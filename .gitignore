@@ -1,0 +1,108 @@
+# ============================================================
+# .gitignore - Submit Jurnal Form
+# ============================================================
+
+# ============================================================
+# SISTEM OPERASI
+# ============================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+
+# ============================================================
+# EDITOR & IDE
+# ============================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+*.sublime-project
+
+# ============================================================
+# KONFIGURASI SENSITIF
+# ============================================================
+.env
+.env.local
+.env.production
+config.js
+config-local.js
+credentials.json
+secret.json
+*.pem
+*.key
+
+# ============================================================
+# LOG & TEMPORARY
+# ============================================================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+tmp/
+temp/
+*.tmp
+*.bak
+*.cache
+
+# ============================================================
+# NODE.JS (Jika ada pengembangan lanjutan)
+# ============================================================
+node_modules/
+package-lock.json
+yarn.lock
+
+# ============================================================
+# UPLOAD & USER DATA
+# ============================================================
+uploads/
+user-data/
+*.zip
+*.tar.gz
+*.rar
+
+# ============================================================
+# BACKUP & VERSI LAMA
+# ============================================================
+backup/
+old/
+*.old
+*.backup
+index-backup.html
+index-lama.html
+form-v1.html
+form-v2.html
+
+# ============================================================
+# GOOGLE APPS SCRIPT
+# ============================================================
+.clasp.json
+.clasprc.json
+appsscript.json
+Code.gs
+*.gs
+
+# ============================================================
+# LAINNYA
+# ============================================================
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.svg
+.DS_Store
