@@ -2,607 +2,804 @@
 <html lang="id" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    
-    <title>Login v3.1.0 - Arsip Surat Digital Enterprise</title>
-    <meta name="description" content="Login dengan AI & Biometric - v3.1.0 (2026)">
-    <meta name="version" content="3.1.0">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login - Arsip Surat Digital Enterprise v30.1.0">
     <meta name="theme-color" content="#1976D2">
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1E1E1E">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    
-    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png?v=3.1.0">
-    <link rel="apple-touch-icon" href="icons/icon-512x512.png?v=3.1.0">
-    <link rel="manifest" href="manifest.json?v=3.1.0">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="css/custom.css?v=3.1.0">
+    <title>Login - Arsip Surat Digital Enterprise v30.1.0</title>
     
     <style>
         :root {
-            --login-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --card-bg: #FFFFFF;
-            --text: #333333;
-            --text-secondary: #666666;
-            --input-bg: #FFFFFF;
-            --input-border: #E0E0E0;
+            --primary: #1976D2;
+            --primary-dark: #1565C0;
+            --bg: #F0F4F8;
+            --surface: #FFFFFF;
+            --text: #212121;
+            --text-secondary: #757575;
+            --border: #E0E0E0;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
-        
+
         [data-theme="dark"] {
-            --login-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            --card-bg: #1E1E1E;
-            --text: #FFFFFF;
-            --text-secondary: #B0B0B0;
-            --input-bg: #2D2D2D;
-            --input-border: #4E4E4E;
+            --bg: #0F172A;
+            --surface: #1E293B;
+            --text: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --border: #334155;
+            --shadow: 0 4px 20px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
         }
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Roboto', sans-serif;
-            background: var(--login-bg);
+            font-family: var(--font-family);
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: background 0.3s;
             padding: 20px;
-            transition: all 0.3s;
         }
-        
-        .login-wrapper {
-            width: 100%;
-            max-width: 460px;
+
+        /* Background Pattern */
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(25,118,210,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(38,166,154,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 20%, rgba(255,112,67,0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
-        
+
+        /* Login Container */
         .login-container {
-            background: var(--card-bg);
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-            animation: slideUp 0.5s ease;
-            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 440px;
+            animation: fadeInUp 0.6s ease;
         }
-        
-        @keyframes slideUp {
+
+        @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
-        .login-header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 40px 32px;
+
+        /* Logo Section */
+        .logo-section {
             text-align: center;
-            position: relative;
+            margin-bottom: 32px;
         }
-        
-        .login-header .version-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(255,255,255,0.2);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        
-        .login-logo {
+
+        .logo {
             width: 80px;
             height: 80px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--primary), #42A5F5);
             border-radius: 20px;
-            margin-bottom: 16px;
-            background: white;
-            padding: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 8px 24px rgba(25,118,210,0.3);
+            animation: pulse 2s infinite;
         }
-        
-        .login-header h1 {
-            font-size: 24px;
-            margin: 0 0 4px;
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 8px 24px rgba(25,118,210,0.3); }
+            50% { box-shadow: 0 12px 32px rgba(25,118,210,0.5); }
+        }
+
+        .app-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .app-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
             font-weight: 500;
         }
-        
-        .login-header p {
-            font-size: 13px;
-            opacity: 0.9;
-            margin: 0;
-        }
-        
-        .login-body {
+
+        /* Login Card */
+        .login-card {
+            background: var(--surface);
+            border-radius: var(--radius);
             padding: 32px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
         }
-        
-        .form-group {
-            margin-bottom: 20px;
+
+        .login-card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-align: center;
         }
-        
-        .form-label {
-            display: block;
+
+        .login-card .welcome-text {
+            text-align: center;
+            color: var(--text-secondary);
             font-size: 13px;
-            font-weight: 500;
-            color: var(--text);
+            margin-bottom: 24px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
             margin-bottom: 6px;
-        }
-        
-        .form-input {
-            width: 100%;
-            height: 48px;
-            padding: 0 16px;
-            border: 2px solid var(--input-border);
-            border-radius: 12px;
-            font-size: 15px;
-            background: var(--input-bg);
+            font-size: 13px;
+            font-weight: 600;
             color: var(--text);
-            transition: all 0.3s;
-            font-family: 'Roboto', sans-serif;
         }
-        
-        .form-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-            outline: none;
-        }
-        
-        .password-wrapper {
+
+        .input-wrapper {
             position: relative;
         }
-        
-        .password-wrapper .form-input {
-            padding-right: 50px;
-        }
-        
-        .toggle-password {
+
+        .input-wrapper .icon {
             position: absolute;
-            right: 4px;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 14px 12px 44px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: var(--font-family);
+            background: var(--bg);
+            color: var(--text);
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(25,118,210,0.1);
+            background: var(--surface);
+        }
+
+        .input-wrapper input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        /* Password Toggle */
+        .password-toggle {
+            position: absolute;
+            right: 14px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
             cursor: pointer;
+            font-size: 18px;
             color: var(--text-secondary);
-            padding: 10px;
-            font-size: 20px;
+            padding: 4px;
         }
-        
-        .login-options {
+
+        /* Remember & Forgot */
+        .form-options {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             font-size: 13px;
         }
-        
+
         .remember-me {
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
+            gap: 6px;
             cursor: pointer;
         }
-        
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+        }
+
         .forgot-password {
-            color: #667eea;
+            color: var(--primary);
             text-decoration: none;
             font-weight: 500;
+            cursor: pointer;
         }
-        
-        .login-btn {
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        /* Button */
+        .btn-login {
             width: 100%;
-            height: 48px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: var(--radius-sm);
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: 'Roboto', sans-serif;
+            font-family: var(--font-family);
+            position: relative;
+            overflow: hidden;
         }
-        
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+
+        .btn-login:hover {
+            box-shadow: 0 6px 20px rgba(25,118,210,0.4);
+            transform: translateY(-1px);
         }
-        
-        .login-btn:disabled {
-            opacity: 0.7;
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
-        
-        .biometric-btn {
-            width: 100%;
-            height: 48px;
-            background: var(--input-bg);
-            color: var(--text);
-            border: 2px solid var(--input-border);
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 12px;
-            font-family: 'Roboto', sans-serif;
+
+        .btn-login .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin: 0 auto;
         }
-        
-        .biometric-btn:hover {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.05);
+
+        .btn-login.loading .btn-text { display: none; }
+        .btn-login.loading .spinner { display: block; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
-        
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-            color: var(--text-secondary);
-            font-size: 13px;
-        }
-        
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--input-border);
-        }
-        
-        .divider span {
-            padding: 0 12px;
-        }
-        
+
+        /* Error Message */
         .error-message {
-            background: #FFEBEE;
-            color: #C62828;
+            background: rgba(244,67,54,0.08);
+            color: #F44336;
             padding: 12px 16px;
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
             font-size: 13px;
             margin-bottom: 16px;
             display: none;
-            border-left: 4px solid #F44336;
+            border: 1px solid rgba(244,67,54,0.2);
+            animation: shake 0.4s;
         }
-        
-        [data-theme="dark"] .error-message {
-            background: #4A1525;
-            color: #EF5350;
+
+        .error-message.show { display: block; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
         }
-        
-        .login-footer {
+
+        /* Biometric */
+        .biometric-section {
             text-align: center;
-            padding: 20px 32px;
-            background: var(--input-bg);
-            border-top: 1px solid var(--input-border);
-            font-size: 12px;
-            color: var(--text-secondary);
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
         }
-        
-        .ai-badge {
+
+        .btn-biometric {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 2px 8px;
-            border-radius: 8px;
-            font-size: 10px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            margin-left: 4px;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            transition: all 0.3s;
+            font-family: var(--font-family);
         }
-        
-        .theme-toggle-btn {
+
+        .btn-biometric:hover {
+            border-color: var(--primary);
+            background: rgba(25,118,210,0.05);
+        }
+
+        .btn-biometric .fingerprint {
+            font-size: 20px;
+        }
+
+        /* Features */
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .feature-item .feature-icon {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Version */
+        .version {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 20px;
+            opacity: 0.7;
+        }
+
+        /* Toast */
+        .toast {
             position: fixed;
             top: 20px;
             right: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: none;
-            background: rgba(255,255,255,0.2);
+            padding: 12px 20px;
+            border-radius: 8px;
             color: white;
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            z-index: 10;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 9999;
+            animation: slideIn 0.3s;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
         }
-        
-        .theme-toggle-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: rotate(30deg);
+
+        .toast.success { background: #4CAF50; }
+        .toast.error { background: #F44336; }
+        .toast.info { background: #2196F3; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
         }
-        
+
+        /* Responsive */
         @media (max-width: 480px) {
-            .login-header { padding: 32px 20px; }
-            .login-body { padding: 24px 20px; }
-            .login-logo { width: 60px; height: 60px; }
-            .login-header h1 { font-size: 20px; }
+            .login-card { padding: 24px 20px; }
+            .logo { width: 64px; height: 64px; font-size: 32px; }
+            .app-title { font-size: 18px; }
+            .features { gap: 16px; }
+        }
+
+        /* Quick Login Info */
+        .quick-login-info {
+            background: rgba(25,118,210,0.05);
+            border: 1px dashed rgba(25,118,210,0.3);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin-top: 16px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .quick-login-info strong {
+            color: var(--primary);
         }
     </style>
 </head>
 <body>
-    <!-- Theme Toggle -->
-    <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark Mode">
-        <span id="theme-icon">🌙</span>
-    </button>
+    <div class="bg-pattern"></div>
     
-    <div class="login-wrapper">
-        <div class="login-container">
-            <!-- Header -->
-            <div class="login-header">
-                <span class="version-badge">v3.1.0</span>
-                <img src="icons/icon-192x192.png" alt="Logo" class="login-logo">
-                <h1>Arsip Surat Digital</h1>
-                <p>Enterprise Document Management <span class="ai-badge">🤖 AI</span></p>
-            </div>
+    <div class="login-container">
+        <!-- Logo -->
+        <div class="logo-section">
+            <div class="logo">📄</div>
+            <h1 class="app-title">Arsip Surat Digital</h1>
+            <p class="app-subtitle">Enterprise v30.1.0 | AI Powered</p>
+        </div>
+        
+        <!-- Login Card -->
+        <div class="login-card">
+            <h2>👋 Selamat Datang</h2>
+            <p class="welcome-text">Silakan login untuk mengakses sistem</p>
             
-            <!-- Body -->
-            <div class="login-body">
-                <!-- Error Message -->
-                <div class="error-message" id="error-message"></div>
-                
-                <!-- Login Form -->
-                <form id="login-form" autocomplete="off">
-                    <div class="form-group">
-                        <label class="form-label">Username / Email</label>
-                        <input type="text" id="username" class="form-input" 
-                               placeholder="Masukkan username atau email" required autofocus>
+            <!-- Error Message -->
+            <div class="error-message" id="errorMessage"></div>
+            
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <span class="icon">👤</span>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            placeholder="Masukkan username" 
+                            required 
+                            autocomplete="username"
+                            autofocus
+                        >
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Password</label>
-                        <div class="password-wrapper">
-                            <input type="password" id="password" class="form-input" 
-                                   placeholder="Masukkan password" required>
-                            <button type="button" class="toggle-password" id="toggle-password">
-                                <span class="material-icons">visibility_off</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="login-options">
-                        <label class="remember-me">
-                            <input type="checkbox" id="remember-me">
-                            <span>Ingat saya</span>
-                        </label>
-                        <a href="#" class="forgot-password" id="forgot-password">Lupa password?</a>
-                    </div>
-                    
-                    <button type="submit" class="login-btn" id="login-btn">
-                        <span class="material-icons">login</span>
-                        Masuk
-                    </button>
-                </form>
-                
-                <!-- Biometric Divider -->
-                <div class="divider" id="biometric-divider" style="display:none;">
-                    <span>atau</span>
                 </div>
                 
-                <!-- Biometric Login -->
-                <button class="biometric-btn" id="biometric-btn" style="display:none;" 
-                        onclick="loginWithBiometric()">
-                    <span class="material-icons">fingerprint</span>
-                    Login dengan Biometric
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <span class="icon">🔒</span>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Masukkan password" 
+                            required 
+                            autocomplete="current-password"
+                        >
+                        <button type="button" class="password-toggle" onclick="togglePassword()" title="Tampilkan password">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <span>Ingat saya</span>
+                    </label>
+                    <a class="forgot-password" onclick="forgotPassword()">Lupa password?</a>
+                </div>
+                
+                <button type="submit" class="btn-login" id="btnLogin">
+                    <span class="btn-text">🔐 Masuk</span>
+                    <span class="spinner"></span>
+                </button>
+            </form>
+            
+            <!-- Biometric -->
+            <div class="biometric-section" id="biometricSection" style="display:none;">
+                <button class="btn-biometric" onclick="loginWithBiometric()">
+                    <span class="fingerprint">🖐️</span>
+                    <span>Login dengan Fingerprint / Face ID</span>
                 </button>
             </div>
             
-            <!-- Footer -->
-            <div class="login-footer">
-                <p>&copy; 2024-2026 Arsip Surat Digital Enterprise</p>
-                <p style="margin-top: 4px;">
-                    v3.1.0 (2026) • 
-                    <a href="#" onclick="toggleTheme()" style="color: #667eea;">🌙 Tema</a> •
-                    <a href="#" onclick="switchLanguage()" style="color: #667eea;" id="lang-switch">EN</a>
-                </p>
+            <!-- Quick Login Info -->
+            <div class="quick-login-info">
+                ℹ️ Login dengan akun yang sudah terdaftar.<br>
+                Hubungi <strong>Administrator</strong> jika belum memiliki akun.
             </div>
+        </div>
+        
+        <!-- Features -->
+        <div class="features">
+            <div class="feature-item">
+                <span class="feature-icon">🤖</span>
+                AI Smart Search
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🔗</span>
+                Blockchain
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🔐</span>
+                Biometric
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🎤</span>
+                Voice
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🌙</span>
+                Dark Mode
+            </div>
+        </div>
+        
+        <!-- Version -->
+        <div class="version">
+            Arsip Surat Digital Enterprise v30.1.0 &copy; 2026
         </div>
     </div>
     
-    <!-- Scripts -->
-    <script src="js/app.js?v=3.1.0"></script>
-    <script src="js/auth.js?v=3.1.0"></script>
-    
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
     <script>
+        // ========== CONFIGURATION ==========
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxhx4JXI_yX9MIEhYmSVAjxy-_9McM0-2WKzA2OvW4h8T9QT2nh5bJcio0KiWEyL4VRsQ/exec';
+        const APP_VERSION = '30.1.0';
+        
         // ========== INITIALIZATION ==========
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🔐 Login v3.1.0 (2026)');
-            
+        document.addEventListener('DOMContentLoaded', () => {
             // Check if already logged in
-            if (typeof AuthGuard !== 'undefined') {
-                const isAuth = await AuthGuard.redirectIfAuthenticated();
-                if (isAuth) return;
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (token && user) {
+                // Verify token is still valid
+                verifyAndRedirect(token);
             }
             
-            // Load saved theme
-            loadTheme();
+            // Load saved username
+            const savedUsername = localStorage.getItem('savedUsername');
+            if (savedUsername) {
+                document.getElementById('username').value = savedUsername;
+                document.getElementById('rememberMe').checked = true;
+            }
             
             // Check biometric availability
-            await checkBiometric();
+            checkBiometricAvailability();
             
-            // Toggle password visibility
-            document.getElementById('toggle-password')?.addEventListener('click', function() {
-                const pw = document.getElementById('password');
-                const icon = this.querySelector('.material-icons');
-                if (pw.type === 'password') {
-                    pw.type = 'text';
-                    icon.textContent = 'visibility';
-                } else {
-                    pw.type = 'password';
-                    icon.textContent = 'visibility_off';
-                }
-            });
+            // Apply saved theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
             
-            // Form submit
-            document.getElementById('login-form')?.addEventListener('submit', handleLogin);
-            
-            // Forgot password
-            document.getElementById('forgot-password')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                handleForgotPassword();
-            });
-            
-            // Enter key
-            document.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    document.getElementById('login-form')?.dispatchEvent(new Event('submit'));
-                }
-            });
+            console.log('✅ Login page v' + APP_VERSION + ' loaded');
+            console.log('🔗 API URL:', API_URL);
         });
         
-        // ========== THEME ==========
-        function loadTheme() {
-            const saved = localStorage.getItem('app_theme') || 'auto';
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            if (saved === 'dark' || (saved === 'auto' && prefersDark)) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                document.getElementById('theme-icon').textContent = '☀️';
+        // ========== VERIFY EXISTING TOKEN ==========
+        async function verifyAndRedirect(token) {
+            try {
+                const url = new URL(API_URL);
+                url.searchParams.set('action', 'me');
+                url.searchParams.set('token', token);
+                
+                const response = await fetch(url.toString());
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.data) {
+                    // Token valid, redirect to dashboard
+                    window.location.href = '/index.html';
+                } else {
+                    // Token invalid, clear storage
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                }
+            } catch (error) {
+                console.log('Token verification failed:', error.message);
+                // Stay on login page
             }
         }
         
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme');
-            const newTheme = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            localStorage.setItem('app_theme', newTheme);
-        }
-        
-        function switchLanguage() {
-            const current = localStorage.getItem('app_locale') || 'id';
-            const newLang = current === 'id' ? 'en' : 'id';
-            localStorage.setItem('app_locale', newLang);
-            document.getElementById('lang-switch').textContent = newLang === 'id' ? 'EN' : 'ID';
-            location.reload();
-        }
-        
-        // ========== BIOMETRIC ==========
-        async function checkBiometric() {
-            if (typeof biometricAuth === 'undefined') return;
+        // ========== HANDLE LOGIN ==========
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const btnLogin = document.getElementById('btnLogin');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Validation
+            if (!username || !password) {
+                showError('Username dan password harus diisi');
+                return;
+            }
+            
+            // Show loading
+            btnLogin.classList.add('loading');
+            btnLogin.disabled = true;
+            hideError();
             
             try {
-                const available = await biometricAuth.isAvailable();
-                if (available) {
-                    const registered = localStorage.getItem('biometric_registered') === 'true';
-                    if (registered) {
-                        document.getElementById('biometric-divider').style.display = 'flex';
-                        document.getElementById('biometric-btn').style.display = 'flex';
+                const url = new URL(API_URL);
+                url.searchParams.set('action', 'login');
+                
+                const response = await fetch(url.toString(), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.data) {
+                    // Save token and user data
+                    localStorage.setItem('token', data.data.token);
+                    localStorage.setItem('user', JSON.stringify(data.data.user));
+                    
+                    // Save username if remember me
+                    if (rememberMe) {
+                        localStorage.setItem('savedUsername', username);
+                    } else {
+                        localStorage.removeItem('savedUsername');
+                    }
+                    
+                    showToast('✅ Login berhasil! Mengalihkan...', 'success');
+                    
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = '/index.html';
+                    }, 800);
+                    
+                } else {
+                    showError(data.message || 'Username atau password salah');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                if (!navigator.onLine) {
+                    showError('Tidak ada koneksi internet. Periksa koneksi Anda.');
+                } else {
+                    showError('Gagal terhubung ke server. Silakan coba lagi.');
+                }
+            } finally {
+                // Hide loading
+                btnLogin.classList.remove('loading');
+                btnLogin.disabled = false;
+            }
+        }
+        
+        // ========== BIOMETRIC LOGIN ==========
+        async function checkBiometricAvailability() {
+            try {
+                // Check if WebAuthn is supported
+                if (window.PublicKeyCredential) {
+                    // Check if user has registered biometric before
+                    const hasBiometric = localStorage.getItem('hasBiometric') === 'true';
+                    
+                    if (hasBiometric || true) { // Show button regardless
+                        document.getElementById('biometricSection').style.display = 'block';
                     }
                 }
-            } catch (e) {
-                console.log('Biometric not available');
+            } catch (error) {
+                console.log('Biometric not available:', error.message);
             }
         }
         
         async function loginWithBiometric() {
-            if (typeof biometricAuth === 'undefined') {
-                alert('Biometric tidak didukung di browser ini');
-                return;
-            }
-            
-            const btn = document.getElementById('biometric-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner spinner-sm"></span> Verifikasi...';
-            
             try {
-                const result = await biometricAuth.authenticate();
+                // Check if we have saved credential ID
+                const credentialId = localStorage.getItem('biometricCredentialId');
                 
-                if (result) {
-                    // Get stored token
-                    const token = localStorage.getItem('app_token');
-                    if (token) {
-                        api.setToken(JSON.parse(token));
-                        appState.set('isAuthenticated', true);
-                        window.location.href = '/index.html';
-                    } else {
-                        throw new Error('Session tidak ditemukan');
-                    }
-                } else {
-                    throw new Error('Verifikasi biometric gagal');
+                if (!credentialId) {
+                    showToast('⚠️ Belum ada biometric terdaftar. Login dengan username/password terlebih dahulu.', 'info');
+                    return;
                 }
+                
+                showToast('🔐 Memindai biometric...', 'info');
+                
+                // WebAuthn get assertion
+                const publicKey = {
+                    challenge: new Uint8Array(32),
+                    rpId: window.location.hostname,
+                    allowCredentials: [{
+                        id: Uint8Array.from(atob(credentialId), c => c.charCodeAt(0)),
+                        type: 'public-key',
+                    }],
+                    userVerification: 'required',
+                    timeout: 30000,
+                };
+                
+                const assertion = await navigator.credentials.get({ publicKey });
+                
+                if (assertion) {
+                    // Verify with backend
+                    const url = new URL(API_URL);
+                    url.searchParams.set('action', 'biometric.verify');
+                    url.searchParams.set('credentialId', credentialId);
+                    
+                    const response = await fetch(url.toString());
+                    const data = await response.json();
+                    
+                    if (data.status === 'success') {
+                        // Get user from stored data
+                        const user = JSON.parse(localStorage.getItem('user') || '{}');
+                        const token = localStorage.getItem('token');
+                        
+                        if (token && user.username) {
+                            showToast('✅ Biometric verified! Mengalihkan...', 'success');
+                            setTimeout(() => {
+                                window.location.href = '/index.html';
+                            }, 800);
+                        } else {
+                            showToast('⚠️ Silakan login dengan username/password terlebih dahulu', 'info');
+                        }
+                    } else {
+                        showToast('❌ Biometric verification gagal', 'error');
+                    }
+                }
+                
             } catch (error) {
-                showError(error.message);
-                btn.disabled = false;
-                btn.innerHTML = '<span class="material-icons">fingerprint</span> Login dengan Biometric';
+                console.error('Biometric login error:', error);
+                showToast('❌ Biometric login gagal: ' + error.message, 'error');
             }
         }
         
-        // ========== LOGIN ==========
-        async function handleLogin(e) {
-            e.preventDefault();
+        // ========== TOGGLE PASSWORD ==========
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.password-toggle');
             
-            const username = document.getElementById('username')?.value?.trim();
-            const password = document.getElementById('password')?.value;
-            const rememberMe = document.getElementById('remember-me')?.checked;
-            
-            if (!username) { showError('Username wajib diisi'); return; }
-            if (!password) { showError('Password wajib diisi'); return; }
-            
-            const btn = document.getElementById('login-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner spinner-sm" style="border-color:white;border-top-color:transparent;"></span> Login...';
-            
-            hideError();
-            
-            try {
-                const result = await authManager.login(username, password, rememberMe);
-                // Redirect handled by auth.js
-            } catch (error) {
-                showError(error.message || 'Login gagal');
-                btn.disabled = false;
-                btn.innerHTML = '<span class="material-icons">login</span> Masuk';
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
             }
         }
         
         // ========== FORGOT PASSWORD ==========
-        async function handleForgotPassword() {
-            const email = prompt('Masukkan email Anda untuk reset password:');
-            if (!email) return;
-            
-            try {
-                await authManager.forgotPassword(email);
-                alert('Link reset password telah dikirim ke email Anda.');
-            } catch (error) {
-                alert('Gagal: ' + error.message);
-            }
+        function forgotPassword() {
+            showToast('ℹ️ Hubungi Administrator untuk reset password', 'info');
         }
         
-        // ========== HELPERS ==========
+        // ========== ERROR HANDLING ==========
         function showError(message) {
-            const el = document.getElementById('error-message');
-            if (el) {
-                el.textContent = message;
-                el.style.display = 'block';
-            }
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+            
+            // Shake animation
+            errorMessage.style.animation = 'none';
+            errorMessage.offsetHeight; // Trigger reflow
+            errorMessage.style.animation = 'shake 0.4s';
         }
         
         function hideError() {
-            const el = document.getElementById('error-message');
-            if (el) el.style.display = 'none';
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.classList.remove('show');
+            errorMessage.textContent = '';
         }
-    </script>
-    
-    <!-- Service Worker -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js?v=3.1.0')
-                .then(reg => console.log('SW v3.1.0 registered'))
-                .catch(err => console.log('SW failed:', err));
+        
+        // ========== TOAST ==========
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
+        
+        // ========== KEYBOARD SHORTCUTS ==========
+        document.addEventListener('keydown', (e) => {
+            // Enter to submit
+            if (e.key === 'Enter' && document.activeElement?.tagName !== 'BUTTON') {
+                document.getElementById('loginForm').requestSubmit();
+            }
+        });
+        
+        console.log('✅ Login script v30.1.0 loaded');
     </script>
 </body>
 </html>
