@@ -3,101 +3,517 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi v3.1.0 - Arsip Surat Digital</title>
+    <meta name="description" content="404 - Halaman Tidak Ditemukan - Arsip Surat Digital Enterprise">
     <meta name="theme-color" content="#1976D2">
-    <link rel="stylesheet" href="css/custom.css?v=3.1.0">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>404 - Halaman Tidak Ditemukan | Arsip Surat Digital Enterprise</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📄%3C/text%3E%3C/svg%3E">
+    
     <style>
-        .verify-wrapper {
+        :root {
+            --primary: #1976D2;
+            --primary-dark: #1565C0;
+            --bg: #F0F4F8;
+            --surface: #FFFFFF;
+            --text: #212121;
+            --text-secondary: #757575;
+            --border: #E0E0E0;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --success: #4CAF50;
+            --error: #F44336;
+            --warning: #FF9800;
+            --info: #2196F3;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0F172A;
+            --surface: #1E293B;
+            --text: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --border: #334155;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            transition: background 0.3s ease;
             padding: 20px;
         }
-        .verify-container {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-            padding: 48px 32px;
-            max-width: 480px;
+
+        .error-container {
             width: 100%;
+            max-width: 560px;
+            animation: fadeInUp 0.6s ease;
             text-align: center;
         }
-        .verify-icon { font-size: 80px; margin-bottom: 24px; }
-        .verify-title { font-size: 24px; margin-bottom: 12px; color: #333; }
-        .verify-message { font-size: 15px; color: #666; margin-bottom: 32px; line-height: 1.6; }
-        .verify-btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 14px 32px; background: #1976D2; color: white;
-            border: none; border-radius: 12px; font-size: 16px; font-weight: 500;
-            cursor: pointer; text-decoration: none; transition: all 0.3s;
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .verify-btn:hover { background: #1565C0; box-shadow: 0 4px 15px rgba(25,118,210,0.3); }
-        .spinner { width: 40px; height: 40px; border: 3px solid #E0E0E0; border-top-color: #1976D2; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Error Code */
+        .error-code {
+            font-size: 120px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), #42A5F5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 8px;
+            animation: pulse 2s ease-in-out infinite;
+            user-select: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 16px;
+            animation: bounce 2s ease-in-out infinite;
+            user-select: none;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Error Card */
+        .error-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 40px 32px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .error-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .error-message {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .error-path {
+            display: inline-block;
+            background: var(--bg);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            word-break: break-all;
+            max-width: 100%;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: var(--font-family);
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(25,118,210,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(25,118,210,0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(25,118,210,0.05);
+        }
+
+        /* Suggestions */
+        .suggestions {
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+            text-align: left;
+        }
+
+        .suggestions h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .suggestion-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+
+        .suggestion-item:hover {
+            background: var(--surface);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .suggestion-item .suggestion-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Footer */
+        .error-footer {
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .error-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .error-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Online Status */
+        .online-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .status-dot.offline {
+            background: var(--error);
+        }
+
+        /* Search Box */
+        .search-box {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: var(--font-family);
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+        }
+
+        .search-box button {
+            padding: 10px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+            font-family: var(--font-family);
+            transition: background 0.3s;
+        }
+
+        .search-box button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .error-code { font-size: 80px; }
+            .error-icon { font-size: 60px; }
+            .error-title { font-size: 22px; }
+            .error-card { padding: 28px 20px; }
+            .suggestion-list { grid-template-columns: 1fr; }
+            .button-group { flex-direction: column; }
+            .btn { justify-content: center; width: 100%; }
+            .search-box { flex-direction: column; }
+        }
+
+        @media (max-width: 360px) {
+            .error-code { font-size: 60px; }
+            .error-card { padding: 20px 16px; }
+        }
+
+        /* Print */
+        @media print {
+            body { background: white; }
+            .btn, .search-box { display: none; }
+        }
     </style>
 </head>
 <body>
-    <div class="verify-wrapper">
-        <div class="verify-container" id="verify-content">
-            <div class="spinner"></div>
-            <h1 class="verify-title">Memverifikasi...</h1>
-            <p class="verify-message">Mohon tunggu, kami sedang memverifikasi akun Anda.</p>
-            <p style="font-size:12px;color:#999;">v3.1.0 (2026)</p>
+    <div class="error-container">
+        
+        <!-- Error Icon -->
+        <div class="error-icon">🔍</div>
+        
+        <!-- Error Code -->
+        <div class="error-code">404</div>
+        
+        <!-- Error Card -->
+        <div class="error-card">
+            <h1 class="error-title">Halaman Tidak Ditemukan</h1>
+            <p class="error-message">Maaf, halaman yang Anda cari tidak tersedia atau telah dipindahkan.</p>
+            
+            <!-- Path yang dicari -->
+            <div class="error-path" id="errorPath">/halaman/tidak/ditemukan</div>
+            
+            <!-- Online Status -->
+            <div class="online-status">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Online</span>
+            </div>
+            
+            <!-- Search -->
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Cari halaman..." onkeypress="if(event.key==='Enter')searchPage()">
+                <button onclick="searchPage()">Cari</button>
+            </div>
+            
+            <!-- Buttons -->
+            <div class="button-group">
+                <a href="/login.html" class="btn btn-primary">🔐 Kembali ke Login</a>
+                <a href="/index.html" class="btn btn-outline">📊 Dashboard</a>
+                <button class="btn btn-outline" onclick="goBack()">⬅️ Kembali</button>
+                <button class="btn btn-outline" onclick="location.reload()">🔄 Refresh</button>
+            </div>
+            
+            <!-- Suggestions -->
+            <div class="suggestions">
+                <h3>💡 Mungkin Anda mencari:</h3>
+                <div class="suggestion-list">
+                    <a href="/login.html" class="suggestion-item">
+                        <span class="suggestion-icon">🔐</span> Halaman Login
+                    </a>
+                    <a href="/index.html" class="suggestion-item">
+                        <span class="suggestion-icon">📊</span> Dashboard
+                    </a>
+                    <a href="/index.html#surat-masuk" class="suggestion-item">
+                        <span class="suggestion-icon">📨</span> Surat Masuk
+                    </a>
+                    <a href="/index.html#surat-keluar" class="suggestion-item">
+                        <span class="suggestion-icon">📤</span> Surat Keluar
+                    </a>
+                    <a href="/index.html#approval" class="suggestion-item">
+                        <span class="suggestion-icon">✅</span> Approval
+                    </a>
+                    <a href="/setup.html" class="suggestion-item">
+                        <span class="suggestion-icon">⚙️</span> Setup Sistem
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="error-footer">
+            Arsip Surat Digital Enterprise v3.1.0 &copy; 2026 |
+            <a href="/login.html">Login</a> |
+            <a href="/index.html">Dashboard</a> |
+            <a href="/setup.html">Setup</a>
         </div>
     </div>
-    
-    <script src="js/app.js?v=3.1.0"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const token = new URLSearchParams(window.location.search).get('token');
-            const container = document.getElementById('verify-content');
+        // ========== INITIALIZATION ==========
+        (function init() {
+            console.log('📄 404 Page v3.1.0 loaded');
             
-            if (!token) {
-                showError('Token tidak ditemukan');
+            // Tampilkan path yang dicari
+            const path = window.location.pathname + window.location.search;
+            document.getElementById('errorPath').textContent = path || '/';
+            
+            // Update status online
+            updateOnlineStatus();
+            
+            // Listen for online/offline events
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            
+            // Apply saved theme
+            applyTheme();
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') window.location.href = '/login.html';
+                if (e.key === 'Enter' && document.activeElement === document.getElementById('searchInput')) {
+                    searchPage();
+                }
+            });
+            
+            // Log error (opsional - untuk debugging)
+            log404Error(path);
+        })();
+        
+        // ========== ONLINE STATUS ==========
+        function updateOnlineStatus() {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            if (navigator.onLine) {
+                dot.className = 'status-dot';
+                text.textContent = 'Online';
+            } else {
+                dot.className = 'status-dot offline';
+                text.textContent = 'Offline';
+            }
+        }
+        
+        // ========== THEME ==========
+        function applyTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        
+        // ========== SEARCH ==========
+        function searchPage() {
+            const query = document.getElementById('searchInput').value.trim();
+            
+            if (!query) {
+                alert('Masukkan kata kunci pencarian');
                 return;
             }
             
-            try {
-                const response = await api.get('verify', { token });
-                
-                if (response.status === 'success') {
-                    showSuccess('Verifikasi Berhasil!', 'Akun Anda telah diverifikasi. Silakan login.');
-                } else {
-                    throw new Error(response.message);
-                }
-            } catch (error) {
-                showError(error.message || 'Verifikasi gagal');
+            // Redirect ke dashboard dengan parameter search
+            window.location.href = '/index.html#surat-masuk&search=' + encodeURIComponent(query);
+        }
+        
+        // ========== GO BACK ==========
+        function goBack() {
+            if (document.referrer && document.referrer !== window.location.href) {
+                window.history.back();
+            } else {
+                window.location.href = '/login.html';
             }
-        });
-        
-        function showSuccess(title, message) {
-            document.getElementById('verify-content').innerHTML = `
-                <div class="verify-icon">✅</div>
-                <h1 class="verify-title">${title}</h1>
-                <p class="verify-message">${message}</p>
-                <a href="login.html" class="verify-btn">
-                    <span class="material-icons">login</span> Login Sekarang
-                </a>
-                <p style="font-size:12px;color:#999;margin-top:16px;">v3.1.0 (2026)</p>
-            `;
-            setTimeout(() => { window.location.href = 'login.html'; }, 3000);
         }
         
-        function showError(message) {
-            document.getElementById('verify-content').innerHTML = `
-                <div class="verify-icon">❌</div>
-                <h1 class="verify-title">Verifikasi Gagal</h1>
-                <p class="verify-message">${message}</p>
-                <a href="login.html" class="verify-btn" style="background:#F44336;">
-                    <span class="material-icons">arrow_back</span> Kembali
-                </a>
-                <p style="font-size:12px;color:#999;margin-top:16px;">v3.1.0 (2026)</p>
-            `;
+        // ========== LOG 404 ==========
+        function log404Error(path) {
+            console.warn('404 Error:', {
+                path: path,
+                referrer: document.referrer,
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString(),
+                online: navigator.onLine
+            });
+            
+            // Kirim ke analytics (jika ada)
+            if (navigator.onLine && typeof gtag !== 'undefined') {
+                gtag('event', '404_error', {
+                    'event_category': 'error',
+                    'event_label': path,
+                    'value': 1
+                });
+            }
         }
+        
+        // ========== SERVICE WORKER REGISTRATION ==========
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js?v=3.1.0')
+                    .then((registration) => {
+                        console.log('✅ SW registered for 404 page:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.warn('⚠️ SW registration failed for 404 page:', error);
+                    });
+            });
+        }
+        
+        console.log('✅ 404.html v3.1.0 - STANDALONE - READY');
     </script>
 </body>
 </html>
