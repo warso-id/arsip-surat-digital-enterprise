@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arsip Surat Digital Enterprise - Redirecting...</title>
+  
+  <!-- Redirect ke halaman utama dengan menyimpan path -->
+  <script>
+    // SessionStorage untuk menyimpan path yang diminta
+    const path = window.location.pathname.replace('/arsip-surat-digital-enterprise', '');
+    const search = window.location.search;
+    const hash = window.location.hash;
+    
+    sessionStorage.setItem('redirectPath', path);
+    sessionStorage.setItem('redirectSearch', search);
+    sessionStorage.setItem('redirectHash', hash);
+    
+    // Redirect ke halaman utama
+    window.location.href = '/arsip-surat-digital-enterprise/';
+  </script>
+</head>
+<body>
+  <p>Redirecting to application...</p>
+</body>
+</html>
