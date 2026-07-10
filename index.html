@@ -2,579 +2,2252 @@
 <html lang="id" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    
-    <title>Arsip Surat Digital Enterprise v3.1.0</title>
-    <meta name="description" content="Enterprise Digital Document Management System v3.1.0 - AI-Powered PWA">
-    <meta name="version" content="3.1.0">
-    <meta name="build-date" content="2026-07-10">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Arsip Surat Digital Enterprise v30.1.0 - AI Powered Document Management System">
     <meta name="theme-color" content="#1976D2">
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1E1E1E">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ArsipSurat v3.1">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="display-override" content="window-controls-overlay">
-    <meta name="theme-color" media="(display-mode: window-controls-overlay)" content="transparent">
+    <meta name="apple-mobile-web-app-title" content="Arsip Surat">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
     
-    <meta property="og:title" content="Arsip Surat Digital Enterprise v3.1.0">
-    <meta property="og:description" content="Enterprise Digital Document Management System - AI-Powered PWA">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="icons/icon-512x512.png">
-    
-    <script>
-        (function(){var p=window.location.pathname;window.APP_BASE=p.substring(0,p.lastIndexOf('/')+1);console.log('📍 Base:',window.APP_BASE);})();
-    </script>
-    
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png?v=3.1.0">
-    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png?v=3.1.0">
-    <link rel="apple-touch-icon" href="icons/icon-512x512.png?v=3.1.0">
-    <link rel="manifest" href="manifest.json?v=3.1.0">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://script.google.com">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
-    <link rel="stylesheet" href="css/custom.css?v=3.1.0">
-    
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://script.google.com blob:;style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;font-src 'self' https://fonts.gstatic.com data:;img-src 'self' data: https: blob:;connect-src 'self' https://script.google.com https://*.googleapis.com https://cdn.jsdelivr.net;worker-src 'self' blob:;">
+    <title>Arsip Surat Digital Enterprise v30.1.0</title>
     
     <style>
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;margin:0;padding:0;background:#FAFAFA;color:#212121;-webkit-font-smoothing:antialiased}
-        #app-loading{display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;background:#FAFAFA}
-        #app-loading .spinner{width:48px;height:48px;border:4px solid #E0E0E0;border-top-color:#1976D2;border-radius:50%;animation:spin 0.8s linear infinite}
-        @keyframes spin{to{transform:rotate(360deg)}}
-        #app-loading p{color:#666;font-size:15px}
-        #app-loading small{color:#999;font-size:12px}
-        #app{display:none}
-        :root{--sidebar-width:260px;--header-height:64px}
-        .sidebar{position:fixed;top:0;left:0;width:var(--sidebar-width);height:100vh;background:#FFF;box-shadow:0 3px 6px rgba(0,0,0,0.15);z-index:1000;overflow-y:auto;transition:transform 0.3s}
-        .sidebar-header{padding:16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #EEE;min-height:var(--header-height)}
-        .sidebar-logo{width:40px;height:40px;border-radius:8px}
-        .sidebar-title{font-size:16px;font-weight:600;color:#333}
-        .sidebar-version{font-size:10px;color:#999;margin-left:auto;background:#F5F5F5;padding:2px 6px;border-radius:4px}
-        .sidebar-nav{padding:8px 0}
-        .nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;color:#616161;text-decoration:none;transition:all 0.2s;cursor:pointer;font-size:14px}
-        .nav-item:hover{background:#F5F5F5;color:#1976D2}
-        .nav-item.active{background:#E3F2FD;color:#1976D2;font-weight:600}
-        .nav-item .material-icons{font-size:22px;width:24px;text-align:center}
-        .nav-divider{height:1px;background:#EEE;margin:8px 16px}
-        .main-content{flex:1;margin-left:var(--sidebar-width);min-height:100vh;display:flex;flex-direction:column}
-        .header{position:sticky;top:0;z-index:900;background:#FFF;box-shadow:0 1px 3px rgba(0,0,0,0.12);height:var(--header-height);display:flex;align-items:center;padding:0 20px;gap:12px}
-        .header-menu-btn{background:none;border:none;cursor:pointer;padding:8px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-        .header-menu-btn:hover{background:#F5F5F5}
-        .header-title{flex:1;font-size:20px;font-weight:500}
-        .header-actions{display:flex;align-items:center;gap:8px}
-        .ai-search-wrapper{position:relative;display:flex;align-items:center}
-        .ai-search-wrapper input{padding:8px 36px 8px 14px;border:2px solid #E0E0E0;border-radius:20px;font-size:14px;width:220px;outline:none;font-family:inherit}
-        .ai-search-wrapper input:focus{border-color:#1976D2}
-        .ai-search-icon{position:absolute;right:10px;color:#9E9E9E;pointer-events:none;font-size:20px}
-        .content{padding:24px;max-width:1400px;width:100%;flex:1}
-        .footer{text-align:center;padding:16px;font-size:12px;color:#9E9E9E;border-top:1px solid #EEE;margin-top:auto}
-        .card{background:#FFF;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.12);overflow:hidden;margin-bottom:20px}
-        .card-header{padding:16px 20px;border-bottom:1px solid #EEE;display:flex;justify-content:space-between;align-items:center}
-        .card-header h3{font-size:16px;font-weight:600}
-        .card-body{padding:20px}
-        .dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:20px}
-        .stat-card{background:#FFF;padding:20px;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.12);display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s}
-        .stat-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.15)}
-        .stat-card-icon{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#FFF;font-size:24px}
-        .stat-card-primary .stat-card-icon{background:linear-gradient(135deg,#1976D2,#42A5F5)}
-        .stat-card-success .stat-card-icon{background:linear-gradient(135deg,#4CAF50,#81C784)}
-        .stat-card-warning .stat-card-icon{background:linear-gradient(135deg,#FF9800,#FFB74D)}
-        .stat-card-danger .stat-card-icon{background:linear-gradient(135deg,#F44336,#EF5350)}
-        .stat-card-content h3{font-size:28px;font-weight:700;line-height:1.2}
-        .stat-card-content p{font-size:13px;color:#757575}
-        .quick-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
-        .quick-action-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 16px;background:#FFF;border:2px solid #E0E0E0;border-radius:12px;cursor:pointer;transition:all 0.2s;font-family:inherit;font-size:13px;color:#333}
-        .quick-action-btn:hover{border-color:#1976D2;background:#E3F2FD;transform:translateY(-2px)}
-        .quick-action-btn .material-icons{font-size:28px;color:#1976D2}
-        .grid{display:grid;gap:20px}
-        .grid-2{grid-template-columns:repeat(2,1fr)}
-        .chart-container{position:relative;height:300px}
-        .chart-container-lg{height:400px}
-        .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;text-decoration:none}
-        .btn-primary{background:#1976D2;color:#FFF}
-        .btn-primary:hover{background:#1565C0}
-        .btn-outline{background:transparent;border:2px solid #1976D2;color:#1976D2}
-        .btn-sm{padding:4px 10px;font-size:12px}
-        .btn-icon{width:40px;height:40px;padding:0;border-radius:50%;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
-        .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
-        .badge-warning{background:#FFF3E0;color:#E65100}
-        .badge-danger{background:#FFEBEE;color:#C62828}
-        .user-menu{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 8px;border-radius:8px}
-        .user-menu:hover{background:#F5F5F5}
-        .user-avatar{width:36px;height:36px;border-radius:50%;background:#E0E0E0;display:flex;align-items:center;justify-content:center}
-        .user-name{font-size:14px;font-weight:500}
-        .theme-toggle,.voice-btn{width:40px;height:40px;border-radius:50%;border:none;background:transparent;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center}
-        .voice-btn{border:1px solid #E0E0E0;background:#FFF}
-        @media(max-width:992px){.sidebar{transform:translateX(-100%)}.sidebar.active{transform:translateX(0)}.main-content{margin-left:0!important}.grid-2{grid-template-columns:1fr}}
-        @media(max-width:768px){.hide-mobile{display:none!important}.header{padding:0 12px}.content{padding:12px}.ai-search-wrapper input{width:140px}.dashboard-grid{grid-template-columns:1fr}}
-        @media(min-width:993px){.header-menu-btn{display:none}}
+        /* ========== CSS RESET & VARIABLES ========== */
+        :root {
+            --primary: #1976D2;
+            --primary-dark: #1565C0;
+            --primary-light: #42A5F5;
+            --secondary: #26A69A;
+            --accent: #FF7043;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --error: #F44336;
+            --info: #2196F3;
+            --bg: #F5F5F5;
+            --surface: #FFFFFF;
+            --text: #212121;
+            --text-secondary: #757575;
+            --border: #E0E0E0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.15);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --sidebar-width: 280px;
+            --header-height: 64px;
+            --font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg: #121212;
+            --surface: #1E1E1E;
+            --text: #FFFFFF;
+            --text-secondary: #B0B0B0;
+            --border: #333333;
+            --shadow: 0 2px 8px rgba(0,0,0,0.4);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.6);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
+        /* ========== SCROLLBAR ========== */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+        /* ========== LAYOUT ========== */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .sidebar-logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.3;
+        }
+
+        .sidebar-subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .nav-section {
+            margin-bottom: 16px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(25, 118, 210, 0.08);
+            color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+        }
+
+        .nav-item .icon {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-item .badge {
+            position: absolute;
+            right: 12px;
+            background: var(--error);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-info:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: var(--transition);
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            background: var(--surface);
+            height: var(--header-height);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: var(--shadow);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text);
+            padding: 4px;
+        }
+
+        .breadcrumb {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .breadcrumb span {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-btn {
+            background: none;
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--text);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .header-btn:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .header-btn .count {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--error);
+            color: white;
+            font-size: 10px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .online-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            display: inline-block;
+            margin-right: 4px;
+        }
+
+        .online-indicator.offline {
+            background: var(--error);
+        }
+
+        /* ========== PAGE CONTENT ========== */
+        .page-content {
+            padding: 24px;
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* ========== CARDS ========== */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* ========== STATS GRID ========== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .stat-icon.blue { background: rgba(25,118,210,0.1); color: var(--primary); }
+        .stat-icon.green { background: rgba(76,175,80,0.1); color: var(--success); }
+        .stat-icon.orange { background: rgba(255,152,0,0.1); color: var(--warning); }
+        .stat-icon.red { background: rgba(244,67,54,0.1); color: var(--error); }
+        .stat-icon.purple { background: rgba(156,39,176,0.1); color: #9C27B0; }
+
+        .stat-info h3 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stat-info p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* ========== TABLES ========== */
+        .table-container {
+            overflow-x: auto;
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--bg);
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover td {
+            background: rgba(25,118,210,0.02);
+        }
+
+        /* ========== BUTTONS ========== */
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-family: var(--font-family);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(25,118,210,0.3);
+        }
+
+        .btn-success { background: var(--success); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-error { background: var(--error); color: white; }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        .btn-outline:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-lg { padding: 14px 28px; font-size: 16px; }
+
+        /* ========== FORMS ========== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: var(--font-family);
+            background: var(--surface);
+            color: var(--text);
+            transition: var(--transition);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(25,118,210,0.1);
+        }
+
+        /* ========== BADGES ========== */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-success { background: rgba(76,175,80,0.1); color: var(--success); }
+        .badge-warning { background: rgba(255,152,0,0.1); color: var(--warning); }
+        .badge-error { background: rgba(244,67,54,0.1); color: var(--error); }
+        .badge-info { background: rgba(33,150,243,0.1); color: var(--info); }
+        .badge-primary { background: rgba(25,118,210,0.1); color: var(--primary); }
+
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s;
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        /* ========== TOAST ========== */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            animation: slideInRight 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 300px;
+        }
+
+        /* ========== SEARCH ========== */
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+
+        /* ========== PAGINATION ========== */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* ========== EMPTY STATE ========== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state .icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* ========== ANIMATIONS ========== */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-content {
+                padding: 16px;
+            }
+
+            .page-title {
+                font-size: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 14px;
+            }
+
+            .stat-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 22px;
+            }
+
+            .stat-info h3 {
+                font-size: 22px;
+            }
+
+            .header {
+                padding: 0 16px;
+            }
+
+            .search-box {
+                max-width: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* ========== PRINT ========== */
+        @media print {
+            .sidebar, .header, .btn, .no-print {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- LOADING SCREEN (Step 1-7)                   -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div id="app-loading">
-        <div class="spinner"></div>
-        <p>Memuat aplikasi...</p>
-        <small>v3.1.0 (2026)</small>
-    </div>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- APP CONTAINER (Step 8: onAppReady)          -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div id="app">
+    <!-- ========== APP CONTAINER ========== -->
+    <div class="app-container">
         
-        <!-- Offline Bar -->
-        <div id="offline-bar" style="display:none;position:fixed;top:0;left:0;right:0;background:#F44336;color:#FFF;text-align:center;padding:6px;z-index:99999;font-size:13px;">⚠️ Anda sedang offline</div>
-        
-        <!-- Sidebar -->
+        <!-- ========== SIDEBAR ========== -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <img src="icons/icon-192x192.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'">
-                <span class="sidebar-title">Arsip Surat Digital</span>
-                <span class="sidebar-version">v3.1.0</span>
+                <img src="/icons/icon-192x192.png" alt="Logo" class="sidebar-logo">
+                <div class="sidebar-title">Arsip Surat Digital</div>
+                <div class="sidebar-subtitle">Enterprise v30.1.0</div>
             </div>
-            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title" data-i18n="menu_utama">Menu Utama</div>
+                    <a href="/" class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+                        <span class="icon">📊</span>
+                        <span data-i18n="dashboard">Dashboard</span>
+                    </a>
+                    <a href="/surat-masuk" class="nav-item" data-page="surat-masuk" onclick="navigateTo('surat-masuk')">
+                        <span class="icon">📨</span>
+                        <span data-i18n="surat_masuk">Surat Masuk</span>
+                        <span class="badge" id="sm-count">0</span>
+                    </a>
+                    <a href="/surat-keluar" class="nav-item" data-page="surat-keluar" onclick="navigateTo('surat-keluar')">
+                        <span class="icon">📤</span>
+                        <span data-i18n="surat_keluar">Surat Keluar</span>
+                        <span class="badge" id="sk-count">0</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title" data-i18n="menu_proses">Proses</div>
+                    <a href="/disposisi" class="nav-item" data-page="disposisi" onclick="navigateTo('disposisi')">
+                        <span class="icon">📋</span>
+                        <span data-i18n="disposisi">Disposisi</span>
+                        <span class="badge" id="disp-count">0</span>
+                    </a>
+                    <a href="/approval" class="nav-item" data-page="approval" onclick="navigateTo('approval')">
+                        <span class="icon">✅</span>
+                        <span data-i18n="approval">Approval</span>
+                        <span class="badge" id="appr-count">0</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title" data-i18n="menu_lainnya">Lainnya</div>
+                    <a href="/arsip" class="nav-item" data-page="arsip" onclick="navigateTo('arsip')">
+                        <span class="icon">🗄️</span>
+                        <span data-i18n="arsip">Arsip</span>
+                    </a>
+                    <a href="/laporan" class="nav-item" data-page="laporan" onclick="navigateTo('laporan')">
+                        <span class="icon">📈</span>
+                        <span data-i18n="laporan">Laporan</span>
+                    </a>
+                    <a href="/pengaturan" class="nav-item" data-page="pengaturan" onclick="navigateTo('pengaturan')">
+                        <span class="icon">⚙️</span>
+                        <span data-i18n="pengaturan">Pengaturan</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info" id="userInfo">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Administrator</div>
+                        <div class="user-role" id="userRole">Admin</div>
+                    </div>
+                    <button class="header-btn" onclick="APP.auth.logout()" title="Logout">🚪</button>
+                </div>
+            </div>
         </aside>
         
-        <!-- Main Content -->
-        <main class="main-content" id="main-content">
+        <!-- ========== MAIN CONTENT ========== -->
+        <main class="main-content">
+            <!-- Header -->
             <header class="header">
-                <button class="header-menu-btn" id="sidebar-toggle" aria-label="Menu"><span class="material-icons">menu</span></button>
-                <h1 class="header-title" id="page-title">Dashboard</h1>
-                <div class="header-actions">
-                    <div class="ai-search-wrapper"><input type="text" id="global-search" placeholder="🤖 AI Search..." autocomplete="off"><span class="material-icons ai-search-icon">search</span></div>
-                    <button class="voice-btn hide-mobile" id="voice-btn" title="Voice Command"><span class="material-icons">mic</span></button>
-                    <button class="theme-toggle" id="theme-btn" title="Dark Mode"><span id="theme-icon">🌙</span></button>
-                    <button class="btn-icon" id="notification-btn" aria-label="Notifications"><span class="material-icons">notifications</span><span class="badge badge-danger" id="notification-badge" style="display:none;">0</span></button>
-                    <div class="user-menu hide-mobile" id="user-menu">
-                        <div class="user-avatar"><span class="material-icons">account_circle</span></div>
-                        <span class="user-name" id="user-display">User</span>
+                <div class="header-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <div class="breadcrumb">
+                        <span data-i18n="dashboard">Dashboard</span>
                     </div>
                 </div>
+                
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="globalSearch" placeholder="Cari surat..." data-i18n-placeholder="search" onkeyup="handleGlobalSearch(event)">
+                </div>
+                
+                <div class="header-right">
+                    <span class="online-indicator" id="onlineIndicator" title="Online"></span>
+                    
+                    <button class="header-btn" onclick="APP.voice.start()" title="Voice Command">🎤</button>
+                    
+                    <button class="header-btn" onclick="APP.theme.toggle()" title="Toggle Theme">
+                        <span id="themeIcon">🌙</span>
+                    </button>
+                    
+                    <button class="header-btn" onclick="APP.i18n.set(APP.lang === 'id' ? 'en' : 'id')" title="Ganti Bahasa">
+                        <span id="langFlag">🇮🇩</span>
+                    </button>
+                    
+                    <button class="header-btn" onclick="navigateTo('notifikasi')" title="Notifikasi">
+                        🔔
+                        <span class="count" id="notifCount" style="display:none">0</span>
+                    </button>
+                    
+                    <button class="header-btn" onclick="APP.biometric.authenticate()" title="Biometric">
+                        🔐
+                    </button>
+                </div>
             </header>
-            <div class="content" id="content-area"></div>
-            <footer class="footer"><p>© 2024-2026 Arsip Surat Digital Enterprise | v3.1.0</p></footer>
+            
+            <!-- Page Content -->
+            <div class="page-content" id="pageContent">
+                <!-- DYNAMIC CONTENT LOADED HERE -->
+            </div>
         </main>
     </div>
-
-    <!-- PWA Install Banner -->
-    <div id="pwa-banner" style="display:none;position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#FFF;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2);padding:16px 20px;z-index:9999;align-items:center;gap:12px;max-width:420px;width:calc(100%-32px);">
-        <span style="font-size:28px;">📱</span>
-        <div style="flex:1;"><strong style="font-size:14px;">Install Aplikasi</strong><p style="font-size:12px;color:#666;margin:2px 0;">Pasang di homescreen</p></div>
-        <button id="pwa-install-btn" style="padding:8px 16px;background:#1976D2;color:#FFF;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Install</button>
-        <button id="pwa-dismiss-btn" style="background:none;border:none;font-size:18px;cursor:pointer;">×</button>
+    
+    <!-- ========== TOAST CONTAINER ========== -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- ========== LOADING OVERLAY ========== -->
+    <div id="loadingOverlay" style="display:none;">
+        <div style="position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:250;display:flex;align-items:center;justify-content:center;">
+            <div style="background:var(--surface);padding:32px;border-radius:var(--radius);text-align:center;box-shadow:var(--shadow-lg);">
+                <div class="spinner" style="margin:0 auto 12px;"></div>
+                <p style="color:var(--text);font-weight:500;">Memuat...</p>
+            </div>
+        </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- SCRIPTS (Step 4: Loaded Berurutan)          -->
-    <!-- ═══════════════════════════════════════════ -->
-    <script src="js/app.js?v=3.1.0"></script>
-    <script src="js/auth.js?v=3.1.0"></script>
-    <script src="js/db.js?v=3.1.0"></script>
-    <script src="js/notifications.js?v=3.1.0"></script>
-    <script src="js/security.js?v=3.1.0"></script>
-    <script src="js/export.js?v=3.1.0"></script>
-    <script src="js/chart-init.js?v=3.1.0"></script>
-    <script src="js/ai-local.js?v=3.1.0"></script>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- SERVICE WORKER                              -->
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- ========== SCRIPTS ========== -->
+    <script src="/app.js?v=30.1.0"></script>
+    
     <script>
-    if('serviceWorker' in navigator){
-        var swPath=(window.APP_BASE||'')+'sw.js?v=3.1.0';
-        window.addEventListener('load',function(){
-            navigator.serviceWorker.register(swPath).then(function(r){console.log('✅ SW:',r.scope);}).catch(function(e){console.warn('SW:',e.message);});
-        });
-    }
-    </script>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- MAIN APP INITIALIZATION (Step 5-10)         -->
-    <!-- ═══════════════════════════════════════════ -->
-    <script>
-    (function(){
-        'use strict';
-        console.log('🚀 Starting App v3.1.0 Initialization...');
+        // ========== GLOBAL APP CONFIGURATION ==========
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxhx4JXI_yX9MIEhYmSVAjxy-_9McM0-2WKzA2OvW4h8T9QT2nh5bJcio0KiWEyL4VRsQ/exec';
         
-        // Global state
-        var APP_READY = false;
-        var deferredPWA = null;
-
-        // ========== STEP 6: initApp ==========
-        function initApp(){
-            console.log('📦 initApp() called');
+        // Override API URL dari app.js
+        if (window.APP) {
+            APP.apiUrl = API_URL;
+        }
+        
+        // ========== NAVIGATION ==========
+        let currentPage = 'dashboard';
+        
+        function navigateTo(page, params = {}) {
+            currentPage = page;
             
-            // Check if APP core loaded
-            if(typeof APP === 'undefined'){
-                console.warn('APP not ready, retrying...');
-                setTimeout(initApp, 200);
+            // Update active nav
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === page) item.classList.add('active');
+            });
+            
+            // Update breadcrumb
+            const breadcrumbMap = {
+                'dashboard': 'Dashboard',
+                'surat-masuk': 'Surat Masuk',
+                'surat-keluar': 'Surat Keluar',
+                'disposisi': 'Disposisi',
+                'approval': 'Approval',
+                'arsip': 'Arsip',
+                'laporan': 'Laporan',
+                'pengaturan': 'Pengaturan',
+                'notifikasi': 'Notifikasi',
+            };
+            document.querySelector('.breadcrumb span').textContent = breadcrumbMap[page] || page;
+            
+            // Load page content
+            loadPage(page, params);
+            
+            // Update URL hash
+            window.location.hash = page;
+            
+            // Close sidebar on mobile
+            if (window.innerWidth <= 1024) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+        
+        // ========== LOAD PAGE ==========
+        async function loadPage(page, params = {}) {
+            const content = document.getElementById('pageContent');
+            
+            // Show loading
+            showLoading(true);
+            
+            try {
+                switch(page) {
+                    case 'dashboard':
+                        content.innerHTML = await renderDashboard();
+                        await loadDashboardData();
+                        break;
+                    case 'surat-masuk':
+                        content.innerHTML = await renderSuratMasuk();
+                        await loadSuratMasukData(params);
+                        break;
+                    case 'surat-keluar':
+                        content.innerHTML = await renderSuratKeluar();
+                        await loadSuratKeluarData(params);
+                        break;
+                    case 'disposisi':
+                        content.innerHTML = await renderDisposisi();
+                        await loadDisposisiData(params);
+                        break;
+                    case 'approval':
+                        content.innerHTML = await renderApproval();
+                        await loadApprovalData(params);
+                        break;
+                    case 'arsip':
+                        content.innerHTML = await renderArsip();
+                        break;
+                    case 'laporan':
+                        content.innerHTML = await renderLaporan();
+                        break;
+                    case 'pengaturan':
+                        content.innerHTML = await renderPengaturan();
+                        await loadPengaturanData();
+                        break;
+                    case 'notifikasi':
+                        content.innerHTML = await renderNotifikasi();
+                        await loadNotifikasiData();
+                        break;
+                    default:
+                        content.innerHTML = `
+                            <div class="empty-state">
+                                <div class="icon">🔍</div>
+                                <h3>Halaman Tidak Ditemukan</h3>
+                                <p>Halaman "${page}" tidak tersedia.</p>
+                                <button class="btn btn-primary" onclick="navigateTo('dashboard')" style="margin-top:16px;">Kembali ke Dashboard</button>
+                            </div>
+                        `;
+                }
+            } catch (error) {
+                console.error('Error loading page:', error);
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">❌</div>
+                        <h3>Gagal Memuat Halaman</h3>
+                        <p>${error.message}</p>
+                        <button class="btn btn-primary" onclick="navigateTo('dashboard')" style="margin-top:16px;">Kembali ke Dashboard</button>
+                    </div>
+                `;
+            }
+            
+            showLoading(false);
+        }
+        
+        // ========== API HELPER ==========
+        async function apiCall(action, params = {}, method = 'GET') {
+            const url = new URL(API_URL);
+            url.searchParams.set('action', action);
+            
+            const token = localStorage.getItem('token');
+            if (token) url.searchParams.set('token', token);
+            
+            Object.entries(params).forEach(([k, v]) => {
+                if (v !== undefined && v !== null && v !== '') {
+                    url.searchParams.set(k, v);
+                }
+            });
+            
+            try {
+                const options = { method };
+                if (method === 'POST') {
+                    options.headers = { 'Content-Type': 'application/json' };
+                    options.body = JSON.stringify(params);
+                    // Remove params from URL for POST
+                    Object.keys(params).forEach(k => url.searchParams.delete(k));
+                }
+                
+                const response = await fetch(url.toString(), options);
+                const data = await response.json();
+                
+                if (data.code === 401) {
+                    APP.auth.logout();
+                    throw new Error('Sesi habis, silakan login kembali');
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+        
+        // ========== DASHBOARD ==========
+        async function renderDashboard() {
+            return `
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">📊 Dashboard</h1>
+                        <p class="page-subtitle">Ringkasan aktivitas surat menyurat</p>
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn btn-outline btn-sm" onclick="refreshDashboard()">🔄 Refresh</button>
+                        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Cetak</button>
+                    </div>
+                </div>
+                
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card" onclick="navigateTo('surat-masuk')">
+                        <div class="stat-icon blue">📨</div>
+                        <div class="stat-info">
+                            <h3 id="stat-sm-total">-</h3>
+                            <p>Total Surat Masuk</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" onclick="navigateTo('surat-keluar')">
+                        <div class="stat-icon green">📤</div>
+                        <div class="stat-info">
+                            <h3 id="stat-sk-total">-</h3>
+                            <p>Total Surat Keluar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" onclick="navigateTo('disposisi')">
+                        <div class="stat-icon orange">📋</div>
+                        <div class="stat-info">
+                            <h3 id="stat-disp-pending">-</h3>
+                            <p>Disposisi Pending</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" onclick="navigateTo('approval')">
+                        <div class="stat-icon red">✅</div>
+                        <div class="stat-info">
+                            <h3 id="stat-appr-pending">-</h3>
+                            <p>Approval Pending</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-bottom:24px;">
+                    <div class="card-header">
+                        <h2 class="card-title">📈 Grafik Surat Bulanan</h2>
+                        <select onchange="loadChartData(this.value)" style="width:auto;">
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                        </select>
+                    </div>
+                    <canvas id="chartSurat" height="300"></canvas>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📋 Aktivitas Terbaru</h2>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>User</th>
+                                    <th>Aksi</th>
+                                    <th>Modul</th>
+                                    <th>Deskripsi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentActivities">
+                                <tr><td colspan="5" class="empty-state">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        
+        async function loadDashboardData() {
+            try {
+                // Load stats
+                const statsRes = await apiCall('dashboard.stats');
+                if (statsRes.status === 'success') {
+                    document.getElementById('stat-sm-total').textContent = statsRes.data.suratMasuk?.total || 0;
+                    document.getElementById('stat-sk-total').textContent = statsRes.data.suratKeluar?.total || 0;
+                    document.getElementById('stat-disp-pending').textContent = statsRes.data.disposisi?.pending || 0;
+                    document.getElementById('stat-appr-pending').textContent = statsRes.data.suratKeluar?.pending || 0;
+                }
+                
+                // Load chart
+                await loadChartData(2026);
+                
+                // Load recent activities
+                const auditRes = await apiCall('auditLog.list', { limit: 10 });
+                if (auditRes.status === 'success' && auditRes.data?.items) {
+                    const tbody = document.getElementById('recentActivities');
+                    if (auditRes.data.items.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Belum ada aktivitas</td></tr>';
+                    } else {
+                        tbody.innerHTML = auditRes.data.items.map(item => `
+                            <tr>
+                                <td>${new Date(item.createdAt).toLocaleString('id-ID')}</td>
+                                <td>${item.userNama || '-'}</td>
+                                <td><span class="badge badge-info">${item.aksi}</span></td>
+                                <td>${item.modul}</td>
+                                <td>${item.deskripsi || '-'}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+                
+                // Update sidebar counts
+                await updateSidebarCounts();
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+        
+        async function loadChartData(year) {
+            try {
+                const res = await apiCall('dashboard.chart', { year });
+                if (res.status === 'success') {
+                    // Simple bar chart using CSS (atau gunakan Chart.js jika tersedia)
+                    const canvas = document.getElementById('chartSurat');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        const datasets = res.data.datasets;
+                        
+                        // Clear canvas
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        
+                        const barWidth = 30;
+                        const gap = 10;
+                        const maxVal = Math.max(
+                            ...datasets[0]?.data || [0],
+                            ...datasets[1]?.data || [0]
+                        ) || 1;
+                        
+                        canvas.width = canvas.parentElement.clientWidth - 40;
+                        
+                        datasets[0]?.data?.forEach((val, i) => {
+                            const x = i * (barWidth * 2 + gap * 3) + 50;
+                            const h1 = (val / maxVal) * (canvas.height - 80);
+                            const h2 = ((datasets[1]?.data?.[i] || 0) / maxVal) * (canvas.height - 80);
+                            
+                            // Bar Surat Masuk
+                            ctx.fillStyle = '#1976D2';
+                            ctx.fillRect(x, canvas.height - h1 - 40, barWidth, h1);
+                            
+                            // Bar Surat Keluar
+                            ctx.fillStyle = '#388E3C';
+                            ctx.fillRect(x + barWidth + gap, canvas.height - h2 - 40, barWidth, h2);
+                            
+                            // Label
+                            ctx.fillStyle = document.documentElement.getAttribute('data-theme') === 'dark' ? '#FFF' : '#333';
+                            ctx.font = '11px Inter, sans-serif';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][i], x + barWidth, canvas.height - 10);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading chart:', error);
+            }
+        }
+        
+        async function refreshDashboard() {
+            await loadDashboardData();
+            showToast('Dashboard berhasil diperbarui', 'success');
+        }
+        
+        // ========== SURAT MASUK ==========
+        async function renderSuratMasuk() {
+            return `
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">📨 Surat Masuk</h1>
+                        <p class="page-subtitle">Manajemen surat masuk</p>
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn btn-outline btn-sm" onclick="loadSuratMasukData()">🔄 Refresh</button>
+                        <button class="btn btn-primary btn-sm" onclick="showSuratMasukForm()">+ Tambah Surat</button>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-bottom:16px;">
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                        <div class="search-box" style="max-width:300px;">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="smSearch" placeholder="Cari surat masuk..." onkeyup="if(event.key==='Enter')loadSuratMasukData()">
+                        </div>
+                        <select id="smStatus" onchange="loadSuratMasukData()" style="width:auto;">
+                            <option value="">Semua Status</option>
+                            <option value="diterima">Diterima</option>
+                            <option value="diproses">Diproses</option>
+                            <option value="selesai">Selesai</option>
+                        </select>
+                        <select id="smSifat" onchange="loadSuratMasukData()" style="width:auto;">
+                            <option value="">Semua Sifat</option>
+                            <option value="biasa">Biasa</option>
+                            <option value="penting">Penting</option>
+                            <option value="rahasia">Rahasia</option>
+                            <option value="segera">Segera</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No. Agenda</th>
+                                <th>No. Surat</th>
+                                <th>Tanggal</th>
+                                <th>Pengirim</th>
+                                <th>Perihal</th>
+                                <th>Sifat</th>
+                                <th>Status</th>
+                                <th>AI Tags</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="smTableBody">
+                            <tr><td colspan="9" class="empty-state">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination" id="smPagination"></div>
+            `;
+        }
+        
+        let smCurrentPage = 1;
+        
+        async function loadSuratMasukData(params = {}) {
+            try {
+                const search = document.getElementById('smSearch')?.value || '';
+                const status = document.getElementById('smStatus')?.value || '';
+                const sifat = document.getElementById('smSifat')?.value || '';
+                
+                const res = await apiCall('suratMasuk.list', {
+                    page: smCurrentPage,
+                    limit: 20,
+                    search: search || undefined,
+                    status: status || undefined,
+                    sifat: sifat || undefined,
+                    ...params
+                });
+                
+                if (res.status === 'success') {
+                    const tbody = document.getElementById('smTableBody');
+                    const items = res.data.items;
+                    
+                    if (!items || items.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="icon">📭</div><h3>Tidak ada surat masuk</h3><p>Belum ada data surat masuk</p></div></td></tr>';
+                    } else {
+                        tbody.innerHTML = items.map(item => `
+                            <tr>
+                                <td><strong>${item.nomorAgenda || '-'}</strong></td>
+                                <td>${item.nomorSurat || '-'}</td>
+                                <td>${item.tanggalSurat ? new Date(item.tanggalSurat).toLocaleDateString('id-ID') : '-'}</td>
+                                <td>${item.pengirim || '-'}</td>
+                                <td>${item.perihal || '-'}</td>
+                                <td><span class="badge badge-${item.sifat === 'rahasia' ? 'error' : item.sifat === 'penting' ? 'warning' : item.sifat === 'segera' ? 'info' : 'success'}">${item.sifat || 'biasa'}</span></td>
+                                <td><span class="badge badge-${item.status === 'selesai' ? 'success' : item.status === 'diproses' ? 'warning' : 'info'}">${item.status || 'diterima'}</span></td>
+                                <td>${(item.aiTags || []).map(t => `<span class="badge badge-primary" style="margin:2px;">${t}</span>`).join('') || '-'}</td>
+                                <td>
+                                    <button class="btn btn-outline btn-sm" onclick="viewSuratMasuk('${item.id}')">👁️</button>
+                                    <button class="btn btn-outline btn-sm" onclick="editSuratMasuk('${item.id}')">✏️</button>
+                                    <button class="btn btn-outline btn-sm" onclick="deleteSuratMasuk('${item.id}')" style="color:var(--error);">🗑️</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                    
+                    // Pagination
+                    renderPagination('smPagination', res.data.pagination, (page) => {
+                        smCurrentPage = page;
+                        loadSuratMasukData();
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading surat masuk:', error);
+            }
+        }
+        
+        function showSuratMasukForm() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <h2>Tambah Surat Masuk</h2>
+                        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+                    </div>
+                    <form onsubmit="saveSuratMasuk(event)">
+                        <div class="form-group">
+                            <label>Nomor Surat</label>
+                            <input type="text" name="nomorSurat" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Tanggal Surat</label>
+                            <input type="date" name="tanggalSurat" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Tanggal Terima</label>
+                            <input type="date" name="tanggalTerima" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Pengirim</label>
+                            <input type="text" name="pengirim" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Perihal</label>
+                            <input type="text" name="perihal" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sifat</label>
+                            <select name="sifat">
+                                <option value="biasa">Biasa</option>
+                                <option value="penting">Penting</option>
+                                <option value="rahasia">Rahasia</option>
+                                <option value="segera">Segera</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Catatan</label>
+                            <textarea name="catatan" rows="3"></textarea>
+                        </div>
+                        <div style="display:flex;gap:8px;justify-content:flex-end;">
+                            <button type="button" class="btn btn-outline" onclick="this.closest('.modal-overlay').remove()">Batal</button>
+                            <button type="submit" class="btn btn-primary">💾 Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        async function saveSuratMasuk(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            showLoading(true);
+            try {
+                const res = await apiCall('suratMasuk.create', data, 'POST');
+                if (res.status === 'success') {
+                    showToast('Surat masuk berhasil disimpan', 'success');
+                    form.closest('.modal-overlay').remove();
+                    await loadSuratMasukData();
+                } else {
+                    showToast('Gagal: ' + res.message, 'error');
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+            showLoading(false);
+        }
+        
+        async function viewSuratMasuk(id) {
+            showLoading(true);
+            try {
+                const res = await apiCall('suratMasuk.detail', { id });
+                if (res.status === 'success') {
+                    const item = res.data;
+                    const modal = document.createElement('div');
+                    modal.className = 'modal-overlay';
+                    modal.innerHTML = `
+                        <div class="modal" style="max-width:700px;">
+                            <div class="modal-header">
+                                <h2>Detail Surat Masuk</h2>
+                                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                <div><strong>No. Agenda:</strong> ${item.nomorAgenda}</div>
+                                <div><strong>No. Surat:</strong> ${item.nomorSurat || '-'}</div>
+                                <div><strong>Tanggal Surat:</strong> ${item.tanggalSurat ? new Date(item.tanggalSurat).toLocaleDateString('id-ID') : '-'}</div>
+                                <div><strong>Tanggal Terima:</strong> ${item.tanggalTerima ? new Date(item.tanggalTerima).toLocaleDateString('id-ID') : '-'}</div>
+                                <div><strong>Pengirim:</strong> ${item.pengirim}</div>
+                                <div><strong>Perihal:</strong> ${item.perihal}</div>
+                                <div><strong>Sifat:</strong> ${item.sifat}</div>
+                                <div><strong>Status:</strong> ${item.status}</div>
+                                <div><strong>Klasifikasi:</strong> ${item.klasifikasi || '-'}</div>
+                                <div><strong>AI Tags:</strong> ${(item.aiTags || []).join(', ') || '-'}</div>
+                                <div style="grid-column:1/-1;"><strong>Catatan:</strong> ${item.catatan || '-'}</div>
+                                ${item.fileUrl ? `<div style="grid-column:1/-1;"><strong>File:</strong> <a href="${item.fileUrl}" target="_blank">${item.fileName || 'Download'}</a></div>` : ''}
+                                ${item.qrCode ? `<div style="grid-column:1/-1;text-align:center;"><img src="${item.qrCode}" alt="QR Code" style="width:150px;"></div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+            showLoading(false);
+        }
+        
+        async function editSuratMasuk(id) {
+            showLoading(true);
+            try {
+                const res = await apiCall('suratMasuk.detail', { id });
+                if (res.status === 'success') {
+                    const item = res.data;
+                    const modal = document.createElement('div');
+                    modal.className = 'modal-overlay';
+                    modal.innerHTML = `
+                        <div class="modal">
+                            <div class="modal-header">
+                                <h2>Edit Surat Masuk</h2>
+                                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+                            </div>
+                            <form onsubmit="updateSuratMasuk(event, '${id}')">
+                                <div class="form-group"><label>Nomor Surat</label><input type="text" name="nomorSurat" value="${item.nomorSurat || ''}"></div>
+                                <div class="form-group"><label>Pengirim</label><input type="text" name="pengirim" value="${item.pengirim || ''}"></div>
+                                <div class="form-group"><label>Perihal</label><input type="text" name="perihal" value="${item.perihal || ''}"></div>
+                                <div class="form-group"><label>Sifat</label><select name="sifat">
+                                    <option value="biasa" ${item.sifat==='biasa'?'selected':''}>Biasa</option>
+                                    <option value="penting" ${item.sifat==='penting'?'selected':''}>Penting</option>
+                                    <option value="rahasia" ${item.sifat==='rahasia'?'selected':''}>Rahasia</option>
+                                    <option value="segera" ${item.sifat==='segera'?'selected':''}>Segera</option>
+                                </select></div>
+                                <div class="form-group"><label>Status</label><select name="status">
+                                    <option value="diterima" ${item.status==='diterima'?'selected':''}>Diterima</option>
+                                    <option value="diproses" ${item.status==='diproses'?'selected':''}>Diproses</option>
+                                    <option value="selesai" ${item.status==='selesai'?'selected':''}>Selesai</option>
+                                </select></div>
+                                <div class="form-group"><label>Catatan</label><textarea name="catatan" rows="3">${item.catatan || ''}</textarea></div>
+                                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                                    <button type="button" class="btn btn-outline" onclick="this.closest('.modal-overlay').remove()">Batal</button>
+                                    <button type="submit" class="btn btn-primary">💾 Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+            showLoading(false);
+        }
+        
+        async function updateSuratMasuk(event, id) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            showLoading(true);
+            try {
+                const res = await apiCall('suratMasuk.update', { id, ...data }, 'POST');
+                if (res.status === 'success') {
+                    showToast('Surat masuk berhasil diupdate', 'success');
+                    form.closest('.modal-overlay').remove();
+                    await loadSuratMasukData();
+                } else {
+                    showToast('Gagal: ' + res.message, 'error');
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+            showLoading(false);
+        }
+        
+        async function deleteSuratMasuk(id) {
+            if (!confirm('Yakin ingin menghapus surat ini?')) return;
+            
+            showLoading(true);
+            try {
+                const res = await apiCall('suratMasuk.delete', { id }, 'POST');
+                if (res.status === 'success') {
+                    showToast('Surat masuk berhasil dihapus', 'success');
+                    await loadSuratMasukData();
+                } else {
+                    showToast('Gagal: ' + res.message, 'error');
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+            showLoading(false);
+        }
+        
+        // ========== SURAT KELUAR ==========
+        async function renderSuratKeluar() {
+            return `
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">📤 Surat Keluar</h1>
+                        <p class="page-subtitle">Manajemen surat keluar</p>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="showSuratKeluarForm()">+ Tambah Surat</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>No. Surat</th><th>Tanggal</th><th>Tujuan</th><th>Perihal</th><th>Status</th><th>Approval</th><th>Aksi</th></tr>
+                        </thead>
+                        <tbody id="skTableBody">
+                            <tr><td colspan="7" class="empty-state">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="skPagination"></div>
+            `;
+        }
+        
+        let skCurrentPage = 1;
+        
+        async function loadSuratKeluarData() {
+            try {
+                const res = await apiCall('suratKeluar.list', { page: skCurrentPage, limit: 20 });
+                if (res.status === 'success') {
+                    const tbody = document.getElementById('skTableBody');
+                    const items = res.data.items;
+                    
+                    if (!items || items.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div><h3>Tidak ada surat keluar</h3></div></td></tr>';
+                    } else {
+                        tbody.innerHTML = items.map(item => `
+                            <tr>
+                                <td><strong>${item.nomorSurat || '-'}</strong></td>
+                                <td>${item.tanggalSurat ? new Date(item.tanggalSurat).toLocaleDateString('id-ID') : '-'}</td>
+                                <td>${item.tujuan || '-'}</td>
+                                <td>${item.perihal || '-'}</td>
+                                <td><span class="badge badge-info">${item.status || 'draft'}</span></td>
+                                <td><span class="badge badge-${item.approvalStatus === 'approved' ? 'success' : item.approvalStatus === 'rejected' ? 'error' : 'warning'}">${item.approvalStatus || 'pending'}</span></td>
+                                <td>
+                                    <button class="btn btn-outline btn-sm" onclick="viewSuratKeluar('${item.id}')">👁️</button>
+                                    <button class="btn btn-outline btn-sm" onclick="submitApproval('${item.id}')">✅</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                    
+                    renderPagination('skPagination', res.data.pagination, (page) => {
+                        skCurrentPage = page;
+                        loadSuratKeluarData();
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading surat keluar:', error);
+            }
+        }
+        
+        function showSuratKeluarForm() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <h2>Tambah Surat Keluar</h2>
+                        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+                    </div>
+                    <form onsubmit="saveSuratKeluar(event)">
+                        <div class="form-group"><label>Nomor Surat</label><input type="text" name="nomorSurat" required></div>
+                        <div class="form-group"><label>Tanggal Surat</label><input type="date" name="tanggalSurat" required></div>
+                        <div class="form-group"><label>Tujuan</label><input type="text" name="tujuan" required></div>
+                        <div class="form-group"><label>Perihal</label><input type="text" name="perihal" required></div>
+                        <div class="form-group"><label>Sifat</label><select name="sifat">
+                            <option value="biasa">Biasa</option><option value="penting">Penting</option>
+                            <option value="rahasia">Rahasia</option><option value="segera">Segera</option>
+                        </select></div>
+                        <div class="form-group"><label>Catatan</label><textarea name="catatan" rows="3"></textarea></div>
+                        <div style="display:flex;gap:8px;justify-content:flex-end;">
+                            <button type="button" class="btn btn-outline" onclick="this.closest('.modal-overlay').remove()">Batal</button>
+                            <button type="submit" class="btn btn-primary">💾 Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        async function saveSuratKeluar(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            showLoading(true);
+            try {
+                const res = await apiCall('suratKeluar.create', data, 'POST');
+                if (res.status === 'success') {
+                    showToast('Surat keluar berhasil disimpan', 'success');
+                    form.closest('.modal-overlay').remove();
+                    await loadSuratKeluarData();
+                } else {
+                    showToast('Gagal: ' + res.message, 'error');
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+            showLoading(false);
+        }
+        
+        async function viewSuratKeluar(id) {
+            showLoading(true);
+            try {
+                const res = await apiCall('suratKeluar.detail', { id });
+                if (res.status === 'success') {
+                    const item = res.data;
+                    const modal = document.createElement('div');
+                    modal.className = 'modal-overlay';
+                    modal.innerHTML = `
+                        <div class="modal">
+                            <div class="modal-header">
+                                <h2>Detail Surat Keluar</h2>
+                                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                <div><strong>No. Surat:</strong> ${item.nomorSurat || '-'}</div>
+                                <div><strong>Tanggal:</strong> ${item.tanggalSurat ? new Date(item.tanggalSurat).toLocaleDateString('id-ID') : '-'}</div>
+                                <div><strong>Tujuan:</strong> ${item.tujuan || '-'}</div>
+                                <div><strong>Perihal:</strong> ${item.perihal || '-'}</div>
+                                <div><strong>Sifat:</strong> ${item.sifat || '-'}</div>
+                                <div><strong>Status:</strong> ${item.status || '-'}</div>
+                                <div><strong>Approval:</strong> ${item.approvalStatus || 'pending'}</div>
+                                <div><strong>Approved By:</strong> ${item.approvedBy || '-'}</div>
+                                <div style="grid-column:1/-1;"><strong>Catatan:</strong> ${item.catatan || '-'}</div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+            showLoading(false);
+        }
+        
+        async function submitApproval(id) {
+            if (!confirm('Kirim untuk approval?')) return;
+            showLoading(true);
+            try {
+                const res = await apiCall('suratKeluar.submitApproval', { id }, 'POST');
+                if (res.status === 'success') {
+                    showToast('Approval request dikirim', 'success');
+                    await loadSuratKeluarData();
+                } else {
+                    showToast('Gagal: ' + res.message, 'error');
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+            showLoading(false);
+        }
+        
+        // ========== DISPOSISI ==========
+        async function renderDisposisi() {
+            return `
+                <div class="page-header">
+                    <h1 class="page-title">📋 Disposisi</h1>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Dari</th><th>Kepada</th><th>Instruksi</th><th>Status</th><th>Tanggal</th></tr></thead>
+                        <tbody id="dispTableBody">
+                            <tr><td colspan="5" class="empty-state">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+        
+        async function loadDisposisiData() {
+            try {
+                const res = await apiCall('disposisi.list', { limit: 20 });
+                if (res.status === 'success') {
+                    const tbody = document.getElementById('dispTableBody');
+                    const items = res.data.items;
+                    if (!items || items.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon">📋</div><h3>Tidak ada disposisi</h3></div></td></tr>';
+                    } else {
+                        tbody.innerHTML = items.map(item => `
+                            <tr>
+                                <td>${item.dariNama || '-'}</td>
+                                <td>${item.kepadaNama || '-'}</td>
+                                <td>${item.instruksi || '-'}</td>
+                                <td><span class="badge badge-${item.status==='selesai'?'success':'warning'}">${item.status}</span></td>
+                                <td>${item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID') : '-'}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading disposisi:', error);
+            }
+        }
+        
+        // ========== APPROVAL ==========
+        async function renderApproval() {
+            return `
+                <div class="page-header">
+                    <h1 class="page-title">✅ Approval</h1>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Surat Keluar ID</th><th>Approver</th><th>Status</th><th>Komentar</th><th>Aksi</th></tr></thead>
+                        <tbody id="apprTableBody">
+                            <tr><td colspan="5" class="empty-state">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+        
+        async function loadApprovalData() {
+            try {
+                const res = await apiCall('approval.list', { limit: 20 });
+                if (res.status === 'success') {
+                    const tbody = document.getElementById('apprTableBody');
+                    const items = res.data.items;
+                    if (!items || items.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon">✅</div><h3>Tidak ada approval</h3></div></td></tr>';
+                    } else {
+                        tbody.innerHTML = items.map(item => `
+                            <tr>
+                                <td>${item.suratKeluarId}</td>
+                                <td>${item.approverNama || '-'}</td>
+                                <td><span class="badge badge-${item.status==='approved'?'success':item.status==='rejected'?'error':'warning'}">${item.status}</span></td>
+                                <td>${item.komentar || '-'}</td>
+                                <td>
+                                    ${item.status === 'pending' ? `
+                                        <button class="btn btn-sm btn-success" onclick="processApproval('${item.id}','approved')">✅ Setujui</button>
+                                        <button class="btn btn-sm btn-error" onclick="processApproval('${item.id}','rejected')">❌ Tolak</button>
+                                    ` : '-'}
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading approval:', error);
+            }
+        }
+        
+        async function processApproval(id, status) {
+            const komentar = prompt('Komentar (opsional):');
+            showLoading(true);
+            try {
+                const res = await apiCall('approval.process', { id, status, komentar }, 'POST');
+                if (res.status === 'success') {
+                    showToast(`Approval ${status === 'approved' ? 'disetujui' : 'ditolak'}`, 'success');
+                    await loadApprovalData();
+                } else {
+                    showToast('Gagal: ' + res.message, 'error');
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+            showLoading(false);
+        }
+        
+        // ========== ARSIP ==========
+        async function renderArsip() {
+            return `
+                <div class="page-header">
+                    <h1 class="page-title">🗄️ Arsip</h1>
+                </div>
+                <div class="card">
+                    <div class="empty-state">
+                        <div class="icon">🗄️</div>
+                        <h3>Arsip Surat</h3>
+                        <p>Fitur arsip akan menampilkan surat yang sudah diarsipkan berdasarkan tahun akademik.</p>
+                        <button class="btn btn-primary" style="margin-top:16px;" onclick="navigateTo('surat-masuk')">Lihat Surat Masuk</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ========== LAPORAN ==========
+        async function renderLaporan() {
+            return `
+                <div class="page-header">
+                    <h1 class="page-title">📈 Laporan</h1>
+                </div>
+                <div class="stats-grid">
+                    <div class="card" style="text-align:center;cursor:pointer;" onclick="exportData('csv')">
+                        <div style="font-size:48px;">📄</div>
+                        <h3>Export CSV</h3>
+                        <p>Download data dalam format CSV</p>
+                    </div>
+                    <div class="card" style="text-align:center;cursor:pointer;" onclick="exportData('json')">
+                        <div style="font-size:48px;">📋</div>
+                        <h3>Export JSON</h3>
+                        <p>Download data dalam format JSON</p>
+                    </div>
+                    <div class="card" style="text-align:center;cursor:pointer;" onclick="window.print()">
+                        <div style="font-size:48px;">🖨️</div>
+                        <h3>Cetak</h3>
+                        <p>Cetak laporan langsung</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        async function exportData(format) {
+            showLoading(true);
+            try {
+                const res = await apiCall('export.all');
+                if (res.status === 'success') {
+                    if (format === 'csv') {
+                        // Convert to CSV dan download
+                        let csv = '';
+                        Object.entries(res.data.data).forEach(([key, value]) => {
+                            csv += `\n=== ${key} ===\n`;
+                            if (value.headers) {
+                                csv += value.headers.join(',') + '\n';
+                                value.rows.forEach(row => {
+                                    csv += row.map(cell => `"${cell}"`).join(',') + '\n';
+                                });
+                            }
+                        });
+                        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(blob);
+                        a.download = `export_arsip_${new Date().toISOString().split('T')[0]}.csv`;
+                        a.click();
+                    } else {
+                        const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' });
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(blob);
+                        a.download = `export_arsip_${new Date().toISOString().split('T')[0]}.json`;
+                        a.click();
+                    }
+                    showToast('Export berhasil', 'success');
+                }
+            } catch (error) {
+                showToast('Export gagal: ' + error.message, 'error');
+            }
+            showLoading(false);
+        }
+        
+        // ========== PENGATURAN ==========
+        async function renderPengaturan() {
+            return `
+                <div class="page-header">
+                    <h1 class="page-title">⚙️ Pengaturan</h1>
+                </div>
+                <div class="card" style="margin-bottom:16px;">
+                    <h3>Informasi Sistem</h3>
+                    <div id="systemInfo">Memuat...</div>
+                </div>
+                <div class="card">
+                    <h3>Fitur</h3>
+                    <div style="display:grid;gap:12px;margin-top:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span>🤖 AI Auto-Tagging</span>
+                            <span class="badge badge-success">Aktif</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span>🔗 Blockchain</span>
+                            <span class="badge badge-success">Aktif</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span>🔐 Biometric</span>
+                            <span class="badge badge-success">Aktif</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span>🎤 Voice Command</span>
+                            <span class="badge badge-info">Tersedia</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        async function loadPengaturanData() {
+            try {
+                const res = await apiCall('system.status');
+                if (res.status === 'success') {
+                    document.getElementById('systemInfo').innerHTML = `
+                        <p><strong>Version:</strong> ${res.data.version}</p>
+                        <p><strong>API Version:</strong> ${res.data.apiVersion}</p>
+                        <p><strong>Timezone:</strong> ${res.data.timezone}</p>
+                        <p><strong>Total Sheets:</strong> ${res.data.totalSheets}</p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading system info:', error);
+            }
+        }
+        
+        // ========== NOTIFIKASI ==========
+        async function renderNotifikasi() {
+            return `
+                <div class="page-header">
+                    <h1 class="page-title">🔔 Notifikasi</h1>
+                    <button class="btn btn-outline btn-sm" onclick="readAllNotifikasi()">✓ Tandai Semua Dibaca</button>
+                </div>
+                <div id="notifList">Memuat...</div>
+            `;
+        }
+        
+        async function loadNotifikasiData() {
+            try {
+                const res = await apiCall('notifikasi.list', { limit: 50 });
+                if (res.status === 'success') {
+                    const container = document.getElementById('notifList');
+                    const items = res.data.items;
+                    if (!items || items.length === 0) {
+                        container.innerHTML = '<div class="empty-state"><div class="icon">🔔</div><h3>Tidak ada notifikasi</h3></div>';
+                    } else {
+                        container.innerHTML = items.map(item => `
+                            <div class="card" style="margin-bottom:8px;opacity:${item.isRead ? '0.6' : '1'};">
+                                <div style="display:flex;justify-content:space-between;align-items:start;">
+                                    <div>
+                                        <strong>${item.judul}</strong>
+                                        <p style="color:var(--text-secondary);margin-top:4px;">${item.pesan}</p>
+                                        <small style="color:var(--text-secondary);">${new Date(item.createdAt).toLocaleString('id-ID')}</small>
+                                    </div>
+                                    ${!item.isRead ? `<button class="btn btn-sm btn-outline" onclick="readNotifikasi('${item.id}')">✓</button>` : ''}
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading notifikasi:', error);
+            }
+        }
+        
+        async function readNotifikasi(id) {
+            try {
+                await apiCall('notifikasi.read', { id });
+                await loadNotifikasiData();
+                await updateSidebarCounts();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        async function readAllNotifikasi() {
+            try {
+                await apiCall('notifikasi.readAll');
+                await loadNotifikasiData();
+                await updateSidebarCounts();
+                showToast('Semua notifikasi ditandai dibaca', 'success');
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+        
+        // ========== HELPERS ==========
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
+        
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.background = type === 'success' ? '#4CAF50' : type === 'error' ? '#F44336' : type === 'warning' ? '#FF9800' : '#2196F3';
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+        
+        function renderPagination(containerId, pagination, callback) {
+            const container = document.getElementById(containerId);
+            if (!container || !pagination || pagination.totalPages <= 1) {
+                if (container) container.innerHTML = '';
                 return;
             }
             
-            // Check if APP.init exists
-            if(typeof APP.init === 'function'){
-                APP.init().then(function(){
-                    console.log('✅ APP.init() completed');
-                    onAppReady();
-                }).catch(function(err){
-                    console.warn('APP.init() error:', err.message);
-                    onAppReady(); // Continue anyway
-                });
-            } else {
-                console.log('APP.init() not found, continuing...');
-                onAppReady();
-            }
-        }
-
-        // ========== STEP 8: onAppReady ==========
-        function onAppReady(){
-            APP_READY = true;
-            console.log('🎉 onAppReady() - Hiding spinner, showing app');
+            let html = '';
+            html += `<button ${pagination.hasPrev ? '' : 'disabled'} onclick="void(0)" data-page="${pagination.page - 1}">«</button>`;
             
-            // Hide loading spinner
-            document.getElementById('app-loading').style.display = 'none';
-            
-            // Show app
-            document.getElementById('app').style.display = 'block';
-            
-            // Set theme
-            var theme = localStorage.getItem('theme') || 'light';
-            if(theme === 'dark'){
-                document.documentElement.setAttribute('data-theme', 'dark');
-                document.getElementById('theme-icon').textContent = '☀️';
-            }
-            
-            // Build sidebar navigation
-            buildSidebar();
-            
-            // Set user display
-            updateUserDisplay();
-            
-            // Build dashboard content
-            buildDashboard();
-            
-            // STEP 9: Load dashboard data
-            setTimeout(function(){ loadDashboardData(); }, 100);
-            
-            // STEP 10: Initialize charts
-            setTimeout(function(){ initCharts(); }, 600);
-            
-            // Setup event listeners
-            setupEventListeners();
-            
-            // Check online status
-            checkOnlineStatus();
-            
-            // Setup PWA install
-            setupPWA();
-            
-            console.log('✅ App v3.1.0 fully ready!');
-        }
-
-        // ========== BUILD SIDEBAR ==========
-        function buildSidebar(){
-            var nav = document.getElementById('sidebar-nav');
-            var menuItems = [
-                {route:'dashboard',icon:'dashboard',label:'Dashboard',active:true},
-                {route:'surat-masuk',icon:'mail',label:'Surat Masuk'},
-                {route:'surat-keluar',icon:'send',label:'Surat Keluar'},
-                {route:'disposisi',icon:'assignment',label:'Disposisi'},
-                {route:'approval',icon:'check_circle',label:'Approval',badge:true},
-                {route:'arsip',icon:'archive',label:'Arsip'},
-                {type:'divider'},
-                {route:'master-data',icon:'settings',label:'Master Data'},
-                {route:'audit-log',icon:'history',label:'Audit Log'},
-                {route:'pengaturan',icon:'tune',label:'Pengaturan'},
-            ];
-            
-            var html = '';
-            menuItems.forEach(function(item){
-                if(item.type === 'divider'){
-                    html += '<div class="nav-divider"></div>';
-                } else {
-                    html += '<a href="#" class="nav-item'+(item.active?' active':'')+'" data-route="'+item.route+'">';
-                    html += '<span class="material-icons">'+item.icon+'</span>';
-                    html += '<span>'+item.label+'</span>';
-                    if(item.badge) html += '<span class="badge badge-warning" id="approval-count" style="display:none;">0</span>';
-                    html += '</a>';
+            for (let i = 1; i <= pagination.totalPages; i++) {
+                if (i === 1 || i === pagination.totalPages || (i >= pagination.page - 2 && i <= pagination.page + 2)) {
+                    html += `<button class="${i === pagination.page ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                } else if (i === pagination.page - 3 || i === pagination.page + 3) {
+                    html += `<button disabled>...</button>`;
                 }
-            });
-            
-            nav.innerHTML = html;
-            
-            // Add click handlers
-            nav.querySelectorAll('.nav-item').forEach(function(el){
-                el.addEventListener('click', function(e){
-                    e.preventDefault();
-                    var route = this.getAttribute('data-route');
-                    navigateTo(route);
-                });
-            });
-        }
-
-        // ========== BUILD DASHBOARD ==========
-        function buildDashboard(){
-            var content = document.getElementById('content-area');
-            
-            var html = '<div id="dashboard-content">';
-            
-            // Stats Cards
-            html += '<div class="dashboard-grid">';
-            html += '<div class="stat-card stat-card-primary" data-route="surat-masuk"><div class="stat-card-icon"><span class="material-icons">mail</span></div><div class="stat-card-content"><h3 id="total-surat-masuk">-</h3><p>Surat Masuk Bulan Ini</p></div></div>';
-            html += '<div class="stat-card stat-card-success" data-route="surat-keluar"><div class="stat-card-icon"><span class="material-icons">send</span></div><div class="stat-card-content"><h3 id="total-surat-keluar">-</h3><p>Surat Keluar Bulan Ini</p></div></div>';
-            html += '<div class="stat-card stat-card-warning" data-route="disposisi"><div class="stat-card-icon"><span class="material-icons">assignment</span></div><div class="stat-card-content"><h3 id="total-disposisi">-</h3><p>Disposisi Menunggu</p></div></div>';
-            html += '<div class="stat-card stat-card-danger" data-route="approval"><div class="stat-card-icon"><span class="material-icons">check_circle</span></div><div class="stat-card-content"><h3 id="total-approval">-</h3><p>Approval Pending</p></div></div>';
-            html += '</div>';
-            
-            // Quick Actions
-            html += '<div class="card"><div class="card-header"><h3>Aksi Cepat</h3></div><div class="card-body"><div class="quick-actions">';
-            html += '<button class="quick-action-btn" data-route="surat-masuk"><span class="material-icons">mail</span><span>Input Surat Masuk</span></button>';
-            html += '<button class="quick-action-btn" data-route="surat-keluar"><span class="material-icons">send</span><span>Buat Surat Keluar</span></button>';
-            html += '<button class="quick-action-btn" data-route="approval"><span class="material-icons">check_circle</span><span>Approval Cepat</span></button>';
-            html += '<button class="quick-action-btn" id="export-btn"><span class="material-icons">download</span><span>Export Data</span></button>';
-            html += '</div></div></div>';
-            
-            // Charts Row 1
-            html += '<div class="grid grid-2">';
-            html += '<div class="card"><div class="card-header"><h3>Grafik Surat Masuk & Keluar</h3></div><div class="card-body"><div class="chart-container"><canvas id="surat-bar-chart"></canvas></div></div></div>';
-            html += '<div class="card"><div class="card-header"><h3>Status Surat</h3></div><div class="card-body"><div class="chart-container"><canvas id="status-pie-chart"></canvas></div></div></div>';
-            html += '</div>';
-            
-            // AI Predictive Chart
-            html += '<div class="card"><div class="card-header"><h3>🤖 AI Prediksi Tren Surat</h3></div><div class="card-body"><div class="chart-container chart-container-lg"><canvas id="ai-predictive-chart"></canvas></div></div></div>';
-            
-            html += '</div>';
-            
-            content.innerHTML = html;
-            
-            // Add click handlers for cards
-            content.querySelectorAll('.stat-card[data-route], .quick-action-btn[data-route]').forEach(function(el){
-                el.addEventListener('click', function(){
-                    navigateTo(this.getAttribute('data-route'));
-                });
-            });
-        }
-
-        // ========== STEP 9: loadDashboardData ==========
-        function loadDashboardData(){
-            console.log('📊 Loading dashboard data...');
-            
-            // Default values
-            var data = {suratMasuk:45,suratKeluar:30,disposisi:15,approval:3};
-            
-            // Try API
-            if(typeof APP !== 'undefined' && APP.api){
-                APP.api.get('dashboard.stats').then(function(res){
-                    if(res && res.data){
-                        data.suratMasuk = res.data.totalSuratMasuk || res.data.suratMasuk?.bulanIni || res.data.suratMasuk?.total || data.suratMasuk;
-                        data.suratKeluar = res.data.totalSuratKeluar || res.data.suratKeluar?.bulanIni || res.data.suratKeluar?.total || data.suratKeluar;
-                        data.disposisi = res.data.totalDisposisi || res.data.disposisi?.pending || data.disposisi;
-                        data.approval = res.data.pendingApproval || res.data.approval?.pending || data.approval;
-                    }
-                    updateStats(data);
-                }).catch(function(){
-                    updateStats(data);
-                });
-            } else {
-                updateStats(data);
-            }
-        }
-
-        function updateStats(d){
-            var setText = function(id,val){var el=document.getElementById(id);if(el)el.textContent=val;};
-            setText('total-surat-masuk', d.suratMasuk);
-            setText('total-surat-keluar', d.suratKeluar);
-            setText('total-disposisi', d.disposisi);
-            setText('total-approval', d.approval);
-        }
-
-        // ========== STEP 10: initCharts ==========
-        function initCharts(){
-            console.log('📈 Initializing charts...');
-            if(typeof chartManager !== 'undefined'){
-                try {
-                    chartManager.createBarChart('surat-bar-chart', {
-                        labels: ['Jan','Feb','Mar','Apr','Mei','Jun'],
-                        suratMasuk: [45,38,42,50,48,55],
-                        suratKeluar: [30,25,28,35,32,40]
-                    });
-                    chartManager.createPieChart('status-pie-chart', {
-                        labels: ['Diterima','Disposisi','Proses','Selesai'],
-                        values: [30,25,20,50]
-                    });
-                    chartManager.createAIPredictiveChart('ai-predictive-chart', {
-                        historical: [45,38,42,50,48,55],
-                        historicalLabels: ['Jan','Feb','Mar','Apr','Mei','Jun'],
-                        predictions: [
-                            {month:'Jul',predicted:52,confidence:85,lowerBound:42,upperBound:62},
-                            {month:'Ags',predicted:48,confidence:80,lowerBound:38,upperBound:58},
-                            {month:'Sep',predicted:55,confidence:75,lowerBound:45,upperBound:65}
-                        ]
-                    });
-                    console.log('✅ Charts initialized');
-                } catch(e){
-                    console.warn('Chart init error:', e.message);
-                }
-            } else {
-                console.warn('chartManager not available');
-            }
-        }
-
-        // ========== SETUP EVENT LISTENERS ==========
-        function setupEventListeners(){
-            // Sidebar toggle
-            document.getElementById('sidebar-toggle').addEventListener('click', function(){
-                document.getElementById('sidebar').classList.toggle('active');
-            });
-            
-            // Theme toggle
-            document.getElementById('theme-btn').addEventListener('click', function(){
-                var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-                var newTheme = isDark ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', newTheme);
-                document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
-                localStorage.setItem('theme', newTheme);
-            });
-            
-            // Voice button
-            document.getElementById('voice-btn').addEventListener('click', function(){
-                if(typeof APP !== 'undefined' && APP.voice){ APP.voice.start(); }
-                else { alert('Voice commands not available'); }
-            });
-            
-            // User menu (logout)
-            document.getElementById('user-menu').addEventListener('click', function(){
-                if(confirm('Keluar dari aplikasi?')){
-                    if(typeof APP !== 'undefined' && APP.auth){ APP.auth.logout(); }
-                    else { localStorage.clear(); window.location.href = 'login.html'; }
-                }
-            });
-            
-            // Export button
-            document.getElementById('export-btn').addEventListener('click', function(){
-                if(typeof APP !== 'undefined' && APP.export){ APP.export.exportModule('all'); }
-                else { alert('Export not available'); }
-            });
-            
-            // Search
-            var searchInput = document.getElementById('global-search');
-            var searchTimeout;
-            searchInput.addEventListener('input', function(){
-                clearTimeout(searchTimeout);
-                var query = this.value.trim();
-                if(query.length < 2) return;
-                searchTimeout = setTimeout(function(){
-                    console.log('🔍 Search:', query);
-                    if(typeof APP !== 'undefined' && APP.ai){ APP.ai.smartSearch(query, []); }
-                }, 500);
-            });
-            
-            // Close sidebar on mobile when clicking outside
-            document.addEventListener('click', function(e){
-                var sidebar = document.getElementById('sidebar');
-                var toggle = document.getElementById('sidebar-toggle');
-                if(window.innerWidth <= 992 && sidebar.classList.contains('active')){
-                    if(!sidebar.contains(e.target) && e.target !== toggle){
-                        sidebar.classList.remove('active');
-                    }
-                }
-            });
-        }
-
-        // ========== NAVIGATION ==========
-        function navigateTo(page){
-            console.log('📍 Navigate to:', page);
-            
-            // Update active nav
-            document.querySelectorAll('.nav-item').forEach(function(el){
-                el.classList.remove('active');
-                if(el.getAttribute('data-route') === page) el.classList.add('active');
-            });
-            
-            // Close sidebar on mobile
-            if(window.innerWidth <= 992){
-                document.getElementById('sidebar').classList.remove('active');
             }
             
-            // Update page title
-            var titles = {dashboard:'Dashboard','surat-masuk':'Surat Masuk','surat-keluar':'Surat Keluar',disposisi:'Disposisi',approval:'Approval',arsip:'Arsip','master-data':'Master Data','audit-log':'Audit Log',pengaturan:'Pengaturan'};
-            document.getElementById('page-title').textContent = titles[page] || page;
+            html += `<button ${pagination.hasNext ? '' : 'disabled'} data-page="${pagination.page + 1}">»</button>`;
             
-            // If not dashboard, show placeholder
-            if(page !== 'dashboard'){
-                document.getElementById('content-area').innerHTML = '<div style="text-align:center;padding:60px 20px;"><span class="material-icons" style="font-size:64px;color:#CCC;">construction</span><h2 style="margin:16px 0;color:#666;">Halaman ' + (titles[page]||page) + '</h2><p style="color:#999;">Modul sedang dalam pengembangan</p><button class="btn btn-primary" onclick="location.reload()" style="margin-top:16px;">Kembali ke Dashboard</button></div>';
-            }
-        }
-
-        // ========== UTILITIES ==========
-        function updateUserDisplay(){
-            var user = null;
-            try {
-                user = JSON.parse(localStorage.getItem('user') || 'null');
-                if(!user && typeof APP !== 'undefined') user = APP.user;
-            } catch(e){}
+            container.innerHTML = html;
             
-            if(user){
-                document.getElementById('user-display').textContent = user.namaLengkap || user.username || 'User';
-            }
-        }
-
-        function checkOnlineStatus(){
-            var bar = document.getElementById('offline-bar');
-            if(!navigator.onLine && bar) bar.style.display = 'block';
-            
-            window.addEventListener('online', function(){ if(bar) bar.style.display = 'none'; });
-            window.addEventListener('offline', function(){ if(bar) bar.style.display = 'block'; });
-        }
-
-        function setupPWA(){
-            window.addEventListener('beforeinstallprompt', function(e){
-                e.preventDefault();
-                deferredPWA = e;
-                document.getElementById('pwa-banner').style.display = 'flex';
+            container.querySelectorAll('button:not([disabled])').forEach(btn => {
+                btn.addEventListener('click', () => callback(parseInt(btn.dataset.page)));
             });
-            
-            document.getElementById('pwa-install-btn').addEventListener('click', function(){
-                if(deferredPWA){
-                    deferredPWA.prompt();
-                    deferredPWA.userChoice.then(function(r){console.log('PWA:',r.outcome);deferredPWA=null;});
-                    document.getElementById('pwa-banner').style.display = 'none';
-                }
-            });
-            
-            document.getElementById('pwa-dismiss-btn').addEventListener('click', function(){
-                document.getElementById('pwa-banner').style.display = 'none';
-            });
-        }
-
-        // ========== START: STEP 5 ==========
-        if(document.readyState === 'loading'){
-            document.addEventListener('DOMContentLoaded', function(){
-                console.log('📄 DOMContentLoaded');
-                setTimeout(initApp, 300);
-            });
-        } else {
-            console.log('📄 DOM already ready');
-            setTimeout(initApp, 300);
         }
         
-        console.log('✅ Index.html v3.1.0 - Full initialization script loaded');
-    })();
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+        
+        async function updateSidebarCounts() {
+            try {
+                const [smRes, skRes, dispRes, apprRes, notifRes] = await Promise.all([
+                    apiCall('suratMasuk.list', { limit: 1 }),
+                    apiCall('suratKeluar.list', { limit: 1 }),
+                    apiCall('disposisi.list', { limit: 1 }),
+                    apiCall('approval.list', { limit: 1 }),
+                    apiCall('notifikasi.unreadCount'),
+                ]);
+                
+                document.getElementById('sm-count').textContent = smRes.data?.pagination?.total || 0;
+                document.getElementById('sk-count').textContent = skRes.data?.pagination?.total || 0;
+                document.getElementById('disp-count').textContent = dispRes.data?.pagination?.total || 0;
+                document.getElementById('appr-count').textContent = apprRes.data?.items?.length || 0;
+                
+                const unread = notifRes.data?.count || 0;
+                const notifCount = document.getElementById('notifCount');
+                if (unread > 0) {
+                    notifCount.style.display = 'flex';
+                    notifCount.textContent = unread > 99 ? '99+' : unread;
+                } else {
+                    notifCount.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error updating counts:', error);
+            }
+        }
+        
+        function handleGlobalSearch(event) {
+            if (event.key === 'Enter') {
+                const query = event.target.value.trim();
+                if (query) {
+                    navigateTo('surat-masuk', { search: query });
+                }
+            }
+        }
+        
+        // ========== ONLINE/OFFLINE ==========
+        function updateOnlineStatus() {
+            const indicator = document.getElementById('onlineIndicator');
+            if (navigator.onLine) {
+                indicator.className = 'online-indicator';
+                indicator.title = 'Online';
+            } else {
+                indicator.className = 'online-indicator offline';
+                indicator.title = 'Offline';
+            }
+        }
+        
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        
+        // ========== KEYBOARD SHORTCUTS ==========
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case '1': e.preventDefault(); navigateTo('dashboard'); break;
+                    case '2': e.preventDefault(); navigateTo('surat-masuk'); break;
+                    case '3': e.preventDefault(); navigateTo('surat-keluar'); break;
+                    case '4': e.preventDefault(); navigateTo('disposisi'); break;
+                    case '5': e.preventDefault(); navigateTo('approval'); break;
+                    case 'd': e.preventDefault(); APP.theme.toggle(); break;
+                }
+            }
+        });
+        
+        // ========== INITIALIZATION ==========
+        async function init() {
+            console.log('🚀 Initializing Arsip Surat Digital Enterprise v30.1.0');
+            
+            // Check auth
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Verify token
+            try {
+                const res = await apiCall('me');
+                if (res.status === 'success' && res.data) {
+                    const user = res.data;
+                    document.getElementById('userName').textContent = user.namaLengkap || user.username;
+                    document.getElementById('userRole').textContent = user.role || 'User';
+                    document.getElementById('userAvatar').textContent = (user.namaLengkap || user.username || 'A').charAt(0).toUpperCase();
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Update online status
+            updateOnlineStatus();
+            
+            // Load initial page
+            const hash = window.location.hash.replace('#', '');
+            if (hash) {
+                navigateTo(hash);
+            } else {
+                navigateTo('dashboard');
+            }
+            
+            // Update sidebar counts
+            await updateSidebarCounts();
+            
+            // Update theme icon
+            updateThemeIcon();
+            
+            // Update language flag
+            updateLangFlag();
+            
+            console.log('✅ Application initialized');
+        }
+        
+        function updateThemeIcon() {
+            const icon = document.getElementById('themeIcon');
+            if (icon) {
+                icon.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+            }
+        }
+        
+        function updateLangFlag() {
+            const flag = document.getElementById('langFlag');
+            if (flag) {
+                flag.textContent = APP.lang === 'id' ? '🇮🇩' : '🇬🇧';
+            }
+        }
+        
+        // Handle hash changes
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.replace('#', '');
+            if (hash && hash !== currentPage) {
+                navigateTo(hash);
+            }
+        });
+        
+        // Start app
+        init();
+        
+        console.log('✅ Index.html v30.1.0 loaded successfully');
     </script>
 </body>
 </html>
