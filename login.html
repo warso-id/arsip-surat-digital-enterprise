@@ -8,285 +8,103 @@
     <title>Login - Arsip Surat Digital Enterprise v30.1.0</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📄%3C/text%3E%3C/svg%3E">
     <link rel="manifest" href="/manifest.json">
-    
     <style>
-        :root {
-            --primary: #1976D2;
-            --primary-dark: #1565C0;
-            --bg: #F0F4F8;
-            --surface: #FFFFFF;
-            --text: #212121;
-            --text-secondary: #757575;
-            --border: #E0E0E0;
-            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
-            --radius: 16px;
-            --radius-sm: 10px;
-            --error: #F44336;
-            --success: #4CAF50;
-            --warning: #FF9800;
-            --info: #2196F3;
-            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-
-        [data-theme="dark"] {
-            --bg: #0F172A;
-            --surface: #1E293B;
-            --text: #F1F5F9;
-            --text-secondary: #94A3B8;
-            --border: #334155;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: var(--font-family);
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s;
-            padding: 20px;
-        }
-
-        .login-container {
-            width: 100%;
-            max-width: 420px;
-            animation: fadeInUp 0.6s ease;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .logo-section { text-align: center; margin-bottom: 28px; }
-
-        .logo-icon {
-            width: 72px; height: 72px;
-            margin: 0 auto 14px;
-            background: linear-gradient(135deg, #1976D2, #42A5F5);
-            border-radius: 18px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 36px;
-            box-shadow: 0 8px 24px rgba(25,118,210,0.3);
-        }
-
-        .app-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-        .app-subtitle { font-size: 12px; color: var(--text-secondary); }
-
-        .login-card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 30px;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
-        }
-
-        .login-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; text-align: center; }
-        .welcome-text { text-align: center; color: var(--text-secondary); font-size: 13px; margin-bottom: 22px; }
-
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; }
-
-        .input-wrapper { position: relative; }
-        .input-wrapper .input-icon {
-            position: absolute; left: 12px; top: 50%;
-            transform: translateY(-50%); font-size: 18px; pointer-events: none;
-        }
-
-        .input-wrapper input {
-            width: 100%; padding: 11px 14px 11px 40px;
-            border: 2px solid var(--border); border-radius: var(--radius-sm);
-            font-size: 14px; font-family: var(--font-family);
-            background: var(--bg); color: var(--text);
-            transition: all 0.3s; outline: none;
-        }
-
-        .input-wrapper input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(25,118,210,0.1);
-            background: var(--surface);
-        }
-
-        .password-toggle {
-            position: absolute; right: 10px; top: 50%;
-            transform: translateY(-50%); background: none;
-            border: none; cursor: pointer; font-size: 18px; padding: 4px 8px;
-        }
-
-        .btn-login {
-            width: 100%; padding: 13px;
-            background: linear-gradient(135deg, #1976D2, #1565C0);
-            color: white; border: none; border-radius: var(--radius-sm);
-            font-size: 15px; font-weight: 600; cursor: pointer;
-            transition: all 0.3s; font-family: var(--font-family); position: relative;
-        }
-
-        .btn-login:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(25,118,210,0.4); transform: translateY(-1px); }
-        .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        .btn-login .btn-text { display: inline; }
-        .btn-login .spinner {
-            display: none; width: 20px; height: 20px;
-            border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
-            border-radius: 50%; animation: spin 0.6s linear infinite; margin: 0 auto;
-        }
-        .btn-login.loading .btn-text { display: none; }
-        .btn-login.loading .spinner { display: block; }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .error-message {
-            background: rgba(244,67,54,0.08); color: var(--error);
-            padding: 10px 14px; border-radius: var(--radius-sm);
-            font-size: 13px; margin-bottom: 14px; display: none;
-            border: 1px solid rgba(244,67,54,0.2); text-align: center;
-        }
-        .error-message.show { display: block; animation: shake 0.4s ease; }
-
-        @keyframes shake {
-            0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
-        }
-
-        .form-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; font-size: 12px; }
-        .remember-me { display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-secondary); }
-        .remember-me input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--primary); }
-        .forgot-password { color: var(--primary); cursor: pointer; font-weight: 500; }
-        .forgot-password:hover { text-decoration: underline; }
-
-        .info-text { text-align: center; font-size: 11px; color: var(--text-secondary); margin-top: 14px; opacity: 0.7; }
-
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-        .toast {
-            padding: 12px 20px; border-radius: 8px; color: white;
-            font-size: 14px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-            animation: slideIn 0.3s ease;
-        }
-        .toast.success{background:var(--success)} .toast.error{background:var(--error)}
-        .toast.info{background:var(--info)} .toast.warning{background:var(--warning)}
-
-        @keyframes slideIn { from{opacity:0;transform:translateX(100px)} to{opacity:1;transform:translateX(0)} }
-
-        @media (max-width:480px) {
-            .login-card{padding:24px 20px} .logo-icon{width:56px;height:56px;font-size:28px} .app-title{font-size:17px}
-        }
+        :root{--primary:#1976D2;--primary-dark:#1565C0;--bg:#F0F4F8;--surface:#FFFFFF;--text:#212121;--text-secondary:#757575;--border:#E0E0E0;--shadow-lg:0 8px 32px rgba(0,0,0,0.12);--radius:16px;--radius-sm:10px;--error:#F44336;--success:#4CAF50;--warning:#FF9800;--info:#2196F3;--font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
+        [data-theme="dark"]{--bg:#0F172A;--surface:#1E293B;--text:#F1F5F9;--text-secondary:#94A3B8;--border:#334155}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:var(--font-family);background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+        .login-container{width:100%;max-width:420px;animation:fadeInUp .6s}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        .logo-section{text-align:center;margin-bottom:28px}
+        .logo-icon{width:72px;height:72px;margin:0 auto 14px;background:linear-gradient(135deg,#1976D2,#42A5F5);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 8px 24px rgba(25,118,210,.3)}
+        .app-title{font-size:20px;font-weight:700;margin-bottom:4px}
+        .app-subtitle{font-size:12px;color:var(--text-secondary)}
+        .login-card{background:var(--surface);border-radius:var(--radius);padding:30px;box-shadow:var(--shadow-lg);border:1px solid var(--border)}
+        .login-card h2{font-size:18px;font-weight:700;margin-bottom:6px;text-align:center}
+        .welcome-text{text-align:center;color:var(--text-secondary);font-size:13px;margin-bottom:22px}
+        .form-group{margin-bottom:16px}
+        .form-group label{display:block;margin-bottom:6px;font-size:13px;font-weight:600}
+        .input-wrapper{position:relative}
+        .input-wrapper .input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none}
+        .input-wrapper input{width:100%;padding:11px 14px 11px 40px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:var(--font-family);background:var(--bg);color:var(--text);transition:all .3s;outline:none}
+        .input-wrapper input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(25,118,210,.1);background:var(--surface)}
+        .password-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;padding:4px 8px}
+        .btn-login{width:100%;padding:13px;background:linear-gradient(135deg,#1976D2,#1565C0);color:white;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:600;cursor:pointer;transition:all .3s;font-family:var(--font-family);position:relative}
+        .btn-login:hover:not(:disabled){box-shadow:0 6px 20px rgba(25,118,210,.4);transform:translateY(-1px)}
+        .btn-login:disabled{opacity:.6;cursor:not-allowed}
+        .btn-login .btn-text{display:inline}
+        .btn-login .spinner{display:none;width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;margin:0 auto}
+        .btn-login.loading .btn-text{display:none}.btn-login.loading .spinner{display:block}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .error-message{background:rgba(244,67,54,.08);color:var(--error);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:14px;display:none;border:1px solid rgba(244,67,54,.2);text-align:center}
+        .error-message.show{display:block;animation:shake .4s}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+        .form-options{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;font-size:12px}
+        .remember-me{display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-secondary)}
+        .remember-me input{width:15px;height:15px;accent-color:var(--primary)}
+        .forgot-password{color:var(--primary);cursor:pointer;font-weight:500}.forgot-password:hover{text-decoration:underline}
+        .info-text{text-align:center;font-size:11px;color:var(--text-secondary);margin-top:14px;opacity:.7}
+        .toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+        .toast{padding:12px 20px;border-radius:8px;color:white;font-size:14px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);animation:slideIn .3s}
+        .toast.success{background:var(--success)}.toast.error{background:var(--error)}
+        .toast.info{background:var(--info)}.toast.warning{background:var(--warning)}
+        @keyframes slideIn{from{opacity:0;transform:translateX(100px)}to{opacity:1;transform:translateX(0)}}
+        @media(max-width:480px){.login-card{padding:24px 20px}.logo-icon{width:56px;height:56px;font-size:28px}.app-title{font-size:17px}}
     </style>
 </head>
 <body>
     <div class="login-container">
-        <div class="logo-section">
-            <div class="logo-icon">📄</div>
-            <h1 class="app-title">Arsip Surat Digital</h1>
-            <p class="app-subtitle">Enterprise v30.1.0</p>
-        </div>
-        
+        <div class="logo-section"><div class="logo-icon">📄</div><h1 class="app-title">Arsip Surat Digital</h1><p class="app-subtitle">Enterprise v30.1.0</p></div>
         <div class="login-card">
-            <h2>👋 Selamat Datang</h2>
-            <p class="welcome-text">Silakan login untuk mengakses sistem</p>
-            
+            <h2>👋 Selamat Datang</h2><p class="welcome-text">Silakan login untuk mengakses sistem</p>
             <div class="error-message" id="errorMessage"></div>
-            
-            <div class="form-group">
-                <label for="username">Username</label>
-                <div class="input-wrapper">
-                    <span class="input-icon">👤</span>
-                    <input type="text" id="username" placeholder="Masukkan username" autocomplete="username" autofocus>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Password</label>
-                <div class="input-wrapper">
-                    <span class="input-icon">🔒</span>
-                    <input type="password" id="password" placeholder="Masukkan password" autocomplete="current-password">
-                    <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
-                </div>
-            </div>
-            
-            <div class="form-options">
-                <label class="remember-me">
-                    <input type="checkbox" id="rememberMe"> Ingat saya
-                </label>
-                <span class="forgot-password" onclick="showToast('Hubungi Administrator untuk reset password','info')">Lupa password?</span>
-            </div>
-            
-            <button class="btn-login" id="btnLogin" onclick="handleLogin()">
-                <span class="btn-text">🔐 Masuk</span>
-                <span class="spinner"></span>
-            </button>
-            
+            <div class="form-group"><label for="username">Username</label><div class="input-wrapper"><span class="input-icon">👤</span><input type="text" id="username" placeholder="Masukkan username" autocomplete="username" autofocus></div></div>
+            <div class="form-group"><label for="password">Password</label><div class="input-wrapper"><span class="input-icon">🔒</span><input type="password" id="password" placeholder="Masukkan password" autocomplete="current-password"><button type="button" class="password-toggle" onclick="togglePassword()">👁️</button></div></div>
+            <div class="form-options"><label class="remember-me"><input type="checkbox" id="rememberMe"> Ingat saya</label><span class="forgot-password" onclick="showToast('Hubungi Administrator','info')">Lupa password?</span></div>
+            <button class="btn-login" id="btnLogin" onclick="handleLogin()"><span class="btn-text">🔐 Masuk</span><span class="spinner"></span></button>
             <p class="info-text">Arsip Surat Digital Enterprise v30.1.0 &copy; 2026</p>
         </div>
     </div>
-    
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
         const API_URL='https://script.google.com/macros/s/AKfycbxhx4JXI_yX9MIEhYmSVAjxy-_9McM0-2WKzA2OvW4h8T9QT2nh5bJcio0KiWEyL4VRsQ/exec';
         const DASHBOARD_URL='/index.html';
-
         (function init(){
-            const token=localStorage.getItem('token');
-            if(token){verifyAndRedirect(token);}
-            const saved=localStorage.getItem('savedUsername');
-            if(saved){document.getElementById('username').value=saved;document.getElementById('rememberMe').checked=true;}
+            const t=localStorage.getItem('token');
+            if(t)verifyAndRedirect(t);
+            const s=localStorage.getItem('savedUsername');
+            if(s){document.getElementById('username').value=s;document.getElementById('rememberMe').checked=true;}
             document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light');
             document.getElementById('username').addEventListener('keypress',function(e){if(e.key==='Enter'){e.preventDefault();document.getElementById('password').focus();}});
             document.getElementById('password').addEventListener('keypress',function(e){if(e.key==='Enter'){e.preventDefault();handleLogin();}});
         })();
-
-        async function verifyAndRedirect(token){
-            try{
-                const r=await fetch(API_URL+'?action=me&token='+encodeURIComponent(token));
-                const d=await r.json();
+        async function verifyAndRedirect(t){
+            try{const r=await fetch(API_URL+'?action=me&token='+encodeURIComponent(t));const d=await r.json();
                 if(d.status==='success'&&d.data){localStorage.setItem('user',JSON.stringify(d.data));window.location.replace(DASHBOARD_URL);}
                 else{localStorage.removeItem('token');localStorage.removeItem('user');}
-            }catch(e){if(!navigator.onLine&&token)window.location.replace(DASHBOARD_URL);}
+            }catch(e){if(!navigator.onLine&&t)window.location.replace(DASHBOARD_URL);}
         }
-
         async function handleLogin(){
-            const username=document.getElementById('username').value.trim();
-            const password=document.getElementById('password').value;
-            const remember=document.getElementById('rememberMe').checked;
-            const btn=document.getElementById('btnLogin');
-            if(!username){showError('Username harus diisi');return;}
-            if(!password){showError('Password harus diisi');return;}
-            btn.classList.add('loading');btn.disabled=true;hideError();
-            try{
-                const r=await fetch(API_URL+'?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
-                const d=await r.json();
-                if(d.status==='success'&&d.data&&d.data.token){
-                    localStorage.setItem('token',d.data.token);
-                    localStorage.setItem('user',JSON.stringify(d.data.user));
-                    if(remember)localStorage.setItem('savedUsername',username);
-                    else localStorage.removeItem('savedUsername');
-                    showToast('✅ Login berhasil!','success');
-                    setTimeout(()=>window.location.replace(DASHBOARD_URL),500);
-                }else{showError(d.message||'Login gagal');}
+            const u=document.getElementById('username').value.trim();
+            const p=document.getElementById('password').value;
+            const r=document.getElementById('rememberMe').checked;
+            const b=document.getElementById('btnLogin');
+            if(!u){showError('Username harus diisi');return;}
+            if(!p){showError('Password harus diisi');return;}
+            b.classList.add('loading');b.disabled=true;hideError();
+            try{const res=await fetch(API_URL+'?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+                const d=await res.json();
+                if(d.status==='success'&&d.data&&d.data.token){localStorage.setItem('token',d.data.token);localStorage.setItem('user',JSON.stringify(d.data.user));if(r)localStorage.setItem('savedUsername',u);else localStorage.removeItem('savedUsername');showToast('✅ Login berhasil!','success');setTimeout(()=>window.location.replace(DASHBOARD_URL),500);}
+                else showError(d.message||'Login gagal');
             }catch(e){showError(navigator.onLine?'Gagal terhubung ke server':'Tidak ada koneksi internet');}
-            finally{btn.classList.remove('loading');btn.disabled=false;}
+            finally{b.classList.remove('loading');b.disabled=false;}
         }
-
-        function togglePassword(){
-            const i=document.getElementById('password');
-            const b=document.querySelector('.password-toggle');
-            if(i.type==='password'){i.type='text';b.textContent='🙈';}
-            else{i.type='password';b.textContent='👁️';}
-        }
-
+        function togglePassword(){const i=document.getElementById('password');const b=document.querySelector('.password-toggle');if(i.type==='password'){i.type='text';b.textContent='🙈';}else{i.type='password';b.textContent='👁️';}}
         function showError(m){const e=document.getElementById('errorMessage');e.textContent='❌ '+m;e.classList.add('show');clearTimeout(window._et);window._et=setTimeout(hideError,5000);}
         function hideError(){document.getElementById('errorMessage').classList.remove('show');}
-        function showToast(m,t){
-            document.querySelectorAll('.toast').forEach(x=>{x.style.opacity='0';setTimeout(()=>x.remove(),300);});
-            const c=document.getElementById('toastContainer');
-            const el=document.createElement('div');
-            el.className='toast '+t;el.textContent=m;c.appendChild(el);
-            setTimeout(()=>{if(el.parentNode){el.style.opacity='0';setTimeout(()=>{if(el.parentNode)el.remove();},300);}},3500);
-        }
-
-        if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js?v=3.1.0').catch(()=>{});});}
+        function showToast(m,t){document.querySelectorAll('.toast').forEach(x=>{x.style.opacity='0';setTimeout(()=>x.remove(),300);});const c=document.getElementById('toastContainer');const el=document.createElement('div');el.className='toast '+t;el.textContent=m;c.appendChild(el);setTimeout(()=>{if(el.parentNode){el.style.opacity='0';setTimeout(()=>{if(el.parentNode)el.remove();},300);}},3500);}
+        if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js?v=30.1.0').catch(()=>{});});}
     </script>
 </body>
 </html>
