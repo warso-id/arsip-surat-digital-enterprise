@@ -1,640 +1,486 @@
 /**
  * ============================================
- * ARSIP SURAT DIGITAL ENTERPRISE v3.1.0 (2026)
- * Service Worker - GRAND MASTER FINAL
+ * ARSIP SURAT DIGITAL ENTERPRISE v3.1.0
+ * Service Worker - STANDALONE PWA
  * ============================================
- * Features: Advanced Caching, Background Sync,
- *           Push Notifications, Periodic Sync,
- *           Offline Fallback, Cache Management
- * ============================================
+ * Fitur:
+ * - Offline Caching
+ * - Background Sync
+ * - Push Notification
+ * - Periodic Sync
+ * - Cache Management
  */
 
-// ========== VERSION ==========
-const SW_VERSION = '3.1.0';
-const BUILD_DATE = '2026-07-10';
-const CACHE_PREFIX = 'arsip-surat-v3';
-
-// ========== CACHE NAMES ==========
-const CACHE_NAMES = {
-  static: `${CACHE_PREFIX}-static-${SW_VERSION}`,
-  dynamic: `${CACHE_PREFIX}-dynamic-${SW_VERSION}`,
-  api: `${CACHE_PREFIX}-api-${SW_VERSION}`,
-  images: `${CACHE_PREFIX}-images-${SW_VERSION}`,
-  fonts: `${CACHE_PREFIX}-fonts-${SW_VERSION}`,
-  pages: `${CACHE_PREFIX}-pages-${SW_VERSION}`,
+// ========== CONFIGURATION ==========
+const CONFIG = {
+  VERSION: '3.1.0',
+  BUILD_DATE: '2026-07-10',
+  CACHE_NAME: 'arsip-surat-v3.1.0',
+  RUNTIME_CACHE: 'arsip-surat-runtime-v3.1.0',
+  
+  // Daftar file yang akan di-cache saat install
+  PRECACHE_ASSETS: [
+    '/',
+    '/login.html',
+    '/index.html',
+    '/setup.html',
+    '/manifest.json',
+    '/404.html'
+  ],
+  
+  // Pola URL yang akan di-cache saat runtime
+  RUNTIME_PATTERNS: [
+    /\.(png|jpg|jpeg|gif|svg|ico|webp)$/i,
+    /\.(css)$/i,
+    /\.(js)$/i,
+    /\.(woff|woff2|ttf|eot)$/i
+  ],
+  
+  // URL API yang TIDAK di-cache (selalu fetch dari network)
+  API_URL: 'script.google.com/macros/s',
+  
+  // Batas maksimum cache entries
+  MAX_CACHE_ENTRIES: 100,
+  MAX_CACHE_AGE: 7 * 24 * 60 * 60 * 1000, // 7 hari
 };
-
-// ========== PRE-CACHE ASSETS ==========
-const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/login.html',
-  '/setup.html',
-  '/verify.html',
-  '/404.html',
-  '/offline.html',
-  '/css/custom.css',
-  '/js/app.js',
-  '/js/auth.js',
-  '/js/db.js',
-  '/js/notifications.js',
-  '/js/security.js',
-  '/js/export.js',
-  '/js/chart-init.js',
-  '/manifest.json',
-  '/version.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
-];
 
 // ========== INSTALL EVENT ==========
 self.addEventListener('install', (event) => {
-  console.log(`[SW v${SW_VERSION}] Installing...`);
-
+  console.log(`🔧 SW v${CONFIG.VERSION} - Installing...`);
+  
   event.waitUntil(
-    Promise.all([
-      // Pre-cache static assets
-      caches.open(CACHE_NAMES.static)
-        .then((cache) => {
-          console.log(`[SW] Pre-caching ${PRECACHE_ASSETS.length} assets...`);
-          return cache.addAll(PRECACHE_ASSETS);
-        })
-        .then(() => console.log('[SW] Pre-cache complete')),
-      
-      // Clean old caches
-      cleanOldCaches(),
-    ]).then(() => {
-      console.log('[SW] Installation complete');
-      return self.skipWaiting();
-    })
+    caches.open(CONFIG.CACHE_NAME)
+      .then((cache) => {
+        console.log('📦 Caching precache assets...');
+        
+        // Coba cache semua asset, tapi jangan gagal jika ada yang error
+        return Promise.allSettled(
+          CONFIG.PRECACHE_ASSETS.map((asset) => {
+            return cache.add(asset).catch((error) => {
+              console.warn(`⚠️ Failed to cache: ${asset}`, error.message);
+            });
+          })
+        );
+      })
+      .then(() => {
+        console.log('✅ Precache complete');
+        // Force activation
+        return self.skipWaiting();
+      })
   );
 });
 
 // ========== ACTIVATE EVENT ==========
 self.addEventListener('activate', (event) => {
-  console.log(`[SW v${SW_VERSION}] Activating...`);
-
+  console.log(`🚀 SW v${CONFIG.VERSION} - Activating...`);
+  
   event.waitUntil(
-    Promise.all([
-      // Claim all clients immediately
-      self.clients.claim(),
-      
-      // Clean old caches
-      cleanOldCaches(),
-      
-      // Initialize storage
-      initStorage(),
-    ]).then(() => {
-      console.log('[SW] Activation complete');
-      
-      // Notify clients about update
-      notifyClients({
-        type: 'SW_ACTIVATED',
-        version: SW_VERSION,
-      });
-    })
+    caches.keys()
+      .then((cacheNames) => {
+        // Hapus cache versi lama
+        return Promise.all(
+          cacheNames
+            .filter((name) => {
+              return name !== CONFIG.CACHE_NAME && 
+                     name !== CONFIG.RUNTIME_CACHE;
+            })
+            .map((name) => {
+              console.log(`🗑️ Deleting old cache: ${name}`);
+              return caches.delete(name);
+            })
+        );
+      })
+      .then(() => {
+        console.log('✅ Activation complete');
+        // Claim semua clients
+        return self.clients.claim();
+      })
   );
 });
 
-// ========== FETCH EVENT ==========
+// ========== FETCH EVENT - STRATEGI CACHE FIRST DENGAN NETWORK FALLBACK ==========
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  const url = new URL(request.url);
-
+  
   // Skip non-GET requests
   if (request.method !== 'GET') return;
-
-  // Skip chrome-extension and other non-http(s) requests
-  if (!url.protocol.startsWith('http')) return;
-
-  // Determine strategy based on request type
-  const strategy = determineStrategy(url, request);
-
-  switch (strategy) {
-    case 'cache-first':
-      event.respondWith(cacheFirstStrategy(request));
-      break;
-    case 'network-first':
-      event.respondWith(networkFirstStrategy(request));
-      break;
-    case 'stale-while-revalidate':
-      event.respondWith(staleWhileRevalidateStrategy(request));
-      break;
-    case 'network-only':
-      event.respondWith(fetch(request));
-      break;
-    case 'cache-only':
-      event.respondWith(caches.match(request));
-      break;
-    default:
-      event.respondWith(networkFirstStrategy(request));
+  
+  // Skip Google Apps Script API requests (selalu network first)
+  if (request.url.includes(CONFIG.API_URL)) {
+    event.respondWith(networkFirstStrategy(request));
+    return;
   }
+  
+  // Skip chrome-extension dan browser internal requests
+  if (!request.url.startsWith('http')) return;
+  
+  // Untuk halaman HTML - Network First
+  if (request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(networkFirstStrategy(request));
+    return;
+  }
+  
+  // Untuk static assets - Cache First
+  if (isStaticAsset(request.url)) {
+    event.respondWith(cacheFirstStrategy(request));
+    return;
+  }
+  
+  // Default: Network First
+  event.respondWith(networkFirstStrategy(request));
 });
 
-// ========== CACHE STRATEGIES ==========
-
-/**
- * Determine cache strategy based on URL
- */
-function determineStrategy(url, request) {
-  // API calls - Network First
-  if (url.href.includes('script.google.com') || url.pathname.includes('/api/')) {
-    return 'network-first';
-  }
-
-  // Static assets - Cache First
-  if (url.pathname.match(/\.(css|js|json|woff2?|ttf|eot)$/)) {
-    return 'cache-first';
-  }
-
-  // Images - Stale While Revalidate
-  if (url.pathname.match(/\.(png|jpg|jpeg|gif|svg|webp|ico)$/)) {
-    return 'stale-while-revalidate';
-  }
-
-  // HTML pages - Network First (for freshness)
-  if (request.mode === 'navigate' || url.pathname.endsWith('.html')) {
-    return 'network-first';
-  }
-
-  // Google Fonts - Cache First
-  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
-    return 'cache-first';
-  }
-
-  // CDN libraries - Cache First
-  if (url.hostname === 'cdn.jsdelivr.net' || url.hostname === 'unpkg.com') {
-    return 'cache-first';
-  }
-
-  // Default - Network First
-  return 'network-first';
-}
-
-/**
- * Cache First Strategy
- * Check cache first, fallback to network
- */
+// ========== CACHE FIRST STRATEGY ==========
 async function cacheFirstStrategy(request) {
-  const cache = await caches.open(CACHE_NAMES.static);
-  const cached = await cache.match(request);
-
-  if (cached) {
-    // Update cache in background
-    fetch(request).then(response => {
-      if (response.ok) cache.put(request, response);
-    }).catch(() => {});
+  const cachedResponse = await caches.match(request);
+  
+  if (cachedResponse) {
+    // Update cache di background (stale-while-revalidate)
+    updateCache(request).catch(() => {});
+    return cachedResponse;
+  }
+  
+  try {
+    const networkResponse = await fetch(request);
     
-    return cached;
-  }
-
-  try {
-    const response = await fetch(request);
-    if (response.ok) {
-      cache.put(request, response.clone());
+    // Cache valid response
+    if (networkResponse && networkResponse.status === 200) {
+      const cache = await caches.open(CONFIG.RUNTIME_CACHE);
+      cache.put(request, networkResponse.clone());
     }
-    return response;
+    
+    return networkResponse;
   } catch (error) {
-    // Return offline page for navigation
-    if (request.mode === 'navigate') {
-      const offlineCache = await caches.open(CACHE_NAMES.pages);
-      return offlineCache.match('/offline.html');
-    }
-    throw error;
-  }
-}
-
-/**
- * Network First Strategy
- * Try network first, fallback to cache, then offline page
- */
-async function networkFirstStrategy(request) {
-  const cache = await caches.open(CACHE_NAMES.api);
-
-  try {
-    const response = await fetch(request, {
-      // Set timeout for API calls
-      signal: request.url.includes('script.google.com') 
-        ? AbortSignal.timeout(15000) 
-        : undefined,
-    });
-
-    // Cache successful responses
-    if (response.ok) {
-      cache.put(request, response.clone());
-    }
-
-    return response;
-  } catch (error) {
-    console.log(`[SW] Network failed for: ${request.url}, trying cache...`);
-
-    const cached = await cache.match(request);
-    if (cached) {
-      // Notify about stale data
-      notifyClients({
-        type: 'STALE_DATA',
-        url: request.url,
-      });
-      return cached;
-    }
-
-    // Return offline page for navigation requests
-    if (request.mode === 'navigate') {
-      const offlineCache = await caches.open(CACHE_NAMES.pages);
-      const offlinePage = await offlineCache.match('/offline.html');
-      if (offlinePage) return offlinePage;
-    }
-
-    // Return JSON error for API requests
-    if (request.url.includes('script.google.com') || request.url.includes('/api/')) {
+    console.warn(`⚠️ Fetch failed for: ${request.url}`);
+    
+    // Return custom offline response untuk image
+    if (request.headers.get('accept')?.includes('image')) {
       return new Response(
-        JSON.stringify({
-          status: 'error',
-          message: 'Anda sedang offline. Data akan disinkronkan saat online.',
-          offline: true,
-          version: SW_VERSION,
-        }),
-        {
-          status: 503,
-          headers: { 'Content-Type': 'application/json' },
-        }
+        `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+           <rect width="200" height="200" fill="#E0E0E0"/>
+           <text x="100" y="110" text-anchor="middle" font-size="40">📄</text>
+           <text x="100" y="150" text-anchor="middle" font-size="14" fill="#757575">Offline</text>
+         </svg>`,
+        { headers: { 'Content-Type': 'image/svg+xml' } }
       );
     }
-
+    
     throw error;
   }
 }
 
-/**
- * Stale While Revalidate Strategy
- * Return cached version immediately, update cache in background
- */
-async function staleWhileRevalidateStrategy(request) {
-  const cache = await caches.open(CACHE_NAMES.images);
-  const cached = await cache.match(request);
-
-  const fetchPromise = fetch(request)
-    .then(response => {
-      if (response.ok) {
-        cache.put(request, response.clone());
-      }
-      return response;
-    })
-    .catch(() => cached);
-
-  return cached || fetchPromise;
+// ========== NETWORK FIRST STRATEGY ==========
+async function networkFirstStrategy(request) {
+  try {
+    const networkResponse = await fetch(request);
+    
+    // Cache valid response
+    if (networkResponse && networkResponse.status === 200) {
+      const cache = await caches.open(CONFIG.CACHE_NAME);
+      cache.put(request, networkResponse.clone());
+    }
+    
+    return networkResponse;
+  } catch (error) {
+    console.warn(`⚠️ Network failed, trying cache for: ${request.url}`);
+    
+    const cachedResponse = await caches.match(request);
+    
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    // Jika HTML, return halaman offline
+    if (request.headers.get('accept')?.includes('text/html')) {
+      return caches.match('/404.html').then((response) => {
+        return response || new Response(
+          `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Offline</title>
+           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+           <style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#F5F5F5;text-align:center;}
+           h1{color:#333;}p{color:#757575;}.btn{display:inline-block;margin-top:16px;padding:12px 24px;background:#1976D2;color:white;text-decoration:none;border-radius:8px;font-weight:600;}</style></head>
+           <body><div><div style="font-size:80px;">📡</div><h1>Anda Sedang Offline</h1><p>Periksa koneksi internet Anda dan coba lagi.</p>
+           <a href="/" class="btn" onclick="location.reload()">🔄 Coba Lagi</a></div></body></html>`,
+          { headers: { 'Content-Type': 'text/html' } }
+        );
+      });
+    }
+    
+    throw error;
+  }
 }
 
 // ========== BACKGROUND SYNC ==========
 self.addEventListener('sync', (event) => {
-  console.log(`[SW] Background Sync: ${event.tag}`);
-
-  switch (event.tag) {
-    case 'sync-surat':
-      event.waitUntil(syncPendingOperations('surat'));
-      break;
-    case 'sync-disposisi':
-      event.waitUntil(syncPendingOperations('disposisi'));
-      break;
-    case 'sync-all':
-      event.waitUntil(syncAllPending());
-      break;
-    default:
-      console.log(`[SW] Unknown sync tag: ${event.tag}`);
+  console.log(`🔄 Background Sync: ${event.tag}`);
+  
+  if (event.tag === 'sync-pending-requests') {
+    event.waitUntil(syncPendingRequests());
+  }
+  
+  if (event.tag === 'sync-notifications') {
+    event.waitUntil(syncNotifications());
   }
 });
 
-/**
- * Sync pending operations from IndexedDB
- */
-async function syncPendingOperations(type) {
-  try {
-    const db = await openIDB();
-    const tx = db.transaction('pendingOps', 'readwrite');
-    const store = tx.objectStore('pendingOps');
-    const items = await store.getAll();
-
-    let synced = 0;
-    for (const item of items) {
-      if (item.type !== type && type !== 'all') continue;
-      
-      try {
-        const data = JSON.parse(item.data);
-        await fetch(data.url || '/api', {
-          method: item.method || 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(item.headers || {}),
-          },
-          body: item.body || JSON.stringify(data),
-        });
-        
-        await store.delete(item.id);
-        synced++;
-      } catch (e) {
-        console.error(`[SW] Sync failed for ${item.id}:`, e);
-      }
-    }
-
-    await tx.complete;
-    console.log(`[SW] Synced ${synced} ${type} operations`);
-  } catch (error) {
-    console.error(`[SW] Sync ${type} failed:`, error);
-  }
-}
-
-async function syncAllPending() {
-  await syncPendingOperations('all');
-}
-
-// ========== PUSH NOTIFICATIONS ==========
+// ========== PUSH NOTIFICATION ==========
 self.addEventListener('push', (event) => {
-  console.log('[SW] Push notification received');
-
+  console.log('📨 Push notification received');
+  
   let data = {
     title: 'Arsip Surat Digital',
-    body: 'Ada pembaruan baru',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-96x96.png',
-    tag: 'default',
+    body: 'Ada notifikasi baru',
+    icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" rx="20" fill="%231976D2"/%3E%3Ctext x="50" y="70" font-size="50" text-anchor="middle" fill="white"%3E📄%3C/text%3E%3C/svg%3E',
+    badge: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="50" fill="%231976D2"/%3E%3Ctext x="50" y="70" font-size="50" text-anchor="middle" fill="white"%3E📄%3C/text%3E%3C/svg%3E',
     data: {
-      url: '/',
-      version: SW_VERSION,
-    },
-    actions: [
-      { action: 'open', title: '🔍 Buka' },
-      { action: 'dismiss', title: '❌ Tutup' },
-    ],
-    vibrate: [200, 100, 200],
-    requireInteraction: false,
+      url: '/index.html#notifikasi'
+    }
   };
-
+  
   if (event.data) {
     try {
-      const pushData = event.data.json();
-      data = { ...data, ...pushData };
+      data = { ...data, ...JSON.parse(event.data.text()) };
     } catch (e) {
       data.body = event.data.text();
     }
   }
-
+  
+  const options = {
+    body: data.body,
+    icon: data.icon,
+    badge: data.badge,
+    vibrate: [200, 100, 200],
+    data: data.data,
+    actions: [
+      {
+        action: 'open',
+        title: '🔍 Lihat'
+      },
+      {
+        action: 'close',
+        title: '✕ Tutup'
+      }
+    ],
+    requireInteraction: false,
+    silent: false,
+    timestamp: Date.now()
+  };
+  
   event.waitUntil(
-    self.registration.showNotification(data.title, data)
+    self.registration.showNotification(data.title, options)
   );
 });
 
 // ========== NOTIFICATION CLICK ==========
 self.addEventListener('notificationclick', (event) => {
+  console.log('🔔 Notification clicked');
+  
   event.notification.close();
-
-  const { action, notification } = event;
-  const urlToOpen = notification.data?.url || '/';
-
-  if (action === 'dismiss') return;
-
+  
+  if (event.action === 'close') return;
+  
+  const urlToOpen = event.notification.data?.url || '/index.html';
+  
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true })
-      .then(windowClients => {
-        // Find existing window
-        for (const client of windowClients) {
-          if (client.url.includes(urlToOpen) && 'focus' in client) {
-            return client.focus();
-          }
+    clients.matchAll({
+      type: 'window',
+      includeUncontrolled: true
+    }).then((windowClients) => {
+      // Cek jika sudah ada window yang terbuka
+      for (const client of windowClients) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          client.focus();
+          client.postMessage({
+            type: 'NOTIFICATION_CLICK',
+            url: urlToOpen
+          });
+          return;
         }
-        // Open new window
+      }
+      
+      // Buka window baru
+      if (clients.openWindow) {
         return clients.openWindow(urlToOpen);
-      })
+      }
+    })
   );
+});
+
+// ========== MESSAGE FROM CLIENT ==========
+self.addEventListener('message', (event) => {
+  console.log('📨 Message from client:', event.data);
+  
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    event.waitUntil(
+      caches.keys().then((keys) => {
+        return Promise.all(keys.map((key) => caches.delete(key)));
+      }).then(() => {
+        console.log('🗑️ All caches cleared');
+        // Kirim response ke client
+        event.ports && event.ports[0] && event.ports[0].postMessage({ success: true });
+      })
+    );
+  }
+  
+  if (event.data && event.data.type === 'GET_CACHE_STATS') {
+    event.waitUntil(
+      getCacheStats().then((stats) => {
+        event.ports && event.ports[0] && event.ports[0].postMessage(stats);
+      })
+    );
+  }
 });
 
 // ========== PERIODIC SYNC ==========
 self.addEventListener('periodicsync', (event) => {
-  console.log(`[SW] Periodic Sync: ${event.tag}`);
-
-  switch (event.tag) {
-    case 'check-updates':
-      event.waitUntil(checkForUpdates());
-      break;
-    case 'refresh-cache':
-      event.waitUntil(refreshCache());
-      break;
-    case 'sync-daily':
-      event.waitUntil(dailyMaintenance());
-      break;
-  }
-});
-
-async function checkForUpdates() {
-  try {
-    const response = await fetch('/version.json?v=' + Date.now(), {
-      cache: 'no-cache',
-    });
-    const data = await response.json();
-
-    if (data.version !== SW_VERSION) {
-      notifyClients({
-        type: 'UPDATE_AVAILABLE',
-        version: data.version,
-      });
-    }
-  } catch (e) {
-    console.error('[SW] Update check failed:', e);
-  }
-}
-
-async function refreshCache() {
-  const cache = await caches.open(CACHE_NAMES.static);
-  for (const asset of PRECACHE_ASSETS) {
-    try {
-      const response = await fetch(asset, { cache: 'no-cache' });
-      if (response.ok) {
-        await cache.put(asset, response);
-      }
-    } catch (e) {
-      console.warn(`[SW] Cache refresh failed for: ${asset}`);
-    }
-  }
-}
-
-async function dailyMaintenance() {
-  await cleanOldCaches();
-  await refreshCache();
-}
-
-// ========== MESSAGE HANDLER ==========
-self.addEventListener('message', (event) => {
-  const { type, payload } = event.data || {};
-
-  switch (type) {
-    case 'SKIP_WAITING':
-      self.skipWaiting();
-      break;
-      
-    case 'CLEAR_CACHE':
-      event.waitUntil(cleanAllCaches());
-      break;
-      
-    case 'CLEAR_OLD_CACHE':
-      event.waitUntil(cleanOldCaches());
-      break;
-      
-    case 'GET_VERSION':
-      if (event.ports && event.ports[0]) {
-        event.ports[0].postMessage({
-          version: SW_VERSION,
-          buildDate: BUILD_DATE,
-        });
-      }
-      break;
-      
-    case 'GET_CACHE_SIZE':
-      event.waitUntil(
-        getCacheSize().then(size => {
-          if (event.ports && event.ports[0]) {
-            event.ports[0].postMessage(size);
-          }
-        })
-      );
-      break;
-      
-    case 'FORCE_UPDATE':
-      event.waitUntil(
-        Promise.all([
-          self.skipWaiting(),
-          refreshCache(),
-        ])
-      );
-      break;
-      
-    case 'SYNC_NOW':
-      event.waitUntil(syncAllPending());
-      break;
-      
-    default:
-      console.log(`[SW] Unknown message type: ${type}`);
+  console.log(`🔄 Periodic Sync: ${event.tag}`);
+  
+  if (event.tag === 'check-updates') {
+    event.waitUntil(checkForUpdates());
   }
 });
 
 // ========== HELPER FUNCTIONS ==========
 
-/**
- * Clean old caches
- */
-async function cleanOldCaches() {
-  const cacheNames = await caches.keys();
-  const validCaches = Object.values(CACHE_NAMES);
-  const prefixOnly = cacheNames.filter(name => name.startsWith(CACHE_PREFIX));
+// Cek apakah URL adalah static asset
+function isStaticAsset(url) {
+  return CONFIG.RUNTIME_PATTERNS.some((pattern) => pattern.test(url));
+}
 
-  const toDelete = prefixOnly.filter(name => !validCaches.includes(name));
-
-  if (toDelete.length > 0) {
-    console.log(`[SW] Cleaning ${toDelete.length} old caches:`, toDelete);
-    await Promise.all(toDelete.map(name => caches.delete(name)));
+// Update cache di background (stale-while-revalidate)
+async function updateCache(request) {
+  try {
+    const response = await fetch(request);
+    if (response && response.status === 200) {
+      const cache = await caches.open(CONFIG.RUNTIME_CACHE);
+      cache.put(request, response);
+    }
+  } catch (error) {
+    // Silent fail
   }
 }
 
-/**
- * Clean all caches
- */
-async function cleanAllCaches() {
-  const cacheNames = await caches.keys();
-  console.log(`[SW] Cleaning all ${cacheNames.length} caches`);
-  await Promise.all(cacheNames.map(name => caches.delete(name)));
+// Sync pending requests
+async function syncPendingRequests() {
+  try {
+    // Buka IndexedDB untuk mengambil pending requests
+    const db = await openDB();
+    const pendingRequests = await getAllPendingRequests(db);
+    
+    for (const req of pendingRequests) {
+      try {
+        const response = await fetch(req.url, {
+          method: req.method,
+          headers: req.headers,
+          body: req.body
+        });
+        
+        if (response.ok) {
+          await deletePendingRequest(db, req.id);
+        }
+      } catch (error) {
+        console.warn(`⚠️ Failed to sync request ${req.id}:`, error);
+      }
+    }
+  } catch (error) {
+    console.error('❌ Background sync failed:', error);
+  }
 }
 
-/**
- * Get total cache size
- */
-async function getCacheSize() {
-  let totalSize = 0;
-  const cacheNames = await caches.keys();
+// Sync notifications
+async function syncNotifications() {
+  // Placeholder untuk sync notifikasi
+  console.log('🔔 Syncing notifications...');
+}
 
+// Check for updates
+async function checkForUpdates() {
+  try {
+    const response = await fetch('/manifest.json?check=' + Date.now(), {
+      cache: 'no-cache'
+    });
+    
+    if (response.ok) {
+      const manifest = await response.json();
+      console.log('📋 Current version:', manifest.version);
+      
+      // Notify clients if there's an update
+      const clients = await self.clients.matchAll();
+      clients.forEach((client) => {
+        client.postMessage({
+          type: 'VERSION_CHECK',
+          version: manifest.version
+        });
+      });
+    }
+  } catch (error) {
+    console.warn('⚠️ Update check failed:', error);
+  }
+}
+
+// Get cache stats
+async function getCacheStats() {
+  const cacheNames = await caches.keys();
+  const stats = {
+    caches: {},
+    totalEntries: 0,
+    totalSize: 0
+  };
+  
   for (const name of cacheNames) {
     const cache = await caches.open(name);
     const keys = await cache.keys();
-
-    for (const request of keys) {
-      const response = await cache.match(request);
-      if (response) {
-        const blob = await response.blob();
-        totalSize += blob.size;
-      }
-    }
+    stats.caches[name] = {
+      entries: keys.length,
+      urls: keys.map((req) => req.url)
+    };
+    stats.totalEntries += keys.length;
   }
-
-  return {
-    totalSize,
-    totalSizeFormatted: formatBytes(totalSize),
-    cacheCount: cacheNames.length,
-  };
+  
+  return stats;
 }
 
-/**
- * Notify all clients
- */
-async function notifyClients(data) {
-  const clients = await self.clients.matchAll({ type: 'window' });
-  clients.forEach(client => {
-    client.postMessage(data);
-  });
-}
-
-/**
- * Open IndexedDB
- */
-function openIDB() {
+// Simple IndexedDB wrapper (untuk background sync)
+function openDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('ArsipSuratDB', 30);
-
+    const request = indexedDB.open('ArsipSuratSW', 1);
+    
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
-      if (!db.objectStoreNames.contains('pendingOps')) {
-        db.createObjectStore('pendingOps', {
-          keyPath: 'id',
-          autoIncrement: true,
-        });
-      }
-      if (!db.objectStoreNames.contains('cache')) {
-        db.createObjectStore('cache', { keyPath: 'url' });
+      if (!db.objectStoreNames.contains('pendingRequests')) {
+        db.createObjectStore('pendingRequests', { keyPath: 'id', autoIncrement: true });
       }
     };
-
+    
     request.onsuccess = (event) => resolve(event.target.result);
     request.onerror = (event) => reject(event.target.error);
   });
 }
 
-/**
- * Initialize storage
- */
-async function initStorage() {
-  try {
-    // Estimate and log storage
-    if (navigator.storage?.estimate) {
-      const estimate = await navigator.storage.estimate();
-      console.log(`[SW] Storage: ${formatBytes(estimate.usage || 0)} / ${formatBytes(estimate.quota || 0)}`);
-    }
-
-    // Enable persistent storage
-    if (navigator.storage?.persist) {
-      const isPersisted = await navigator.storage.persist();
-      console.log(`[SW] Persistent storage: ${isPersisted ? '✅' : '❌'}`);
-    }
-  } catch (e) {
-    console.warn('[SW] Storage init warning:', e);
-  }
+function getAllPendingRequests(db) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('pendingRequests', 'readonly');
+    const store = transaction.objectStore('pendingRequests');
+    const request = store.getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
 }
 
-/**
- * Format bytes to human-readable string
- */
-function formatBytes(bytes) {
-  if (bytes === 0) return '0 B';
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+function deletePendingRequest(db, id) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('pendingRequests', 'readwrite');
+    const store = transaction.objectStore('pendingRequests');
+    const request = store.delete(id);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
 }
 
-// ========== LOG ==========
-console.log(`[SW] Service Worker v${SW_VERSION} (${BUILD_DATE}) loaded`);
-console.log(`[SW] Caches: ${Object.keys(CACHE_NAMES).length} | Pre-cache: ${PRECACHE_ASSETS.length} assets`);
+// ========== LOGGING ==========
+console.log(`✅ Service Worker v${CONFIG.VERSION} - ${CONFIG.BUILD_DATE} - READY`);
+console.log('📦 Cache Name:', CONFIG.CACHE_NAME);
+console.log('📋 Precached Assets:', CONFIG.PRECACHE_ASSETS.length, 'files');
