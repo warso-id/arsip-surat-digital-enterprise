@@ -1,1 +1,155 @@
+# ============================================
+# ARSIP SURAT DIGITAL ENTERPRISE v3.1.0 (2026)
+# .gitignore
+# ============================================
 
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+package-lock.json
+yarn.lock
+bun.lockb
+
+# Google Apps Script
+backend/.clasp.json
+credentials.json
+token.json
+service-account.json
+client_secret*.json
+.clasprc.json
+
+# Environment
+.env
+.env.local
+.env.production
+.env.development
+.env.staging
+.env.v3
+
+# Backup & Database
+*.backup
+*.sql
+*.sqlite
+*.db
+database/backup/
+database/dump/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary
+temp/
+tmp/
+.tmp/
+*.tmp
+*.temp
+.cache/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# Build & Distribution
+build/
+dist/
+out/
+.next/
+.nuxt/
+.output/
+.vite/
+
+# Testing
+coverage/
+.nyc_output/
+reports/
+test-results/
+jest.config.js
+
+# Deployment
+.firebase/
+.firebaserc
+.gcloud/
+.netlify/
+.vercel/
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# AI Models (v3.1.0)
+ai-models/
+*.onnx
+*.tflite
+*.h5
+*.pkl
+model-cache/
+
+# Blockchain Data (v3.1.0)
+blockchain-data/
+*.chain
+chain-*.json
+
+# Biometric Templates (v3.1.0)
+biometric-templates/
+*.bio
+
+# Voice Data (v3.1.0)
+voice-samples/
+*.wav
+*.mp3
+
+# Sensitive
+*secret*
+*private*
+*credential*
+*.pem
+*.key
+*.cert
+*.crt
+
+# Upload
+uploads/
+attachments/
+media/
+
+# OS
+$RECYCLE.BIN/
+Desktop.ini
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+*~
+
+# Allow
+!.gitkeep
+!README.md
+!LICENSE
