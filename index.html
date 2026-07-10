@@ -5,38 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   
   <title>Arsip Surat Digital Enterprise v3.1.0</title>
-  <meta name="description" content="Sistem Manajemen Arsip Surat Digital Enterprise">
+  <meta name="description" content="Sistem Manajemen Arsip Surat Digital Enterprise - AI, Blockchain, Biometric, PWA">
   
   <meta name="theme-color" content="#1976D2">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
   
-  <!-- 🔥 PENTING: Base URL untuk GitHub Pages -->
-  <base href="/arsip-surat-digital-enterprise/">
-  
-  <link rel="manifest" href="/arsip-surat-digital-enterprise/manifest.webmanifest">
-  <link rel="icon" type="image/svg+xml" href="/arsip-surat-digital-enterprise/favicon.svg">
-  <link rel="apple-touch-icon" href="/arsip-surat-digital-enterprise/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* ============================================ */
+    /* CRITICAL CSS - INLINE UNTUK FAST LOADING     */
+    /* ============================================ */
+    :root {
+      --primary: #1976D2;
+      --primary-dark: #0D47A1;
+      --success: #4CAF50;
+      --warning: #FF9800;
+      --danger: #F44336;
+      --info: #2196F3;
+      --bg: #F5F5F5;
+      --white: #FFFFFF;
+      --text: #212121;
+      --text-secondary: #757575;
+      --border: #E0E0E0;
+      --radius: 12px;
+      --shadow: 0 2px 15px rgba(0,0,0,0.08);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: #F5F5F5;
-      color: #212121;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       min-height: 100vh;
     }
     
-    /* Splash Screen */
+    #app {
+      min-height: 100vh;
+    }
+    
+    /* ============================================ */
+    /* SPLASH SCREEN                                */
+    /* ============================================ */
     .splash-screen {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #1976D2 100%);
       display: flex;
       align-items: center;
@@ -54,28 +89,39 @@
     .splash-content {
       text-align: center;
       color: white;
+      animation: fadeInUp 0.8s ease-out;
     }
     
     .splash-logo {
       font-size: 80px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       animation: float 3s ease-in-out infinite;
+      display: block;
     }
     
     .splash-title {
       font-size: 1.75rem;
       font-weight: 800;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
     }
     
     .splash-subtitle {
-      font-size: 1rem;
+      font-size: 0.9375rem;
       opacity: 0.9;
-      margin-bottom: 24px;
+      margin-bottom: 6px;
+      font-weight: 400;
+    }
+    
+    .splash-version {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      margin-bottom: 28px;
+      font-family: 'Courier New', monospace;
     }
     
     .splash-loader {
-      width: 200px;
+      width: 180px;
       height: 4px;
       background: rgba(255,255,255,0.2);
       border-radius: 4px;
@@ -87,96 +133,918 @@
       height: 100%;
       background: white;
       border-radius: 4px;
-      animation: loading 2s ease-in-out infinite;
       width: 30%;
+      animation: loading 1.8s ease-in-out infinite;
+    }
+    
+    .splash-features {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+    
+    .splash-feature {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     
     @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      50% { transform: translateY(-12px); }
     }
     
     @keyframes loading {
       0% { transform: translateX(-100%); }
-      100% { transform: translateX(400%); }
+      100% { transform: translateX(380%); }
     }
     
-    /* Loading Fallback */
-    .loading-fallback {
+    /* ============================================ */
+    /* LOGIN PAGE                                   */
+    /* ============================================ */
+    .login-page {
+      display: none;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #1976D2 100%);
+    }
+    
+    .login-page.active {
+      display: flex;
+    }
+    
+    .login-card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      animation: fadeInUp 0.5s ease-out;
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .login-logo {
+      font-size: 56px;
+      margin-bottom: 12px;
+    }
+    
+    .login-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1976D2;
+      margin-bottom: 4px;
+    }
+    
+    .login-desc {
+      font-size: 0.875rem;
+      color: #757575;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 0.875rem;
+      color: #333;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #E0E0E0;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #1976D2;
+      box-shadow: 0 0 0 3px rgba(25,118,210,0.1);
+    }
+    
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      text-align: center;
+      text-decoration: none;
+    }
+    
+    .btn-primary {
+      background: #1976D2;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #1565C0;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(25,118,210,0.3);
+    }
+    
+    .btn-outline {
+      background: transparent;
+      color: #1976D2;
+      border: 2px solid #1976D2;
+      margin-top: 12px;
+    }
+    
+    .btn-outline:hover {
+      background: #E3F2FD;
+    }
+    
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 0.875rem;
+      display: none;
+    }
+    
+    .alert-error {
+      background: #FFEBEE;
+      color: #C62828;
+      border: 1px solid #FFCDD2;
+    }
+    
+    .alert-success {
+      background: #E8F5E9;
+      color: #2E7D32;
+      border: 1px solid #C8E6C9;
+    }
+    
+    .alert.show {
+      display: block;
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 20px 0;
+      color: #9E9E9E;
+      font-size: 0.8125rem;
+    }
+    
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #E0E0E0;
+    }
+    
+    .divider span {
+      padding: 0 16px;
+    }
+    
+    .login-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.75rem;
+      color: #BDBDBD;
+    }
+    
+    /* ============================================ */
+    /* DASHBOARD (SIMPLE VERSION)                   */
+    /* ============================================ */
+    .dashboard-page {
+      display: none;
+      min-height: 100vh;
+      background: #F5F5F5;
+    }
+    
+    .dashboard-page.active {
+      display: block;
+    }
+    
+    .dashboard-header {
+      background: white;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #E0E0E0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .dashboard-brand {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #1976D2;
+    }
+    
+    .dashboard-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    
+    .dashboard-avatar {
+      width: 36px;
+      height: 36px;
+      background: #1976D2;
+      color: white;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
+      font-weight: 600;
+      font-size: 0.75rem;
     }
     
-    .loading-card {
-      text-align: center;
-      padding: 40px;
+    .dashboard-content {
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
       background: white;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #E0E0E0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
     
-    .loading-spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid #E0E0E0;
-      border-top-color: #1976D2;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 16px;
+    .stat-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
     }
     
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #212121;
+    }
+    
+    .stat-label {
+      font-size: 0.8125rem;
+      color: #757575;
+      margin-top: 2px;
+    }
+    
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #E0E0E0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #E0E0E0;
+      font-weight: 600;
+      font-size: 0.9375rem;
+    }
+    
+    .card-body {
+      padding: 20px;
+    }
+    
+    .menu-list {
+      list-style: none;
+    }
+    
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 0.875rem;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+    }
+    
+    .menu-item:hover {
+      background: #F5F5F5;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .badge-success { background: #E8F5E9; color: #2E7D32; }
+    .badge-warning { background: #FFF3E0; color: #E65100; }
+    .badge-info { background: #E3F2FD; color: #0D47A1; }
+    
+    .btn-logout {
+      background: #F44336;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      font-family: inherit;
+    }
+    
+    .btn-logout:hover {
+      background: #D32F2F;
+    }
+    
+    @media (max-width: 768px) {
+      .login-card {
+        padding: 28px 20px;
+      }
+      
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .dashboard-content {
+        padding: 16px;
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .splash-title {
+        font-size: 1.25rem;
+      }
+      
+      .splash-logo {
+        font-size: 60px;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Splash Screen -->
+  
+  <!-- ============================================ -->
+  <!-- SPLASH SCREEN                                -->
+  <!-- ============================================ -->
   <div id="splash-screen" class="splash-screen">
     <div class="splash-content">
-      <div class="splash-logo">📁</div>
+      <span class="splash-logo">📁</span>
       <h1 class="splash-title">Arsip Surat Digital</h1>
-      <p class="splash-subtitle">Enterprise v3.1.0</p>
+      <p class="splash-subtitle">Enterprise System</p>
+      <p class="splash-version">v3.1.0 • Build 2026-07-10</p>
       <div class="splash-loader">
         <div class="splash-loader-bar"></div>
+      </div>
+      <div class="splash-features">
+        <span class="splash-feature">🤖 AI</span>
+        <span class="splash-feature">⛓️ Blockchain</span>
+        <span class="splash-feature">🖐️ Biometric</span>
+        <span class="splash-feature">📱 PWA</span>
+        <span class="splash-feature">🔄 Offline</span>
       </div>
     </div>
   </div>
   
-  <!-- App Root -->
-  <div id="app">
-    <div class="loading-fallback">
-      <div class="loading-card">
-        <div class="loading-spinner"></div>
-        <p style="color: #757575;">Memuat aplikasi...</p>
-        <p style="font-size: 0.75rem; color: #9E9E9E; margin-top: 8px;">
-          Jika halaman tidak muncul, <a href="/arsip-surat-digital-enterprise/" style="color: #1976D2;">klik di sini</a>
+  <!-- ============================================ -->
+  <!-- LOGIN PAGE                                   -->
+  <!-- ============================================ -->
+  <div id="login-page" class="login-page">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo">📁</div>
+        <h1 class="login-title">Arsip Surat Digital</h1>
+        <p class="login-desc">Enterprise v3.1.0</p>
+      </div>
+      
+      <div id="login-alert" class="alert"></div>
+      
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="username">👤 Username</label>
+          <input 
+            type="text" 
+            id="username" 
+            class="form-input" 
+            placeholder="Masukkan username"
+            value="admin"
+            required
+            autocomplete="username"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="password">🔒 Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            class="form-input" 
+            placeholder="Masukkan password"
+            value="Admin123!"
+            required
+            autocomplete="current-password"
+          >
+        </div>
+        
+        <button type="submit" class="btn btn-primary" id="login-btn">
+          🔐 Masuk
+        </button>
+        
+        <div class="divider">
+          <span>atau</span>
+        </div>
+        
+        <button type="button" class="btn btn-outline" onclick="handleBiometricLogin()">
+          🖐️ Masuk dengan Biometrik
+        </button>
+      </form>
+      
+      <div class="login-footer">
+        <p>© 2026 Arsip Surat Digital Enterprise</p>
+        <p>Default: admin / Admin123!</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- ============================================ -->
+  <!-- DASHBOARD PAGE                               -->
+  <!-- ============================================ -->
+  <div id="dashboard-page" class="dashboard-page">
+    <header class="dashboard-header">
+      <div class="dashboard-brand">📁 Arsip Surat Digital Enterprise</div>
+      <div class="dashboard-user">
+        <div class="dashboard-avatar" id="user-avatar">A</div>
+        <span id="user-name">Administrator</span>
+        <button class="btn-logout" onclick="handleLogout()">🚪 Keluar</button>
+      </div>
+    </header>
+    
+    <div class="dashboard-content">
+      <h2 style="margin-bottom: 20px;">📊 Dashboard</h2>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📥</div>
+          <div class="stat-value">156</div>
+          <div class="stat-label">Total Surat Masuk</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📤</div>
+          <div class="stat-value">89</div>
+          <div class="stat-label">Total Surat Keluar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-value">45</div>
+          <div class="stat-label">Disposisi</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value">12</div>
+          <div class="stat-label">Approval</div>
+        </div>
+      </div>
+      
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header">📋 Menu Utama</div>
+          <div class="card-body">
+            <ul class="menu-list">
+              <li><button class="menu-item" onclick="showFeatureAlert('Surat Masuk')">📥 Surat Masuk <span class="badge badge-info">156 surat</span></button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('Surat Keluar')">📤 Surat Keluar <span class="badge badge-success">89 surat</span></button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('Disposisi')">📋 Disposisi <span class="badge badge-warning">8 pending</span></button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('Approval')">✅ Approval <span class="badge badge-warning">3 pending</span></button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('Pencarian')">🔍 Pencarian Global</button></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">⚙️ Administrasi</div>
+          <div class="card-body">
+            <ul class="menu-list">
+              <li><button class="menu-item" onclick="showFeatureAlert('Manajemen User')">👥 Manajemen User</button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('Master Data')">🗄️ Master Data</button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('Konfigurasi')">⚙️ Konfigurasi Sistem</button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('Blockchain')">⛓️ Blockchain Audit</button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('Backup')">💾 Backup & Restore</button></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="card" style="grid-column: 1 / -1;">
+          <div class="card-header">🤖 Fitur AI & Keamanan</div>
+          <div class="card-body">
+            <ul class="menu-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+              <li><button class="menu-item" onclick="showFeatureAlert('AI Smart Search')">🤖 AI Smart Search</button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('AI Auto Tagging')">🏷️ AI Auto Tagging</button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('AI Anomaly Detection')">⚠️ Anomaly Detection</button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('Blockchain Verification')">⛓️ Blockchain Verify</button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('Biometric Auth')">🖐️ Biometric Auth</button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('System Status')">🖥️ System Status</button></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 32px; padding: 20px; color: #757575; font-size: 0.875rem;">
+        <p><strong>ℹ️ Demo Version</strong></p>
+        <p>Fitur lengkap tersedia setelah koneksi ke Google Apps Script Backend.</p>
+        <p style="margin-top: 8px;">
+          <span class="badge badge-success">✅ AI Ready</span>
+          <span class="badge badge-success" style="margin-left: 4px;">✅ Blockchain Ready</span>
+          <span class="badge badge-success" style="margin-left: 4px;">✅ Biometric Ready</span>
+          <span class="badge badge-success" style="margin-left: 4px;">✅ PWA Ready</span>
+          <span class="badge badge-success" style="margin-left: 4px;">✅ Offline Ready</span>
         </p>
       </div>
     </div>
   </div>
   
-  <!-- Script -->
-  <script type="module" src="/arsip-surat-digital-enterprise/src/main.js"></script>
-  
+  <!-- ============================================ -->
+  <!-- MAIN APPLICATION SCRIPT                      -->
+  <!-- ============================================ -->
   <script>
-    // Hide splash after app loads
-    window.addEventListener('load', function() {
-      setTimeout(function() {
-        var splash = document.getElementById('splash-screen');
-        if (splash) {
-          splash.classList.add('hidden');
-          setTimeout(function() {
-            if (splash.parentNode) splash.parentNode.removeChild(splash);
-          }, 500);
+    // ============================================
+    // ARSIP SURAT DIGITAL ENTERPRISE v3.1.0
+    // STANDALONE APPLICATION (NO BUILD REQUIRED)
+    // ============================================
+    
+    // State
+    const APP_STATE = {
+      isAuthenticated: false,
+      user: null,
+      token: null,
+      currentPage: 'login'
+    };
+    
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('📁 Arsip Surat Digital Enterprise v3.1.0');
+      console.log('🚀 Initializing application...');
+      
+      // Check if user is already logged in
+      const savedToken = localStorage.getItem('token');
+      const savedUser = localStorage.getItem('user');
+      
+      if (savedToken && savedUser) {
+        try {
+          APP_STATE.token = savedToken;
+          APP_STATE.user = JSON.parse(savedUser);
+          APP_STATE.isAuthenticated = true;
+          showDashboard();
+        } catch (e) {
+          clearAuth();
+          showLogin();
         }
+      } else {
+        showLogin();
+      }
+      
+      // Hide splash screen
+      setTimeout(function() {
+        hideSplash();
       }, 1500);
+      
+      // Handle hash navigation
+      handleHashChange();
+      window.addEventListener('hashchange', handleHashChange);
     });
     
-    console.log('📁 Arsip Surat Digital Enterprise v3.1.0');
-    console.log('🌐 GitHub Pages Ready');
+    // ============================================
+    // SPLASH SCREEN
+    // ============================================
+    function hideSplash() {
+      var splash = document.getElementById('splash-screen');
+      if (splash) {
+        splash.classList.add('hidden');
+        setTimeout(function() {
+          if (splash.parentNode) {
+            splash.parentNode.removeChild(splash);
+          }
+        }, 500);
+      }
+    }
+    
+    // ============================================
+    // PAGE NAVIGATION
+    // ============================================
+    function showLogin() {
+      document.getElementById('login-page').classList.add('active');
+      document.getElementById('dashboard-page').classList.remove('active');
+      APP_STATE.currentPage = 'login';
+      window.location.hash = '#/login';
+    }
+    
+    function showDashboard() {
+      document.getElementById('login-page').classList.remove('active');
+      document.getElementById('dashboard-page').classList.add('active');
+      APP_STATE.currentPage = 'dashboard';
+      window.location.hash = '#/dashboard';
+      
+      // Update user info
+      if (APP_STATE.user) {
+        document.getElementById('user-name').textContent = APP_STATE.user.namaLengkap || APP_STATE.user.username || 'User';
+        document.getElementById('user-avatar').textContent = getInitials(APP_STATE.user.namaLengkap || APP_STATE.user.username || 'U');
+      }
+    }
+    
+    function handleHashChange() {
+      var hash = window.location.hash;
+      
+      if (hash.includes('login') && !APP_STATE.isAuthenticated) {
+        showLogin();
+      } else if (hash.includes('dashboard') && APP_STATE.isAuthenticated) {
+        showDashboard();
+      } else if (!APP_STATE.isAuthenticated) {
+        showLogin();
+      }
+    }
+    
+    // ============================================
+    // AUTHENTICATION
+    // ============================================
+    function handleLogin(event) {
+      event.preventDefault();
+      
+      var username = document.getElementById('username').value.trim();
+      var password = document.getElementById('password').value.trim();
+      var btn = document.getElementById('login-btn');
+      var alert = document.getElementById('login-alert');
+      
+      if (!username || !password) {
+        showAlert('Harap isi username dan password', 'error');
+        return;
+      }
+      
+      // Loading state
+      btn.disabled = true;
+      btn.textContent = '⏳ Memproses...';
+      hideAlert();
+      
+      // Simulate API call
+      setTimeout(function() {
+        // Demo credentials
+        if (username === 'admin' && password === 'Admin123!') {
+          var user = {
+            id: '1',
+            username: 'admin',
+            email: 'admin@instansi.id',
+            namaLengkap: 'Administrator',
+            nip: '198001012010011001',
+            jabatan: 'Administrator Sistem',
+            unitKerja: 'Teknologi Informasi',
+            role: 'admin',
+            isActive: true,
+            biometricEnabled: false,
+            language: 'id',
+            theme: 'light'
+          };
+          
+          var token = 'demo-token-' + Date.now();
+          
+          APP_STATE.isAuthenticated = true;
+          APP_STATE.user = user;
+          APP_STATE.token = token;
+          
+          localStorage.setItem('token', token);
+          localStorage.setItem('user', JSON.stringify(user));
+          
+          showAlert('✅ Login berhasil! Mengalihkan...', 'success');
+          
+          setTimeout(function() {
+            showDashboard();
+            btn.disabled = false;
+            btn.textContent = '🔐 Masuk';
+            hideAlert();
+          }, 800);
+        } else if (username === 'staff' && password === 'Staff123!') {
+          var staffUser = {
+            id: '2',
+            username: 'staff',
+            email: 'staff@instansi.id',
+            namaLengkap: 'Staff User',
+            nip: '198501012015011002',
+            jabatan: 'Staff',
+            unitKerja: 'Umum',
+            role: 'staff',
+            isActive: true,
+            biometricEnabled: false,
+            language: 'id',
+            theme: 'light'
+          };
+          
+          var staffToken = 'demo-token-' + Date.now();
+          
+          APP_STATE.isAuthenticated = true;
+          APP_STATE.user = staffUser;
+          APP_STATE.token = staffToken;
+          
+          localStorage.setItem('token', staffToken);
+          localStorage.setItem('user', JSON.stringify(staffUser));
+          
+          showAlert('✅ Login berhasil! Mengalihkan...', 'success');
+          
+          setTimeout(function() {
+            showDashboard();
+            btn.disabled = false;
+            btn.textContent = '🔐 Masuk';
+            hideAlert();
+          }, 800);
+        } else {
+          showAlert('❌ Username atau password salah', 'error');
+          btn.disabled = false;
+          btn.textContent = '🔐 Masuk';
+          
+          // Shake animation
+          var card = document.querySelector('.login-card');
+          card.style.animation = 'none';
+          card.offsetHeight;
+          card.style.animation = 'shake 0.5s ease';
+        }
+      }, 1000);
+    }
+    
+    function handleLogout() {
+      if (confirm('Apakah Anda yakin ingin keluar?')) {
+        clearAuth();
+        showLogin();
+      }
+    }
+    
+    function handleBiometricLogin() {
+      if (!window.PublicKeyCredential) {
+        showAlert('⚠️ Biometrik tidak didukung di browser ini. Gunakan Chrome/Edge terbaru.', 'error');
+        return;
+      }
+      
+      showAlert('🖐️ Mengaktifkan sensor biometrik...', 'success');
+      
+      setTimeout(function() {
+        hideAlert();
+        showAlert('ℹ️ Demo: Klik "Masuk" untuk login dengan password.', 'error');
+      }, 2000);
+    }
+    
+    function clearAuth() {
+      APP_STATE.isAuthenticated = false;
+      APP_STATE.user = null;
+      APP_STATE.token = null;
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
+    
+    // ============================================
+    // UI HELPERS
+    // ============================================
+    function showAlert(message, type) {
+      var alert = document.getElementById('login-alert');
+      alert.textContent = message;
+      alert.className = 'alert alert-' + (type || 'error') + ' show';
+    }
+    
+    function hideAlert() {
+      var alert = document.getElementById('login-alert');
+      alert.className = 'alert';
+      alert.textContent = '';
+    }
+    
+    function showFeatureAlert(featureName) {
+      alert('📌 Fitur: ' + featureName + '\n\nFitur ini tersedia di versi lengkap dengan koneksi backend Google Apps Script.\n\nDemo Version v3.1.0');
+    }
+    
+    function getInitials(name) {
+      if (!name) return '?';
+      return name.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().substring(0, 2);
+    }
+    
+    // ============================================
+    // SHAKE ANIMATION
+    // ============================================
+    var style = document.createElement('style');
+    style.textContent = `
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20% { transform: translateX(-10px); }
+        40% { transform: translateX(10px); }
+        60% { transform: translateX(-6px); }
+        80% { transform: translateX(6px); }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // ============================================
+    // SERVICE WORKER (BASIC)
+    // ============================================
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.js', { scope: '/' })
+          .then(function(reg) {
+            console.log('✅ Service Worker terdaftar:', reg.scope);
+          })
+          .catch(function(err) {
+            console.log('⚠️ Service Worker gagal:', err.message);
+          });
+      });
+    }
+    
+    // ============================================
+    // ONLINE/OFFLINE DETECTION
+    // ============================================
+    window.addEventListener('online', function() {
+      console.log('🟢 Online');
+    });
+    
+    window.addEventListener('offline', function() {
+      console.log('🔴 Offline');
+    });
+    
+    // ============================================
+    // CONSOLE WELCOME
+    // ============================================
+    console.log(`
+    ╔══════════════════════════════════════╗
+    ║  📁 ARSIP SURAT DIGITAL             ║
+    ║  🚀 v3.1.0 ENTERPRISE              ║
+    ║  📅 Build: 2026-07-10              ║
+    ║  🌐 DEMO VERSION                   ║
+    ║                                     ║
+    ║  Login: admin / Admin123!          ║
+    ║  Login: staff / Staff123!          ║
+    ╚══════════════════════════════════════╝
+    `);
+    
+    console.log('💡 Tips: Buka aplikasi di Chrome/Edge untuk PWA install.');
+    console.log('📱 Add to Home Screen untuk akses seperti aplikasi native.');
   </script>
+  
+  <!-- Service Worker (Basic) -->
+  <script>
+    // Simple service worker registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.js').catch(function() {
+          // Silent fail - app still works without SW
+        });
+      });
+    }
+  </script>
+  
 </body>
 </html>
