@@ -1,0 +1,11 @@
+// Common components aggregator
+export { default as AppHeader } from './AppHeader.vue'
+export { default as AppSidebar } from './AppSidebar.vue'
+export { default as AppFooter } from './AppFooter.vue'
+export { default as LoadingSpinner } from './LoadingSpinner.vue'
+export { default as Pagination } from './Pagination.vue'
+export { default as SearchBar } from './SearchBar.vue'
+export { default as DataTable } from './DataTable.vue'
+export { default as ModalDialog } from './ModalDialog.vue'
+export { default as ToastNotification } from './ToastNotification.vue'
+export { default as FileUploader } from './FileUploader.vue'
