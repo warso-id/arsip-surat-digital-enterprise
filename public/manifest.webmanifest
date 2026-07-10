@@ -1,14 +1,8 @@
-
----
-
-## 📁 FILE 13: `public/manifest.webmanifest`
-
-```json
 {
   "name": "Arsip Surat Digital Enterprise",
   "short_name": "ArsipSurat",
   "description": "Sistem Manajemen Arsip Surat Digital Enterprise v3.1.0",
-  "start_url": "/",
+  "start_url": "/arsip-surat-digital-enterprise/",
   "display": "standalone",
   "background_color": "#F5F5F5",
   "theme_color": "#1976D2",
@@ -16,53 +10,14 @@
   "lang": "id-ID",
   "icons": [
     {
-      "src": "/pwa-192x192.png",
+      "src": "https://via.placeholder.com/192x192/1976D2/FFFFFF?text=AS",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/pwa-512x512.png",
+      "src": "https://via.placeholder.com/512x512/1976D2/FFFFFF?text=AS",
       "sizes": "512x512",
       "type": "image/png"
-    },
-    {
-      "src": "/pwa-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshot-1.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Dashboard"
-    }
-  ],
-  "categories": ["productivity", "business", "government"],
-  "shortcuts": [
-    {
-      "name": "Surat Masuk",
-      "short_name": "Masuk",
-      "description": "Lihat surat masuk",
-      "url": "/surat-masuk",
-      "icons": [{ "src": "/icons/surat-masuk.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Surat Keluar",
-      "short_name": "Keluar",
-      "description": "Lihat surat keluar",
-      "url": "/surat-keluar",
-      "icons": [{ "src": "/icons/surat-keluar.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Dashboard",
-      "short_name": "Dashboard",
-      "description": "Lihat dashboard",
-      "url": "/dashboard",
-      "icons": [{ "src": "/icons/dashboard.png", "sizes": "96x96" }]
     }
   ]
 }
