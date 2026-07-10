@@ -6,13 +6,12 @@
     <meta name="description" content="Login - Arsip Surat Digital Enterprise v30.1.0">
     <meta name="theme-color" content="#1976D2">
     <title>Login - Arsip Surat Digital Enterprise v30.1.0</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
     
     <style>
-        /* ========== CSS RESET & VARIABLES ========== */
         :root {
             --primary: #1976D2;
             --primary-dark: #1565C0;
-            --primary-light: #42A5F5;
             --bg: #F0F4F8;
             --surface: #FFFFFF;
             --text: #212121;
@@ -22,11 +21,11 @@
             --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
             --radius: 16px;
             --radius-sm: 10px;
-            --font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
             --error: #F44336;
             --success: #4CAF50;
             --warning: #FF9800;
             --info: #2196F3;
+            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         [data-theme="dark"] {
@@ -35,8 +34,6 @@
             --text: #F1F5F9;
             --text-secondary: #94A3B8;
             --border: #334155;
-            --shadow: 0 4px 20px rgba(0,0,0,0.3);
-            --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -49,30 +46,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.3s ease;
+            transition: background 0.3s;
             padding: 20px;
-            position: relative;
         }
 
-        /* Background Pattern */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(25,118,210,0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(38,166,154,0.05) 0%, transparent 50%),
-                radial-gradient(circle at 50% 20%, rgba(255,112,67,0.03) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* Login Container */
         .login-container {
-            position: relative;
-            z-index: 1;
             width: 100%;
-            max-width: 440px;
+            max-width: 420px;
             animation: fadeInUp 0.6s ease;
         }
 
@@ -81,74 +61,60 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Logo Section */
         .logo-section {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
         }
 
         .logo-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 16px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            border-radius: 20px;
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 14px;
+            background: linear-gradient(135deg, #1976D2, #42A5F5);
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 36px;
             box-shadow: 0 8px 24px rgba(25,118,210,0.3);
-            animation: pulse 2s infinite;
-            user-select: none;
-        }
-
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 8px 24px rgba(25,118,210,0.3); }
-            50% { box-shadow: 0 12px 32px rgba(25,118,210,0.5); }
         }
 
         .app-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
             color: var(--text);
             margin-bottom: 4px;
-            letter-spacing: -0.3px;
         }
 
         .app-subtitle {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
-            font-weight: 500;
         }
 
-        /* Login Card */
         .login-card {
             background: var(--surface);
             border-radius: var(--radius);
-            padding: 32px;
+            padding: 30px;
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
-            transition: all 0.3s ease;
         }
 
         .login-card h2 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             margin-bottom: 6px;
             text-align: center;
-            color: var(--text);
         }
 
         .login-card .welcome-text {
             text-align: center;
             color: var(--text-secondary);
             font-size: 13px;
-            margin-bottom: 24px;
+            margin-bottom: 22px;
         }
 
-        /* Form */
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         .form-group label {
@@ -165,144 +131,75 @@
 
         .input-wrapper .input-icon {
             position: absolute;
-            left: 14px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
             font-size: 18px;
-            color: var(--text-secondary);
             pointer-events: none;
-            z-index: 1;
         }
 
         .input-wrapper input {
             width: 100%;
-            padding: 12px 14px 12px 44px;
+            padding: 11px 14px 11px 40px;
             border: 2px solid var(--border);
             border-radius: var(--radius-sm);
             font-size: 14px;
             font-family: var(--font-family);
             background: var(--bg);
             color: var(--text);
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             outline: none;
         }
 
         .input-wrapper input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(25,118,210,0.1);
+            box-shadow: 0 0 0 3px rgba(25,118,210,0.1);
             background: var(--surface);
         }
 
-        .input-wrapper input::placeholder {
-            color: var(--text-secondary);
-            opacity: 0.5;
-        }
-
-        .input-wrapper input:-webkit-autofill {
-            -webkit-box-shadow: 0 0 0 30px var(--surface) inset !important;
-            -webkit-text-fill-color: var(--text) !important;
-        }
-
-        /* Password Toggle */
         .password-toggle {
             position: absolute;
-            right: 12px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
             cursor: pointer;
             font-size: 18px;
-            color: var(--text-secondary);
             padding: 4px 8px;
-            z-index: 1;
-            transition: color 0.2s;
         }
 
-        .password-toggle:hover {
-            color: var(--primary);
-        }
-
-        /* Form Options */
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 13px;
-        }
-
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            color: var(--text-secondary);
-            user-select: none;
-        }
-
-        .remember-me input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .forgot-password {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .forgot-password:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        /* Login Button */
         .btn-login {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 13px;
+            background: linear-gradient(135deg, #1976D2, #1565C0);
             color: white;
             border: none;
             border-radius: var(--radius-sm);
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             font-family: var(--font-family);
             position: relative;
-            overflow: hidden;
-            letter-spacing: 0.3px;
         }
 
         .btn-login:hover:not(:disabled) {
             box-shadow: 0 6px 20px rgba(25,118,210,0.4);
-            transform: translateY(-2px);
-        }
-
-        .btn-login:active:not(:disabled) {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
 
         .btn-login:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            transform: none;
         }
 
-        .btn-login .btn-text {
-            display: inline;
-        }
-
+        .btn-login .btn-text { display: inline; }
         .btn-login .spinner {
             display: none;
             width: 20px;
             height: 20px;
-            border: 2.5px solid rgba(255,255,255,0.3);
+            border: 2px solid rgba(255,255,255,0.3);
             border-top-color: white;
             border-radius: 50%;
             animation: spin 0.6s linear infinite;
@@ -312,19 +209,15 @@
         .btn-login.loading .btn-text { display: none; }
         .btn-login.loading .spinner { display: block; }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Error Message */
         .error-message {
             background: rgba(244,67,54,0.08);
             color: var(--error);
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-radius: var(--radius-sm);
             font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             display: none;
             border: 1px solid rgba(244,67,54,0.2);
             text-align: center;
@@ -337,100 +230,48 @@
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-8px); }
-            40% { transform: translateX(8px); }
-            60% { transform: translateX(-4px); }
-            80% { transform: translateX(4px); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
         }
 
-        /* Biometric Section */
-        .biometric-section {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
-        }
-
-        .btn-biometric {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text);
-            transition: all 0.3s ease;
-            font-family: var(--font-family);
-        }
-
-        .btn-biometric:hover {
-            border-color: var(--primary);
-            background: rgba(25,118,210,0.05);
-            transform: translateY(-1px);
-        }
-
-        .btn-biometric .fingerprint-icon {
-            font-size: 20px;
-        }
-
-        /* Quick Info */
-        .quick-info {
-            background: rgba(25,118,210,0.04);
-            border: 1px dashed rgba(25,118,210,0.25);
-            border-radius: var(--radius-sm);
-            padding: 12px 16px;
-            margin-top: 16px;
-            font-size: 11px;
-            color: var(--text-secondary);
-            text-align: center;
-            line-height: 1.5;
-        }
-
-        .quick-info strong {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        /* Features Grid */
-        .features {
+        .form-options {
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 24px;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            font-size: 12px;
         }
 
-        .feature-item {
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            accent-color: var(--primary);
+        }
+
+        .forgot-password {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .forgot-password:hover { text-decoration: underline; }
+
+        .info-text {
             text-align: center;
             font-size: 11px;
             color: var(--text-secondary);
-            transition: transform 0.2s;
+            margin-top: 14px;
+            opacity: 0.7;
         }
 
-        .feature-item:hover {
-            transform: translateY(-2px);
-        }
-
-        .feature-item .feature-icon {
-            font-size: 22px;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        /* Version */
-        .version-info {
-            text-align: center;
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-top: 20px;
-            opacity: 0.6;
-        }
-
-        /* Toast Notification */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -439,7 +280,6 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-width: 380px;
         }
 
         .toast {
@@ -449,12 +289,7 @@
             font-size: 14px;
             font-weight: 500;
             box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-            animation: slideInRight 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: opacity 0.3s ease;
+            animation: slideIn 0.3s ease;
         }
 
         .toast.success { background: var(--success); }
@@ -462,402 +297,171 @@
         .toast.info { background: var(--info); }
         .toast.warning { background: var(--warning); }
 
-        @keyframes slideInRight {
+        @keyframes slideIn {
             from { opacity: 0; transform: translateX(100px); }
             to { opacity: 1; transform: translateX(0); }
         }
 
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.3);
-            z-index: 9998;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .loading-overlay.show {
-            display: flex;
-        }
-
-        .loading-box {
-            background: var(--surface);
-            padding: 32px;
-            border-radius: var(--radius);
-            text-align: center;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .loading-box .spinner-large {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 12px;
-        }
-
-        .loading-box p {
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        /* Responsive Design */
         @media (max-width: 480px) {
             .login-card { padding: 24px 20px; }
-            .logo-icon { width: 64px; height: 64px; font-size: 32px; }
-            .app-title { font-size: 18px; }
-            .features { gap: 14px; }
-            .feature-item { font-size: 10px; }
-            .feature-item .feature-icon { font-size: 18px; }
-        }
-
-        @media (max-width: 360px) {
-            body { padding: 12px; }
-            .login-card { padding: 20px 16px; }
-            .form-options { flex-direction: column; gap: 10px; align-items: flex-start; }
-        }
-
-        /* Print Styles */
-        @media print {
-            body { background: white; }
-            .bg-pattern { display: none; }
-            .toast-container { display: none; }
+            .logo-icon { width: 56px; height: 56px; font-size: 28px; }
+            .app-title { font-size: 17px; }
         }
     </style>
 </head>
 <body>
-    <!-- Login Container -->
     <div class="login-container">
         
-        <!-- Logo Section -->
         <div class="logo-section">
             <div class="logo-icon">📄</div>
             <h1 class="app-title">Arsip Surat Digital</h1>
-            <p class="app-subtitle">Enterprise v30.1.0 • AI Powered</p>
+            <p class="app-subtitle">Enterprise v30.1.0</p>
         </div>
         
-        <!-- Login Card -->
         <div class="login-card">
             <h2>👋 Selamat Datang</h2>
             <p class="welcome-text">Silakan login untuk mengakses sistem</p>
             
-            <!-- Error Message -->
             <div class="error-message" id="errorMessage"></div>
             
-            <!-- Login Form -->
-            <div id="loginForm">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <div class="input-wrapper">
-                        <span class="input-icon">👤</span>
-                        <input 
-                            type="text" 
-                            id="username" 
-                            name="username" 
-                            placeholder="Masukkan username" 
-                            required 
-                            autocomplete="username"
-                            autofocus
-                            maxlength="50"
-                        >
-                    </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="username" placeholder="Masukkan username" autocomplete="username" autofocus>
                 </div>
-                
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="input-wrapper">
-                        <span class="input-icon">🔒</span>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            placeholder="Masukkan password" 
-                            required 
-                            autocomplete="current-password"
-                            maxlength="100"
-                        >
-                        <button type="button" class="password-toggle" id="passwordToggle" onclick="togglePassword()" title="Tampilkan/Sembunyikan password">
-                            👁️
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="form-options">
-                    <label class="remember-me">
-                        <input type="checkbox" id="rememberMe">
-                        <span>Ingat saya</span>
-                    </label>
-                    <a class="forgot-password" onclick="handleForgotPassword()">Lupa password?</a>
-                </div>
-                
-                <button type="button" class="btn-login" id="btnLogin" onclick="handleLogin()">
-                    <span class="btn-text">🔐 Masuk</span>
-                    <span class="spinner"></span>
-                </button>
             </div>
             
-            <!-- Biometric Section -->
-            <div class="biometric-section" id="biometricSection" style="display:none;">
-                <button class="btn-biometric" onclick="handleBiometricLogin()">
-                    <span class="fingerprint-icon">🖐️</span>
-                    <span>Login dengan Fingerprint / Face ID</span>
-                </button>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="password" placeholder="Masukkan password" autocomplete="current-password">
+                    <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+                </div>
             </div>
             
-            <!-- Quick Info -->
-            <div class="quick-info">
-                ℹ️ Hubungi <strong>Administrator</strong> jika belum memiliki akun.<br>
-                Sistem menggunakan enkripsi AES-256 untuk keamanan data.
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" id="rememberMe">
+                    Ingat saya
+                </label>
+                <span class="forgot-password" onclick="showToast('Hubungi Administrator untuk reset password', 'info')">Lupa password?</span>
             </div>
-        </div>
-        
-        <!-- Features -->
-        <div class="features">
-            <div class="feature-item">
-                <span class="feature-icon">🤖</span>
-                AI Smart
-            </div>
-            <div class="feature-item">
-                <span class="feature-icon">🔗</span>
-                Blockchain
-            </div>
-            <div class="feature-item">
-                <span class="feature-icon">🔐</span>
-                Biometric
-            </div>
-            <div class="feature-item">
-                <span class="feature-icon">🎤</span>
-                Voice
-            </div>
-            <div class="feature-item">
-                <span class="feature-icon">🌙</span>
-                Dark Mode
-            </div>
-            <div class="feature-item">
-                <span class="feature-icon">📱</span>
-                PWA
-            </div>
-        </div>
-        
-        <!-- Version -->
-        <div class="version-info">
-            Arsip Surat Digital Enterprise v30.1.0 &copy; 2026
+            
+            <button class="btn-login" id="btnLogin" onclick="handleLogin()">
+                <span class="btn-text">🔐 Masuk</span>
+                <span class="spinner"></span>
+            </button>
+            
+            <p class="info-text">Arsip Surat Digital Enterprise v30.1.0 &copy; 2026</p>
         </div>
     </div>
     
-    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
-    
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-box">
-            <div class="spinner-large"></div>
-            <p id="loadingText">Memproses...</p>
-        </div>
-    </div>
 
-    <!-- ========== JAVASCRIPT - NO EXTERNAL DEPENDENCIES ========== -->
     <script>
-        /**
-         * ============================================
-         * ARSIP SURAT DIGITAL ENTERPRISE v30.1.0
-         * Login Module - STANDALONE (No Dependencies)
-         * ============================================
-         */
-        
-        // ========== CONFIGURATION ==========
-        const CONFIG = {
-            API_URL: 'https://script.google.com/macros/s/AKfycbxhx4JXI_yX9MIEhYmSVAjxy-_9McM0-2WKzA2OvW4h8T9QT2nh5bJcio0KiWEyL4VRsQ/exec',
-            VERSION: '30.1.0',
-            BUILD_DATE: '2026-07-10',
-            DASHBOARD_URL: '/index.html',
-            TOKEN_KEY: 'token',
-            USER_KEY: 'user',
-            THEME_KEY: 'theme',
-            SAVED_USERNAME_KEY: 'savedUsername',
-            BIOMETRIC_KEY: 'hasBiometric',
-            BC_CHAIN_KEY: 'bc_chain',
-        };
-        
-        // ========== STATE ==========
-        let isLoading = false;
+        // ========== CONFIGURATION (SINKRON DENGAN INDEX.HTML) ==========
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxhx4JXI_yX9MIEhYmSVAjxy-_9McM0-2WKzA2OvW4h8T9QT2nh5bJcio0KiWEyL4VRsQ/exec';
+        const DASHBOARD_URL = '/index.html';
         
         // ========== INITIALIZATION ==========
         (function init() {
-            console.log('🚀 Login v' + CONFIG.VERSION + ' initializing...');
-            console.log('🔗 API URL:', CONFIG.API_URL);
-            console.log('📅 Build Date:', CONFIG.BUILD_DATE);
+            console.log('🔐 Login v30.1.0 initialized');
             
             // Cek existing session
-            checkExistingSession();
-            
-            // Load saved preferences
-            loadSavedPreferences();
-            
-            // Cek biometric availability
-            checkBiometricSupport();
-            
-            // Apply theme
-            applyTheme();
-            
-            // Setup event listeners
-            setupEventListeners();
-            
-            console.log('✅ Login module initialized');
-        })();
-        
-        // ========== CHECK EXISTING SESSION ==========
-        async function checkExistingSession() {
-            const token = localStorage.getItem(CONFIG.TOKEN_KEY);
-            const user = localStorage.getItem(CONFIG.USER_KEY);
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
             
             if (token && user) {
-                console.log('🔍 Token ditemukan, memverifikasi...');
-                
-                try {
-                    const isValid = await verifyToken(token);
-                    
-                    if (isValid) {
-                        console.log('✅ Token valid, redirect ke dashboard');
-                        showToast('✅ Sesi aktif, mengalihkan...', 'success');
-                        setTimeout(() => {
-                            window.location.replace(CONFIG.DASHBOARD_URL);
-                        }, 800);
-                    } else {
-                        console.log('❌ Token expired, hapus session');
-                        clearSession();
-                        showToast('⚠️ Sesi telah berakhir, silakan login kembali', 'warning');
-                    }
-                } catch (error) {
-                    console.error('❌ Verifikasi token gagal:', error.message);
-                    
-                    // Jika offline, tetap redirect (pakai cache)
-                    if (!navigator.onLine) {
-                        console.log('⚠️ Offline mode, gunakan session cached');
-                        window.location.replace(CONFIG.DASHBOARD_URL);
-                    } else {
-                        clearSession();
-                    }
-                }
-            } else {
-                console.log('ℹ️ Tidak ada session aktif');
+                console.log('🔍 Token found, verifying...');
+                verifyTokenAndRedirect(token);
             }
-        }
+            
+            // Load saved username
+            const savedUsername = localStorage.getItem('savedUsername');
+            if (savedUsername) {
+                document.getElementById('username').value = savedUsername;
+                document.getElementById('rememberMe').checked = true;
+            }
+            
+            // Apply theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // Enter key handlers
+            document.getElementById('username').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') { e.preventDefault(); document.getElementById('password').focus(); }
+            });
+            
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') { e.preventDefault(); handleLogin(); }
+            });
+            
+        })();
         
-        // ========== VERIFY TOKEN ==========
-        async function verifyToken(token) {
-            const url = CONFIG.API_URL + '?action=me&token=' + encodeURIComponent(token);
-            
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 detik timeout
-            
+        // ========== VERIFY EXISTING TOKEN ==========
+        async function verifyTokenAndRedirect(token) {
             try {
-                const response = await fetch(url, {
-                    signal: controller.signal,
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                });
+                const url = API_URL + '?action=me&token=' + encodeURIComponent(token);
+                console.log('📡 Verifying token...');
                 
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error('HTTP ' + response.status);
-                }
-                
+                const response = await fetch(url);
                 const data = await response.json();
-                console.log('📥 Response verifikasi:', data);
                 
                 if (data.status === 'success' && data.data) {
-                    // Update user data di localStorage
-                    localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(data.data));
-                    return true;
+                    console.log('✅ Token valid, redirecting...');
+                    localStorage.setItem('user', JSON.stringify(data.data));
+                    window.location.replace(DASHBOARD_URL);
+                } else {
+                    console.log('❌ Token invalid, clearing...');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
                 }
-                
-                return false;
-                
             } catch (error) {
-                clearTimeout(timeoutId);
-                
-                if (error.name === 'AbortError') {
-                    console.error('⏰ Verifikasi token timeout');
+                console.error('Verification error:', error.message);
+                // If offline but have token, redirect anyway
+                if (!navigator.onLine && localStorage.getItem('token')) {
+                    console.log('⚠️ Offline mode, redirecting with cached data...');
+                    window.location.replace(DASHBOARD_URL);
                 }
-                
-                throw error;
             }
         }
         
         // ========== HANDLE LOGIN ==========
         async function handleLogin() {
-            // Prevent double submit
-            if (isLoading) {
-                console.log('⚠️ Login sedang diproses...');
-                return;
-            }
-            
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const rememberMe = document.getElementById('rememberMe').checked;
             const btnLogin = document.getElementById('btnLogin');
-            const errorMessage = document.getElementById('errorMessage');
             
             // Validasi
             if (!username) {
-                showError('⚠️ Username harus diisi');
+                showError('Username harus diisi');
                 document.getElementById('username').focus();
                 return;
             }
-            
             if (!password) {
-                showError('⚠️ Password harus diisi');
+                showError('Password harus diisi');
                 document.getElementById('password').focus();
                 return;
             }
             
-            if (password.length < 3) {
-                showError('⚠️ Password minimal 3 karakter');
-                document.getElementById('password').focus();
-                return;
-            }
-            
-            // Set loading state
-            isLoading = true;
+            // Loading state
             btnLogin.classList.add('loading');
             btnLogin.disabled = true;
             hideError();
-            showLoading('Memverifikasi kredensial...');
             
-            console.log('🔐 Mengirim login request...');
-            console.log('📤 Username:', username);
+            console.log('🔐 Logging in as:', username);
             
             try {
-                const url = CONFIG.API_URL + '?action=login';
-                
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                const url = API_URL + '?action=login';
                 
                 const response = await fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ 
-                        username: username, 
-                        password: password 
-                    }),
-                    signal: controller.signal,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
                 });
-                
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error('HTTP ' + response.status + ' - ' + response.statusText);
-                }
                 
                 const data = await response.json();
                 console.log('📥 Response:', data);
@@ -865,276 +469,72 @@
                 if (data.status === 'success' && data.data && data.data.token) {
                     console.log('✅ Login BERHASIL');
                     
-                    // SIMPAN TOKEN & USER DATA
-                    localStorage.setItem(CONFIG.TOKEN_KEY, data.data.token);
-                    localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(data.data.user));
+                    // SIMPAN TOKEN & USER (sama seperti di index.html)
+                    localStorage.setItem('token', data.data.token);
+                    localStorage.setItem('user', JSON.stringify(data.data.user));
                     
-                    // Simpan username jika "Ingat saya" dicentang
+                    // Simpan username jika "Ingat saya"
                     if (rememberMe) {
-                        localStorage.setItem(CONFIG.SAVED_USERNAME_KEY, username);
+                        localStorage.setItem('savedUsername', username);
                     } else {
-                        localStorage.removeItem(CONFIG.SAVED_USERNAME_KEY);
+                        localStorage.removeItem('savedUsername');
                     }
                     
-                    // Set biometric flag
-                    localStorage.setItem(CONFIG.BIOMETRIC_KEY, 'true');
-                    
-                    // Blockchain log
-                    logBlockchainActivity('LOGIN', data.data.user);
-                    
-                    // Notifikasi sukses
                     showToast('✅ Login berhasil!', 'success');
                     
-                    // Update loading text
-                    updateLoadingText('Mengalihkan ke dashboard...');
-                    
-                    // Redirect setelah delay singkat
+                    // Redirect
                     setTimeout(() => {
-                        hideLoading();
-                        window.location.replace(CONFIG.DASHBOARD_URL);
-                    }, 600);
+                        window.location.replace(DASHBOARD_URL);
+                    }, 500);
                     
-                } else if (data.status === 'error' && data.code === 401) {
-                    showError('❌ Username atau password salah');
-                    logFailedAttempt(username, 'Invalid credentials');
+                } else if (data.code === 401) {
+                    showError('Username atau password salah');
                 } else {
-                    showError('❌ ' + (data.message || 'Login gagal, silakan coba lagi'));
-                    logFailedAttempt(username, data.message || 'Unknown error');
+                    showError(data.message || 'Login gagal');
                 }
                 
             } catch (error) {
                 console.error('❌ Login error:', error);
                 
-                if (error.name === 'AbortError') {
-                    showError('⏰ Koneksi timeout. Periksa koneksi internet Anda.');
-                } else if (!navigator.onLine) {
-                    showError('📡 Tidak ada koneksi internet');
-                    // Attempt offline login
-                    attemptOfflineLogin(username, password);
-                } else if (error.message.includes('Failed to fetch')) {
-                    showError('🔌 Gagal terhubung ke server. Pastikan URL API benar.');
+                if (!navigator.onLine) {
+                    showError('Tidak ada koneksi internet');
                 } else {
-                    showError('❌ Gagal terhubung ke server. Silakan coba lagi.');
+                    showError('Gagal terhubung ke server');
                 }
-                
             } finally {
-                // Reset loading state
-                isLoading = false;
                 btnLogin.classList.remove('loading');
                 btnLogin.disabled = false;
-                hideLoading();
             }
-        }
-        
-        // ========== OFFLINE LOGIN ==========
-        function attemptOfflineLogin(username, password) {
-            try {
-                const cachedUser = JSON.parse(localStorage.getItem(CONFIG.USER_KEY) || 'null');
-                const cachedToken = localStorage.getItem(CONFIG.TOKEN_KEY);
-                
-                if (cachedUser && cachedToken && cachedUser.username === username) {
-                    console.log('⚠️ Login offline dengan data cached');
-                    showToast('⚠️ Mode offline - menggunakan data tersimpan', 'warning');
-                    
-                    setTimeout(() => {
-                        window.location.replace(CONFIG.DASHBOARD_URL);
-                    }, 1000);
-                } else {
-                    showError('📡 Tidak dapat login offline. Diperlukan koneksi internet untuk login pertama kali.');
-                }
-            } catch (e) {
-                showError('📡 Gagal login offline');
-            }
-        }
-        
-        // ========== BIOMETRIC LOGIN ==========
-        function checkBiometricSupport() {
-            if (window.PublicKeyCredential) {
-                document.getElementById('biometricSection').style.display = 'block';
-                console.log('✅ WebAuthn/Biometric supported');
-            } else {
-                console.log('ℹ️ WebAuthn tidak didukung di browser ini');
-            }
-        }
-        
-        async function handleBiometricLogin() {
-            const credentialId = localStorage.getItem('biometricCredentialId');
-            
-            if (!credentialId) {
-                showToast('⚠️ Belum ada biometric terdaftar. Login dengan password terlebih dahulu.', 'info');
-                return;
-            }
-            
-            showLoading('Memindai biometric...');
-            
-            try {
-                const publicKey = {
-                    challenge: crypto.getRandomValues(new Uint8Array(32)),
-                    rpId: window.location.hostname,
-                    allowCredentials: [{
-                        id: Uint8Array.from(atob(credentialId), c => c.charCodeAt(0)),
-                        type: 'public-key',
-                    }],
-                    userVerification: 'required',
-                    timeout: 30000,
-                };
-                
-                const assertion = await navigator.credentials.get({ publicKey });
-                
-                if (assertion) {
-                    const token = localStorage.getItem(CONFIG.TOKEN_KEY);
-                    
-                    if (token) {
-                        const url = CONFIG.API_URL + '?action=biometric.verify&token=' + encodeURIComponent(token) + '&credentialId=' + encodeURIComponent(credentialId);
-                        const response = await fetch(url);
-                        const data = await response.json();
-                        
-                        if (data.status === 'success') {
-                            showToast('✅ Biometric verified!', 'success');
-                            setTimeout(() => {
-                                window.location.replace(CONFIG.DASHBOARD_URL);
-                            }, 500);
-                        } else {
-                            showToast('❌ Verifikasi biometric gagal', 'error');
-                        }
-                    } else {
-                        showToast('⚠️ Silakan login dengan password terlebih dahulu', 'warning');
-                    }
-                }
-            } catch (error) {
-                console.error('Biometric error:', error);
-                showToast('❌ Biometric error: ' + error.message, 'error');
-            } finally {
-                hideLoading();
-            }
-        }
-        
-        // ========== FORGOT PASSWORD ==========
-        function handleForgotPassword() {
-            showToast('ℹ️ Hubungi Administrator untuk reset password', 'info');
         }
         
         // ========== TOGGLE PASSWORD ==========
         function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const toggleBtn = document.getElementById('passwordToggle');
+            const input = document.getElementById('password');
+            const btn = document.querySelector('.password-toggle');
             
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleBtn.textContent = '🙈';
-                toggleBtn.title = 'Sembunyikan password';
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
             } else {
-                passwordInput.type = 'password';
-                toggleBtn.textContent = '👁️';
-                toggleBtn.title = 'Tampilkan password';
+                input.type = 'password';
+                btn.textContent = '👁️';
             }
-        }
-        
-        // ========== SESSION MANAGEMENT ==========
-        function clearSession() {
-            localStorage.removeItem(CONFIG.TOKEN_KEY);
-            localStorage.removeItem(CONFIG.USER_KEY);
-            console.log('🧹 Session cleared');
-        }
-        
-        function loadSavedPreferences() {
-            // Load saved username
-            const savedUsername = localStorage.getItem(CONFIG.SAVED_USERNAME_KEY);
-            if (savedUsername) {
-                document.getElementById('username').value = savedUsername;
-                document.getElementById('rememberMe').checked = true;
-                console.log('📝 Loaded saved username:', savedUsername);
-            }
-        }
-        
-        function applyTheme() {
-            const savedTheme = localStorage.getItem(CONFIG.THEME_KEY) || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            console.log('🎨 Theme applied:', savedTheme);
-        }
-        
-        // ========== BLOCKCHAIN LOGGING ==========
-        function logBlockchainActivity(action, user) {
-            try {
-                let chain = JSON.parse(localStorage.getItem(CONFIG.BC_CHAIN_KEY) || '[]');
-                
-                if (chain.length === 0) {
-                    chain = [{
-                        index: 0,
-                        timestamp: new Date().toISOString(),
-                        data: 'Genesis Block v' + CONFIG.VERSION,
-                        prevHash: '0',
-                        hash: '0'
-                    }];
-                }
-                
-                const prevBlock = chain[chain.length - 1];
-                const blockData = JSON.stringify({
-                    action: action,
-                    username: user.username,
-                    role: user.role,
-                    timestamp: new Date().toISOString(),
-                    userAgent: navigator.userAgent.substring(0, 100)
-                });
-                
-                // Simple hash function
-                let hashValue = 0;
-                const hashInput = (prevBlock.index + 1) + blockData + prevBlock.hash;
-                for (let i = 0; i < hashInput.length; i++) {
-                    const char = hashInput.charCodeAt(i);
-                    hashValue = ((hashValue << 5) - hashValue) + char;
-                    hashValue |= 0;
-                }
-                
-                const newBlock = {
-                    index: prevBlock.index + 1,
-                    timestamp: new Date().toISOString(),
-                    data: blockData,
-                    prevHash: prevBlock.hash,
-                    hash: Math.abs(hashValue).toString(16)
-                };
-                
-                chain.push(newBlock);
-                
-                // Keep only last 50 blocks
-                if (chain.length > 50) {
-                    chain = chain.slice(-50);
-                }
-                
-                localStorage.setItem(CONFIG.BC_CHAIN_KEY, JSON.stringify(chain));
-                console.log('🔗 Blockchain log recorded - Block #' + newBlock.index);
-                
-            } catch (error) {
-                console.error('Blockchain log error:', error.message);
-            }
-        }
-        
-        function logFailedAttempt(username, reason) {
-            console.warn('❌ Login failed for:', username, 'Reason:', reason);
         }
         
         // ========== UI HELPERS ==========
         function showError(message) {
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = message;
-            errorMessage.classList.add('show');
-            
-            // Reset animation
-            errorMessage.style.animation = 'none';
-            errorMessage.offsetHeight; // Trigger reflow
-            errorMessage.style.animation = 'shake 0.4s ease';
+            const el = document.getElementById('errorMessage');
+            el.textContent = '❌ ' + message;
+            el.classList.add('show');
             
             // Auto hide after 5 seconds
             clearTimeout(window._errorTimeout);
-            window._errorTimeout = setTimeout(() => {
-                hideError();
-            }, 5000);
+            window._errorTimeout = setTimeout(hideError, 5000);
         }
         
         function hideError() {
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.classList.remove('show');
-            errorMessage.textContent = '';
+            const el = document.getElementById('errorMessage');
+            el.classList.remove('show');
             clearTimeout(window._errorTimeout);
         }
         
@@ -1148,101 +548,21 @@
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = 'toast ' + type;
-            
-            const icons = {
-                success: '✅',
-                error: '❌',
-                warning: '⚠️',
-                info: 'ℹ️'
-            };
-            
-            toast.textContent = (icons[type] || '') + ' ' + message;
-            toast.onclick = function() {
-                this.style.opacity = '0';
-                setTimeout(() => this.remove(), 300);
-            };
-            
+            toast.textContent = message;
             container.appendChild(toast);
             
-            // Auto remove after 4 seconds
             setTimeout(() => {
                 if (toast.parentNode) {
                     toast.style.opacity = '0';
-                    setTimeout(() => {
-                        if (toast.parentNode) toast.remove();
-                    }, 300);
+                    toast.style.transition = 'opacity 0.3s';
+                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
                 }
-            }, 4000);
+            }, 3500);
         }
         
-        function showLoading(message = 'Memproses...') {
-            document.getElementById('loadingText').textContent = message;
-            document.getElementById('loadingOverlay').classList.add('show');
-        }
-        
-        function hideLoading() {
-            document.getElementById('loadingOverlay').classList.remove('show');
-        }
-        
-        function updateLoadingText(message) {
-            document.getElementById('loadingText').textContent = message;
-        }
-        
-        // ========== EVENT LISTENERS ==========
-        function setupEventListeners() {
-            // Enter key on username field
-            document.getElementById('username').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    document.getElementById('password').focus();
-                }
-            });
-            
-            // Enter key on password field
-            document.getElementById('password').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleLogin();
-                }
-            });
-            
-            // Global keyboard shortcut
-            document.addEventListener('keydown', function(e) {
-                // Escape to clear error
-                if (e.key === 'Escape') {
-                    hideError();
-                }
-            });
-            
-            // Online/Offline detection
-            window.addEventListener('online', function() {
-                console.log('🌐 Online');
-                hideError();
-            });
-            
-            window.addEventListener('offline', function() {
-                console.log('📡 Offline');
-                showToast('📡 Koneksi terputus - Mode offline', 'warning');
-            });
-        }
-        
-        // ========== EXPORT FOR DEBUG ==========
-        if (typeof window !== 'undefined') {
-            window.loginModule = {
-                CONFIG,
-                handleLogin,
-                handleBiometricLogin,
-                handleForgotPassword,
-                togglePassword,
-                clearSession,
-                version: CONFIG.VERSION,
-            };
-        }
-        
-        console.log('✅ Login.html v' + CONFIG.VERSION + ' - STANDALONE - READY');
-        console.log('📋 No external dependencies required');
-        console.log('🔗 Dashboard URL:', CONFIG.DASHBOARD_URL);
-        console.log('💾 Token key:', CONFIG.TOKEN_KEY);
+        console.log('✅ Login.html v30.1.0 - STANDALONE - READY');
+        console.log('🔗 API:', API_URL);
+        console.log('📋 Redirect:', DASHBOARD_URL);
     </script>
 </body>
 </html>
