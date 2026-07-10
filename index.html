@@ -8,105 +8,79 @@
     <title>Dashboard - Arsip Surat Digital Enterprise v30.1.0</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📄%3C/text%3E%3C/svg%3E">
     <link rel="manifest" href="/manifest.json">
-    
     <style>
-        :root {
-            --primary:#1976D2;--primary-dark:#1565C0;--bg:#F5F5F5;--surface:#FFFFFF;
-            --text:#212121;--text-secondary:#757575;--border:#E0E0E0;
-            --shadow:0 2px 8px rgba(0,0,0,0.1);--shadow-lg:0 4px 16px rgba(0,0,0,0.15);
-            --radius:12px;--radius-sm:8px;--sidebar-width:260px;--header-height:60px;
-            --success:#4CAF50;--warning:#FF9800;--error:#F44336;--info:#2196F3;
-            --font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-        }
-        [data-theme="dark"]{--bg:#121212;--surface:#1E1E1E;--text:#FFFFFF;--text-secondary:#B0B0B0;--border:#333333;}
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:var(--font-family);background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
-
-        .sidebar{width:var(--sidebar-width);background:var(--surface);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;box-shadow:var(--shadow);}
-        .sidebar-header{padding:20px;border-bottom:1px solid var(--border);text-align:center;}
-        .sidebar-logo{font-size:40px;display:block;margin-bottom:8px;}
-        .sidebar-title{font-size:13px;font-weight:700;color:var(--primary);}
-        .sidebar-subtitle{font-size:10px;color:var(--text-secondary);}
-        .sidebar-nav{flex:1;overflow-y:auto;padding:12px;}
-        .nav-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s;color:var(--text);text-decoration:none;font-size:14px;font-weight:500;margin-bottom:3px;}
-        .nav-item:hover{background:rgba(25,118,210,0.08);color:var(--primary);}
-        .nav-item.active{background:var(--primary);color:white;}
-        .nav-item .icon{font-size:18px;width:22px;text-align:center;}
-        .sidebar-footer{padding:14px;border-top:1px solid var(--border);}
-        .user-info{display:flex;align-items:center;gap:10px;}
-        .user-avatar{width:36px;height:36px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;}
-        .user-name{font-size:13px;font-weight:600;}.user-role{font-size:11px;color:var(--text-secondary);}
-
-        .main-content{flex:1;margin-left:var(--sidebar-width);}
-        .header{background:var(--surface);height:var(--header-height);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:50;}
-        .header-left{display:flex;align-items:center;gap:12px;}
-        .menu-toggle{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text);}
-        .breadcrumb{font-size:16px;font-weight:600;}
-        .header-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
-        .header-btn{background:none;border:1px solid var(--border);padding:7px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:16px;}
-
-        .page-content{padding:20px;}
-        .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
-        .page-title{font-size:22px;font-weight:700;}
-        .page-subtitle{font-size:13px;color:var(--text-secondary);}
-
-        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px;}
-        .stat-card{background:var(--surface);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;}
-        .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
-        .stat-icon{width:50px;height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;}
-        .stat-icon.blue{background:rgba(25,118,210,0.1);color:#1976D2;}.stat-icon.green{background:rgba(76,175,80,0.1);color:#4CAF50;}
-        .stat-icon.orange{background:rgba(255,152,0,0.1);color:#FF9800;}.stat-icon.red{background:rgba(244,67,54,0.1);color:#F44336;}
-        .stat-info h3{font-size:24px;font-weight:700;}.stat-info p{font-size:12px;color:var(--text-secondary);}
-
-        .card{background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:16px;}
-        .card-title{font-size:16px;font-weight:600;margin-bottom:12px;}
-        .table-container{overflow-x:auto;}
-        table{width:100%;border-collapse:collapse;}
-        th{background:var(--bg);padding:12px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-secondary);border-bottom:2px solid var(--border);}
-        td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border);}
-        tr:hover td{background:rgba(25,118,210,0.02);}
-
-        .btn{padding:8px 16px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.2s;font-family:var(--font-family);}
-        .btn-primary{background:#1976D2;color:white;}.btn-primary:hover{background:#1565C0;}
-        .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
-        .btn-sm{padding:5px 10px;font-size:11px;}
-
-        .badge{display:inline-flex;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;text-transform:uppercase;}
-        .badge-success{background:rgba(76,175,80,0.1);color:#4CAF50;}.badge-warning{background:rgba(255,152,0,0.1);color:#FF9800;}
-        .badge-error{background:rgba(244,67,54,0.1);color:#F44336;}.badge-info{background:rgba(33,150,243,0.1);color:#2196F3;}
-
-        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:flex;align-items:center;justify-content:center;}
-        .modal{background:var(--surface);border-radius:var(--radius);padding:24px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;}
-        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
-        .modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-secondary);}
-
-        .toast-container{position:fixed;top:16px;right:16px;z-index:300;}
-        .toast{padding:10px 18px;border-radius:6px;color:white;font-size:13px;margin-bottom:8px;animation:slideIn 0.3s;}
+        :root{--primary:#1976D2;--bg:#F5F5F5;--surface:#FFFFFF;--text:#212121;--text-secondary:#757575;--border:#E0E0E0;--shadow:0 2px 8px rgba(0,0,0,.1);--radius:12px;--sidebar-width:260px;--header-height:60px;--success:#4CAF50;--warning:#FF9800;--error:#F44336;--info:#2196F3;--font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
+        [data-theme="dark"]{--bg:#121212;--surface:#1E1E1E;--text:#FFF;--text-secondary:#B0B0B0;--border:#333}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:var(--font-family);background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+        .sidebar{width:var(--sidebar-width);background:var(--surface);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+        .sidebar-header{padding:20px;border-bottom:1px solid var(--border);text-align:center}
+        .sidebar-logo{font-size:40px;display:block;margin-bottom:8px}
+        .sidebar-title{font-size:13px;font-weight:700;color:var(--primary)}
+        .sidebar-nav{flex:1;overflow-y:auto;padding:12px}
+        .nav-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:8px;cursor:pointer;transition:all .2s;color:var(--text);text-decoration:none;font-size:14px;font-weight:500;margin-bottom:3px}
+        .nav-item:hover{background:rgba(25,118,210,.08);color:var(--primary)}
+        .nav-item.active{background:var(--primary);color:white}
+        .nav-item .icon{font-size:18px;width:22px;text-align:center}
+        .sidebar-footer{padding:14px;border-top:1px solid var(--border)}
+        .user-info{display:flex;align-items:center;gap:10px}
+        .user-avatar{width:36px;height:36px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+        .user-name{font-size:13px;font-weight:600}.user-role{font-size:11px;color:var(--text-secondary)}
+        .main-content{flex:1;margin-left:var(--sidebar-width)}
+        .header{background:var(--surface);height:var(--header-height);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:50}
+        .header-left{display:flex;align-items:center;gap:12px}
+        .menu-toggle{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text)}
+        .breadcrumb{font-size:16px;font-weight:600}
+        .header-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+        .header-btn{background:none;border:1px solid var(--border);padding:7px 10px;border-radius:8px;cursor:pointer;font-size:16px}
+        .page-content{padding:20px}
+        .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+        .page-title{font-size:22px;font-weight:700}
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px}
+        .stat-card{background:var(--surface);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s}
+        .stat-card:hover{transform:translateY(-2px)}
+        .stat-icon{width:50px;height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px}
+        .stat-icon.blue{background:rgba(25,118,210,.1);color:#1976D2}.stat-icon.green{background:rgba(76,175,80,.1);color:#4CAF50}
+        .stat-icon.orange{background:rgba(255,152,0,.1);color:#FF9800}.stat-icon.red{background:rgba(244,67,54,.1);color:#F44336}
+        .stat-info h3{font-size:24px;font-weight:700}.stat-info p{font-size:12px;color:var(--text-secondary)}
+        .card{background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:16px}
+        .card-title{font-size:16px;font-weight:600;margin-bottom:12px}
+        .table-container{overflow-x:auto}
+        table{width:100%;border-collapse:collapse}
+        th{background:var(--bg);padding:12px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-secondary);border-bottom:2px solid var(--border)}
+        td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border)}
+        tr:hover td{background:rgba(25,118,210,.02)}
+        .btn{padding:8px 16px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s;font-family:var(--font-family)}
+        .btn-primary{background:#1976D2;color:white}.btn-primary:hover{background:#1565C0}
+        .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+        .btn-sm{padding:5px 10px;font-size:11px}
+        .badge{display:inline-flex;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;text-transform:uppercase}
+        .badge-success{background:rgba(76,175,80,.1);color:#4CAF50}.badge-warning{background:rgba(255,152,0,.1);color:#FF9800}
+        .badge-error{background:rgba(244,67,54,.1);color:#F44336}.badge-info{background:rgba(33,150,243,.1);color:#2196F3}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center}
+        .modal{background:var(--surface);border-radius:var(--radius);padding:24px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+        .modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-secondary)}
+        .toast-container{position:fixed;top:16px;right:16px;z-index:300}
+        .toast{padding:10px 18px;border-radius:6px;color:white;font-size:13px;margin-bottom:8px;animation:slideIn .3s}
         @keyframes slideIn{from{opacity:0;transform:translateX(80px)}to{opacity:1;transform:translateX(0)}}
-
-        .pagination{display:flex;justify-content:center;gap:6px;margin-top:16px;}
-        .pagination button{padding:6px 12px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:4px;cursor:pointer;font-size:13px;}
-        .pagination button.active{background:#1976D2;color:white;border-color:#1976D2;}
-        .pagination button:disabled{opacity:0.4;cursor:not-allowed;}
-
-        .empty-state{text-align:center;padding:40px;}
-        .empty-state .icon{font-size:48px;margin-bottom:12px;opacity:0.5;}
-        .empty-state h3{font-size:16px;margin-bottom:6px;}
-
-        .loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:250;display:none;align-items:center;justify-content:center;}
-        .loading-overlay.show{display:flex;}
-        .loading-box{background:var(--surface);padding:28px;border-radius:var(--radius);text-align:center;}
-        .spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:#1976D2;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 10px;}
+        .pagination{display:flex;justify-content:center;gap:6px;margin-top:16px}
+        .pagination button{padding:6px 12px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:4px;cursor:pointer;font-size:13px}
+        .pagination button.active{background:#1976D2;color:white;border-color:#1976D2}
+        .pagination button:disabled{opacity:.4;cursor:not-allowed}
+        .empty-state{text-align:center;padding:40px}.empty-state .icon{font-size:48px;margin-bottom:12px;opacity:.5}
+        .loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:250;display:none;align-items:center;justify-content:center}
+        .loading-overlay.show{display:flex}
+        .loading-box{background:var(--surface);padding:28px;border-radius:var(--radius);text-align:center}
+        .spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:#1976D2;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
         @keyframes spin{to{transform:rotate(360deg)}}
-
         @media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-content{margin-left:0}.menu-toggle{display:block}.stats-grid{grid-template-columns:1fr 1fr}}
         @media(max-width:480px){.stats-grid{grid-template-columns:1fr}.page-content{padding:12px}}
-        @media print{.sidebar,.header,.btn{display:none!important}.main-content{margin-left:0}}
     </style>
 </head>
 <body>
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header"><span class="sidebar-logo">📄</span><div class="sidebar-title">Arsip Surat Digital</div><div class="sidebar-subtitle">Enterprise v30.1.0</div></div>
+        <div class="sidebar-header"><span class="sidebar-logo">📄</span><div class="sidebar-title">Arsip Surat Digital</div></div>
         <nav class="sidebar-nav">
             <a class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')"><span class="icon">📊</span> Dashboard</a>
             <a class="nav-item" data-page="surat-masuk" onclick="navigateTo('surat-masuk')"><span class="icon">📨</span> Surat Masuk</a>
@@ -130,93 +104,41 @@
     <script>
         const API_URL='https://script.google.com/macros/s/AKfycbxhx4JXI_yX9MIEhYmSVAjxy-_9McM0-2WKzA2OvW4h8T9QT2nh5bJcio0KiWEyL4VRsQ/exec';
         let currentPage='dashboard';
-
-        (async function init(){
-            const token=localStorage.getItem('token');
-            if(!token){window.location.replace('/login.html');return;}
-            try{
-                const res=await apiCall('me');
-                if(res.status!=='success')throw new Error('Invalid');
-                const u=res.data;
-                document.getElementById('userName').textContent=u.namaLengkap||u.username;
-                document.getElementById('userRole').textContent=u.role||'User';
-                document.getElementById('userAvatar').textContent=(u.namaLengkap||'A').charAt(0).toUpperCase();
-            }catch(e){localStorage.clear();window.location.replace('/login.html');return;}
-            applyTheme();
-            const hash=window.location.hash.replace('#','')||'dashboard';
-            navigateTo(hash);
-        })();
-
-        async function apiCall(action,params={},method='GET'){
-            const url=new URL(API_URL);url.searchParams.set('action',action);
-            const token=localStorage.getItem('token');if(token)url.searchParams.set('token',token);
-            if(method==='GET'){Object.entries(params).forEach(([k,v])=>{if(v)url.searchParams.set(k,v);});}
-            const options={method};
-            if(method==='POST'){options.headers={'Content-Type':'application/json'};options.body=JSON.stringify(params);}
-            const r=await fetch(url.toString(),options);const d=await r.json();
-            if(d.code===401){localStorage.clear();window.location.replace('/login.html');}
-            return d;
-        }
-
-        function navigateTo(page){
-            currentPage=page;
-            document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.page===page));
-            document.getElementById('breadcrumb').textContent={'dashboard':'Dashboard','surat-masuk':'Surat Masuk','surat-keluar':'Surat Keluar','disposisi':'Disposisi','approval':'Approval','notifikasi':'Notifikasi','pengaturan':'Pengaturan'}[page]||page;
-            window.location.hash=page;loadPage(page);
-        }
-
-        async function loadPage(page){
-            const content=document.getElementById('pageContent');showLoading(true);
-            try{
-                switch(page){
-                    case'dashboard':
-                        content.innerHTML=`<div class="page-header"><div><h1 class="page-title">📊 Dashboard</h1><p class="page-subtitle">Ringkasan aktivitas</p></div></div><div class="stats-grid"><div class="stat-card" onclick="navigateTo('surat-masuk')"><div class="stat-icon blue">📨</div><div class="stat-info"><h3 id="st-sm">-</h3><p>Surat Masuk</p></div></div><div class="stat-card" onclick="navigateTo('surat-keluar')"><div class="stat-icon green">📤</div><div class="stat-info"><h3 id="st-sk">-</h3><p>Surat Keluar</p></div></div><div class="stat-card" onclick="navigateTo('disposisi')"><div class="stat-icon orange">📋</div><div class="stat-info"><h3 id="st-dp">-</h3><p>Disposisi Pending</p></div></div><div class="stat-card" onclick="navigateTo('approval')"><div class="stat-icon red">✅</div><div class="stat-info"><h3 id="st-ap">-</h3><p>Approval Pending</p></div></div></div><div class="card"><div class="card-title">📋 Aktivitas Terbaru</div><div class="table-container"><table><thead><tr><th>Waktu</th><th>User</th><th>Aksi</th><th>Deskripsi</th></tr></thead><tbody id="recentLog"><tr><td colspan="4" style="text-align:center;">Memuat...</td></tr></tbody></table></div></div>`;
-                        const stats=await apiCall('dashboard.stats');
-                        if(stats.status==='success'){document.getElementById('st-sm').textContent=stats.data.suratMasuk?.total||0;document.getElementById('st-sk').textContent=stats.data.suratKeluar?.total||0;document.getElementById('st-dp').textContent=stats.data.disposisi?.pending||0;document.getElementById('st-ap').textContent=stats.data.suratKeluar?.pending||0;}
-                        const audit=await apiCall('auditLog.list',{limit:10});
-                        const tbody=document.getElementById('recentLog');
-                        if(audit.status==='success'&&audit.data?.items?.length){tbody.innerHTML=audit.data.items.map(r=>`<tr><td>${new Date(r.createdAt).toLocaleString('id-ID')}</td><td>${r.userNama||'-'}</td><td><span class="badge badge-info">${r.aksi}</span></td><td>${r.deskripsi||'-'}</td></tr>`).join('');}
-                        else{tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:30px;">Belum ada aktivitas</td></tr>';}
-                        break;
-                    case'surat-masuk':content.innerHTML=`<div class="page-header"><div><h1 class="page-title">📨 Surat Masuk</h1></div><button class="btn btn-primary" onclick="showSMForm()">+ Tambah</button></div><div class="table-container"><table><thead><tr><th>No. Agenda</th><th>Pengirim</th><th>Perihal</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="smTable"></tbody></table></div><div class="pagination" id="smPage"></div>`;await loadSMData(1);break;
-                    case'surat-keluar':content.innerHTML=`<div class="page-header"><div><h1 class="page-title">📤 Surat Keluar</h1></div><button class="btn btn-primary" onclick="showSKForm()">+ Tambah</button></div><div class="table-container"><table><thead><tr><th>No. Surat</th><th>Tujuan</th><th>Perihal</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="skTable"></tbody></table></div><div class="pagination" id="skPage"></div>`;await loadSKData(1);break;
-                    case'disposisi':content.innerHTML=`<div class="page-header"><h1 class="page-title">📋 Disposisi</h1></div><div class="table-container"><table><thead><tr><th>Dari</th><th>Kepada</th><th>Instruksi</th><th>Status</th></tr></thead><tbody id="dispTable"></tbody></table></div>`;const disp=await apiCall('disposisi.list',{limit:20});const dt=document.getElementById('dispTable');if(disp.data?.items?.length){dt.innerHTML=disp.data.items.map(r=>`<tr><td>${r.dariNama||'-'}</td><td>${r.kepadaNama||'-'}</td><td>${r.instruksi||'-'}</td><td><span class="badge badge-${r.status==='selesai'?'success':'warning'}">${r.status}</span></td></tr>`).join('');}else{dt.innerHTML='<tr><td colspan="4"><div class="empty-state"><div class="icon">📋</div><h3>Tidak ada data</h3></div></td></tr>';}break;
-                    case'approval':content.innerHTML=`<div class="page-header"><h1 class="page-title">✅ Approval</h1></div><div class="table-container"><table><thead><tr><th>Surat ID</th><th>Approver</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="apprTable"></tbody></table></div>`;const appr=await apiCall('approval.list',{limit:20});const at=document.getElementById('apprTable');if(appr.data?.items?.length){at.innerHTML=appr.data.items.map(r=>`<tr><td>${r.suratKeluarId}</td><td>${r.approverNama||'-'}</td><td><span class="badge badge-${r.status==='approved'?'success':r.status==='rejected'?'error':'warning'}">${r.status}</span></td><td>${r.status==='pending'?`<button class="btn btn-sm btn-primary" onclick="processAppr('${r.id}','approved')">Setujui</button> <button class="btn btn-sm" style="background:#F44336;color:white;" onclick="processAppr('${r.id}','rejected')">Tolak</button>`:'-'}</td></tr>`).join('');}else{at.innerHTML='<tr><td colspan="4"><div class="empty-state"><div class="icon">✅</div><h3>Tidak ada data</h3></div></td></tr>';}break;
-                    case'notifikasi':content.innerHTML=`<div class="page-header"><h1 class="page-title">🔔 Notifikasi</h1><button class="btn btn-outline" onclick="readAllNotif()">✓ Tandai Semua</button></div><div id="notifList"></div>`;const notif=await apiCall('notifikasi.list',{limit:50});const nl=document.getElementById('notifList');if(notif.data?.items?.length){nl.innerHTML=notif.data.items.map(r=>`<div class="card" style="margin-bottom:6px;opacity:${r.isRead?'0.5':'1'};"><strong>${r.judul}</strong><p style="font-size:12px;color:var(--text-secondary);">${r.pesan}</p><small>${new Date(r.createdAt).toLocaleString('id-ID')}</small>${!r.isRead?` <button class="btn btn-sm btn-outline" onclick="readNotif('${r.id}')">✓</button>`:''}</div>`).join('');}else{nl.innerHTML='<div class="empty-state"><div class="icon">🔔</div><h3>Tidak ada notifikasi</h3></div>';}break;
-                    case'pengaturan':content.innerHTML=`<div class="page-header"><h1 class="page-title">⚙️ Pengaturan</h1></div><div class="card"><h3>Informasi Sistem</h3><div id="sysInfo">Memuat...</div></div><div class="card"><button class="btn" style="background:#F44336;color:white;" onclick="handleLogout()">🚪 Logout</button></div>`;const sys=await apiCall('system.status');if(sys.status==='success'){document.getElementById('sysInfo').innerHTML=`<p>Version: ${sys.data.version}</p><p>Timezone: ${sys.data.timezone}</p><p>Total Sheets: ${sys.data.totalSheets}</p>`;}break;
-                    default:content.innerHTML='<div class="empty-state"><div class="icon">🔍</div><h3>Halaman Tidak Ditemukan</h3></div>';
-                }
-            }catch(e){content.innerHTML='<div class="empty-state"><div class="icon">❌</div><h3>Gagal Memuat</h3><p>'+e.message+'</p></div>';}
-            showLoading(false);
-        }
-
-        async function loadSMData(page){const res=await apiCall('suratMasuk.list',{page,limit:20});const tbody=document.getElementById('smTable');if(res.data?.items?.length){tbody.innerHTML=res.data.items.map(r=>`<tr><td><strong>${r.nomorAgenda||'-'}</strong></td><td>${r.pengirim||'-'}</td><td>${r.perihal||'-'}</td><td><span class="badge badge-${r.status==='selesai'?'success':'info'}">${r.status}</span></td><td><button class="btn btn-sm btn-outline" onclick="viewSM('${r.id}')">👁️</button> <button class="btn btn-sm btn-outline" onclick="editSM('${r.id}')">✏️</button></td></tr>`).join('');renderPagination('smPage',res.data.pagination,loadSMData);}else{tbody.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div><h3>Tidak ada data</h3></div></td></tr>';}}
+        (async function init(){const t=localStorage.getItem('token');if(!t){window.location.replace('/login.html');return;}try{const r=await apiCall('me');if(r.status!=='success')throw new Error('Invalid');const u=r.data;document.getElementById('userName').textContent=u.namaLengkap||u.username;document.getElementById('userRole').textContent=u.role||'User';document.getElementById('userAvatar').textContent=(u.namaLengkap||'A').charAt(0).toUpperCase();}catch(e){localStorage.clear();window.location.replace('/login.html');return;}applyTheme();const h=window.location.hash.replace('#','')||'dashboard';navigateTo(h);})();
+        async function apiCall(a,p={},m='GET'){const u=new URL(API_URL);u.searchParams.set('action',a);const t=localStorage.getItem('token');if(t)u.searchParams.set('token',t);if(m==='GET')Object.entries(p).forEach(([k,v])=>{if(v)u.searchParams.set(k,v);});const o={method:m};if(m==='POST'){o.headers={'Content-Type':'application/json'};o.body=JSON.stringify(p);}const r=await fetch(u.toString(),o);const d=await r.json();if(d.code===401){localStorage.clear();window.location.replace('/login.html');}return d;}
+        function navigateTo(p){currentPage=p;document.querySelectorAll('.nav-item').forEach(e=>e.classList.toggle('active',e.dataset.page===p));document.getElementById('breadcrumb').textContent={'dashboard':'Dashboard','surat-masuk':'Surat Masuk','surat-keluar':'Surat Keluar','disposisi':'Disposisi','approval':'Approval','notifikasi':'Notifikasi','pengaturan':'Pengaturan'}[p]||p;window.location.hash=p;loadPage(p);}
+        async function loadPage(p){const c=document.getElementById('pageContent');showLoading(true);try{switch(p){case'dashboard':c.innerHTML=`<div class="page-header"><div><h1 class="page-title">📊 Dashboard</h1></div></div><div class="stats-grid"><div class="stat-card" onclick="navigateTo('surat-masuk')"><div class="stat-icon blue">📨</div><div class="stat-info"><h3 id="st-sm">-</h3><p>Surat Masuk</p></div></div><div class="stat-card" onclick="navigateTo('surat-keluar')"><div class="stat-icon green">📤</div><div class="stat-info"><h3 id="st-sk">-</h3><p>Surat Keluar</p></div></div><div class="stat-card" onclick="navigateTo('disposisi')"><div class="stat-icon orange">📋</div><div class="stat-info"><h3 id="st-dp">-</h3><p>Disposisi Pending</p></div></div><div class="stat-card" onclick="navigateTo('approval')"><div class="stat-icon red">✅</div><div class="stat-info"><h3 id="st-ap">-</h3><p>Approval Pending</p></div></div></div><div class="card"><div class="card-title">📋 Aktivitas Terbaru</div><div class="table-container"><table><thead><tr><th>Waktu</th><th>User</th><th>Aksi</th><th>Deskripsi</th></tr></thead><tbody id="recentLog"><tr><td colspan="4" style="text-align:center;">Memuat...</td></tr></tbody></table></div></div>`;const s=await apiCall('dashboard.stats');if(s.status==='success'){document.getElementById('st-sm').textContent=s.data.suratMasuk?.total||0;document.getElementById('st-sk').textContent=s.data.suratKeluar?.total||0;document.getElementById('st-dp').textContent=s.data.disposisi?.pending||0;document.getElementById('st-ap').textContent=s.data.suratKeluar?.pending||0;}const a=await apiCall('auditLog.list',{limit:10});const tb=document.getElementById('recentLog');if(a.status==='success'&&a.data?.items?.length)tb.innerHTML=a.data.items.map(r=>`<tr><td>${new Date(r.createdAt).toLocaleString('id-ID')}</td><td>${r.userNama||'-'}</td><td><span class="badge badge-info">${r.aksi}</span></td><td>${r.deskripsi||'-'}</td></tr>`).join('');else tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:30px;">Belum ada aktivitas</td></tr>';break;
+            case'surat-masuk':c.innerHTML=`<div class="page-header"><div><h1 class="page-title">📨 Surat Masuk</h1></div><button class="btn btn-primary" onclick="showSMForm()">+ Tambah</button></div><div class="table-container"><table><thead><tr><th>No. Agenda</th><th>Pengirim</th><th>Perihal</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="smTable"></tbody></table></div><div class="pagination" id="smPage"></div>`;await loadSM(1);break;
+            case'surat-keluar':c.innerHTML=`<div class="page-header"><div><h1 class="page-title">📤 Surat Keluar</h1></div><button class="btn btn-primary" onclick="showSKForm()">+ Tambah</button></div><div class="table-container"><table><thead><tr><th>No. Surat</th><th>Tujuan</th><th>Perihal</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="skTable"></tbody></table></div><div class="pagination" id="skPage"></div>`;await loadSK(1);break;
+            case'disposisi':c.innerHTML=`<div class="page-header"><h1 class="page-title">📋 Disposisi</h1></div><div class="table-container"><table><thead><tr><th>Dari</th><th>Kepada</th><th>Instruksi</th><th>Status</th></tr></thead><tbody id="dispTable"></tbody></table></div>`;const dp=await apiCall('disposisi.list',{limit:20});const dt=document.getElementById('dispTable');if(dp.data?.items?.length)dt.innerHTML=dp.data.items.map(r=>`<tr><td>${r.dariNama||'-'}</td><td>${r.kepadaNama||'-'}</td><td>${r.instruksi||'-'}</td><td><span class="badge badge-${r.status==='selesai'?'success':'warning'}">${r.status}</span></td></tr>`).join('');else dt.innerHTML='<tr><td colspan="4"><div class="empty-state"><div class="icon">📋</div><h3>Tidak ada data</h3></div></td></tr>';break;
+            case'approval':c.innerHTML=`<div class="page-header"><h1 class="page-title">✅ Approval</h1></div><div class="table-container"><table><thead><tr><th>Surat ID</th><th>Approver</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="apprTable"></tbody></table></div>`;const ap=await apiCall('approval.list',{limit:20});const at=document.getElementById('apprTable');if(ap.data?.items?.length)at.innerHTML=ap.data.items.map(r=>`<tr><td>${r.suratKeluarId}</td><td>${r.approverNama||'-'}</td><td><span class="badge badge-${r.status==='approved'?'success':r.status==='rejected'?'error':'warning'}">${r.status}</span></td><td>${r.status==='pending'?`<button class="btn btn-sm btn-primary" onclick="processAppr('${r.id}','approved')">Setujui</button> <button class="btn btn-sm" style="background:#F44336;color:white;" onclick="processAppr('${r.id}','rejected')">Tolak</button>`:'-'}</td></tr>`).join('');else at.innerHTML='<tr><td colspan="4"><div class="empty-state"><div class="icon">✅</div><h3>Tidak ada data</h3></div></td></tr>';break;
+            case'notifikasi':c.innerHTML=`<div class="page-header"><h1 class="page-title">🔔 Notifikasi</h1><button class="btn btn-outline" onclick="readAllNotif()">✓ Tandai Semua</button></div><div id="notifList"></div>`;const nf=await apiCall('notifikasi.list',{limit:50});const nl=document.getElementById('notifList');if(nf.data?.items?.length)nl.innerHTML=nf.data.items.map(r=>`<div class="card" style="margin-bottom:6px;opacity:${r.isRead?'0.5':'1'};"><strong>${r.judul}</strong><p style="font-size:12px;color:var(--text-secondary);">${r.pesan}</p><small>${new Date(r.createdAt).toLocaleString('id-ID')}</small>${!r.isRead?` <button class="btn btn-sm btn-outline" onclick="readNotif('${r.id}')">✓</button>`:''}</div>`).join('');else nl.innerHTML='<div class="empty-state"><div class="icon">🔔</div><h3>Tidak ada notifikasi</h3></div>';break;
+            case'pengaturan':c.innerHTML=`<div class="page-header"><h1 class="page-title">⚙️ Pengaturan</h1></div><div class="card"><h3>Informasi Sistem</h3><div id="sysInfo">Memuat...</div></div><div class="card"><button class="btn" style="background:#F44336;color:white;" onclick="handleLogout()">🚪 Logout</button></div>`;const sy=await apiCall('system.status');if(sy.status==='success')document.getElementById('sysInfo').innerHTML=`<p>Version: ${sy.data.version}</p><p>Timezone: ${sy.data.timezone}</p><p>Total Sheets: ${sy.data.totalSheets}</p>`;break;
+            default:c.innerHTML='<div class="empty-state"><div class="icon">🔍</div><h3>Halaman Tidak Ditemukan</h3></div>';}}catch(e){c.innerHTML='<div class="empty-state"><div class="icon">❌</div><h3>Gagal Memuat</h3><p>'+e.message+'</p></div>';}showLoading(false);}
+        async function loadSM(pg){const r=await apiCall('suratMasuk.list',{page:pg,limit:20});const tb=document.getElementById('smTable');if(r.data?.items?.length){tb.innerHTML=r.data.items.map(r=>`<tr><td><strong>${r.nomorAgenda||'-'}</strong></td><td>${r.pengirim||'-'}</td><td>${r.perihal||'-'}</td><td><span class="badge badge-${r.status==='selesai'?'success':'info'}">${r.status}</span></td><td><button class="btn btn-sm btn-outline" onclick="viewSM('${r.id}')">👁️</button> <button class="btn btn-sm btn-outline" onclick="editSM('${r.id}')">✏️</button></td></tr>`).join('');renderPg('smPage',r.data.pagination,loadSM);}else tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div><h3>Tidak ada data</h3></div></td></tr>';}
         function showSMForm(){showModal('Tambah Surat Masuk',`<form onsubmit="saveSM(event)" style="display:flex;flex-direction:column;gap:10px;"><input name="nomorSurat" placeholder="Nomor Surat" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="pengirim" placeholder="Pengirim" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="perihal" placeholder="Perihal" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input type="date" name="tanggalSurat" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input type="date" name="tanggalTerima" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><textarea name="catatan" placeholder="Catatan" rows="2" style="padding:8px;border:1px solid var(--border);border-radius:4px;"></textarea><button type="submit" class="btn btn-primary">💾 Simpan</button></form>`);}
-        async function saveSM(e){e.preventDefault();const data=Object.fromEntries(new FormData(e.target));const res=await apiCall('suratMasuk.create',data,'POST');if(res.status==='success'){closeModal();loadSMData(1);showToast('✅ Berhasil disimpan','success');}else showToast('❌ '+res.message,'error');}
-        async function viewSM(id){const res=await apiCall('suratMasuk.detail',{id});if(res.status==='success'){const d=res.data;showModal('Detail Surat Masuk',`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><div><strong>No. Agenda:</strong> ${d.nomorAgenda}</div><div><strong>No. Surat:</strong> ${d.nomorSurat||'-'}</div><div><strong>Pengirim:</strong> ${d.pengirim}</div><div><strong>Perihal:</strong> ${d.perihal}</div><div><strong>Status:</strong> ${d.status}</div><div><strong>Sifat:</strong> ${d.sifat}</div><div style="grid-column:1/-1;"><strong>Catatan:</strong> ${d.catatan||'-'}</div></div>`);}}
-        async function editSM(id){const res=await apiCall('suratMasuk.detail',{id});if(res.status==='success'){const d=res.data;showModal('Edit Surat Masuk',`<form onsubmit="updateSM(event,'${id}')" style="display:flex;flex-direction:column;gap:10px;"><input name="nomorSurat" value="${d.nomorSurat||''}" style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="pengirim" value="${d.pengirim||''}" style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="perihal" value="${d.perihal||''}" style="padding:8px;border:1px solid var(--border);border-radius:4px;"><select name="status" style="padding:8px;border:1px solid var(--border);border-radius:4px;"><option value="diterima" ${d.status==='diterima'?'selected':''}>Diterima</option><option value="diproses" ${d.status==='diproses'?'selected':''}>Diproses</option><option value="selesai" ${d.status==='selesai'?'selected':''}>Selesai</option></select><textarea name="catatan" rows="2" style="padding:8px;border:1px solid var(--border);border-radius:4px;">${d.catatan||''}</textarea><button type="submit" class="btn btn-primary">💾 Update</button></form>`);}}
-        async function updateSM(e,id){e.preventDefault();const data=Object.fromEntries(new FormData(e.target));const res=await apiCall('suratMasuk.update',{id,...data},'POST');if(res.status==='success'){closeModal();loadSMData(1);showToast('✅ Diupdate','success');}else showToast('❌ '+res.message,'error');}
-
-        async function loadSKData(page){const res=await apiCall('suratKeluar.list',{page,limit:20});const tbody=document.getElementById('skTable');if(res.data?.items?.length){tbody.innerHTML=res.data.items.map(r=>`<tr><td>${r.nomorSurat||'-'}</td><td>${r.tujuan||'-'}</td><td>${r.perihal||'-'}</td><td><span class="badge badge-info">${r.status||'draft'}</span></td><td><button class="btn btn-sm btn-outline" onclick="viewSK('${r.id}')">👁️</button></td></tr>`).join('');renderPagination('skPage',res.data.pagination,loadSKData);}else{tbody.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div><h3>Tidak ada data</h3></div></td></tr>';}}
+        async function saveSM(e){e.preventDefault();const d=Object.fromEntries(new FormData(e.target));const r=await apiCall('suratMasuk.create',d,'POST');if(r.status==='success'){closeModal();loadSM(1);showToast('✅ Berhasil','success');}else showToast('❌ '+r.message,'error');}
+        async function viewSM(id){const r=await apiCall('suratMasuk.detail',{id});if(r.status==='success'){const d=r.data;showModal('Detail Surat Masuk',`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><div><strong>No. Agenda:</strong> ${d.nomorAgenda}</div><div><strong>No. Surat:</strong> ${d.nomorSurat||'-'}</div><div><strong>Pengirim:</strong> ${d.pengirim}</div><div><strong>Perihal:</strong> ${d.perihal}</div><div><strong>Status:</strong> ${d.status}</div><div><strong>Sifat:</strong> ${d.sifat}</div><div style="grid-column:1/-1;"><strong>Catatan:</strong> ${d.catatan||'-'}</div></div>`);}}
+        async function editSM(id){const r=await apiCall('suratMasuk.detail',{id});if(r.status==='success'){const d=r.data;showModal('Edit Surat Masuk',`<form onsubmit="updateSM(event,'${id}')" style="display:flex;flex-direction:column;gap:10px;"><input name="nomorSurat" value="${d.nomorSurat||''}" style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="pengirim" value="${d.pengirim||''}" style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="perihal" value="${d.perihal||''}" style="padding:8px;border:1px solid var(--border);border-radius:4px;"><select name="status" style="padding:8px;border:1px solid var(--border);border-radius:4px;"><option value="diterima" ${d.status==='diterima'?'selected':''}>Diterima</option><option value="diproses" ${d.status==='diproses'?'selected':''}>Diproses</option><option value="selesai" ${d.status==='selesai'?'selected':''}>Selesai</option></select><textarea name="catatan" rows="2" style="padding:8px;border:1px solid var(--border);border-radius:4px;">${d.catatan||''}</textarea><button type="submit" class="btn btn-primary">💾 Update</button></form>`);}}
+        async function updateSM(e,id){e.preventDefault();const d=Object.fromEntries(new FormData(e.target));const r=await apiCall('suratMasuk.update',{id,...d},'POST');if(r.status==='success'){closeModal();loadSM(1);showToast('✅ Diupdate','success');}else showToast('❌ '+r.message,'error');}
+        async function loadSK(pg){const r=await apiCall('suratKeluar.list',{page:pg,limit:20});const tb=document.getElementById('skTable');if(r.data?.items?.length){tb.innerHTML=r.data.items.map(r=>`<tr><td>${r.nomorSurat||'-'}</td><td>${r.tujuan||'-'}</td><td>${r.perihal||'-'}</td><td><span class="badge badge-info">${r.status||'draft'}</span></td><td><button class="btn btn-sm btn-outline" onclick="viewSK('${r.id}')">👁️</button></td></tr>`).join('');renderPg('skPage',r.data.pagination,loadSK);}else tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div><h3>Tidak ada data</h3></div></td></tr>';}
         function showSKForm(){showModal('Tambah Surat Keluar',`<form onsubmit="saveSK(event)" style="display:flex;flex-direction:column;gap:10px;"><input name="nomorSurat" placeholder="Nomor Surat" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="tujuan" placeholder="Tujuan" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="perihal" placeholder="Perihal" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input type="date" name="tanggalSurat" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><textarea name="catatan" placeholder="Catatan" rows="2" style="padding:8px;border:1px solid var(--border);border-radius:4px;"></textarea><button type="submit" class="btn btn-primary">💾 Simpan</button></form>`);}
-        async function saveSK(e){e.preventDefault();const data=Object.fromEntries(new FormData(e.target));const res=await apiCall('suratKeluar.create',data,'POST');if(res.status==='success'){closeModal();loadSKData(1);showToast('✅ Berhasil','success');}else showToast('❌ '+res.message,'error');}
-        async function viewSK(id){const res=await apiCall('suratKeluar.detail',{id});if(res.status==='success'){const d=res.data;showModal('Detail Surat Keluar',`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><div><strong>No. Surat:</strong> ${d.nomorSurat||'-'}</div><div><strong>Tanggal:</strong> ${d.tanggalSurat?new Date(d.tanggalSurat).toLocaleDateString('id-ID'):'-'}</div><div><strong>Tujuan:</strong> ${d.tujuan||'-'}</div><div><strong>Perihal:</strong> ${d.perihal||'-'}</div><div><strong>Status:</strong> ${d.status||'-'}</div><div><strong>Approval:</strong> ${d.approvalStatus||'pending'}</div><div style="grid-column:1/-1;"><strong>Catatan:</strong> ${d.catatan||'-'}</div></div>`);}}
-
-        async function processAppr(id,status){const komentar=prompt('Komentar (opsional):');const res=await apiCall('approval.process',{id,status,komentar},'POST');if(res.status==='success'){navigateTo('approval');showToast('✅ Approval '+(status==='approved'?'disetujui':'ditolak'),'success');}else showToast('❌ '+res.message,'error');}
+        async function saveSK(e){e.preventDefault();const d=Object.fromEntries(new FormData(e.target));const r=await apiCall('suratKeluar.create',d,'POST');if(r.status==='success'){closeModal();loadSK(1);showToast('✅ Berhasil','success');}else showToast('❌ '+r.message,'error');}
+        async function viewSK(id){const r=await apiCall('suratKeluar.detail',{id});if(r.status==='success'){const d=r.data;showModal('Detail Surat Keluar',`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><div><strong>No. Surat:</strong> ${d.nomorSurat||'-'}</div><div><strong>Tanggal:</strong> ${d.tanggalSurat?new Date(d.tanggalSurat).toLocaleDateString('id-ID'):'-'}</div><div><strong>Tujuan:</strong> ${d.tujuan||'-'}</div><div><strong>Perihal:</strong> ${d.perihal||'-'}</div><div><strong>Status:</strong> ${d.status||'-'}</div><div><strong>Approval:</strong> ${d.approvalStatus||'pending'}</div><div style="grid-column:1/-1;"><strong>Catatan:</strong> ${d.catatan||'-'}</div></div>`);}}
+        async function processAppr(id,s){const k=prompt('Komentar:');const r=await apiCall('approval.process',{id,status:s,komentar:k},'POST');if(r.status==='success'){navigateTo('approval');showToast('✅ '+(s==='approved'?'Disetujui':'Ditolak'),'success');}else showToast('❌ '+r.message,'error');}
         async function readNotif(id){await apiCall('notifikasi.read',{id});navigateTo('notifikasi');}
-        async function readAllNotif(){await apiCall('notifikasi.readAll');navigateTo('notifikasi');showToast('✅ Semua ditandai dibaca','success');}
-
+        async function readAllNotif(){await apiCall('notifikasi.readAll');navigateTo('notifikasi');showToast('✅ Semua dibaca','success');}
         function showLoading(s){document.getElementById('loadingOverlay').classList.toggle('show',s);}
-        function showToast(m,t){const c=document.getElementById('toastContainer');const el=document.createElement('div');el.className='toast';el.style.background=t==='success'?'#4CAF50':t==='error'?'#F44336':'#2196F3';el.textContent=m;c.appendChild(el);setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.remove(),300);},3000);}
-        function renderPagination(id,pag,cb){const c=document.getElementById(id);if(!pag||pag.totalPages<=1){c.innerHTML='';return;}let h=`<button ${pag.hasPrev?'':'disabled'} onclick="void(0)">«</button>`;for(let i=1;i<=pag.totalPages;i++){if(i===1||i===pag.totalPages||(i>=pag.page-2&&i<=pag.page+2))h+=`<button class="${i===pag.page?'active':''}" onclick="void(0)">${i}</button>`;else if(i===pag.page-3||i===pag.page+3)h+='<button disabled>...</button>';}h+=`<button ${pag.hasNext?'':'disabled'} onclick="void(0)">»</button>`;c.innerHTML=h;c.querySelectorAll('button:not([disabled])').forEach((b)=>{if(b.textContent==='«')b.onclick=()=>cb(pag.page-1);else if(b.textContent==='»')b.onclick=()=>cb(pag.page+1);else b.onclick=()=>cb(parseInt(b.textContent));});}
-        function showModal(title,body){const el=document.createElement('div');el.className='modal-overlay';el.id='currentModal';el.innerHTML=`<div class="modal"><div class="modal-header"><h3>${title}</h3><button class="modal-close" onclick="closeModal()">✕</button></div>${body}</div>`;document.body.appendChild(el);}
+        function showToast(m,t){const c=document.getElementById('toastContainer');const e=document.createElement('div');e.className='toast';e.style.background=t==='success'?'#4CAF50':t==='error'?'#F44336':'#2196F3';e.textContent=m;c.appendChild(e);setTimeout(()=>{e.style.opacity='0';setTimeout(()=>e.remove(),300);},3000);}
+        function renderPg(id,p,cb){const el=document.getElementById(id);if(!p||p.totalPages<=1){el.innerHTML='';return;}let h=`<button ${p.hasPrev?'':'disabled'} onclick="void(0)">«</button>`;for(let i=1;i<=p.totalPages;i++){if(i===1||i===p.totalPages||(i>=p.page-2&&i<=p.page+2))h+=`<button class="${i===p.page?'active':''}" onclick="void(0)">${i}</button>`;else if(i===p.page-3||i===p.page+3)h+='<button disabled>...</button>';}h+=`<button ${p.hasNext?'':'disabled'} onclick="void(0)">»</button>`;el.innerHTML=h;el.querySelectorAll('button:not([disabled])').forEach(b=>{if(b.textContent==='«')b.onclick=()=>cb(p.page-1);else if(b.textContent==='»')b.onclick=()=>cb(p.page+1);else b.onclick=()=>cb(parseInt(b.textContent));});}
+        function showModal(t,b){const e=document.createElement('div');e.className='modal-overlay';e.id='currentModal';e.innerHTML=`<div class="modal"><div class="modal-header"><h3>${t}</h3><button class="modal-close" onclick="closeModal()">✕</button></div>${b}</div>`;document.body.appendChild(e);}
         function closeModal(){const m=document.getElementById('currentModal');if(m)m.remove();}
         function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
-        function toggleTheme(){const cur=document.documentElement.getAttribute('data-theme')||'light';const next=cur==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);localStorage.setItem('theme',next);}
+        function toggleTheme(){const c=document.documentElement.getAttribute('data-theme')||'light';const n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('theme',n);}
         function applyTheme(){document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light');}
         function handleLogout(){if(confirm('Yakin ingin logout?')){localStorage.clear();window.location.replace('/login.html');}}
         window.addEventListener('hashchange',()=>{const h=window.location.hash.replace('#','');if(h&&h!==currentPage)navigateTo(h);});
-        if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js?v=3.1.0').catch(()=>{});});}
+        if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js?v=30.1.0').catch(()=>{});});}
     </script>
 </body>
 </html>
