@@ -1,10 +1,10 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'  // 🔥 GANTI ke Hash History
 import { useAuthStore } from '@/stores/auth'
 
 const routes = [
   {
     path: '/',
-    redirect: '/dashboard'
+    redirect: '/login'  // 🔥 Redirect ke login, bukan dashboard
   },
   {
     path: '/login',
@@ -65,6 +65,12 @@ const routes = [
     name: 'SuratKeluarDetail',
     component: () => import('@/views/surat-keluar/SuratKeluarDetail.vue'),
     meta: { requiresAuth: true, title: 'Detail Surat Keluar' }
+  },
+  {
+    path: '/surat-keluar/:id/edit',
+    name: 'SuratKeluarEdit',
+    component: () => import('@/views/surat-keluar/SuratKeluarForm.vue'),
+    meta: { requiresAuth: true, title: 'Edit Surat Keluar' }
   },
   {
     path: '/disposisi',
@@ -158,7 +164,8 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  // 🔥 GANTI: Gunakan Hash History untuk GitHub Pages
+  history: createWebHashHistory('/arsip-surat-digital-enterprise/'),
   routes,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
@@ -177,6 +184,19 @@ router.beforeEach((to, from, next) => {
   document.title = to.meta.title 
     ? `${to.meta.title} - Arsip Surat Digital Enterprise` 
     : 'Arsip Surat Digital Enterprise'
+  
+  // 🔥 Cek redirect path dari 404.html
+  const redirectPath = sessionStorage.getItem('redirectPath')
+  if (redirectPath) {
+    sessionStorage.removeItem('redirectPath')
+    sessionStorage.removeItem('redirectSearch')
+    sessionStorage.removeItem('redirectHash')
+    
+    if (redirectPath !== '/' && redirectPath !== '') {
+      next(redirectPath)
+      return
+    }
+  }
   
   // Check if route requires auth
   if (to.matched.some(record => record.meta.requiresAuth)) {
