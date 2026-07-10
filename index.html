@@ -1,52 +1,36 @@
 <!DOCTYPE html>
-<html lang="id" dir="ltr">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  
   <title>Arsip Surat Digital Enterprise v3.1.0</title>
-  <meta name="description" content="Sistem Manajemen Arsip Surat Digital Enterprise - AI, Blockchain, Biometric, PWA">
-  
+  <meta name="description" content="Sistem Manajemen Arsip Surat Digital Enterprise">
   <meta name="theme-color" content="#1976D2">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   
-  <!-- Manifest -->
   <script>
     (function() {
       var currentUrl = window.location.href.split('#')[0];
       if (currentUrl.endsWith('/')) currentUrl = currentUrl.slice(0, -1);
-      
       var manifestData = {
         name: 'Arsip Surat Digital Enterprise',
         short_name: 'ArsipSurat',
-        description: 'Sistem Manajemen Arsip Surat Digital Enterprise v3.1.0',
         start_url: currentUrl,
         display: 'standalone',
         background_color: '#F5F5F5',
         theme_color: '#1976D2',
-        orientation: 'portrait-primary',
-        lang: 'id-ID',
         icons: [{
           src: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192"><rect width="192" height="192" rx="38" fill="#1976D2"/><rect x="48" y="58" width="96" height="12" rx="6" fill="white"/><rect x="48" y="80" width="96" height="12" rx="6" fill="white"/><rect x="48" y="102" width="68" height="12" rx="6" fill="white"/><path d="M125 114l28 28-28 28" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/></svg>'),
           sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable'
-        },{
-          src: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="102" fill="#1976D2"/><rect x="128" y="154" width="256" height="32" rx="16" fill="white"/><rect x="128" y="214" width="256" height="32" rx="16" fill="white"/><rect x="128" y="274" width="180" height="32" rx="16" fill="white"/><path d="M334 304l74 74-74 74" stroke="white" stroke-width="20" fill="none" stroke-linecap="round"/></svg>'),
-          sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable'
         }]
       };
-      
       var blob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
-      var manifestUrl = URL.createObjectURL(blob);
-      var link = document.createElement('link');
-      link.rel = 'manifest';
-      link.href = manifestUrl;
-      document.head.appendChild(link);
+      var link = document.createElement('link'); link.rel = 'manifest'; link.href = URL.createObjectURL(blob); document.head.appendChild(link);
     })();
   </script>
   
-  <!-- Icons -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231976D2'/%3E%3Crect x='8' y='10' width='16' height='2' rx='1' fill='white'/%3E%3Crect x='8' y='14' width='16' height='2' rx='1' fill='white'/%3E%3Crect x='8' y='18' width='11' height='2' rx='1' fill='white'/%3E%3Cpath d='M22 20l5 5-5 5' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%231976D2'/%3E%3Crect x='45' y='54' width='90' height='11' rx='5.5' fill='white'/%3E%3Crect x='45' y='75' width='90' height='11' rx='5.5' fill='white'/%3E%3Crect x='45' y='96' width='64' height='11' rx='5.5' fill='white'/%3E%3Cpath d='M117 107l26 26-26 26' stroke='white' stroke-width='7' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
   
@@ -55,135 +39,88 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <style>
-    :root {
-      --primary: #1976D2; --primary-dark: #0D47A1; --success: #4CAF50; --warning: #FF9800;
-      --danger: #F44336; --info: #2196F3; --bg: #F5F5F5; --white: #FFFFFF;
-      --text: #212121; --text-secondary: #757575; --border: #E0E0E0;
-      --radius: 12px; --shadow: 0 2px 15px rgba(0,0,0,0.08);
-    }
+    :root{--p:#1976D2;--pd:#0D47A1;--s:#4CAF50;--w:#FF9800;--d:#F44336;--i:#2196F3;--bg:#F5F5F5;--w2:#FFF;--t:#212121;--t2:#757575;--b:#E0E0E0;--r:12px}
     *{margin:0;padding:0;box-sizing:border-box}
-    body{
-      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-      font-size:16px;line-height:1.6;color:var(--text);background:var(--bg);
-      -webkit-font-smoothing:antialiased;min-height:100vh
-    }
+    body{font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.6;color:var(--t);background:var(--bg);-webkit-font-smoothing:antialiased;min-height:100vh}
     
-    .splash-screen{
-      position:fixed;top:0;left:0;right:0;bottom:0;
-      background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#1976D2 100%);
-      display:flex;align-items:center;justify-content:center;
-      z-index:99999;transition:opacity .5s,visibility .5s
-    }
+    .splash-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#667eea,#764ba2 50%,#1976D2);display:flex;align-items:center;justify-content:center;z-index:99999;transition:opacity .5s,visibility .5s}
     .splash-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
-    .splash-content{text-align:center;color:white;animation:fadeInUp .8s ease-out}
-    .splash-logo{font-size:80px;margin-bottom:16px;animation:float 3s ease-in-out infinite;display:block}
-    .splash-title{font-size:1.75rem;font-weight:800;margin-bottom:6px;letter-spacing:-.5px}
-    .splash-subtitle{font-size:.9375rem;opacity:.9;margin-bottom:6px;font-weight:400}
-    .splash-version{font-size:.75rem;opacity:.7;margin-bottom:28px;font-family:'Courier New',monospace}
+    .splash-content{text-align:center;color:#fff;animation:fadeInUp .8s}
+    .splash-logo{font-size:80px;margin-bottom:16px;animation:float 3s infinite;display:block}
+    .splash-title{font-size:1.75rem;font-weight:800;margin-bottom:6px}
+    .splash-subtitle{font-size:.9375rem;opacity:.9;margin-bottom:6px}
+    .splash-version{font-size:.75rem;opacity:.7;margin-bottom:28px;font-family:monospace}
     .splash-loader{width:180px;height:4px;background:rgba(255,255,255,.2);border-radius:4px;margin:0 auto;overflow:hidden}
-    .splash-loader-bar{height:100%;background:white;border-radius:4px;width:30%;animation:loading 1.8s ease-in-out infinite}
+    .splash-loader-bar{height:100%;background:#fff;border-radius:4px;width:30%;animation:loading 1.8s infinite}
     .splash-features{display:flex;gap:10px;justify-content:center;margin-top:28px;flex-wrap:wrap}
-    .splash-feature{background:rgba(255,255,255,.15);backdrop-filter:blur(10px);padding:6px 14px;border-radius:20px;font-size:.75rem;font-weight:500}
-    
+    .splash-feature{background:rgba(255,255,255,.15);padding:6px 14px;border-radius:20px;font-size:.75rem;font-weight:500}
     @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
     @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
     @keyframes loading{0%{transform:translateX(-100%)}100%{transform:translateX(380%)}}
     
-    .login-page{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#1976D2 100%)}
+    .login-page{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#667eea,#764ba2 50%,#1976D2)}
     .login-page.active{display:flex}
-    .login-card{background:white;border-radius:16px;padding:40px 36px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:fadeInUp .5s ease-out}
+    .login-card{background:#fff;border-radius:16px;padding:40px 36px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:fadeInUp .5s}
     .login-header{text-align:center;margin-bottom:32px}
     .login-logo{font-size:56px;margin-bottom:12px}
-    .login-title{font-size:1.5rem;font-weight:700;color:#1976D2;margin-bottom:4px}
-    .login-desc{font-size:.875rem;color:#757575}
-    
+    .login-title{font-size:1.5rem;font-weight:700;color:var(--p);margin-bottom:4px}
+    .login-desc{font-size:.875rem;color:var(--t2)}
     .form-group{margin-bottom:20px}
     .form-group label{display:block;margin-bottom:6px;font-weight:500;font-size:.875rem;color:#333}
-    .form-input{width:100%;padding:12px 16px;border:2px solid #E0E0E0;border-radius:8px;font-size:.9375rem;transition:all .2s;font-family:inherit}
-    .form-input:focus{outline:none;border-color:#1976D2;box-shadow:0 0 0 3px rgba(25,118,210,.1)}
-    
-    .btn{display:block;width:100%;padding:14px;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;text-align:center;text-decoration:none}
-    .btn-primary{background:#1976D2;color:white}
-    .btn-primary:hover{background:#1565C0;transform:translateY(-1px);box-shadow:0 4px 12px rgba(25,118,210,.3)}
-    .btn-outline{background:transparent;color:#1976D2;border:2px solid #1976D2;margin-top:12px}
-    .btn-outline:hover{background:#E3F2FD}
-    
+    .form-input{width:100%;padding:12px 16px;border:2px solid #E0E0E0;border-radius:8px;font-size:.9375rem;font-family:inherit}
+    .form-input:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 3px rgba(25,118,210,.1)}
+    .btn{display:block;width:100%;padding:14px;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit;text-align:center}
+    .btn-primary{background:var(--p);color:#fff}.btn-primary:hover{background:var(--pd)}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
     .alert{padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:.875rem;display:none}
     .alert-error{background:#FFEBEE;color:#C62828;border:1px solid #FFCDD2}
     .alert-success{background:#E8F5E9;color:#2E7D32;border:1px solid #C8E6C9}
-    .alert-info{background:#E3F2FD;color:#0D47A1;border:1px solid #BBDEFB}
     .alert.show{display:block}
-    
-    .divider{display:flex;align-items:center;margin:20px 0;color:#9E9E9E;font-size:.8125rem}
-    .divider::before,.divider::after{content:'';flex:1;height:1px;background:#E0E0E0}
-    .divider span{padding:0 16px}
     .login-footer{text-align:center;margin-top:24px;font-size:.75rem;color:#BDBDBD}
     
-    .dashboard-page{display:none;min-height:100vh;background:#F5F5F5}
+    .dashboard-page{display:none;min-height:100vh;background:var(--bg)}
     .dashboard-page.active{display:block}
-    .dashboard-header{background:white;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E0E0E0;box-shadow:0 1px 3px rgba(0,0,0,.05);flex-wrap:wrap;gap:12px}
-    .dashboard-brand{font-size:1.125rem;font-weight:700;color:#1976D2}
-    .dashboard-user{display:flex;align-items:center;gap:8px;font-size:.875rem;font-weight:500;flex-wrap:wrap}
-    .dashboard-avatar{width:36px;height:36px;background:#1976D2;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.75rem}
-    .dashboard-content{padding:24px;max-width:1200px;margin:0 auto}
+    .d-header{background:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E0E0E0;flex-wrap:wrap;gap:12px}
+    .d-brand{font-size:1.125rem;font-weight:700;color:var(--p)}
+    .d-user{display:flex;align-items:center;gap:8px;font-size:.875rem;font-weight:500;flex-wrap:wrap}
+    .d-avatar{width:36px;height:36px;background:var(--p);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.75rem}
+    .d-content{padding:24px;max-width:1200px;margin:0 auto}
     
-    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
-    .stat-card{background:white;padding:20px;border-radius:12px;border:1px solid #E0E0E0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+    .stat-card{background:#fff;padding:20px;border-radius:12px;border:1px solid #E0E0E0}
     .stat-icon{font-size:28px;margin-bottom:8px}
-    .stat-value{font-size:1.5rem;font-weight:700;color:#212121}
-    .stat-label{font-size:.8125rem;color:#757575;margin-top:2px}
+    .stat-value{font-size:1.5rem;font-weight:700}
+    .stat-label{font-size:.8125rem;color:var(--t2);margin-top:2px}
     
-    .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .card{background:white;border-radius:12px;border:1px solid #E0E0E0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .card{background:#fff;border-radius:12px;border:1px solid #E0E0E0}
     .card-header{padding:16px 20px;border-bottom:1px solid #E0E0E0;font-weight:600;font-size:.9375rem}
     .card-body{padding:20px}
-    
     .menu-list{list-style:none}
-    .menu-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;cursor:pointer;transition:background .2s;font-size:.875rem;border:none;background:none;width:100%;text-align:left;font-family:inherit}
+    .menu-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;cursor:pointer;font-size:.875rem;border:none;background:none;width:100%;text-align:left;font-family:inherit}
     .menu-item:hover{background:#F5F5F5}
     
     .badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:500}
-    .badge-success{background:#E8F5E9;color:#2E7D32}
-    .badge-warning{background:#FFF3E0;color:#E65100}
-    .badge-info{background:#E3F2FD;color:#0D47A1}
-    .badge-danger{background:#FFEBEE;color:#C62828}
-    .badge-primary{background:#E3F2FD;color:#0D47A1}
+    .badge-success{background:#E8F5E9;color:#2E7D32}.badge-warning{background:#FFF3E0;color:#E65100}.badge-info{background:#E3F2FD;color:#0D47A1}.badge-danger{background:#FFEBEE;color:#C62828}.badge-primary{background:#E3F2FD;color:#0D47A1}
     
-    .btn-logout{background:#F44336;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:.8125rem;font-weight:500;font-family:inherit;white-space:nowrap}
+    .btn-logout{background:#F44336;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:.8125rem;font-weight:500;font-family:inherit}
     .btn-logout:hover{background:#D32F2F}
     
-    .connection-status{font-size:.75rem;padding:4px 10px;border-radius:20px;font-weight:500;white-space:nowrap}
-    .connection-status.connected{background:#E8F5E9;color:#2E7D32}
-    .connection-status.disconnected{background:#FFEBEE;color:#C62828}
-    .connection-status.connecting{background:#FFF3E0;color:#E65100}
+    .conn-status{font-size:.75rem;padding:4px 10px;border-radius:20px;font-weight:500}
+    .conn-connected{background:#E8F5E9;color:#2E7D32}.conn-disconnected{background:#FFEBEE;color:#C62828}.conn-connecting{background:#FFF3E0;color:#E65100}
     
     .data-table{width:100%;border-collapse:collapse}
     .data-table th,.data-table td{padding:10px 14px;text-align:left;border-bottom:1px solid #E0E0E0;font-size:.8125rem}
     .data-table th{background:#FAFAFA;font-weight:600;font-size:.7rem;text-transform:uppercase;color:#757575}
     .data-table tbody tr:hover{background:#F5F5F5}
     
-    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
-    .modal-content{background:white;border-radius:16px;padding:24px;max-width:500px;width:100%;max-height:80vh;overflow-y:auto}
-    
-    @media(max-width:768px){
-      .login-card{padding:28px 20px}
-      .dashboard-grid{grid-template-columns:1fr}
-      .dashboard-content{padding:16px}
-      .stats-grid{grid-template-columns:repeat(2,1fr)}
-    }
-    @media(max-width:480px){
-      .splash-title{font-size:1.25rem}
-      .splash-logo{font-size:60px}
-      .stats-grid{grid-template-columns:1fr}
-    }
+    @media(max-width:768px){.login-card{padding:28px 20px}.grid{grid-template-columns:1fr}.d-content{padding:16px}.stats{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:480px){.splash-title{font-size:1.25rem}.splash-logo{font-size:60px}.stats{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
 
-<!-- ============================================ -->
-<!-- SPLASH SCREEN                                -->
-<!-- ============================================ -->
-<div id="splash-screen" class="splash-screen">
+<div id="splash" class="splash-screen">
   <div class="splash-content">
     <span class="splash-logo">📁</span>
     <h1 class="splash-title">Arsip Surat Digital</h1>
@@ -200,9 +137,6 @@
   </div>
 </div>
 
-<!-- ============================================ -->
-<!-- LOGIN PAGE                                   -->
-<!-- ============================================ -->
 <div id="login-page" class="login-page active">
   <div class="login-card">
     <div class="login-header">
@@ -210,622 +144,239 @@
       <h1 class="login-title">Arsip Surat Digital</h1>
       <p class="login-desc">Enterprise v3.1.0</p>
     </div>
-    
     <div id="login-alert" class="alert"></div>
-    
-    <form id="login-form" onsubmit="return handleLogin(event)">
+    <form onsubmit="return doLogin(event)">
       <div class="form-group">
-        <label for="username">👤 Username</label>
-        <input type="text" id="username" class="form-input" placeholder="Masukkan username" required autocomplete="username">
+        <label>👤 Username</label>
+        <input type="text" id="username" class="form-input" placeholder="Username" required autocomplete="username">
       </div>
       <div class="form-group">
-        <label for="password">🔒 Password</label>
-        <input type="password" id="password" class="form-input" placeholder="Masukkan password" required autocomplete="current-password">
+        <label>🔒 Password</label>
+        <input type="password" id="password" class="form-input" placeholder="Password" required autocomplete="current-password">
       </div>
       <button type="submit" class="btn btn-primary" id="login-btn">🔐 Masuk</button>
     </form>
-    
-    <div class="login-footer">
-      <p>© 2026 Arsip Surat Digital Enterprise</p>
-      <p>v3.1.0</p>
-    </div>
+    <div class="login-footer"><p>© 2026 Arsip Surat Digital Enterprise</p><p>v3.1.0</p></div>
   </div>
 </div>
 
-<!-- ============================================ -->
-<!-- DASHBOARD PAGE                               -->
-<!-- ============================================ -->
 <div id="dashboard-page" class="dashboard-page">
-  <header class="dashboard-header">
-    <div class="dashboard-brand">📁 Arsip Surat Digital Enterprise</div>
-    <div class="dashboard-user">
-      <span id="connection-badge" class="connection-status connecting">⏳ Connecting...</span>
-      <div class="dashboard-avatar" id="user-avatar">U</div>
+  <header class="d-header">
+    <div class="d-brand">📁 Arsip Surat Digital Enterprise</div>
+    <div class="d-user">
+      <span id="conn-badge" class="conn-status conn-connecting">⏳ Connecting...</span>
+      <div class="d-avatar" id="user-avatar">U</div>
       <span id="user-name">User</span>
-      <button class="btn-logout" onclick="handleLogout()">🚪 Keluar</button>
+      <button class="btn-logout" onclick="doLogout()">🚪 Keluar</button>
     </div>
   </header>
-  
-  <div class="dashboard-content">
+  <div class="d-content">
     <h2 style="margin-bottom:20px;">📊 Dashboard</h2>
-    
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-icon">📥</div><div class="stat-value" id="stat-masuk">...</div><div class="stat-label">Total Surat Masuk</div></div>
-      <div class="stat-card"><div class="stat-icon">📤</div><div class="stat-value" id="stat-keluar">...</div><div class="stat-label">Total Surat Keluar</div></div>
-      <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-value" id="stat-disposisi">...</div><div class="stat-label">Disposisi</div></div>
-      <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-value" id="stat-approval">...</div><div class="stat-label">Approval Pending</div></div>
+    <div class="stats">
+      <div class="stat-card"><div class="stat-icon">📥</div><div class="stat-value" id="s-masuk">...</div><div class="stat-label">Total Surat Masuk</div></div>
+      <div class="stat-card"><div class="stat-icon">📤</div><div class="stat-value" id="s-keluar">...</div><div class="stat-label">Total Surat Keluar</div></div>
+      <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-value" id="s-disp">...</div><div class="stat-label">Disposisi</div></div>
+      <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-value" id="s-appr">...</div><div class="stat-label">Approval Pending</div></div>
     </div>
-    
-    <div class="dashboard-grid">
-      <div class="card">
-        <div class="card-header">📋 Menu Utama</div>
-        <div class="card-body">
-          <ul class="menu-list">
-            <li><button class="menu-item" onclick="loadSuratMasuk()">📥 Surat Masuk</button></li>
-            <li><button class="menu-item" onclick="loadSuratKeluar()">📤 Surat Keluar</button></li>
-            <li><button class="menu-item" onclick="loadDisposisi()">📋 Disposisi</button></li>
-            <li><button class="menu-item" onclick="loadApproval()">✅ Approval</button></li>
-            <li><button class="menu-item" onclick="loadSearch()">🔍 Pencarian Global</button></li>
-          </ul>
-        </div>
-      </div>
-      
-      <div class="card">
-        <div class="card-header">⚙️ Administrasi</div>
-        <div class="card-body">
-          <ul class="menu-list">
-            <li><button class="menu-item" onclick="loadUsers()">👥 Manajemen User</button></li>
-            <li><button class="menu-item" onclick="loadConfig()">⚙️ Konfigurasi Sistem</button></li>
-            <li><button class="menu-item" onclick="loadBlockchain()">⛓️ Blockchain Audit</button></li>
-            <li><button class="menu-item" onclick="loadBackup()">💾 Backup & Restore</button></li>
-            <li><button class="menu-item" onclick="loadSystemStatus()">🖥️ Status Sistem</button></li>
-          </ul>
-        </div>
-      </div>
-      
-      <div class="card" style="grid-column:1/-1;">
-        <div class="card-header">🤖 Fitur AI & Keamanan</div>
-        <div class="card-body">
-          <ul class="menu-list" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
-            <li><button class="menu-item" onclick="loadAI()">🤖 AI Smart Search</button></li>
-            <li><button class="menu-item" onclick="loadAI()">🏷️ AI Auto Tagging</button></li>
-            <li><button class="menu-item" onclick="loadAI()">⚠️ Anomaly Detection</button></li>
-            <li><button class="menu-item" onclick="loadBlockchain()">⛓️ Blockchain Verify</button></li>
-            <li><button class="menu-item" onclick="loadBiometric()">🖐️ Biometric Auth</button></li>
-            <li><button class="menu-item" onclick="loadSystemStatus()">🖥️ System Status</button></li>
-          </ul>
-        </div>
-      </div>
+    <div class="grid">
+      <div class="card"><div class="card-header">📋 Menu Utama</div><div class="card-body"><ul class="menu-list">
+        <li><button class="menu-item" onclick="loadMod('suratMasuk')">📥 Surat Masuk</button></li>
+        <li><button class="menu-item" onclick="loadMod('suratKeluar')">📤 Surat Keluar</button></li>
+        <li><button class="menu-item" onclick="loadMod('disposisi')">📋 Disposisi</button></li>
+        <li><button class="menu-item" onclick="loadMod('approval')">✅ Approval</button></li>
+        <li><button class="menu-item" onclick="loadSearch()">🔍 Pencarian</button></li>
+      </ul></div></div>
+      <div class="card"><div class="card-header">⚙️ Administrasi</div><div class="card-body"><ul class="menu-list">
+        <li><button class="menu-item" onclick="loadMod('users')">👥 User</button></li>
+        <li><button class="menu-item" onclick="loadMod('config')">⚙️ Konfigurasi</button></li>
+        <li><button class="menu-item" onclick="loadMod('blockchain')">⛓️ Blockchain</button></li>
+        <li><button class="menu-item" onclick="loadMod('backup')">💾 Backup</button></li>
+        <li><button class="menu-item" onclick="loadMod('system')">🖥️ Status</button></li>
+      </ul></div></div>
     </div>
-    
-    <!-- DATA TABLE AREA -->
     <div id="data-area" style="margin-top:24px;"></div>
   </div>
 </div>
 
-<!-- ============================================ -->
-<!-- MAIN SCRIPT - ENTERPRISE v3.1.0              -->
-<!-- ============================================ -->
 <script>
 // ============================================
-// CONFIGURATION
+// 🔥 KONFIGURASI API
 // ============================================
-var API_BASE_URL = 'https://script.google.com/macros/s/AKfycbzzmttzSRYsM7KodsEdFqHRdwBs2kY7VTzFPOpsiab3p3v-6CBl-eKIuUI0Vhqd0opYtA/exec';
+var API = 'https://script.google.com/macros/s/AKfycbzzmttzSRYsM7KodsEdFqHRdwBs2kY7VTzFPOpsiab3p3v-6CBl-eKIuUI0Vhqd0opYtA/exec';
 
-var APP = {
-  isAuthenticated: false,
-  user: null,
-  token: null,
-  apiConnected: false
-};
+var APP = { auth: false, user: null, token: null, connected: false };
 
 // ============================================
-// INITIALIZATION
+// INIT
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
   console.log('%c📁 Arsip Surat Digital Enterprise v3.1.0', 'font-size:18px;font-weight:bold;color:#1976D2');
-  console.log('%c🚀 ENTERPRISE EDITION - Production Ready', 'color:#4CAF50');
-  console.log('%c🔗 API: ' + API_BASE_URL, 'color:#FF9800');
-  
-  // Check saved session
-  var savedToken = localStorage.getItem('asd_enterprise_token');
-  var savedUser = localStorage.getItem('asd_enterprise_user');
-  
-  if (savedToken && savedUser) {
-    try {
-      APP.token = savedToken;
-      APP.user = JSON.parse(savedUser);
-      APP.isAuthenticated = true;
-      showDashboard();
-      verifyTokenAndConnect();
-    } catch(e) {
-      clearSession();
-      showLogin();
-    }
-  } else {
-    showLogin();
-  }
-  
-  setTimeout(hideSplash, 1500);
+  var t = localStorage.getItem('asd_t'), u = localStorage.getItem('asd_u');
+  if (t && u) { try { APP.token = t; APP.user = JSON.parse(u); APP.auth = true; showDash(); checkConn(); } catch(e) { clearAll(); showLogin(); } }
+  else { showLogin(); }
+  setTimeout(function() { var s = document.getElementById('splash'); if (s) { s.classList.add('hidden'); setTimeout(function() { if (s.parentNode) s.parentNode.removeChild(s); }, 500); } }, 1500);
 });
 
 // ============================================
-// SPLASH
+// UI
 // ============================================
-function hideSplash() {
-  var el = document.getElementById('splash-screen');
-  if (el) { el.classList.add('hidden'); setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 500); }
+function showLogin() { document.getElementById('login-page').classList.add('active'); document.getElementById('dashboard-page').classList.remove('active'); }
+function showDash() { document.getElementById('login-page').classList.remove('active'); document.getElementById('dashboard-page').classList.add('active');
+  if (APP.user) { document.getElementById('user-name').textContent = APP.user.namaLengkap || APP.user.username; document.getElementById('user-avatar').textContent = (APP.user.namaLengkap||APP.user.username||'U').split(' ').map(function(w){return w[0]}).join('').toUpperCase().substring(0,2); }
 }
 
 // ============================================
-// NAVIGATION
+// 🔥 API CALL (GET ONLY - NO CORS)
 // ============================================
-function showLogin() {
-  document.getElementById('login-page').classList.add('active');
-  document.getElementById('dashboard-page').classList.remove('active');
-}
-
-function showDashboard() {
-  document.getElementById('login-page').classList.remove('active');
-  document.getElementById('dashboard-page').classList.add('active');
-  
-  if (APP.user) {
-    document.getElementById('user-name').textContent = APP.user.namaLengkap || APP.user.username;
-    document.getElementById('user-avatar').textContent = getInitials(APP.user.namaLengkap || APP.user.username);
-  }
-}
-
-// ============================================
-// 🔥 API FUNCTIONS (PRODUCTION)
-// ============================================
-function apiGet(action, params) {
-  return new Promise(function(resolve, reject) {
-    var url = API_BASE_URL + '?action=' + encodeURIComponent(action);
+function api(action, params) {
+  return new Promise(function(resolve) {
+    var url = API + '?action=' + encodeURIComponent(action);
     if (APP.token) url += '&token=' + encodeURIComponent(APP.token);
-    if (params) {
-      Object.keys(params).forEach(function(k) {
-        if (params[k] !== undefined && params[k] !== '') {
-          url += '&' + k + '=' + encodeURIComponent(params[k]);
-        }
-      });
-    }
+    if (params) { Object.keys(params).forEach(function(k) { if (params[k] !== undefined && params[k] !== '') url += '&' + k + '=' + encodeURIComponent(params[k]); }); }
     
-    fetch(url)
-      .then(function(res) { return res.json(); })
-      .then(function(data) { resolve(data); })
-      .catch(function(err) { resolve({ status: 'error', message: 'Gagal terhubung ke server: ' + err.message }); });
+    fetch(url).then(function(r) { return r.json(); }).then(function(d) { resolve(d); }).catch(function() { resolve({ status: 'error', message: 'Gagal terhubung' }); });
   });
 }
 
-function apiPost(action, data) {
-  return new Promise(function(resolve, reject) {
-    var url = API_BASE_URL + '?action=' + encodeURIComponent(action);
-    if (APP.token) url += '&token=' + encodeURIComponent(APP.token);
-    
-    fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data || {})
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(data) { resolve(data); })
-    .catch(function(err) { resolve({ status: 'error', message: 'Gagal terhubung ke server: ' + err.message }); });
+// 🔥 LOGIN VIA GET (NO CORS)
+function apiLogin(username, password) {
+  return api('login', { username: username, password: password });
+}
+
+function checkConn() {
+  setConn('connecting', '⏳ Verifying...');
+  api('me').then(function(r) {
+    if (r && r.status === 'success') { APP.connected = true; APP.user = r.data; setConn('connected', '🟢 Connected'); loadStats(); }
+    else { APP.connected = false; setConn('disconnected', '🔴 Disconnected'); clearAll(); showLogin(); alert('Sesi berakhir. Silakan login kembali.'); }
   });
 }
 
-// ============================================
-// VERIFY TOKEN & CONNECT
-// ============================================
-function verifyTokenAndConnect() {
-  updateConnectionBadge('connecting', '⏳ Verifying...');
-  
-  apiGet('me').then(function(result) {
-    if (result && result.status === 'success') {
-      APP.apiConnected = true;
-      APP.user = result.data;
-      updateConnectionBadge('connected', '🟢 Connected');
-      loadDashboardData();
-    } else {
-      APP.apiConnected = false;
-      updateConnectionBadge('disconnected', '🔴 Disconnected');
-      clearSession();
-      showLogin();
-      showAlert('Sesi telah berakhir. Silakan login kembali.', 'error');
-    }
-  }).catch(function() {
-    updateConnectionBadge('disconnected', '🔴 Disconnected');
-  });
-}
-
-function updateConnectionBadge(status, text) {
-  var badge = document.getElementById('connection-badge');
-  if (badge) {
-    badge.textContent = text;
-    badge.className = 'connection-status ' + status;
-  }
-}
+function setConn(cls, txt) { var b = document.getElementById('conn-badge'); if (b) { b.textContent = txt; b.className = 'conn-status conn-' + cls; } }
 
 // ============================================
-// LOGIN (PRODUCTION - API ONLY)
+// LOGIN
 // ============================================
-function handleLogin(event) {
-  event.preventDefault();
+function doLogin(e) {
+  e.preventDefault();
+  var u = document.getElementById('username').value.trim(), p = document.getElementById('password').value.trim(), btn = document.getElementById('login-btn');
+  if (!u || !p) { showMsg('❌ Isi username dan password', 'error'); return false; }
+  btn.disabled = true; btn.textContent = '⏳ Connecting...'; hideMsg();
   
-  var username = document.getElementById('username').value.trim();
-  var password = document.getElementById('password').value.trim();
-  var btn = document.getElementById('login-btn');
-  
-  if (!username || !password) {
-    showAlert('❌ Harap isi username dan password', 'error');
-    return false;
-  }
-  
-  btn.disabled = true;
-  btn.textContent = '⏳ Menghubungkan ke server...';
-  hideAlert();
-  
-  apiPost('login', { username: username, password: password }).then(function(result) {
-    if (result && result.status === 'success' && result.data) {
-      APP.isAuthenticated = true;
-      APP.user = result.data.user;
-      APP.token = result.data.token;
-      APP.apiConnected = true;
-      
-      localStorage.setItem('asd_enterprise_token', result.data.token);
-      localStorage.setItem('asd_enterprise_user', JSON.stringify(result.data.user));
-      
-      showAlert('✅ Login berhasil!', 'success');
-      updateConnectionBadge('connected', '🟢 Connected');
-      
-      setTimeout(function() {
-        showDashboard();
-        loadDashboardData();
-        btn.disabled = false;
-        btn.textContent = '🔐 Masuk';
-        hideAlert();
-      }, 500);
-    } else if (result && result.needSetup) {
-      showAlert('⚠️ Sistem belum di-setup. Hubungi administrator.', 'error');
-      btn.disabled = false;
-      btn.textContent = '🔐 Masuk';
-    } else {
-      showAlert('❌ ' + (result.message || 'Login gagal. Periksa username dan password.'), 'error');
-      btn.disabled = false;
-      btn.textContent = '🔐 Masuk';
-    }
-  }).catch(function() {
-    showAlert('❌ Gagal terhubung ke server. Periksa koneksi internet.', 'error');
-    btn.disabled = false;
-    btn.textContent = '🔐 Masuk';
-  });
-  
+  apiLogin(u, p).then(function(r) {
+    if (r && r.status === 'success' && r.data) {
+      APP.auth = true; APP.user = r.data.user; APP.token = r.data.token; APP.connected = true;
+      localStorage.setItem('asd_t', r.data.token); localStorage.setItem('asd_u', JSON.stringify(r.data.user));
+      showMsg('✅ Login berhasil!', 'success'); setConn('connected', '🟢 Connected');
+      setTimeout(function() { showDash(); loadStats(); btn.disabled = false; btn.textContent = '🔐 Masuk'; hideMsg(); }, 500);
+    } else if (r && r.needSetup) { showMsg('⚠️ Sistem belum di-setup', 'error'); btn.disabled = false; btn.textContent = '🔐 Masuk'; }
+    else { showMsg('❌ ' + (r.message || 'Login gagal'), 'error'); btn.disabled = false; btn.textContent = '🔐 Masuk'; }
+  }).catch(function() { showMsg('❌ Gagal terhubung ke server', 'error'); btn.disabled = false; btn.textContent = '🔐 Masuk'; });
   return false;
 }
 
-function handleLogout() {
-  if (confirm('Apakah Anda yakin ingin keluar?')) {
-    apiGet('logout');
-    clearSession();
-    document.getElementById('data-area').innerHTML = '';
-    showLogin();
-  }
-}
-
-function clearSession() {
-  APP.isAuthenticated = false;
-  APP.user = null;
-  APP.token = null;
-  APP.apiConnected = false;
-  localStorage.removeItem('asd_enterprise_token');
-  localStorage.removeItem('asd_enterprise_user');
-}
+function doLogout() { if (confirm('Keluar?')) { api('logout'); clearAll(); document.getElementById('data-area').innerHTML = ''; showLogin(); } }
+function clearAll() { APP.auth = false; APP.user = null; APP.token = null; APP.connected = false; localStorage.removeItem('asd_t'); localStorage.removeItem('asd_u'); }
 
 // ============================================
-// DASHBOARD DATA
+// DASHBOARD
 // ============================================
-function loadDashboardData() {
-  apiGet('dashboard.stats').then(function(result) {
-    if (result && result.status === 'success' && result.data) {
-      var d = result.data;
-      document.getElementById('stat-masuk').textContent = (d.suratMasuk && d.suratMasuk.total) || 0;
-      document.getElementById('stat-keluar').textContent = (d.suratKeluar && d.suratKeluar.total) || 0;
-      document.getElementById('stat-disposisi').textContent = (d.disposisi && d.disposisi.total) || 0;
-      document.getElementById('stat-approval').textContent = (d.disposisi && d.disposisi.pending) || 0;
+function loadStats() {
+  api('dashboard.stats').then(function(r) {
+    if (r && r.status === 'success' && r.data) {
+      var d = r.data;
+      document.getElementById('s-masuk').textContent = (d.suratMasuk&&d.suratMasuk.total)||0;
+      document.getElementById('s-keluar').textContent = (d.suratKeluar&&d.suratKeluar.total)||0;
+      document.getElementById('s-disp').textContent = (d.disposisi&&d.disposisi.total)||0;
+      document.getElementById('s-appr').textContent = (d.disposisi&&d.disposisi.pending)||0;
     }
   });
 }
 
 // ============================================
-// MODULE LOADERS (PRODUCTION)
+// MODULES
 // ============================================
-function loadSuratMasuk() {
-  apiGet('suratMasuk.list', { limit: 20 }).then(function(result) {
-    if (result && result.status === 'success') {
-      renderDataTable('📥 Surat Masuk', ['Nomor Surat', 'Perihal', 'Pengirim', 'Tanggal', 'Status'], result.data.items, 'suratMasuk');
-    } else {
-      showDataError(result);
-    }
-  });
-}
-
-function loadSuratKeluar() {
-  apiGet('suratKeluar.list', { limit: 20 }).then(function(result) {
-    if (result && result.status === 'success') {
-      renderDataTable('📤 Surat Keluar', ['Nomor Surat', 'Perihal', 'Tujuan', 'Tanggal', 'Status'], result.data.items, 'suratKeluar');
-    } else {
-      showDataError(result);
-    }
-  });
-}
-
-function loadDisposisi() {
-  apiGet('disposisi.list').then(function(result) {
-    if (result && result.status === 'success') {
-      renderDataTable('📋 Disposisi', ['Surat', 'Dari', 'Kepada', 'Instruksi', 'Status'], result.data.items, 'disposisi');
-    } else {
-      showDataError(result);
-    }
-  });
-}
-
-function loadApproval() {
-  apiGet('approval.list').then(function(result) {
-    if (result && result.status === 'success') {
-      renderDataTable('✅ Approval', ['Surat', 'Level', 'Status', 'Komentar', 'Tanggal'], result.data.items, 'approval');
-    } else {
-      showDataError(result);
-    }
-  });
-}
-
-function loadUsers() {
-  if (APP.user && APP.user.role !== 'admin') {
-    alert('⚠️ Akses ditolak. Hanya admin yang dapat mengakses fitur ini.');
-    return;
-  }
-  apiGet('users.list').then(function(result) {
-    if (result && result.status === 'success') {
-      renderDataTable('👥 Manajemen User', ['Username', 'Nama', 'Email', 'Role', 'Status'], result.data.items, 'users');
-    } else {
-      showDataError(result);
-    }
+function loadMod(mod) {
+  var actions = { suratMasuk: 'suratMasuk.list', suratKeluar: 'suratKeluar.list', disposisi: 'disposisi.list', approval: 'approval.list', users: 'users.list', blockchain: 'blockchain.getChain', backup: 'backup.list', config: 'config.get', system: 'system.status' };
+  var titles = { suratMasuk: '📥 Surat Masuk', suratKeluar: '📤 Surat Keluar', disposisi: '📋 Disposisi', approval: '✅ Approval', users: '👥 Users', blockchain: '⛓️ Blockchain', backup: '💾 Backup', config: '⚙️ Konfigurasi', system: '🖥️ Status' };
+  
+  if ((mod === 'users' || mod === 'config' || mod === 'backup') && APP.user && APP.user.role !== 'admin') { alert('⚠️ Akses ditolak'); return; }
+  
+  api(actions[mod]).then(function(r) {
+    if (r && r.status === 'success') {
+      var items = r.data.items || r.data.chain || [];
+      if (mod === 'system') items = [{ key: 'Version', value: r.data.version }, { key: 'Timestamp', value: r.data.timestamp }];
+      if (mod === 'config') items = Object.keys(r.data).map(function(k) { return { key: k, value: r.data[k] }; });
+      renderTable(titles[mod], items, mod);
+    } else { document.getElementById('data-area').innerHTML = '<div class="card"><div class="card-body" style="text-align:center;padding:40px;"><span style="font-size:48px;">❌</span><p style="color:#F44336;">' + (r.message||'Gagal') + '</p></div></div>'; }
   });
 }
 
 function loadSearch() {
-  var q = prompt('🔍 Masukkan kata kunci pencarian:');
-  if (!q) return;
-  
-  apiGet('search', { q: q }).then(function(result) {
-    if (result && result.status === 'success') {
-      renderDataTable('🔍 Hasil Pencarian: "' + q + '"', ['Tipe', 'Judul', 'Deskripsi', 'Tanggal', 'Status'], result.data.results, 'search');
-    } else {
-      showDataError(result);
-    }
+  var q = prompt('🔍 Kata kunci:'); if (!q) return;
+  api('search', { q: q }).then(function(r) {
+    if (r && r.status === 'success') { renderTable('🔍 Hasil: "' + q + '"', r.data.results, 'search'); }
+    else { document.getElementById('data-area').innerHTML = '<div class="card"><div class="card-body" style="text-align:center;padding:40px;"><span style="font-size:48px;">❌</span><p>' + (r.message||'Gagal') + '</p></div></div>'; }
   });
 }
 
-function loadBlockchain() {
-  apiGet('blockchain.getChain').then(function(result) {
-    if (result && result.status === 'success') {
-      renderDataTable('⛓️ Blockchain', ['Index', 'Timestamp', 'Data', 'Hash'], result.data.chain, 'blockchain');
-    } else {
-      showDataError(result);
-    }
-  });
-}
-
-function loadBackup() {
-  if (APP.user && APP.user.role !== 'admin') {
-    alert('⚠️ Akses ditolak. Hanya admin yang dapat mengakses fitur ini.');
-    return;
-  }
-  apiGet('backup.list').then(function(result) {
-    if (result && result.status === 'success') {
-      renderDataTable('💾 Backup', ['Nama File', 'Ukuran', 'Dibuat Oleh', 'Tanggal'], result.data.items, 'backup');
-    } else {
-      showDataError(result);
-    }
-  });
-}
-
-function loadConfig() {
-  if (APP.user && APP.user.role !== 'admin') {
-    alert('⚠️ Akses ditolak. Hanya admin yang dapat mengakses fitur ini.');
-    return;
-  }
-  apiGet('config.get').then(function(result) {
-    if (result && result.status === 'success') {
-      var config = result.data;
-      var items = Object.keys(config).map(function(k) {
-        return { key: k, value: typeof config[k] === 'boolean' ? (config[k] ? '✅ Yes' : '❌ No') : config[k] };
-      });
-      renderDataTable('⚙️ Konfigurasi Sistem', ['Key', 'Value'], items, 'config');
-    } else {
-      showDataError(result);
-    }
-  });
-}
-
-function loadSystemStatus() {
-  apiGet('system.status').then(function(result) {
-    if (result && result.status === 'success') {
-      var data = result.data;
-      var items = [
-        { key: 'Version', value: data.version || '-' },
-        { key: 'Build Date', value: data.buildDate || '-' },
-        { key: 'Timezone', value: data.timezone || '-' },
-        { key: 'Spreadsheet ID', value: data.spreadsheetId || '-' }
-      ];
-      renderDataTable('🖥️ Status Sistem', ['Key', 'Value'], items, 'system');
-    } else {
-      showDataError(result);
-    }
-  });
-}
-
-function loadAI() {
-  alert('🤖 AI Features\n\nFitur AI aktif dan terhubung ke backend.\n\nTersedia:\n• AI Smart Search\n• AI Auto Tagging\n• AI Anomaly Detection\n• AI Predictive Analytics');
-}
-
-function loadBiometric() {
-  alert('🖐️ Biometric Authentication\n\nFitur biometrik tersedia via WebAuthn API.\n\nDidukung di:\n• Chrome/Edge (Windows)\n• Safari (macOS Touch ID)\n• Chrome (Android Fingerprint)\n• Safari (iOS Face ID)');
-}
-
-// ============================================
-// DATA TABLE RENDERER
-// ============================================
-function renderDataTable(title, headers, items, module) {
-  var area = document.getElementById('data-area');
-  if (!area) return;
-  
-  var html = '<div class="card"><div class="card-header">' + title + ' <span class="badge badge-info" style="float:right;">' + (items ? items.length : 0) + ' data</span></div>';
-  html += '<div class="card-body" style="padding:0;">';
-  
-  if (!items || items.length === 0) {
-    html += '<div style="text-align:center;padding:40px;"><span style="font-size:48px;">📭</span><p style="color:#757575;">Tidak ada data</p></div>';
-  } else {
-    html += '<div style="overflow-x:auto;"><table class="data-table"><thead><tr>';
-    headers.forEach(function(h) { html += '<th>' + h + '</th>'; });
-    html += '</tr></thead><tbody>';
+function renderTable(title, items, mod) {
+  var a = document.getElementById('data-area'), h = '<div class="card"><div class="card-header">' + title + ' <span class="badge badge-info" style="float:right;">' + (items?items.length:0) + ' data</span></div><div class="card-body" style="padding:0;">';
+  if (!items || items.length === 0) { h += '<div style="text-align:center;padding:40px;"><span style="font-size:48px;">📭</span><p style="color:#757575;">Tidak ada data</p></div>'; }
+  else {
+    h += '<div style="overflow-x:auto;"><table class="data-table"><thead><tr>';
+    if (mod === 'suratMasuk' || mod === 'suratKeluar') h += '<th>Nomor</th><th>Perihal</th><th>' + (mod==='suratMasuk'?'Pengirim':'Tujuan') + '</th><th>Tanggal</th><th>Status</th>';
+    else if (mod === 'disposisi') h += '<th>Surat</th><th>Dari</th><th>Kepada</th><th>Instruksi</th><th>Status</th>';
+    else if (mod === 'approval') h += '<th>Surat</th><th>Level</th><th>Status</th><th>Komentar</th><th>Tanggal</th>';
+    else if (mod === 'users') h += '<th>Username</th><th>Nama</th><th>Email</th><th>Role</th><th>Status</th>';
+    else if (mod === 'blockchain') h += '<th>Index</th><th>Timestamp</th><th>Data</th><th>Hash</th>';
+    else if (mod === 'config' || mod === 'system') h += '<th>Key</th><th>Value</th>';
+    else h += '<th>Tipe</th><th>Judul</th><th>Deskripsi</th><th>Tanggal</th><th>Status</th>';
+    h += '</tr></thead><tbody>';
     
-    items.forEach(function(item, index) {
-      html += '<tr>';
-      if (module === 'suratMasuk' || module === 'suratKeluar') {
-        html += '<td><strong>' + (item.nomorSurat || item.nomorAgenda || '-') + '</strong></td>';
-        html += '<td>' + (item.perihal || '-') + '</td>';
-        html += '<td>' + (item.pengirim || item.tujuan || '-') + '</td>';
-        html += '<td>' + formatDate(item.tanggalSurat || item.createdAt) + '</td>';
-        html += '<td><span class="badge ' + getStatusBadge(item.status) + '">' + (item.status || '-') + '</span></td>';
-      } else if (module === 'disposisi') {
-        html += '<td>' + (item.suratMasukId || '-') + '</td>';
-        html += '<td>' + (item.dariUserId || '-') + '</td>';
-        html += '<td>' + (item.kepadaUserId || '-') + '</td>';
-        html += '<td>' + (item.instruksi || '-') + '</td>';
-        html += '<td><span class="badge ' + getStatusBadge(item.status) + '">' + (item.status || '-') + '</span></td>';
-      } else if (module === 'approval') {
-        html += '<td>' + (item.suratKeluarId || '-') + '</td>';
-        html += '<td>Level ' + (item.level || '-') + '</td>';
-        html += '<td><span class="badge ' + getStatusBadge(item.status) + '">' + (item.status || '-') + '</span></td>';
-        html += '<td>' + (item.komentar || '-') + '</td>';
-        html += '<td>' + formatDate(item.createdAt) + '</td>';
-      } else if (module === 'users') {
-        html += '<td><strong>' + (item.username || '-') + '</strong></td>';
-        html += '<td>' + (item.namaLengkap || '-') + '</td>';
-        html += '<td>' + (item.email || '-') + '</td>';
-        html += '<td><span class="badge badge-primary">' + (item.role || '-') + '</span></td>';
-        html += '<td><span class="badge ' + (item.isActive ? 'badge-success' : 'badge-danger') + '">' + (item.isActive ? 'Aktif' : 'Nonaktif') + '</span></td>';
-      } else if (module === 'blockchain') {
-        html += '<td><span class="badge badge-primary">#' + (item.index || index) + '</span></td>';
-        html += '<td>' + formatDate(item.timestamp) + '</td>';
-        html += '<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (item.data || '-') + '</td>';
-        html += '<td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace;font-size:0.65rem;">' + (item.hash || '-') + '</td>';
+    items.forEach(function(item, i) {
+      h += '<tr>';
+      if (mod === 'suratMasuk' || mod === 'suratKeluar') {
+        h += '<td><strong>' + (item.nomorSurat||item.nomorAgenda||'-') + '</strong></td><td>' + (item.perihal||'-') + '</td><td>' + (item.pengirim||item.tujuan||'-') + '</td><td>' + fmtDate(item.tanggalSurat||item.createdAt) + '</td><td><span class="badge ' + getBadge(item.status) + '">' + (item.status||'-') + '</span></td>';
+      } else if (mod === 'disposisi') {
+        h += '<td>' + (item.suratMasukId||'-') + '</td><td>' + (item.dariUserId||'-') + '</td><td>' + (item.kepadaUserId||'-') + '</td><td>' + (item.instruksi||'-') + '</td><td><span class="badge ' + getBadge(item.status) + '">' + (item.status||'-') + '</span></td>';
+      } else if (mod === 'approval') {
+        h += '<td>' + (item.suratKeluarId||'-') + '</td><td>Level ' + (item.level||'-') + '</td><td><span class="badge ' + getBadge(item.status) + '">' + (item.status||'-') + '</span></td><td>' + (item.komentar||'-') + '</td><td>' + fmtDate(item.createdAt) + '</td>';
+      } else if (mod === 'users') {
+        h += '<td><strong>' + (item.username||'-') + '</strong></td><td>' + (item.namaLengkap||'-') + '</td><td>' + (item.email||'-') + '</td><td><span class="badge badge-primary">' + (item.role||'-') + '</span></td><td><span class="badge ' + (item.isActive?'badge-success':'badge-danger') + '">' + (item.isActive?'Aktif':'Nonaktif') + '</span></td>';
+      } else if (mod === 'blockchain') {
+        h += '<td><span class="badge badge-primary">#' + (item.index||i) + '</span></td><td>' + fmtDate(item.timestamp) + '</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (item.data||'-') + '</td><td style="max-width:150px;font-family:monospace;font-size:.65rem;overflow:hidden;text-overflow:ellipsis;">' + (item.hash||'-') + '</td>';
+      } else if (mod === 'config' || mod === 'system') {
+        h += '<td><strong>' + (item.key||'-') + '</strong></td><td>' + (item.value||'-') + '</td>';
       } else {
-        // Generic render
-        Object.keys(item).slice(0, headers.length).forEach(function(k) {
-          html += '<td>' + (item[k] !== undefined ? item[k] : '-') + '</td>';
-        });
+        h += '<td><span class="badge badge-info">' + (item.type||'-') + '</span></td><td><strong>' + (item.title||'-') + '</strong></td><td>' + (item.description||'-') + '</td><td>' + fmtDate(item.date) + '</td><td><span class="badge ' + getBadge(item.status) + '">' + (item.status||'-') + '</span></td>';
       }
-      html += '</tr>';
+      h += '</tr>';
     });
-    
-    html += '</tbody></table></div>';
+    h += '</tbody></table></div>';
   }
-  
-  html += '</div></div>';
-  area.innerHTML = html;
-  
-  // Scroll to data
-  area.scrollIntoView({ behavior: 'smooth' });
-}
-
-function showDataError(result) {
-  var area = document.getElementById('data-area');
-  if (area) {
-    area.innerHTML = '<div class="card"><div class="card-body" style="text-align:center;padding:40px;"><span style="font-size:48px;">❌</span><p style="color:#F44336;">' + (result.message || 'Gagal memuat data') + '</p><p style="color:#757575;font-size:0.875rem;">Pastikan backend Google Apps Script sudah di-deploy dan terhubung.</p></div></div>';
-  }
+  h += '</div></div>';
+  a.innerHTML = h;
+  a.scrollIntoView({ behavior: 'smooth' });
 }
 
 // ============================================
 // HELPERS
 // ============================================
-function showAlert(message, type) {
-  var el = document.getElementById('login-alert');
-  if (el) { el.textContent = message; el.className = 'alert alert-' + (type || 'error') + ' show'; }
+function showMsg(m, t) { var e = document.getElementById('login-alert'); if (e) { e.textContent = m; e.className = 'alert alert-' + (t||'error') + ' show'; } }
+function hideMsg() { var e = document.getElementById('login-alert'); if (e) { e.className = 'alert'; e.textContent = ''; } }
+function fmtDate(d) { if (!d) return '-'; try { return new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }); } catch(e) { return d; } }
+function getBadge(s) { var m = { diterima:'badge-info', diproses:'badge-warning', selesai:'badge-success', diarsipkan:'badge', draft:'badge', dikirim:'badge-info', pending:'badge-warning', approved:'badge-success', rejected:'badge-danger' }; return m[s]||'badge'; }
+
+// SW
+if ('serviceWorker' in navigator) {
+  var swc = 'var C="asd-v3";self.addEventListener("install",function(e){self.skipWaiting()});self.addEventListener("activate",function(e){e.waitUntil(clients.claim())});self.addEventListener("fetch",function(e){if(e.request.method!=="GET")return;if(e.request.url.indexOf("script.google.com")>-1)return;e.respondWith(caches.match(e.request).then(function(c){return c||fetch(e.request).then(function(r){if(r&&r.status===200){var rc=r.clone();caches.open(C).then(function(ca){ca.put(e.request,rc)})}return r}).catch(function(){return c||new Response("Offline",{status:503})})}))});';
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([swc],{type:'application/javascript'})),{scope:'/'}).then(function(){console.log('✅ SW')}).catch(function(){});
 }
 
-function hideAlert() {
-  var el = document.getElementById('login-alert');
-  if (el) { el.className = 'alert'; el.textContent = ''; }
-}
+window.addEventListener('online', function() { if (APP.auth) checkConn(); });
+window.addEventListener('offline', function() { setConn('disconnected', '🔴 Offline'); });
 
-function getInitials(name) {
-  if (!name) return '?';
-  return name.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().substring(0, 2);
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return '-';
-  try {
-    var d = new Date(dateStr);
-    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-  } catch(e) { return dateStr; }
-}
-
-function getStatusBadge(status) {
-  var map = {
-    'diterima': 'badge-info', 'diproses': 'badge-warning', 'selesai': 'badge-success', 'diarsipkan': 'badge',
-    'draft': 'badge', 'dikirim': 'badge-info',
-    'pending': 'badge-warning', 'approved': 'badge-success', 'rejected': 'badge-danger'
-  };
-  return map[status] || 'badge';
-}
-
-// ============================================
-// SERVICE WORKER (SELF-CONTAINED)
-// ============================================
-(function() {
-  if ('serviceWorker' in navigator) {
-    var swCode = 'var CACHE_NAME="asd-v3.1.0";self.addEventListener("install",function(e){self.skipWaiting()});self.addEventListener("activate",function(e){e.waitUntil(clients.claim())});self.addEventListener("fetch",function(e){if(e.request.method!=="GET")return;if(e.request.url.indexOf("script.google.com")>-1)return;e.respondWith(caches.match(e.request).then(function(c){return c||fetch(e.request).then(function(r){if(r&&r.status===200){var rc=r.clone();caches.open(CACHE_NAME).then(function(ca){ca.put(e.request,rc)})}return r}).catch(function(){return c||new Response("Offline",{status:503})})}))});';
-    
-    var blob = new Blob([swCode], { type: 'application/javascript' });
-    var swUrl = URL.createObjectURL(blob);
-    
-    navigator.serviceWorker.register(swUrl, { scope: '/' })
-      .then(function(reg) { console.log('✅ SW Registered'); })
-      .catch(function(err) { console.log('⚠️ SW:', err.message); });
-  }
-})();
-
-// ============================================
-// SHAKE ANIMATION
-// ============================================
-var shakeCSS = document.createElement('style');
-shakeCSS.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}';
-document.head.appendChild(shakeCSS);
-
-// ============================================
-// ONLINE/OFFLINE
-// ============================================
-window.addEventListener('online', function() {
-  console.log('🟢 Online');
-  updateConnectionBadge('connecting', '⏳ Reconnecting...');
-  if (APP.isAuthenticated) verifyTokenAndConnect();
-});
-
-window.addEventListener('offline', function() {
-  console.log('🔴 Offline');
-  updateConnectionBadge('disconnected', '🔴 Offline');
-});
-
-// ============================================
-// CONSOLE WELCOME
-// ============================================
-console.log('\n    ╔══════════════════════════════════════╗\n    ║  📁 ARSIP SURAT DIGITAL v3.1.0      ║\n    ║  🚀 ENTERPRISE EDITION              ║\n    ║  📅 Build: 2026-07-10              ║\n    ║  🔗 Connected to Google Apps Script ║\n    ║  ✅ Production Ready                ║\n    ╚══════════════════════════════════════╝\n  ');
-
-console.log('🔗 API Endpoint:', API_BASE_URL);
-console.log('📋 Backend: Code.gs + appsscript.json');
-console.log('✅ ENTERPRISE v3.1.0 - NO DEMO MODE');
+console.log('✅ ENTERPRISE v3.1.0 - Production Ready');
 </script>
 
 </body>
