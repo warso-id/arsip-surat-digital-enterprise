@@ -1,0 +1,34 @@
+# Enable CORS
+Header set Access-Control-Allow-Origin "*"
+
+# Custom Error Pages
+ErrorDocument 404 /404.html
+
+# Cache Control
+<FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+</FilesMatch>
+
+<FilesMatch "\.(js|css|json|xml|txt)$">
+    Header set Cache-Control "max-age=604800, public"
+</FilesMatch>
+
+<FilesMatch "\.(png|jpg|jpeg|gif|svg|ico|webp)$">
+    Header set Cache-Control "max-age=2592000, public"
+</FilesMatch>
+
+# Security Headers
+Header set X-Content-Type-Options "nosniff"
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-XSS-Protection "1; mode=block"
+Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+# Force HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Remove .html extension
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.*)$ $1.html [NC,L]
