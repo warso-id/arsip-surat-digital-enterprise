@@ -182,7 +182,7 @@
 
 <script>
 // ============================================
-// CONFIG - GANTI DENGAN URL DEPLOY ANDA
+// 🔥 KONFIGURASI - GANTI DENGAN URL DEPLOY ANDA
 // ============================================
 var API_URL = 'https://script.google.com/macros/s/AKfycbzzmttzSRYsM7KodsEdFqHRdwBs2kY7VTzFPOpsiab3p3v-6CBl-eKIuUI0Vhqd0opYtA/exec';
 
@@ -206,7 +206,7 @@ function showDash() { document.getElementById('login-page').classList.remove('on
 }
 
 // ============================================
-// API - GET ONLY (NO CORS ISSUE)
+// 🔥 API - SEMUA PAKAI GET (NO CORS)
 // ============================================
 function api(action, params) {
   return new Promise(function(ok) {
@@ -222,33 +222,37 @@ function ping() {
   setCS('conn', '⏳ Connecting...');
   api('ping').then(function(r) {
     if (r && r.status === 'success') { A.ok = true; setCS('on', '🟢 Connected'); loadStats(); }
-    else { setCS('off', '🔴 Offline'); }
+    else { A.ok = false; setCS('off', '🔴 Offline'); }
   });
 }
 
 function setCS(c, t) { var b = document.getElementById('cs-badge'); if (b) { b.textContent = t; b.className = 'cs cs-' + c; } }
 
 // ============================================
-// LOGIN
+// 🔥 LOGIN - VIA GET DENGAN PARAMETER QUERY
 // ============================================
 function doLogin(e) {
   e.preventDefault();
-  var u = document.getElementById('user').value.trim(), p = document.getElementById('pass').value.trim(), btn = document.getElementById('btn-login');
+  var u = document.getElementById('user').value.trim();
+  var p = document.getElementById('pass').value.trim();
+  var btn = document.getElementById('btn-login');
+  
   if (!u || !p) { msg('❌ Isi username dan password', 'err'); return false; }
   
   btn.disabled = true; btn.textContent = '⏳ Menghubungkan...'; hideMsg();
   
-  // 🔥 LOGIN VIA GET (NO CORS)
+  // 🔥 KIRIM username & password SEBAGAI PARAMETER URL
   api('login', { username: u, password: p }).then(function(r) {
     console.log('Login response:', r);
     
-    if (r && r.status === 'success' && r.data) {
+    if (r && r.status === 'success' && r.data && r.data.token) {
+      // SUKSES
       A.auth = true; A.user = r.data.user; A.token = r.data.token; A.ok = true;
       localStorage.setItem('asd_tk', r.data.token); localStorage.setItem('asd_us', JSON.stringify(r.data.user));
       msg('✅ Login berhasil!', 'ok'); setCS('on', '🟢 Connected');
       setTimeout(function() { showDash(); loadStats(); btn.disabled = false; btn.textContent = '🔐 Masuk'; hideMsg(); }, 400);
     } else if (r && r.needSetup) {
-      msg('⚠️ Sistem belum di-setup. Buka URL: ' + API_URL + '?action=setup', 'err');
+      msg('⚠️ Sistem belum di-setup. Buka: ' + API_URL + '?action=setup', 'err');
       btn.disabled = false; btn.textContent = '🔐 Masuk';
     } else {
       msg('❌ ' + (r.message || 'Login gagal! Username/password salah.'), 'err');
