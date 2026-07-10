@@ -12,14 +12,17 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   
-  <!-- 🔥 MANIFEST INLINE - Fix start_url -->
+  <!-- 🔥 MANIFEST INLINE - start_url PAKAI ABSOLUTE URL -->
   <script>
     (function() {
-      const manifestData = {
+      var currentUrl = window.location.href.split('#')[0];
+      if (currentUrl.endsWith('/')) currentUrl = currentUrl.slice(0, -1);
+      
+      var manifestData = {
         name: 'Arsip Surat Digital Enterprise',
         short_name: 'ArsipSurat',
         description: 'Sistem Manajemen Arsip Surat Digital Enterprise v3.1.0',
-        start_url: '.',
+        start_url: currentUrl,
         display: 'standalone',
         background_color: '#F5F5F5',
         theme_color: '#1976D2',
@@ -29,25 +32,27 @@
           {
             src: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192"><rect width="192" height="192" rx="38" fill="#1976D2"/><rect x="48" y="58" width="96" height="12" rx="6" fill="white"/><rect x="48" y="80" width="96" height="12" rx="6" fill="white"/><rect x="48" y="102" width="68" height="12" rx="6" fill="white"/><path d="M125 114l28 28-28 28" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/></svg>'),
             sizes: '192x192',
-            type: 'image/svg+xml'
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
           },
           {
             src: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="102" fill="#1976D2"/><rect x="128" y="154" width="256" height="32" rx="16" fill="white"/><rect x="128" y="214" width="256" height="32" rx="16" fill="white"/><rect x="128" y="274" width="180" height="32" rx="16" fill="white"/><path d="M334 304l74 74-74 74" stroke="white" stroke-width="20" fill="none" stroke-linecap="round"/></svg>'),
             sizes: '512x512',
-            type: 'image/svg+xml'
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
           }
         ]
       };
       
-      const blob = new Blob([JSON.stringify(manifestData)], { type: 'application/manifest+json' });
-      const manifestUrl = URL.createObjectURL(blob);
+      var blob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+      var manifestUrl = URL.createObjectURL(blob);
       
-      const link = document.createElement('link');
+      var link = document.createElement('link');
       link.rel = 'manifest';
       link.href = manifestUrl;
       document.head.appendChild(link);
       
-      console.log('✅ Manifest registered');
+      console.log('✅ Manifest registered: ' + currentUrl);
     })();
   </script>
   
@@ -62,19 +67,36 @@
   
   <style>
     :root {
-      --primary: #1976D2; --primary-dark: #0D47A1;
-      --success: #4CAF50; --warning: #FF9800; --danger: #F44336; --info: #2196F3;
-      --bg: #F5F5F5; --white: #FFFFFF; --text: #212121; --text-secondary: #757575;
-      --border: #E0E0E0; --radius: 12px; --shadow: 0 2px 15px rgba(0,0,0,0.08);
+      --primary: #1976D2;
+      --primary-dark: #0D47A1;
+      --success: #4CAF50;
+      --warning: #FF9800;
+      --danger: #F44336;
+      --info: #2196F3;
+      --bg: #F5F5F5;
+      --white: #FFFFFF;
+      --text: #212121;
+      --text-secondary: #757575;
+      --border: #E0E0E0;
+      --radius: 12px;
+      --shadow: 0 2px 15px rgba(0,0,0,0.08);
     }
+    
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     body {
       font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 16px; line-height: 1.6; color: var(--text); background: var(--bg);
-      -webkit-font-smoothing: antialiased; min-height: 100vh;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
     }
+    
     #app { min-height: 100vh; }
     
+    /* Splash Screen */
     .splash-screen {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #1976D2 100%);
@@ -96,6 +118,7 @@
     @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
     @keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(380%); } }
     
+    /* Login Page */
     .login-page { display: none; min-height: 100vh; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #1976D2 100%); }
     .login-page.active { display: flex; }
     .login-card { background: white; border-radius: 16px; padding: 40px 36px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: fadeInUp 0.5s ease-out; }
@@ -103,26 +126,30 @@
     .login-logo { font-size: 56px; margin-bottom: 12px; }
     .login-title { font-size: 1.5rem; font-weight: 700; color: #1976D2; margin-bottom: 4px; }
     .login-desc { font-size: 0.875rem; color: #757575; }
+    
     .form-group { margin-bottom: 20px; }
     .form-group label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.875rem; color: #333; }
     .form-input { width: 100%; padding: 12px 16px; border: 2px solid #E0E0E0; border-radius: 8px; font-size: 0.9375rem; transition: all 0.2s ease; font-family: inherit; }
     .form-input:focus { outline: none; border-color: #1976D2; box-shadow: 0 0 0 3px rgba(25,118,210,0.1); }
+    
     .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; font-family: inherit; text-align: center; text-decoration: none; }
     .btn-primary { background: #1976D2; color: white; }
     .btn-primary:hover { background: #1565C0; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(25,118,210,0.3); }
-    .btn-primary:disabled { background: #90CAF9; cursor: not-allowed; transform: none; box-shadow: none; }
     .btn-outline { background: transparent; color: #1976D2; border: 2px solid #1976D2; margin-top: 12px; }
     .btn-outline:hover { background: #E3F2FD; }
+    
     .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.875rem; display: none; }
     .alert-error { background: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; }
     .alert-success { background: #E8F5E9; color: #2E7D32; border: 1px solid #C8E6C9; }
     .alert-info { background: #E3F2FD; color: #0D47A1; border: 1px solid #BBDEFB; }
     .alert.show { display: block; }
+    
     .divider { display: flex; align-items: center; margin: 20px 0; color: #9E9E9E; font-size: 0.8125rem; }
     .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #E0E0E0; }
     .divider span { padding: 0 16px; }
     .login-footer { text-align: center; margin-top: 24px; font-size: 0.75rem; color: #BDBDBD; }
     
+    /* Dashboard */
     .dashboard-page { display: none; min-height: 100vh; background: #F5F5F5; }
     .dashboard-page.active { display: block; }
     .dashboard-header { background: white; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #E0E0E0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 12px; }
@@ -130,38 +157,41 @@
     .dashboard-user { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 500; flex-wrap: wrap; }
     .dashboard-avatar { width: 36px; height: 36px; background: #1976D2; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.75rem; }
     .dashboard-content { padding: 24px; max-width: 1200px; margin: 0 auto; }
+    
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #E0E0E0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s; }
-    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .stat-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #E0E0E0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
     .stat-icon { font-size: 28px; margin-bottom: 8px; }
     .stat-value { font-size: 1.5rem; font-weight: 700; color: #212121; }
     .stat-label { font-size: 0.8125rem; color: #757575; margin-top: 2px; }
+    
     .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .card { background: white; border-radius: 12px; border: 1px solid #E0E0E0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
     .card-header { padding: 16px 20px; border-bottom: 1px solid #E0E0E0; font-weight: 600; font-size: 0.9375rem; }
     .card-body { padding: 20px; }
+    
     .menu-list { list-style: none; }
     .menu-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 8px; cursor: pointer; transition: background 0.2s; font-size: 0.875rem; border: none; background: none; width: 100%; text-align: left; font-family: inherit; }
     .menu-item:hover { background: #F5F5F5; }
+    
     .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
     .badge-success { background: #E8F5E9; color: #2E7D32; }
     .badge-warning { background: #FFF3E0; color: #E65100; }
     .badge-info { background: #E3F2FD; color: #0D47A1; }
     .badge-danger { background: #FFEBEE; color: #C62828; }
+    
     .btn-logout { background: #F44336; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.8125rem; font-weight: 500; font-family: inherit; white-space: nowrap; }
     .btn-logout:hover { background: #D32F2F; }
-    .connection-status { font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
+    
+    .connection-status { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
     .connection-status.online { background: #E8F5E9; color: #2E7D32; }
-    .connection-status.offline { background: #FFF3E0; color: #E65100; }
-    .connection-status.error { background: #FFEBEE; color: #C62828; }
-    .api-info { margin-top: 8px; font-size: 0.7rem; color: #9E9E9E; word-break: break-all; }
+    .connection-status.offline { background: #FFEBEE; color: #C62828; }
+    .connection-status.checking { background: #FFF3E0; color: #E65100; }
     
     @media (max-width: 768px) {
       .login-card { padding: 28px 20px; }
       .dashboard-grid { grid-template-columns: 1fr; }
       .dashboard-content { padding: 16px; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .dashboard-header { flex-direction: column; text-align: center; }
     }
     @media (max-width: 480px) {
       .splash-title { font-size: 1.25rem; }
@@ -172,7 +202,7 @@
 </head>
 <body>
   
-  <!-- SPLASH -->
+  <!-- Splash Screen -->
   <div id="splash-screen" class="splash-screen">
     <div class="splash-content">
       <span class="splash-logo">📁</span>
@@ -190,8 +220,8 @@
     </div>
   </div>
   
-  <!-- LOGIN -->
-  <div id="login-page" class="login-page">
+  <!-- Login Page -->
+  <div id="login-page" class="login-page active">
     <div class="login-card">
       <div class="login-header">
         <div class="login-logo">📁</div>
@@ -218,17 +248,16 @@
       <div class="login-footer">
         <p>© 2026 Arsip Surat Digital Enterprise</p>
         <p>Default: admin / Admin123!</p>
-        <p class="api-info" id="api-status-text">🔗 API: Menunggu koneksi...</p>
       </div>
     </div>
   </div>
   
-  <!-- DASHBOARD -->
+  <!-- Dashboard Page -->
   <div id="dashboard-page" class="dashboard-page">
     <header class="dashboard-header">
       <div class="dashboard-brand">📁 Arsip Surat Digital Enterprise</div>
       <div class="dashboard-user">
-        <span id="connection-badge" class="connection-status offline">🔴 Demo Mode</span>
+        <span id="connection-badge" class="connection-status checking">⏳ Connecting...</span>
         <div class="dashboard-avatar" id="user-avatar">A</div>
         <span id="user-name">Administrator</span>
         <button class="btn-logout" onclick="handleLogout()">🚪 Keluar</button>
@@ -239,24 +268,24 @@
       <h2 style="margin-bottom: 20px;">📊 Dashboard</h2>
       
       <div class="stats-grid">
-        <div class="stat-card" onclick="showFeatureAlert('Surat Masuk')">
+        <div class="stat-card">
           <div class="stat-icon">📥</div>
-          <div class="stat-value" id="stat-masuk">156</div>
+          <div class="stat-value" id="stat-masuk">0</div>
           <div class="stat-label">Total Surat Masuk</div>
         </div>
-        <div class="stat-card" onclick="showFeatureAlert('Surat Keluar')">
+        <div class="stat-card">
           <div class="stat-icon">📤</div>
-          <div class="stat-value" id="stat-keluar">89</div>
+          <div class="stat-value" id="stat-keluar">0</div>
           <div class="stat-label">Total Surat Keluar</div>
         </div>
-        <div class="stat-card" onclick="showFeatureAlert('Disposisi')">
+        <div class="stat-card">
           <div class="stat-icon">📋</div>
-          <div class="stat-value" id="stat-disposisi">45</div>
+          <div class="stat-value" id="stat-disposisi">0</div>
           <div class="stat-label">Disposisi</div>
         </div>
-        <div class="stat-card" onclick="showFeatureAlert('Approval')">
+        <div class="stat-card">
           <div class="stat-icon">✅</div>
-          <div class="stat-value" id="stat-approval">12</div>
+          <div class="stat-value" id="stat-approval">0</div>
           <div class="stat-label">Approval Pending</div>
         </div>
       </div>
@@ -266,46 +295,46 @@
           <div class="card-header">📋 Menu Utama</div>
           <div class="card-body">
             <ul class="menu-list">
-              <li><button class="menu-item" onclick="showFeatureAlert('Surat Masuk')">📥 Surat Masuk <span class="badge badge-info">156 surat</span></button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('Surat Keluar')">📤 Surat Keluar <span class="badge badge-success">89 surat</span></button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('Disposisi')">📋 Disposisi <span class="badge badge-warning">8 pending</span></button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('Approval')">✅ Approval <span class="badge badge-warning">3 pending</span></button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('Pencarian')">🔍 Pencarian Global</button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('Notifikasi')">🔔 Notifikasi</button></li>
+              <li><button class="menu-item" onclick="loadModule('suratMasuk')">📥 Surat Masuk</button></li>
+              <li><button class="menu-item" onclick="loadModule('suratKeluar')">📤 Surat Keluar</button></li>
+              <li><button class="menu-item" onclick="loadModule('disposisi')">📋 Disposisi</button></li>
+              <li><button class="menu-item" onclick="loadModule('approval')">✅ Approval</button></li>
+              <li><button class="menu-item" onclick="loadModule('search')">🔍 Pencarian Global</button></li>
             </ul>
           </div>
         </div>
+        
         <div class="card">
           <div class="card-header">⚙️ Administrasi</div>
           <div class="card-body">
             <ul class="menu-list">
-              <li><button class="menu-item" onclick="showFeatureAlert('Manajemen User')">👥 Manajemen User</button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('Master Data')">🗄️ Master Data</button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('Konfigurasi')">⚙️ Konfigurasi Sistem</button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('Blockchain')">⛓️ Blockchain Audit</button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('Backup')">💾 Backup & Restore</button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('System Status')">🖥️ Status Sistem</button></li>
+              <li><button class="menu-item" onclick="loadModule('users')">👥 Manajemen User</button></li>
+              <li><button class="menu-item" onclick="loadModule('config')">⚙️ Konfigurasi Sistem</button></li>
+              <li><button class="menu-item" onclick="loadModule('blockchain')">⛓️ Blockchain Audit</button></li>
+              <li><button class="menu-item" onclick="loadModule('backup')">💾 Backup & Restore</button></li>
+              <li><button class="menu-item" onclick="loadModule('system')">🖥️ Status Sistem</button></li>
             </ul>
           </div>
         </div>
+        
         <div class="card" style="grid-column: 1 / -1;">
           <div class="card-header">🤖 Fitur AI & Keamanan</div>
           <div class="card-body">
             <ul class="menu-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-              <li><button class="menu-item" onclick="showFeatureAlert('AI Smart Search')">🤖 AI Smart Search</button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('AI Auto Tagging')">🏷️ AI Auto Tagging</button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('AI Anomaly Detection')">⚠️ Anomaly Detection</button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('Blockchain Verification')">⛓️ Blockchain Verify</button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('Biometric Auth')">🖐️ Biometric Auth</button></li>
-              <li><button class="menu-item" onclick="showFeatureAlert('System Status')">🖥️ System Status</button></li>
+              <li><button class="menu-item" onclick="loadModule('ai')">🤖 AI Smart Search</button></li>
+              <li><button class="menu-item" onclick="loadModule('ai')">🏷️ AI Auto Tagging</button></li>
+              <li><button class="menu-item" onclick="loadModule('ai')">⚠️ Anomaly Detection</button></li>
+              <li><button class="menu-item" onclick="loadModule('blockchain')">⛓️ Blockchain Verify</button></li>
+              <li><button class="menu-item" onclick="handleBiometricLogin()">🖐️ Biometric Auth</button></li>
+              <li><button class="menu-item" onclick="loadModule('system')">🖥️ System Status</button></li>
             </ul>
           </div>
         </div>
       </div>
       
       <div style="text-align: center; margin-top: 32px; padding: 20px; color: #757575; font-size: 0.875rem;">
-        <p><strong>ℹ️ Demo Version</strong></p>
-        <p>Fitur lengkap tersedia setelah koneksi ke Google Apps Script Backend.</p>
+        <p><strong>Arsip Surat Digital Enterprise v3.1.0</strong></p>
+        <p id="api-status-text">🔄 Menghubungkan ke server...</p>
         <p style="margin-top: 8px;">
           <span class="badge badge-success">✅ AI Ready</span>
           <span class="badge badge-success" style="margin-left: 4px;">✅ Blockchain Ready</span>
@@ -318,41 +347,43 @@
   </div>
   
   <!-- ============================================ -->
-  <!-- MAIN SCRIPT - FINAL VERSION                  -->
+  <!-- MAIN APPLICATION SCRIPT                      -->
   <!-- ============================================ -->
   <script>
     // ============================================
-    // STATE
+    // ARSIP SURAT DIGITAL ENTERPRISE v3.1.0
     // ============================================
-    const STATE = {
+    
+    // 🔥 GANTI DENGAN URL GOOGLE APPS SCRIPT ANDA
+    var API_BASE_URL = 'https://script.google.com/macros/s/AKfycbzzmttzSRYsM7KodsEdFqHRdwBs2kY7VTzFPOpsiab3p3v-6CBl-eKIuUI0Vhqd0opYtA/exec';
+    
+    var APP = {
       isAuthenticated: false,
       user: null,
       token: null,
-      apiConnected: false,
-      apiChecked: false
+      apiConnected: false
     };
     
-    // 🔥 API CONFIG - Google Apps Script
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzzmttzSRYsM7KodsEdFqHRdwBs2kY7VTzFPOpsiab3p3v-6CBl-eKIuUI0Vhqd0opYtA/exec';
-    
     // ============================================
-    // INIT
+    // INITIALIZATION
     // ============================================
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('%c📁 Arsip Surat Digital Enterprise v3.1.0', 'font-size:16px;font-weight:bold;color:#1976D2');
-      console.log('%c🚀 Initializing...', 'color:#666');
+      console.log('%c📁 Arsip Surat Digital Enterprise v3.1.0', 'font-size:18px;font-weight:bold;color:#1976D2');
+      console.log('%c🚀 Starting...', 'color:#4CAF50');
       
-      // Cek saved auth
-      const savedToken = localStorage.getItem('asd_token_v2');
-      const savedUser = localStorage.getItem('asd_user_v2');
+      // Check saved session
+      var savedToken = localStorage.getItem('asd_token_v3');
+      var savedUser = localStorage.getItem('asd_user_v3');
       
       if (savedToken && savedUser) {
         try {
-          STATE.token = savedToken;
-          STATE.user = JSON.parse(savedUser);
-          STATE.isAuthenticated = true;
+          APP.token = savedToken;
+          APP.user = JSON.parse(savedUser);
+          APP.isAuthenticated = true;
           showDashboard();
-          checkApiConnection();
+          testApiConnection().then(function(ok) {
+            if (ok) loadDashboardData();
+          });
         } catch(e) {
           clearAuth();
           showLogin();
@@ -367,176 +398,132 @@
     });
     
     // ============================================
-    // SPLASH
-    // ============================================
-    function hideSplash() {
-      const s = document.getElementById('splash-screen');
-      if (s) { s.classList.add('hidden'); setTimeout(() => { if(s.parentNode)s.parentNode.removeChild(s); }, 500); }
-    }
-    
-    // ============================================
     // NAVIGATION
     // ============================================
     function showLogin() {
       document.getElementById('login-page').classList.add('active');
       document.getElementById('dashboard-page').classList.remove('active');
-      window.location.hash = 'login';
+      window.location.hash = '#/login';
     }
     
     function showDashboard() {
       document.getElementById('login-page').classList.remove('active');
       document.getElementById('dashboard-page').classList.add('active');
-      window.location.hash = 'dashboard';
+      window.location.hash = '#/dashboard';
       
-      if (STATE.user) {
-        document.getElementById('user-name').textContent = STATE.user.namaLengkap || STATE.user.username || 'User';
-        document.getElementById('user-avatar').textContent = getInitials(STATE.user.namaLengkap || STATE.user.username || 'U');
+      if (APP.user) {
+        document.getElementById('user-name').textContent = APP.user.namaLengkap || APP.user.username;
+        document.getElementById('user-avatar').textContent = getInitials(APP.user.namaLengkap || APP.user.username);
       }
     }
     
     function handleHash() {
-      const h = window.location.hash;
-      if (h.includes('login') && !STATE.isAuthenticated) showLogin();
-      else if (STATE.isAuthenticated && !h.includes('login')) showDashboard();
-      else if (!STATE.isAuthenticated) showLogin();
+      var hash = window.location.hash;
+      if (!APP.isAuthenticated && !hash.includes('login')) {
+        showLogin();
+      }
+    }
+    
+    function hideSplash() {
+      var el = document.getElementById('splash-screen');
+      if (el) { el.classList.add('hidden'); setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 500); }
     }
     
     // ============================================
-    // 🔥 API - FIX CORS DENGAN MODE no-cors
+    // API CALLS
     // ============================================
-    
-    async function checkApiConnection() {
+    async function apiGet(action, params) {
+      var url = API_BASE_URL + '?action=' + encodeURIComponent(action);
+      if (APP.token) url += '&token=' + encodeURIComponent(APP.token);
+      if (params) {
+        Object.keys(params).forEach(function(k) {
+          if (params[k] !== undefined && params[k] !== '') {
+            url += '&' + k + '=' + encodeURIComponent(params[k]);
+          }
+        });
+      }
+      
       try {
-        // 🔥 Gunakan mode no-cors untuk menghindari CORS error
-        const result = await apiCallGet('ping');
+        var res = await fetch(url);
+        return await res.json();
+      } catch(e) {
+        console.error('API GET Error:', e.message);
+        return { status: 'error', message: 'Gagal terhubung ke server' };
+      }
+    }
+    
+    async function apiPost(action, data) {
+      var url = API_BASE_URL + '?action=' + encodeURIComponent(action);
+      if (APP.token) url += '&token=' + encodeURIComponent(APP.token);
+      
+      try {
+        var res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data || {})
+        });
+        return await res.json();
+      } catch(e) {
+        console.error('API POST Error:', e.message);
+        return { status: 'error', message: 'Gagal terhubung ke server' };
+      }
+    }
+    
+    async function testApiConnection() {
+      updateConnectionBadge('checking', '⏳ Menghubungkan...');
+      
+      try {
+        var result = await apiGet('ping');
         if (result && result.status === 'success') {
-          STATE.apiConnected = true;
-          STATE.apiChecked = true;
-          updateConnectionUI('online', '🟢 API Connected');
+          APP.apiConnected = true;
+          updateConnectionBadge('online', '🟢 Connected');
+          document.getElementById('api-status-text').textContent = '✅ Terhubung ke server';
           console.log('✅ API Connected');
-          loadDashboardFromApi();
           return true;
         }
+        updateConnectionBadge('offline', '🔴 Offline');
+        document.getElementById('api-status-text').textContent = '⚠️ Server tidak terjangkau - Demo Mode';
+        return false;
       } catch(e) {
-        console.log('⚠️ API check failed:', e.message);
-      }
-      
-      STATE.apiConnected = false;
-      STATE.apiChecked = true;
-      updateConnectionUI('offline', '🔴 Demo Mode');
-      return false;
-    }
-    
-    // 🔥 API GET Call (dengan fallback)
-    async function apiCallGet(action, params = {}) {
-      let url = API_URL + '?action=' + encodeURIComponent(action);
-      
-      // Add token
-      if (STATE.token) {
-        url += '&token=' + encodeURIComponent(STATE.token);
-      }
-      
-      // Add params
-      Object.keys(params).forEach(k => {
-        if (params[k] !== undefined && params[k] !== '') {
-          url += '&' + k + '=' + encodeURIComponent(params[k]);
-        }
-      });
-      
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          return data;
-        }
-        
-        throw new Error('HTTP ' + response.status);
-      } catch(e) {
-        // 🔥 Fallback: Jika fetch gagal (CORS/network), return null
-        console.warn('API GET failed:', e.message);
-        return null;
+        updateConnectionBadge('offline', '🔴 Offline');
+        document.getElementById('api-status-text').textContent = '⚠️ Server tidak terjangkau - Demo Mode';
+        return false;
       }
     }
     
-    // 🔥 API POST Call (dengan fallback)
-    async function apiCallPost(action, body = {}) {
-      const url = API_URL + '?action=' + encodeURIComponent(action);
-      
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({ ...body, token: STATE.token || '' })
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          return data;
-        }
-        
-        throw new Error('HTTP ' + response.status);
-      } catch(e) {
-        console.warn('API POST failed:', e.message);
-        return null;
-      }
-    }
-    
-    function updateConnectionUI(status, text) {
-      const badge = document.getElementById('connection-badge');
-      const apiText = document.getElementById('api-status-text');
-      
+    function updateConnectionBadge(status, text) {
+      var badge = document.getElementById('connection-badge');
       if (badge) {
         badge.textContent = text;
         badge.className = 'connection-status ' + status;
       }
-      if (apiText) {
-        if (status === 'online') {
-          apiText.textContent = '🔗 API: Connected ✅';
-        } else {
-          apiText.textContent = '🔗 API: Demo Mode (CORS - perlu deploy ulang GAS)';
-        }
-      }
     }
     
-    async function loadDashboardFromApi() {
+    async function loadDashboardData() {
       try {
-        const result = await apiCallGet('dashboard.stats');
+        var result = await apiGet('dashboard.stats');
         if (result && result.status === 'success' && result.data) {
-          updateStats(result.data);
-          console.log('✅ Dashboard loaded from API');
+          var d = result.data;
+          document.getElementById('stat-masuk').textContent = (d.suratMasuk && d.suratMasuk.total) || 0;
+          document.getElementById('stat-keluar').textContent = (d.suratKeluar && d.suratKeluar.total) || 0;
+          document.getElementById('stat-disposisi').textContent = (d.disposisi && d.disposisi.total) || 0;
+          document.getElementById('stat-approval').textContent = (d.disposisi && d.disposisi.pending) || 0;
+          console.log('✅ Dashboard loaded');
         }
       } catch(e) {
-        console.log('ℹ️ Using demo stats');
-      }
-    }
-    
-    function updateStats(data) {
-      if (data.suratMasuk) {
-        document.getElementById('stat-masuk').textContent = data.suratMasuk.total || 0;
-      }
-      if (data.suratKeluar) {
-        document.getElementById('stat-keluar').textContent = data.suratKeluar.total || 0;
-      }
-      if (data.disposisi) {
-        document.getElementById('stat-disposisi').textContent = data.disposisi.total || 0;
-        document.getElementById('stat-approval').textContent = data.disposisi.pending || 0;
+        console.log('ℹ️ Using demo data');
       }
     }
     
     // ============================================
-    // 🔥 LOGIN - API + DEMO FALLBACK
+    // LOGIN
     // ============================================
-    
     async function handleLogin(event) {
       event.preventDefault();
       
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const btn = document.getElementById('login-btn');
+      var username = document.getElementById('username').value.trim();
+      var password = document.getElementById('password').value.trim();
+      var btn = document.getElementById('login-btn');
       
       if (!username || !password) {
         showAlert('❌ Harap isi username dan password', 'error');
@@ -544,84 +531,88 @@
       }
       
       btn.disabled = true;
-      btn.textContent = '⏳ Menghubungkan...';
+      btn.textContent = '⏳ Menghubungkan ke server...';
       hideAlert();
       
-      // 🔥 STEP 1: Coba login via API
-      const apiResult = await apiCallPost('login', { username, password });
-      
-      if (apiResult && apiResult.status === 'success' && apiResult.data) {
-        // API LOGIN SUKSES
-        STATE.isAuthenticated = true;
-        STATE.user = apiResult.data.user;
-        STATE.token = apiResult.data.token;
-        STATE.apiConnected = true;
+      // 🔥 Coba login via API
+      try {
+        var result = await apiPost('login', { username: username, password: password });
         
-        localStorage.setItem('asd_token_v2', apiResult.data.token);
-        localStorage.setItem('asd_user_v2', JSON.stringify(apiResult.data.user));
-        
-        updateConnectionUI('online', '🟢 API Connected');
-        showAlert('✅ Login berhasil! Terhubung ke server.', 'success');
-        
-        setTimeout(() => {
-          showDashboard();
-          loadDashboardFromApi();
+        if (result && result.status === 'success' && result.data) {
+          APP.isAuthenticated = true;
+          APP.user = result.data.user;
+          APP.token = result.data.token;
+          APP.apiConnected = true;
+          
+          localStorage.setItem('asd_token_v3', result.data.token);
+          localStorage.setItem('asd_user_v3', JSON.stringify(result.data.user));
+          
+          showAlert('✅ Login berhasil! Terhubung ke server.', 'success');
+          updateConnectionBadge('online', '🟢 Connected');
+          
+          setTimeout(function() {
+            showDashboard();
+            loadDashboardData();
+            btn.disabled = false;
+            btn.textContent = '🔐 Masuk';
+            hideAlert();
+          }, 800);
+          return false;
+        } else if (result && result.needSetup) {
+          showAlert('⚠️ Sistem belum di-setup. Buka URL backend?action=setup', 'error');
           btn.disabled = false;
           btn.textContent = '🔐 Masuk';
-          hideAlert();
-        }, 800);
-        return false;
-      }
-      
-      if (apiResult && apiResult.needSetup) {
-        showAlert('⚠️ Sistem belum di-setup. Buka Google Apps Script dan jalankan action=setup', 'error');
-        btn.disabled = false;
-        btn.textContent = '🔐 Masuk';
-        return false;
-      }
-      
-      // 🔥 STEP 2: API gagal/tidak tersedia - GUNAKAN DEMO LOGIN
-      console.log('ℹ️ API tidak tersedia, menggunakan Demo Login');
-      
-      const demoUsers = {
-        'admin': { id: '1', username: 'admin', email: 'admin@instansi.id', namaLengkap: 'Administrator', nip: '198001012010011001', jabatan: 'Administrator Sistem', unitKerja: 'TI', role: 'admin', isActive: true },
-        'staff': { id: '2', username: 'staff', email: 'staff@instansi.id', namaLengkap: 'Staff User', nip: '198501012015011002', jabatan: 'Staff', unitKerja: 'Umum', role: 'staff', isActive: true }
-      };
-      
-      const demoPasswords = { 'admin': 'Admin123!', 'staff': 'Staff123!' };
-      
-      if (demoUsers[username] && password === demoPasswords[username]) {
-        STATE.isAuthenticated = true;
-        STATE.user = demoUsers[username];
-        STATE.token = 'demo-' + Date.now();
-        STATE.apiConnected = false;
-        
-        localStorage.setItem('asd_token_v2', STATE.token);
-        localStorage.setItem('asd_user_v2', JSON.stringify(STATE.user));
-        
-        updateConnectionUI('offline', '🔴 Demo Mode');
-        showAlert('✅ Login berhasil (Demo Mode)! API tidak tersedia.', 'success');
-        
-        setTimeout(() => {
-          showDashboard();
+          return false;
+        } else if (result && result.message) {
+          showAlert('❌ ' + result.message, 'error');
           btn.disabled = false;
           btn.textContent = '🔐 Masuk';
-          hideAlert();
-        }, 800);
-        return false;
+          return false;
+        }
+      } catch(e) {
+        console.log('API login error, trying demo...');
       }
       
-      // Login gagal
-      showAlert('❌ Username atau password salah', 'error');
-      btn.disabled = false;
-      btn.textContent = '🔐 Masuk';
-      
-      const card = document.querySelector('.login-card');
-      if (card) {
-        card.style.animation = 'none';
-        card.offsetHeight;
-        card.style.animation = 'shake 0.5s ease';
-      }
+      // 🔥 Fallback: Demo login
+      setTimeout(function() {
+        if ((username === 'admin' && password === 'Admin123!') || 
+            (username === 'staff' && password === 'Staff123!')) {
+          
+          APP.isAuthenticated = true;
+          APP.user = {
+            id: username === 'admin' ? '1' : '2',
+            username: username,
+            email: username + '@instansi.id',
+            namaLengkap: username === 'admin' ? 'Administrator' : 'Staff User',
+            jabatan: username === 'admin' ? 'Administrator Sistem' : 'Staff',
+            unitKerja: 'TI',
+            role: username === 'admin' ? 'admin' : 'staff'
+          };
+          APP.token = 'demo-' + Date.now();
+          APP.apiConnected = false;
+          
+          localStorage.setItem('asd_token_v3', APP.token);
+          localStorage.setItem('asd_user_v3', JSON.stringify(APP.user));
+          
+          showAlert('✅ Login berhasil (Demo Mode)!', 'success');
+          updateConnectionBadge('offline', '🔴 Demo Mode');
+          document.getElementById('api-status-text').textContent = '⚠️ Demo Mode - Koneksikan backend untuk fitur lengkap';
+          
+          setTimeout(function() {
+            showDashboard();
+            btn.disabled = false;
+            btn.textContent = '🔐 Masuk';
+            hideAlert();
+          }, 800);
+        } else {
+          showAlert('❌ Username atau password salah', 'error');
+          btn.disabled = false;
+          btn.textContent = '🔐 Masuk';
+          
+          var card = document.querySelector('.login-card');
+          if (card) { card.style.animation = 'none'; card.offsetHeight; card.style.animation = 'shake 0.5s ease'; }
+        }
+      }, 500);
       
       return false;
     }
@@ -633,126 +624,102 @@
       }
     }
     
-    function handleBiometricLogin() {
-      if (!window.PublicKeyCredential) {
-        showAlert('⚠️ Biometrik tidak didukung. Gunakan Chrome/Edge.', 'error');
-      } else {
-        showAlert('🖐️ Demo: Gunakan login password. Biometrik perlu koneksi API.', 'info');
-        setTimeout(hideAlert, 3000);
-      }
+    function clearAuth() {
+      APP.isAuthenticated = false;
+      APP.user = null;
+      APP.token = null;
+      APP.apiConnected = false;
+      localStorage.removeItem('asd_token_v3');
+      localStorage.removeItem('asd_user_v3');
     }
     
-    function clearAuth() {
-      STATE.isAuthenticated = false;
-      STATE.user = null;
-      STATE.token = null;
-      STATE.apiConnected = false;
-      localStorage.removeItem('asd_token_v2');
-      localStorage.removeItem('asd_user_v2');
+    function handleBiometricLogin() {
+      showAlert('🖐️ Demo: Klik "Masuk" untuk login dengan password.', 'info');
+      setTimeout(hideAlert, 3000);
+    }
+    
+    // ============================================
+    // MODULE LOADER
+    // ============================================
+    function loadModule(module) {
+      if (!APP.apiConnected) {
+        alert('📌 Fitur ' + module + '\n\nFitur ini memerlukan koneksi ke backend Google Apps Script.\n\nSaat ini: Demo Mode\n\nSilakan deploy backend dan update API_BASE_URL.');
+        return;
+      }
+      alert('📌 Fitur ' + module + '\n\nFitur ini akan menampilkan data real-time dari Google Sheets.\n\nStatus: API Connected ✅');
     }
     
     // ============================================
     // UI HELPERS
     // ============================================
-    
-    function showAlert(msg, type) {
-      const a = document.getElementById('login-alert');
-      if (a) { a.textContent = msg; a.className = 'alert alert-' + (type||'error') + ' show'; }
+    function showAlert(message, type) {
+      var el = document.getElementById('login-alert');
+      if (el) { el.textContent = message; el.className = 'alert alert-' + (type||'error') + ' show'; }
     }
     
     function hideAlert() {
-      const a = document.getElementById('login-alert');
-      if (a) { a.className = 'alert'; a.textContent = ''; }
-    }
-    
-    function showFeatureAlert(name) {
-      alert('📌 ' + name + '\n\nFitur lengkap tersedia dengan koneksi API.\n\nDemo v3.1.0 | Login: admin / Admin123!');
+      var el = document.getElementById('login-alert');
+      if (el) { el.className = 'alert'; el.textContent = ''; }
     }
     
     function getInitials(name) {
       if (!name) return '?';
-      return name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2);
+      return name.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().substring(0, 2);
     }
     
     // ============================================
     // SERVICE WORKER (SELF-CONTAINED)
     // ============================================
-    
     (function() {
       if ('serviceWorker' in navigator) {
-        const swCode = `
-          const CACHE_NAME = 'asd-v3.1.0';
-          self.addEventListener('install', e => { console.log('SW: Install'); self.skipWaiting(); });
-          self.addEventListener('activate', e => { console.log('SW: Activate'); e.waitUntil(clients.claim()); });
-          self.addEventListener('fetch', e => {
-            if (e.request.method !== 'GET' || e.request.url.includes('script.google.com')) return;
-            e.respondWith(
-              caches.match(e.request).then(cached => {
-                const fetched = fetch(e.request).then(resp => {
-                  if (resp && resp.status === 200) {
-                    const clone = resp.clone();
-                    caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
-                  }
-                  return resp;
-                }).catch(() => cached || new Response('Offline', { status: 503 }));
-                return cached || fetched;
-              })
-            );
-          });
-          console.log('✅ SW Ready');
-        `;
+        var swCode = [
+          'var CACHE_NAME = "asd-v3.1.0";',
+          'self.addEventListener("install",function(e){self.skipWaiting();});',
+          'self.addEventListener("activate",function(e){e.waitUntil(clients.claim());});',
+          'self.addEventListener("fetch",function(e){if(e.request.method!=="GET")return;if(e.request.url.indexOf("script.google.com")>-1)return;e.respondWith(caches.match(e.request).then(function(c){return c||fetch(e.request).then(function(r){if(r&&r.status===200){var rc=r.clone();caches.open(CACHE_NAME).then(function(ca){ca.put(e.request,rc);});}return r;}).catch(function(){return c||new Response("Offline",{status:503});});}));});'
+        ].join('');
         
-        const blob = new Blob([swCode], { type: 'application/javascript' });
-        const swUrl = URL.createObjectURL(blob);
+        var blob = new Blob([swCode], { type: 'application/javascript' });
+        var swUrl = URL.createObjectURL(blob);
         
         navigator.serviceWorker.register(swUrl, { scope: '/' })
-          .then(r => console.log('✅ SW Registered:', r.scope))
-          .catch(e => console.log('⚠️ SW:', e.message));
+          .then(function(reg) { console.log('✅ SW Registered'); })
+          .catch(function(err) { console.log('⚠️ SW:', err.message); });
       }
     })();
     
     // ============================================
-    // ONLINE/OFFLINE
-    // ============================================
-    
-    window.addEventListener('online', () => {
-      console.log('🟢 Online');
-      if (STATE.isAuthenticated) { checkApiConnection(); }
-    });
-    
-    window.addEventListener('offline', () => {
-      console.log('🔴 Offline');
-      updateConnectionUI('offline', '🔴 Offline');
-    });
-    
-    // ============================================
     // SHAKE ANIMATION
     // ============================================
-    
-    const shakeCSS = document.createElement('style');
+    var shakeCSS = document.createElement('style');
     shakeCSS.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}';
     document.head.appendChild(shakeCSS);
     
     // ============================================
-    // CONSOLE
+    // ONLINE/OFFLINE
     // ============================================
+    window.addEventListener('online', function() {
+      console.log('🟢 Online');
+      if (APP.isAuthenticated) {
+        testApiConnection().then(function(ok) { if (ok) loadDashboardData(); });
+      }
+    });
     
-    console.log(`
-    ╔══════════════════════════════════════╗
-    ║  📁 ARSIP SURAT DIGITAL v3.1.0     ║
-    ║  🌐 DEMO + API FALLBACK            ║
-    ║                                     ║
-    ║  Login: admin / Admin123!          ║
-    ║  Login: staff / Staff123!          ║
-    ║                                     ║
-    ║  🔗 API: ${API_URL.substring(0,50)}...  ║
-    ╚══════════════════════════════════════╝
-    `);
+    window.addEventListener('offline', function() {
+      console.log('🔴 Offline');
+      updateConnectionBadge('offline', '🔴 Offline');
+    });
     
-    console.log('💡 Mode: Demo (API akan dicek otomatis)');
-    console.log('⚠️ CORS: Jika API diblokir, gunakan Demo Login');
-    console.log('📱 PWA: Add to Home Screen di Chrome/Edge');
+    // ============================================
+    // CONSOLE WELCOME
+    // ============================================
+    console.log('\n    ╔══════════════════════════════════════╗\n    ║  📁 ARSIP SURAT DIGITAL v3.1.0      ║\n    ║  🚀 ENTERPRISE EDITION              ║\n    ║  📅 Build: 2026-07-10              ║\n    ║                                     ║\n    ║  Login: admin / Admin123!          ║\n    ║  Login: staff / Staff123!          ║\n    ╚══════════════════════════════════════╝\n  ');
+    
+    console.log('🔗 API URL:', API_BASE_URL);
+    console.log('💡 Update API_BASE_URL dengan URL Google Apps Script Anda');
+    console.log('📋 Semua file self-contained - NO 404 ERRORS!');
     
   </script>
+  
 </body>
 </html>
