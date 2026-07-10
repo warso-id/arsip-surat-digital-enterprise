@@ -3,7 +3,12 @@ Allow: /
 Disallow: /api/
 Disallow: /private/
 Disallow: /tmp/
+Disallow: /config/
 
 Sitemap: https://warso-id.github.io/sitemap.xml
 
-# Crawl-delay: 10
+# Crawl settings
+Crawl-delay: 10
+
+# Sitemap additional
+Sitemap: https://warso-id.github.io/sitemap.xml
