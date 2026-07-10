@@ -3,1487 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Arsip Surat Digital Enterprise v30.1.0 - AI Powered Document Management System">
+    <meta name="description" content="Dashboard - Arsip Surat Digital Enterprise v30.1.0">
     <meta name="theme-color" content="#1976D2">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Arsip Surat">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
-    
     <title>Dashboard - Arsip Surat Digital Enterprise v30.1.0</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📄%3C/text%3E%3C/svg%3E">
+    <link rel="manifest" href="/manifest.json">
     
     <style>
-        /* ========== CSS VARIABLES ========== */
         :root {
-            --primary: #1976D2;
-            --primary-dark: #1565C0;
-            --primary-light: #42A5F5;
-            --secondary: #26A69A;
-            --accent: #FF7043;
-            --success: #4CAF50;
-            --warning: #FF9800;
-            --error: #F44336;
-            --info: #2196F3;
-            --bg: #F5F5F5;
-            --surface: #FFFFFF;
-            --text: #212121;
-            --text-secondary: #757575;
-            --border: #E0E0E0;
-            --shadow: 0 2px 8px rgba(0,0,0,0.1);
-            --shadow-lg: 0 4px 16px rgba(0,0,0,0.15);
-            --radius: 12px;
-            --radius-sm: 8px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --sidebar-width: 280px;
-            --header-height: 64px;
-            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --primary:#1976D2;--primary-dark:#1565C0;--bg:#F5F5F5;--surface:#FFFFFF;
+            --text:#212121;--text-secondary:#757575;--border:#E0E0E0;
+            --shadow:0 2px 8px rgba(0,0,0,0.1);--shadow-lg:0 4px 16px rgba(0,0,0,0.15);
+            --radius:12px;--radius-sm:8px;--sidebar-width:260px;--header-height:60px;
+            --success:#4CAF50;--warning:#FF9800;--error:#F44336;--info:#2196F3;
+            --font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
         }
-
-        [data-theme="dark"] {
-            --bg: #121212;
-            --surface: #1E1E1E;
-            --text: #FFFFFF;
-            --text-secondary: #B0B0B0;
-            --border: #333333;
-            --shadow: 0 2px 8px rgba(0,0,0,0.4);
-            --shadow-lg: 0 4px 16px rgba(0,0,0,0.6);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: var(--font-family);
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-            transition: var(--transition);
-        }
-
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
-
-        /* ========== LAYOUT ========== */
-        .app-container { display: flex; min-height: 100vh; }
-
-        /* ========== SIDEBAR ========== */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--surface);
-            border-right: 1px solid var(--border);
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            transition: var(--transition);
-            box-shadow: var(--shadow);
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
-            text-align: center;
-        }
-
-        .sidebar-logo {
-            font-size: 48px;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .sidebar-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--primary);
-            line-height: 1.3;
-        }
-
-        .sidebar-subtitle {
-            font-size: 10px;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
-
-        .sidebar-nav {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px;
-        }
-
-        .nav-section { margin-bottom: 16px; }
-
-        .nav-section-title {
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            padding: 8px 12px;
-            letter-spacing: 1px;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: var(--transition);
-            color: var(--text);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 4px;
-            position: relative;
-        }
-
-        .nav-item:hover { background: rgba(25, 118, 210, 0.08); color: var(--primary); }
-
-        .nav-item.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
-        }
-
-        .nav-item .icon { font-size: 20px; width: 24px; text-align: center; }
-
-        .nav-item .badge {
-            position: absolute;
-            right: 12px;
-            background: var(--error);
-            color: white;
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-
-        .sidebar-footer {
-            padding: 16px;
-            border-top: 1px solid var(--border);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .user-info:hover { background: rgba(0,0,0,0.05); }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .user-details { flex: 1; min-width: 0; }
-
-        .user-name {
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .user-role { font-size: 11px; color: var(--text-secondary); }
-
-        /* ========== MAIN CONTENT ========== */
-        .main-content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            transition: var(--transition);
-        }
-
-        /* ========== HEADER ========== */
-        .header {
-            background: var(--surface);
-            height: var(--header-height);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            padding: 0 24px;
-            gap: 16px;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            box-shadow: var(--shadow);
-        }
-
-        .header-left { display: flex; align-items: center; gap: 16px; }
-
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text);
-            padding: 4px;
-        }
-
-        .breadcrumb { font-size: 14px; font-weight: 600; color: var(--text); }
-
-        .header-right {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header-btn {
-            background: none;
-            border: 1px solid var(--border);
-            padding: 8px 12px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-size: 18px;
-            color: var(--text);
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .header-btn:hover { background: rgba(0,0,0,0.05); }
-
-        .header-btn .count {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: var(--error);
-            color: white;
-            font-size: 10px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-        }
-
-        .online-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            display: inline-block;
-        }
-
-        .online-indicator.offline { background: var(--error); }
-
-        /* ========== PAGE CONTENT ========== */
-        .page-content { padding: 24px; min-height: calc(100vh - var(--header-height)); }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .page-title { font-size: 24px; font-weight: 700; }
-
-        .page-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
-
-        /* ========== CARDS ========== */
-        .card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            transition: var(--transition);
-            margin-bottom: 20px;
-        }
-
-        .card:hover { box-shadow: var(--shadow-lg); }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .card-title { font-size: 18px; font-weight: 600; }
-
-        /* ========== STATS GRID ========== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-
-        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-        }
-
-        .stat-icon.blue { background: rgba(25,118,210,0.1); color: var(--primary); }
-        .stat-icon.green { background: rgba(76,175,80,0.1); color: var(--success); }
-        .stat-icon.orange { background: rgba(255,152,0,0.1); color: var(--warning); }
-        .stat-icon.red { background: rgba(244,67,54,0.1); color: var(--error); }
-
-        .stat-info h3 { font-size: 28px; font-weight: 700; }
-        .stat-info p { font-size: 13px; color: var(--text-secondary); }
-
-        /* ========== TABLES ========== */
-        .table-container {
-            overflow-x: auto;
-            background: var(--surface);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-        }
-
-        table { width: 100%; border-collapse: collapse; }
-
-        th {
-            background: var(--bg);
-            padding: 14px 16px;
-            text-align: left;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid var(--border);
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 12px 16px;
-            font-size: 14px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        tr:hover td { background: rgba(25,118,210,0.02); }
-
-        /* ========== BUTTONS ========== */
-        .btn {
-            padding: 10px 20px;
-            border-radius: var(--radius-sm);
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            font-family: var(--font-family);
-        }
-
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-success { background: var(--success); color: white; }
-        .btn-warning { background: var(--warning); color: white; }
-        .btn-error { background: var(--error); color: white; }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-        .btn-outline:hover { background: rgba(0,0,0,0.05); }
-        .btn-sm { padding: 6px 12px; font-size: 12px; }
-
-        /* ========== BADGES ========== */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .badge-success { background: rgba(76,175,80,0.1); color: var(--success); }
-        .badge-warning { background: rgba(255,152,0,0.1); color: var(--warning); }
-        .badge-error { background: rgba(244,67,54,0.1); color: var(--error); }
-        .badge-info { background: rgba(33,150,243,0.1); color: var(--info); }
-        .badge-primary { background: rgba(25,118,210,0.1); color: var(--primary); }
-
-        /* ========== MODAL ========== */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 200;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.2s;
-        }
-
-        .modal {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 24px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-lg);
-            animation: slideUp 0.3s;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-
-        /* ========== TOAST ========== */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 300;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .toast {
-            padding: 12px 20px;
-            border-radius: var(--radius-sm);
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-            box-shadow: var(--shadow-lg);
-            animation: slideInRight 0.3s;
-        }
-
-        /* ========== SEARCH ========== */
-        .search-box {
-            position: relative;
-            flex: 1;
-            max-width: 300px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 8px 14px 8px 36px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 14px;
-            font-family: var(--font-family);
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        .search-box .search-icon {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-        }
-
-        /* ========== PAGINATION ========== */
-        .pagination {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 20px;
-        }
-
-        .pagination button {
-            padding: 8px 14px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: var(--text);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-size: 14px;
-            transition: var(--transition);
-        }
-
-        .pagination button:hover:not(:disabled) { background: var(--primary); color: white; border-color: var(--primary); }
-        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .pagination button.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-        /* ========== EMPTY STATE ========== */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .empty-state .icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
-        .empty-state h3 { font-size: 18px; margin-bottom: 8px; }
-        .empty-state p { color: var(--text-secondary); font-size: 14px; }
-
-        /* ========== ANIMATIONS ========== */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .spinner {
-            width: 24px;
-            height: 24px;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 12px;
-        }
-
-        /* ========== LOADING ========== */
-        .loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.3);
-            z-index: 250;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .loading-overlay.show { display: flex; }
-
-        .loading-box {
-            background: var(--surface);
-            padding: 32px;
-            border-radius: var(--radius);
-            text-align: center;
-            box-shadow: var(--shadow-lg);
-        }
-
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 1024px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-            .menu-toggle { display: block; }
-            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
-        }
-
-        @media (max-width: 768px) {
-            .page-content { padding: 16px; }
-            .page-title { font-size: 20px; }
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-            .stat-card { padding: 14px; }
-            .stat-icon { width: 44px; height: 44px; font-size: 22px; }
-            .stat-info h3 { font-size: 22px; }
-            .header { padding: 0 16px; }
-            .search-box { max-width: 180px; }
-        }
-
-        @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .page-header { flex-direction: column; align-items: flex-start; }
-        }
-
-        @media print {
-            .sidebar, .header, .btn, .no-print { display: none !important; }
-            .main-content { margin-left: 0; }
-            .card { box-shadow: none; border: 1px solid #ddd; }
-        }
+        [data-theme="dark"]{--bg:#121212;--surface:#1E1E1E;--text:#FFFFFF;--text-secondary:#B0B0B0;--border:#333333;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:var(--font-family);background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+
+        .sidebar{width:var(--sidebar-width);background:var(--surface);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;box-shadow:var(--shadow);}
+        .sidebar-header{padding:20px;border-bottom:1px solid var(--border);text-align:center;}
+        .sidebar-logo{font-size:40px;display:block;margin-bottom:8px;}
+        .sidebar-title{font-size:13px;font-weight:700;color:var(--primary);}
+        .sidebar-subtitle{font-size:10px;color:var(--text-secondary);}
+        .sidebar-nav{flex:1;overflow-y:auto;padding:12px;}
+        .nav-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s;color:var(--text);text-decoration:none;font-size:14px;font-weight:500;margin-bottom:3px;}
+        .nav-item:hover{background:rgba(25,118,210,0.08);color:var(--primary);}
+        .nav-item.active{background:var(--primary);color:white;}
+        .nav-item .icon{font-size:18px;width:22px;text-align:center;}
+        .sidebar-footer{padding:14px;border-top:1px solid var(--border);}
+        .user-info{display:flex;align-items:center;gap:10px;}
+        .user-avatar{width:36px;height:36px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;}
+        .user-name{font-size:13px;font-weight:600;}.user-role{font-size:11px;color:var(--text-secondary);}
+
+        .main-content{flex:1;margin-left:var(--sidebar-width);}
+        .header{background:var(--surface);height:var(--header-height);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:50;}
+        .header-left{display:flex;align-items:center;gap:12px;}
+        .menu-toggle{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text);}
+        .breadcrumb{font-size:16px;font-weight:600;}
+        .header-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+        .header-btn{background:none;border:1px solid var(--border);padding:7px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:16px;}
+
+        .page-content{padding:20px;}
+        .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+        .page-title{font-size:22px;font-weight:700;}
+        .page-subtitle{font-size:13px;color:var(--text-secondary);}
+
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px;}
+        .stat-card{background:var(--surface);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;}
+        .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+        .stat-icon{width:50px;height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+        .stat-icon.blue{background:rgba(25,118,210,0.1);color:#1976D2;}.stat-icon.green{background:rgba(76,175,80,0.1);color:#4CAF50;}
+        .stat-icon.orange{background:rgba(255,152,0,0.1);color:#FF9800;}.stat-icon.red{background:rgba(244,67,54,0.1);color:#F44336;}
+        .stat-info h3{font-size:24px;font-weight:700;}.stat-info p{font-size:12px;color:var(--text-secondary);}
+
+        .card{background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:16px;}
+        .card-title{font-size:16px;font-weight:600;margin-bottom:12px;}
+        .table-container{overflow-x:auto;}
+        table{width:100%;border-collapse:collapse;}
+        th{background:var(--bg);padding:12px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-secondary);border-bottom:2px solid var(--border);}
+        td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border);}
+        tr:hover td{background:rgba(25,118,210,0.02);}
+
+        .btn{padding:8px 16px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.2s;font-family:var(--font-family);}
+        .btn-primary{background:#1976D2;color:white;}.btn-primary:hover{background:#1565C0;}
+        .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
+        .btn-sm{padding:5px 10px;font-size:11px;}
+
+        .badge{display:inline-flex;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;text-transform:uppercase;}
+        .badge-success{background:rgba(76,175,80,0.1);color:#4CAF50;}.badge-warning{background:rgba(255,152,0,0.1);color:#FF9800;}
+        .badge-error{background:rgba(244,67,54,0.1);color:#F44336;}.badge-info{background:rgba(33,150,243,0.1);color:#2196F3;}
+
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:flex;align-items:center;justify-content:center;}
+        .modal{background:var(--surface);border-radius:var(--radius);padding:24px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+        .modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-secondary);}
+
+        .toast-container{position:fixed;top:16px;right:16px;z-index:300;}
+        .toast{padding:10px 18px;border-radius:6px;color:white;font-size:13px;margin-bottom:8px;animation:slideIn 0.3s;}
+        @keyframes slideIn{from{opacity:0;transform:translateX(80px)}to{opacity:1;transform:translateX(0)}}
+
+        .pagination{display:flex;justify-content:center;gap:6px;margin-top:16px;}
+        .pagination button{padding:6px 12px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:4px;cursor:pointer;font-size:13px;}
+        .pagination button.active{background:#1976D2;color:white;border-color:#1976D2;}
+        .pagination button:disabled{opacity:0.4;cursor:not-allowed;}
+
+        .empty-state{text-align:center;padding:40px;}
+        .empty-state .icon{font-size:48px;margin-bottom:12px;opacity:0.5;}
+        .empty-state h3{font-size:16px;margin-bottom:6px;}
+
+        .loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:250;display:none;align-items:center;justify-content:center;}
+        .loading-overlay.show{display:flex;}
+        .loading-box{background:var(--surface);padding:28px;border-radius:var(--radius);text-align:center;}
+        .spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:#1976D2;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 10px;}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        @media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-content{margin-left:0}.menu-toggle{display:block}.stats-grid{grid-template-columns:1fr 1fr}}
+        @media(max-width:480px){.stats-grid{grid-template-columns:1fr}.page-content{padding:12px}}
+        @media print{.sidebar,.header,.btn{display:none!important}.main-content{margin-left:0}}
     </style>
 </head>
 <body>
-    <div class="app-container">
-        
-        <!-- SIDEBAR -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <span class="sidebar-logo">📄</span>
-                <div class="sidebar-title">Arsip Surat Digital</div>
-                <div class="sidebar-subtitle">Enterprise v30.1.0</div>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <div class="nav-section">
-                    <div class="nav-section-title">Menu Utama</div>
-                    <a class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
-                        <span class="icon">📊</span> Dashboard
-                    </a>
-                    <a class="nav-item" data-page="surat-masuk" onclick="navigateTo('surat-masuk')">
-                        <span class="icon">📨</span> Surat Masuk
-                        <span class="badge" id="sm-count">0</span>
-                    </a>
-                    <a class="nav-item" data-page="surat-keluar" onclick="navigateTo('surat-keluar')">
-                        <span class="icon">📤</span> Surat Keluar
-                        <span class="badge" id="sk-count">0</span>
-                    </a>
-                </div>
-                
-                <div class="nav-section">
-                    <div class="nav-section-title">Proses</div>
-                    <a class="nav-item" data-page="disposisi" onclick="navigateTo('disposisi')">
-                        <span class="icon">📋</span> Disposisi
-                    </a>
-                    <a class="nav-item" data-page="approval" onclick="navigateTo('approval')">
-                        <span class="icon">✅</span> Approval
-                    </a>
-                </div>
-                
-                <div class="nav-section">
-                    <div class="nav-section-title">Lainnya</div>
-                    <a class="nav-item" data-page="notifikasi" onclick="navigateTo('notifikasi')">
-                        <span class="icon">🔔</span> Notifikasi
-                    </a>
-                    <a class="nav-item" data-page="pengaturan" onclick="navigateTo('pengaturan')">
-                        <span class="icon">⚙️</span> Pengaturan
-                    </a>
-                </div>
-            </nav>
-            
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar" id="userAvatar">A</div>
-                    <div class="user-details">
-                        <div class="user-name" id="userName">Loading...</div>
-                        <div class="user-role" id="userRole">-</div>
-                    </div>
-                    <button class="header-btn" onclick="handleLogout()" title="Logout" style="margin-left:auto;">🚪</button>
-                </div>
-            </div>
-        </aside>
-        
-        <!-- MAIN CONTENT -->
-        <main class="main-content">
-            <header class="header">
-                <div class="header-left">
-                    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-                    <div class="breadcrumb" id="breadcrumb">Dashboard</div>
-                </div>
-                
-                <div class="search-box">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="globalSearch" placeholder="Cari surat..." onkeyup="if(event.key==='Enter')handleGlobalSearch()">
-                </div>
-                
-                <div class="header-right">
-                    <span class="online-indicator" id="onlineIndicator" title="Online"></span>
-                    <button class="header-btn" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
-                    <button class="header-btn" onclick="navigateTo('notifikasi')" title="Notifikasi">
-                        🔔
-                        <span class="count" id="notifCount">0</span>
-                    </button>
-                </div>
-            </header>
-            
-            <div class="page-content" id="pageContent">
-                <!-- Dynamic content -->
-            </div>
-        </main>
-    </div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><span class="sidebar-logo">📄</span><div class="sidebar-title">Arsip Surat Digital</div><div class="sidebar-subtitle">Enterprise v30.1.0</div></div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')"><span class="icon">📊</span> Dashboard</a>
+            <a class="nav-item" data-page="surat-masuk" onclick="navigateTo('surat-masuk')"><span class="icon">📨</span> Surat Masuk</a>
+            <a class="nav-item" data-page="surat-keluar" onclick="navigateTo('surat-keluar')"><span class="icon">📤</span> Surat Keluar</a>
+            <a class="nav-item" data-page="disposisi" onclick="navigateTo('disposisi')"><span class="icon">📋</span> Disposisi</a>
+            <a class="nav-item" data-page="approval" onclick="navigateTo('approval')"><span class="icon">✅</span> Approval</a>
+            <a class="nav-item" data-page="notifikasi" onclick="navigateTo('notifikasi')"><span class="icon">🔔</span> Notifikasi</a>
+            <a class="nav-item" data-page="pengaturan" onclick="navigateTo('pengaturan')"><span class="icon">⚙️</span> Pengaturan</a>
+        </nav>
+        <div class="sidebar-footer"><div class="user-info"><div class="user-avatar" id="userAvatar">A</div><div><div class="user-name" id="userName">Loading...</div><div class="user-role" id="userRole">-</div></div><button class="header-btn" onclick="handleLogout()" style="margin-left:auto;">🚪</button></div></div>
+    </aside>
+    
+    <main class="main-content">
+        <header class="header"><div class="header-left"><button class="menu-toggle" onclick="toggleSidebar()">☰</button><div class="breadcrumb" id="breadcrumb">Dashboard</div></div><div class="header-right"><button class="header-btn" onclick="toggleTheme()">🌙</button><button class="header-btn" onclick="navigateTo('notifikasi')">🔔</button></div></header>
+        <div class="page-content" id="pageContent"></div>
+    </main>
     
     <div class="toast-container" id="toastContainer"></div>
-    
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-box">
-            <div class="spinner"></div>
-            <p>Memuat...</p>
-        </div>
-    </div>
+    <div class="loading-overlay" id="loadingOverlay"><div class="loading-box"><div class="spinner"></div><p>Memuat...</p></div></div>
 
-    <!-- ========== JAVASCRIPT - STANDALONE ========== -->
     <script>
-        // ========== CONFIGURATION ==========
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxhx4JXI_yX9MIEhYmSVAjxy-_9McM0-2WKzA2OvW4h8T9QT2nh5bJcio0KiWEyL4VRsQ/exec';
-        let currentPage = 'dashboard';
-        
-        // ========== INITIALIZATION ==========
-        (async function init() {
-            console.log('🚀 Dashboard v30.1.0 initializing...');
-            
-            // Check auth
-            const token = localStorage.getItem('token');
-            const user = localStorage.getItem('user');
-            
-            if (!token || !user) {
-                console.log('❌ No session, redirect to login');
-                window.location.replace('/login.html');
-                return;
-            }
-            
-            // Verify token
-            try {
-                const res = await apiCall('me');
-                if (res.status === 'success' && res.data) {
-                    updateUserInfo(res.data);
-                } else {
-                    throw new Error('Token invalid');
-                }
-            } catch (error) {
-                console.error('Auth failed:', error);
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.replace('/login.html');
-                return;
-            }
-            
-            // Setup UI
-            updateOnlineStatus();
+        const API_URL='https://script.google.com/macros/s/AKfycbxhx4JXI_yX9MIEhYmSVAjxy-_9McM0-2WKzA2OvW4h8T9QT2nh5bJcio0KiWEyL4VRsQ/exec';
+        let currentPage='dashboard';
+
+        (async function init(){
+            const token=localStorage.getItem('token');
+            if(!token){window.location.replace('/login.html');return;}
+            try{
+                const res=await apiCall('me');
+                if(res.status!=='success')throw new Error('Invalid');
+                const u=res.data;
+                document.getElementById('userName').textContent=u.namaLengkap||u.username;
+                document.getElementById('userRole').textContent=u.role||'User';
+                document.getElementById('userAvatar').textContent=(u.namaLengkap||'A').charAt(0).toUpperCase();
+            }catch(e){localStorage.clear();window.location.replace('/login.html');return;}
             applyTheme();
-            updateSidebarCounts();
-            
-            // Load page
-            const hash = window.location.hash.replace('#', '') || 'dashboard';
+            const hash=window.location.hash.replace('#','')||'dashboard';
             navigateTo(hash);
-            
-            // Event listeners
-            window.addEventListener('online', updateOnlineStatus);
-            window.addEventListener('offline', updateOnlineStatus);
-            window.addEventListener('hashchange', () => {
-                const h = window.location.hash.replace('#', '');
-                if (h && h !== currentPage) navigateTo(h);
-            });
-            
-            console.log('✅ Dashboard initialized');
         })();
-        
-        // ========== API HELPER ==========
-        async function apiCall(action, params = {}, method = 'GET') {
-            const url = new URL(API_URL);
-            url.searchParams.set('action', action);
-            
-            const token = localStorage.getItem('token');
-            if (token) url.searchParams.set('token', token);
-            
-            if (method === 'GET') {
-                Object.entries(params).forEach(([k, v]) => {
-                    if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v);
-                });
-            }
-            
-            try {
-                const options = { method };
-                if (method === 'POST') {
-                    options.headers = { 'Content-Type': 'application/json' };
-                    options.body = JSON.stringify(params);
-                }
-                
-                const response = await fetch(url.toString(), options);
-                const data = await response.json();
-                
-                if (data.code === 401) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    window.location.replace('/login.html');
-                    throw new Error('Session expired');
-                }
-                
-                return data;
-            } catch (error) {
-                console.error('API Error:', error);
-                throw error;
-            }
+
+        async function apiCall(action,params={},method='GET'){
+            const url=new URL(API_URL);url.searchParams.set('action',action);
+            const token=localStorage.getItem('token');if(token)url.searchParams.set('token',token);
+            if(method==='GET'){Object.entries(params).forEach(([k,v])=>{if(v)url.searchParams.set(k,v);});}
+            const options={method};
+            if(method==='POST'){options.headers={'Content-Type':'application/json'};options.body=JSON.stringify(params);}
+            const r=await fetch(url.toString(),options);const d=await r.json();
+            if(d.code===401){localStorage.clear();window.location.replace('/login.html');}
+            return d;
         }
-        
-        // ========== NAVIGATION ==========
-        function navigateTo(page) {
-            currentPage = page;
-            
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.dataset.page === page) item.classList.add('active');
-            });
-            
-            const breadcrumbMap = {
-                'dashboard': 'Dashboard', 'surat-masuk': 'Surat Masuk', 'surat-keluar': 'Surat Keluar',
-                'disposisi': 'Disposisi', 'approval': 'Approval', 'notifikasi': 'Notifikasi', 'pengaturan': 'Pengaturan'
-            };
-            document.getElementById('breadcrumb').textContent = breadcrumbMap[page] || page;
-            
-            window.location.hash = page;
-            loadPage(page);
-            
-            if (window.innerWidth <= 1024) document.getElementById('sidebar').classList.remove('open');
+
+        function navigateTo(page){
+            currentPage=page;
+            document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.page===page));
+            document.getElementById('breadcrumb').textContent={'dashboard':'Dashboard','surat-masuk':'Surat Masuk','surat-keluar':'Surat Keluar','disposisi':'Disposisi','approval':'Approval','notifikasi':'Notifikasi','pengaturan':'Pengaturan'}[page]||page;
+            window.location.hash=page;loadPage(page);
         }
-        
-        // ========== LOAD PAGE ==========
-        async function loadPage(page) {
-            const content = document.getElementById('pageContent');
-            showLoading(true);
-            
-            try {
-                switch(page) {
-                    case 'dashboard': content.innerHTML = renderDashboard(); await loadDashboardData(); break;
-                    case 'surat-masuk': content.innerHTML = renderSuratMasuk(); await loadSuratMasukData(); break;
-                    case 'surat-keluar': content.innerHTML = renderSuratKeluar(); await loadSuratKeluarData(); break;
-                    case 'disposisi': content.innerHTML = renderDisposisi(); await loadDisposisiData(); break;
-                    case 'approval': content.innerHTML = renderApproval(); await loadApprovalData(); break;
-                    case 'notifikasi': content.innerHTML = renderNotifikasi(); await loadNotifikasiData(); break;
-                    case 'pengaturan': content.innerHTML = renderPengaturan(); await loadPengaturanData(); break;
-                    default: content.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><h3>Halaman Tidak Ditemukan</h3></div>';
+
+        async function loadPage(page){
+            const content=document.getElementById('pageContent');showLoading(true);
+            try{
+                switch(page){
+                    case'dashboard':
+                        content.innerHTML=`<div class="page-header"><div><h1 class="page-title">📊 Dashboard</h1><p class="page-subtitle">Ringkasan aktivitas</p></div></div><div class="stats-grid"><div class="stat-card" onclick="navigateTo('surat-masuk')"><div class="stat-icon blue">📨</div><div class="stat-info"><h3 id="st-sm">-</h3><p>Surat Masuk</p></div></div><div class="stat-card" onclick="navigateTo('surat-keluar')"><div class="stat-icon green">📤</div><div class="stat-info"><h3 id="st-sk">-</h3><p>Surat Keluar</p></div></div><div class="stat-card" onclick="navigateTo('disposisi')"><div class="stat-icon orange">📋</div><div class="stat-info"><h3 id="st-dp">-</h3><p>Disposisi Pending</p></div></div><div class="stat-card" onclick="navigateTo('approval')"><div class="stat-icon red">✅</div><div class="stat-info"><h3 id="st-ap">-</h3><p>Approval Pending</p></div></div></div><div class="card"><div class="card-title">📋 Aktivitas Terbaru</div><div class="table-container"><table><thead><tr><th>Waktu</th><th>User</th><th>Aksi</th><th>Deskripsi</th></tr></thead><tbody id="recentLog"><tr><td colspan="4" style="text-align:center;">Memuat...</td></tr></tbody></table></div></div>`;
+                        const stats=await apiCall('dashboard.stats');
+                        if(stats.status==='success'){document.getElementById('st-sm').textContent=stats.data.suratMasuk?.total||0;document.getElementById('st-sk').textContent=stats.data.suratKeluar?.total||0;document.getElementById('st-dp').textContent=stats.data.disposisi?.pending||0;document.getElementById('st-ap').textContent=stats.data.suratKeluar?.pending||0;}
+                        const audit=await apiCall('auditLog.list',{limit:10});
+                        const tbody=document.getElementById('recentLog');
+                        if(audit.status==='success'&&audit.data?.items?.length){tbody.innerHTML=audit.data.items.map(r=>`<tr><td>${new Date(r.createdAt).toLocaleString('id-ID')}</td><td>${r.userNama||'-'}</td><td><span class="badge badge-info">${r.aksi}</span></td><td>${r.deskripsi||'-'}</td></tr>`).join('');}
+                        else{tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:30px;">Belum ada aktivitas</td></tr>';}
+                        break;
+                    case'surat-masuk':content.innerHTML=`<div class="page-header"><div><h1 class="page-title">📨 Surat Masuk</h1></div><button class="btn btn-primary" onclick="showSMForm()">+ Tambah</button></div><div class="table-container"><table><thead><tr><th>No. Agenda</th><th>Pengirim</th><th>Perihal</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="smTable"></tbody></table></div><div class="pagination" id="smPage"></div>`;await loadSMData(1);break;
+                    case'surat-keluar':content.innerHTML=`<div class="page-header"><div><h1 class="page-title">📤 Surat Keluar</h1></div><button class="btn btn-primary" onclick="showSKForm()">+ Tambah</button></div><div class="table-container"><table><thead><tr><th>No. Surat</th><th>Tujuan</th><th>Perihal</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="skTable"></tbody></table></div><div class="pagination" id="skPage"></div>`;await loadSKData(1);break;
+                    case'disposisi':content.innerHTML=`<div class="page-header"><h1 class="page-title">📋 Disposisi</h1></div><div class="table-container"><table><thead><tr><th>Dari</th><th>Kepada</th><th>Instruksi</th><th>Status</th></tr></thead><tbody id="dispTable"></tbody></table></div>`;const disp=await apiCall('disposisi.list',{limit:20});const dt=document.getElementById('dispTable');if(disp.data?.items?.length){dt.innerHTML=disp.data.items.map(r=>`<tr><td>${r.dariNama||'-'}</td><td>${r.kepadaNama||'-'}</td><td>${r.instruksi||'-'}</td><td><span class="badge badge-${r.status==='selesai'?'success':'warning'}">${r.status}</span></td></tr>`).join('');}else{dt.innerHTML='<tr><td colspan="4"><div class="empty-state"><div class="icon">📋</div><h3>Tidak ada data</h3></div></td></tr>';}break;
+                    case'approval':content.innerHTML=`<div class="page-header"><h1 class="page-title">✅ Approval</h1></div><div class="table-container"><table><thead><tr><th>Surat ID</th><th>Approver</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="apprTable"></tbody></table></div>`;const appr=await apiCall('approval.list',{limit:20});const at=document.getElementById('apprTable');if(appr.data?.items?.length){at.innerHTML=appr.data.items.map(r=>`<tr><td>${r.suratKeluarId}</td><td>${r.approverNama||'-'}</td><td><span class="badge badge-${r.status==='approved'?'success':r.status==='rejected'?'error':'warning'}">${r.status}</span></td><td>${r.status==='pending'?`<button class="btn btn-sm btn-primary" onclick="processAppr('${r.id}','approved')">Setujui</button> <button class="btn btn-sm" style="background:#F44336;color:white;" onclick="processAppr('${r.id}','rejected')">Tolak</button>`:'-'}</td></tr>`).join('');}else{at.innerHTML='<tr><td colspan="4"><div class="empty-state"><div class="icon">✅</div><h3>Tidak ada data</h3></div></td></tr>';}break;
+                    case'notifikasi':content.innerHTML=`<div class="page-header"><h1 class="page-title">🔔 Notifikasi</h1><button class="btn btn-outline" onclick="readAllNotif()">✓ Tandai Semua</button></div><div id="notifList"></div>`;const notif=await apiCall('notifikasi.list',{limit:50});const nl=document.getElementById('notifList');if(notif.data?.items?.length){nl.innerHTML=notif.data.items.map(r=>`<div class="card" style="margin-bottom:6px;opacity:${r.isRead?'0.5':'1'};"><strong>${r.judul}</strong><p style="font-size:12px;color:var(--text-secondary);">${r.pesan}</p><small>${new Date(r.createdAt).toLocaleString('id-ID')}</small>${!r.isRead?` <button class="btn btn-sm btn-outline" onclick="readNotif('${r.id}')">✓</button>`:''}</div>`).join('');}else{nl.innerHTML='<div class="empty-state"><div class="icon">🔔</div><h3>Tidak ada notifikasi</h3></div>';}break;
+                    case'pengaturan':content.innerHTML=`<div class="page-header"><h1 class="page-title">⚙️ Pengaturan</h1></div><div class="card"><h3>Informasi Sistem</h3><div id="sysInfo">Memuat...</div></div><div class="card"><button class="btn" style="background:#F44336;color:white;" onclick="handleLogout()">🚪 Logout</button></div>`;const sys=await apiCall('system.status');if(sys.status==='success'){document.getElementById('sysInfo').innerHTML=`<p>Version: ${sys.data.version}</p><p>Timezone: ${sys.data.timezone}</p><p>Total Sheets: ${sys.data.totalSheets}</p>`;}break;
+                    default:content.innerHTML='<div class="empty-state"><div class="icon">🔍</div><h3>Halaman Tidak Ditemukan</h3></div>';
                 }
-            } catch (error) {
-                content.innerHTML = '<div class="empty-state"><div class="icon">❌</div><h3>Gagal Memuat</h3><p>' + error.message + '</p></div>';
-            }
-            
+            }catch(e){content.innerHTML='<div class="empty-state"><div class="icon">❌</div><h3>Gagal Memuat</h3><p>'+e.message+'</p></div>';}
             showLoading(false);
         }
-        
-        // ========== DASHBOARD ==========
-        function renderDashboard() {
-            return `
-                <div class="page-header">
-                    <div>
-                        <h1 class="page-title">📊 Dashboard</h1>
-                        <p class="page-subtitle">Ringkasan aktivitas surat menyurat</p>
-                    </div>
-                    <button class="btn btn-outline btn-sm" onclick="navigateTo('dashboard')">🔄 Refresh</button>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card" onclick="navigateTo('surat-masuk')">
-                        <div class="stat-icon blue">📨</div>
-                        <div class="stat-info"><h3 id="stat-sm-total">-</h3><p>Total Surat Masuk</p></div>
-                    </div>
-                    <div class="stat-card" onclick="navigateTo('surat-keluar')">
-                        <div class="stat-icon green">📤</div>
-                        <div class="stat-info"><h3 id="stat-sk-total">-</h3><p>Total Surat Keluar</p></div>
-                    </div>
-                    <div class="stat-card" onclick="navigateTo('disposisi')">
-                        <div class="stat-icon orange">📋</div>
-                        <div class="stat-info"><h3 id="stat-disp-pending">-</h3><p>Disposisi Pending</p></div>
-                    </div>
-                    <div class="stat-card" onclick="navigateTo('approval')">
-                        <div class="stat-icon red">✅</div>
-                        <div class="stat-info"><h3 id="stat-appr-pending">-</h3><p>Approval Pending</p></div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header"><h2 class="card-title">📋 Aktivitas Terbaru</h2></div>
-                    <div class="table-container">
-                        <table>
-                            <thead><tr><th>Waktu</th><th>User</th><th>Aksi</th><th>Modul</th><th>Deskripsi</th></tr></thead>
-                            <tbody id="recentActivities"><tr><td colspan="5" style="text-align:center;">Memuat...</td></tr></tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-        }
-        
-        async function loadDashboardData() {
-            try {
-                const statsRes = await apiCall('dashboard.stats');
-                if (statsRes.status === 'success') {
-                    const d = statsRes.data;
-                    document.getElementById('stat-sm-total').textContent = d.suratMasuk?.total || 0;
-                    document.getElementById('stat-sk-total').textContent = d.suratKeluar?.total || 0;
-                    document.getElementById('stat-disp-pending').textContent = d.disposisi?.pending || 0;
-                    document.getElementById('stat-appr-pending').textContent = d.suratKeluar?.pending || 0;
-                }
-                
-                const auditRes = await apiCall('auditLog.list', { limit: 10 });
-                const tbody = document.getElementById('recentActivities');
-                if (auditRes.status === 'success' && auditRes.data?.items?.length > 0) {
-                    tbody.innerHTML = auditRes.data.items.map(item => `
-                        <tr>
-                            <td>${new Date(item.createdAt).toLocaleString('id-ID')}</td>
-                            <td>${item.userNama || '-'}</td>
-                            <td><span class="badge badge-info">${item.aksi}</span></td>
-                            <td>${item.modul}</td>
-                            <td>${item.deskripsi || '-'}</td>
-                        </tr>
-                    `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;">Belum ada aktivitas</td></tr>';
-                }
-                
-                updateSidebarCounts();
-            } catch (error) {
-                console.error('Dashboard error:', error);
-            }
-        }
-        
-        // ========== SURAT MASUK ==========
-        let smPage = 1;
-        
-        function renderSuratMasuk() {
-            return `
-                <div class="page-header">
-                    <div>
-                        <h1 class="page-title">📨 Surat Masuk</h1>
-                        <p class="page-subtitle">Manajemen surat masuk</p>
-                    </div>
-                    <button class="btn btn-primary btn-sm" onclick="showSuratMasukForm()">+ Tambah Surat</button>
-                </div>
-                
-                <div class="card" style="margin-bottom:16px;">
-                    <div style="display:flex;gap:12px;flex-wrap:wrap;">
-                        <div class="search-box">
-                            <span class="search-icon">🔍</span>
-                            <input type="text" id="smSearch" placeholder="Cari..." onkeyup="if(event.key==='Enter'){smPage=1;loadSuratMasukData();}">
-                        </div>
-                        <select id="smStatus" onchange="smPage=1;loadSuratMasukData();" style="width:auto;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);">
-                            <option value="">Semua Status</option>
-                            <option value="diterima">Diterima</option>
-                            <option value="diproses">Diproses</option>
-                            <option value="selesai">Selesai</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>No. Agenda</th><th>No. Surat</th><th>Pengirim</th><th>Perihal</th><th>Sifat</th><th>Status</th><th>Aksi</th></tr></thead>
-                        <tbody id="smTableBody"><tr><td colspan="7" style="text-align:center;">Memuat...</td></tr></tbody>
-                    </table>
-                </div>
-                <div class="pagination" id="smPagination"></div>
-            `;
-        }
-        
-        async function loadSuratMasukData() {
-            try {
-                const search = document.getElementById('smSearch')?.value || '';
-                const status = document.getElementById('smStatus')?.value || '';
-                
-                const res = await apiCall('suratMasuk.list', { page: smPage, limit: 20, search: search || undefined, status: status || undefined });
-                
-                if (res.status === 'success') {
-                    const items = res.data.items;
-                    const tbody = document.getElementById('smTableBody');
-                    
-                    if (!items || items.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div><h3>Tidak ada data</h3></div></td></tr>';
-                    } else {
-                        tbody.innerHTML = items.map(item => `
-                            <tr>
-                                <td><strong>${item.nomorAgenda || '-'}</strong></td>
-                                <td>${item.nomorSurat || '-'}</td>
-                                <td>${item.pengirim || '-'}</td>
-                                <td>${item.perihal || '-'}</td>
-                                <td><span class="badge badge-${item.sifat==='rahasia'?'error':item.sifat==='penting'?'warning':'info'}">${item.sifat}</span></td>
-                                <td><span class="badge badge-${item.status==='selesai'?'success':item.status==='diproses'?'warning':'info'}">${item.status}</span></td>
-                                <td>
-                                    <button class="btn btn-outline btn-sm" onclick="viewSuratMasuk('${item.id}')">👁️</button>
-                                    <button class="btn btn-outline btn-sm" onclick="editSuratMasuk('${item.id}')">✏️</button>
-                                    <button class="btn btn-outline btn-sm" onclick="deleteSuratMasuk('${item.id}')" style="color:var(--error);">🗑️</button>
-                                </td>
-                            </tr>
-                        `).join('');
-                    }
-                    
-                    renderPagination('smPagination', res.data.pagination, (page) => { smPage = page; loadSuratMasukData(); });
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
-        
-        function showSuratMasukForm() {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.innerHTML = `
-                <div class="modal">
-                    <div class="modal-header"><h2>Tambah Surat Masuk</h2><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button></div>
-                    <form onsubmit="saveSuratMasuk(event)">
-                        <div class="form-group" style="margin-bottom:12px;"><label>Nomor Surat</label><input type="text" name="nomorSurat" required style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></div>
-                        <div class="form-group" style="margin-bottom:12px;"><label>Tanggal Surat</label><input type="date" name="tanggalSurat" required style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></div>
-                        <div class="form-group" style="margin-bottom:12px;"><label>Tanggal Terima</label><input type="date" name="tanggalTerima" required style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></div>
-                        <div class="form-group" style="margin-bottom:12px;"><label>Pengirim</label><input type="text" name="pengirim" required style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></div>
-                        <div class="form-group" style="margin-bottom:12px;"><label>Perihal</label><input type="text" name="perihal" required style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></div>
-                        <div class="form-group" style="margin-bottom:12px;"><label>Sifat</label><select name="sifat" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"><option value="biasa">Biasa</option><option value="penting">Penting</option><option value="rahasia">Rahasia</option><option value="segera">Segera</option></select></div>
-                        <div class="form-group" style="margin-bottom:12px;"><label>Catatan</label><textarea name="catatan" rows="3" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></textarea></div>
-                        <div style="display:flex;gap:8px;justify-content:flex-end;">
-                            <button type="button" class="btn btn-outline" onclick="this.closest('.modal-overlay').remove()">Batal</button>
-                            <button type="submit" class="btn btn-primary">💾 Simpan</button>
-                        </div>
-                    </form>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-        
-        async function saveSuratMasuk(event) {
-            event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            
-            showLoading(true);
-            try {
-                const res = await apiCall('suratMasuk.create', data, 'POST');
-                if (res.status === 'success') {
-                    showToast('✅ Surat masuk berhasil disimpan', 'success');
-                    form.closest('.modal-overlay').remove();
-                    loadSuratMasukData();
-                } else {
-                    showToast('❌ ' + res.message, 'error');
-                }
-            } catch (error) {
-                showToast('❌ Error: ' + error.message, 'error');
-            }
-            showLoading(false);
-        }
-        
-        async function viewSuratMasuk(id) {
-            showLoading(true);
-            try {
-                const res = await apiCall('suratMasuk.detail', { id });
-                if (res.status === 'success') {
-                    const item = res.data;
-                    const modal = document.createElement('div');
-                    modal.className = 'modal-overlay';
-                    modal.innerHTML = `
-                        <div class="modal"><div class="modal-header"><h2>Detail Surat Masuk</h2><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button></div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                                <div><strong>No. Agenda:</strong> ${item.nomorAgenda}</div>
-                                <div><strong>No. Surat:</strong> ${item.nomorSurat || '-'}</div>
-                                <div><strong>Pengirim:</strong> ${item.pengirim}</div>
-                                <div><strong>Perihal:</strong> ${item.perihal}</div>
-                                <div><strong>Sifat:</strong> ${item.sifat}</div>
-                                <div><strong>Status:</strong> ${item.status}</div>
-                                <div style="grid-column:1/-1;"><strong>Catatan:</strong> ${item.catatan || '-'}</div>
-                            </div>
-                        </div>
-                    `;
-                    document.body.appendChild(modal);
-                }
-            } catch (error) { showToast('❌ Error: ' + error.message, 'error'); }
-            showLoading(false);
-        }
-        
-        async function editSuratMasuk(id) {
-            showLoading(true);
-            try {
-                const res = await apiCall('suratMasuk.detail', { id });
-                if (res.status === 'success') {
-                    const item = res.data;
-                    const modal = document.createElement('div');
-                    modal.className = 'modal-overlay';
-                    modal.innerHTML = `
-                        <div class="modal"><div class="modal-header"><h2>Edit Surat Masuk</h2><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button></div>
-                            <form onsubmit="updateSuratMasuk(event, '${id}')">
-                                <div class="form-group" style="margin-bottom:12px;"><label>Nomor Surat</label><input type="text" name="nomorSurat" value="${item.nomorSurat||''}" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></div>
-                                <div class="form-group" style="margin-bottom:12px;"><label>Pengirim</label><input type="text" name="pengirim" value="${item.pengirim||''}" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></div>
-                                <div class="form-group" style="margin-bottom:12px;"><label>Perihal</label><input type="text" name="perihal" value="${item.perihal||''}" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></div>
-                                <div class="form-group" style="margin-bottom:12px;"><label>Status</label><select name="status" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"><option value="diterima" ${item.status==='diterima'?'selected':''}>Diterima</option><option value="diproses" ${item.status==='diproses'?'selected':''}>Diproses</option><option value="selesai" ${item.status==='selesai'?'selected':''}>Selesai</option></select></div>
-                                <div class="form-group" style="margin-bottom:12px;"><label>Catatan</label><textarea name="catatan" rows="3" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;">${item.catatan||''}</textarea></div>
-                                <div style="display:flex;gap:8px;justify-content:flex-end;">
-                                    <button type="button" class="btn btn-outline" onclick="this.closest('.modal-overlay').remove()">Batal</button>
-                                    <button type="submit" class="btn btn-primary">💾 Update</button>
-                                </div>
-                            </form>
-                        </div>
-                    `;
-                    document.body.appendChild(modal);
-                }
-            } catch (error) { showToast('❌ Error: ' + error.message, 'error'); }
-            showLoading(false);
-        }
-        
-        async function updateSuratMasuk(event, id) {
-            event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            
-            showLoading(true);
-            try {
-                const res = await apiCall('suratMasuk.update', { id, ...data }, 'POST');
-                if (res.status === 'success') {
-                    showToast('✅ Surat berhasil diupdate', 'success');
-                    form.closest('.modal-overlay').remove();
-                    loadSuratMasukData();
-                } else {
-                    showToast('❌ ' + res.message, 'error');
-                }
-            } catch (error) { showToast('❌ Error: ' + error.message, 'error'); }
-            showLoading(false);
-        }
-        
-        async function deleteSuratMasuk(id) {
-            if (!confirm('Yakin ingin menghapus surat ini?')) return;
-            showLoading(true);
-            try {
-                const res = await apiCall('suratMasuk.delete', { id }, 'POST');
-                if (res.status === 'success') {
-                    showToast('✅ Surat berhasil dihapus', 'success');
-                    loadSuratMasukData();
-                } else {
-                    showToast('❌ ' + res.message, 'error');
-                }
-            } catch (error) { showToast('❌ Error: ' + error.message, 'error'); }
-            showLoading(false);
-        }
-        
-        // ========== SURAT KELUAR ==========
-        let skPage = 1;
-        
-        function renderSuratKeluar() {
-            return `
-                <div class="page-header"><div><h1 class="page-title">📤 Surat Keluar</h1></div><button class="btn btn-primary btn-sm" onclick="showSuratKeluarForm()">+ Tambah Surat</button></div>
-                <div class="table-container"><table><thead><tr><th>No. Surat</th><th>Tanggal</th><th>Tujuan</th><th>Perihal</th><th>Status</th><th>Approval</th><th>Aksi</th></tr></thead>
-                <tbody id="skTableBody"><tr><td colspan="7" style="text-align:center;">Memuat...</td></tr></tbody></table></div>
-                <div class="pagination" id="skPagination"></div>
-            `;
-        }
-        
-        async function loadSuratKeluarData() {
-            try {
-                const res = await apiCall('suratKeluar.list', { page: skPage, limit: 20 });
-                if (res.status === 'success') {
-                    const items = res.data.items;
-                    const tbody = document.getElementById('skTableBody');
-                    if (!items || items.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div><h3>Tidak ada data</h3></div></td></tr>';
-                    } else {
-                        tbody.innerHTML = items.map(item => `
-                            <tr>
-                                <td><strong>${item.nomorSurat||'-'}</strong></td>
-                                <td>${item.tanggalSurat?new Date(item.tanggalSurat).toLocaleDateString('id-ID'):'-'}</td>
-                                <td>${item.tujuan||'-'}</td>
-                                <td>${item.perihal||'-'}</td>
-                                <td><span class="badge badge-info">${item.status||'draft'}</span></td>
-                                <td><span class="badge badge-${item.approvalStatus==='approved'?'success':item.approvalStatus==='rejected'?'error':'warning'}">${item.approvalStatus||'pending'}</span></td>
-                                <td><button class="btn btn-outline btn-sm" onclick="viewSuratKeluar('${item.id}')">👁️</button></td>
-                            </tr>
-                        `).join('');
-                    }
-                    renderPagination('skPagination', res.data.pagination, (page) => { skPage = page; loadSuratKeluarData(); });
-                }
-            } catch (error) { console.error('Error:', error); }
-        }
-        
-        function showSuratKeluarForm() {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.innerHTML = `
-                <div class="modal"><div class="modal-header"><h2>Tambah Surat Keluar</h2><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button></div>
-                    <form onsubmit="saveSuratKeluar(event)">
-                        <div class="form-group" style="margin-bottom:12px;"><label>Nomor Surat</label><input type="text" name="nomorSurat" required style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></div>
-                        <div class="form-group" style="margin-bottom:12px;"><label>Tanggal Surat</label><input type="date" name="tanggalSurat" required style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></div>
-                        <div class="form-group" style="margin-bottom:12px;"><label>Tujuan</label><input type="text" name="tujuan" required style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></div>
-                        <div class="form-group" style="margin-bottom:12px;"><label>Perihal</label><input type="text" name="perihal" required style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></div>
-                        <div class="form-group" style="margin-bottom:12px;"><label>Catatan</label><textarea name="catatan" rows="3" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;"></textarea></div>
-                        <div style="display:flex;gap:8px;justify-content:flex-end;">
-                            <button type="button" class="btn btn-outline" onclick="this.closest('.modal-overlay').remove()">Batal</button>
-                            <button type="submit" class="btn btn-primary">💾 Simpan</button>
-                        </div>
-                    </form>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-        
-        async function saveSuratKeluar(event) {
-            event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            
-            showLoading(true);
-            try {
-                const res = await apiCall('suratKeluar.create', data, 'POST');
-                if (res.status === 'success') {
-                    showToast('✅ Surat keluar berhasil disimpan', 'success');
-                    form.closest('.modal-overlay').remove();
-                    loadSuratKeluarData();
-                } else { showToast('❌ ' + res.message, 'error'); }
-            } catch (error) { showToast('❌ Error: ' + error.message, 'error'); }
-            showLoading(false);
-        }
-        
-        async function viewSuratKeluar(id) {
-            showLoading(true);
-            try {
-                const res = await apiCall('suratKeluar.detail', { id });
-                if (res.status === 'success') {
-                    const item = res.data;
-                    const modal = document.createElement('div');
-                    modal.className = 'modal-overlay';
-                    modal.innerHTML = `
-                        <div class="modal"><div class="modal-header"><h2>Detail Surat Keluar</h2><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button></div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                                <div><strong>No. Surat:</strong> ${item.nomorSurat||'-'}</div>
-                                <div><strong>Tanggal:</strong> ${item.tanggalSurat?new Date(item.tanggalSurat).toLocaleDateString('id-ID'):'-'}</div>
-                                <div><strong>Tujuan:</strong> ${item.tujuan||'-'}</div>
-                                <div><strong>Perihal:</strong> ${item.perihal||'-'}</div>
-                                <div><strong>Status:</strong> ${item.status||'-'}</div>
-                                <div><strong>Approval:</strong> ${item.approvalStatus||'pending'}</div>
-                                <div style="grid-column:1/-1;"><strong>Catatan:</strong> ${item.catatan||'-'}</div>
-                            </div>
-                        </div>
-                    `;
-                    document.body.appendChild(modal);
-                }
-            } catch (error) { showToast('❌ Error: ' + error.message, 'error'); }
-            showLoading(false);
-        }
-        
-        // ========== DISPOSISI ==========
-        function renderDisposisi() {
-            return `<div class="page-header"><h1 class="page-title">📋 Disposisi</h1></div>
-                <div class="table-container"><table><thead><tr><th>Dari</th><th>Kepada</th><th>Instruksi</th><th>Status</th><th>Tanggal</th></tr></thead>
-                <tbody id="dispTableBody"><tr><td colspan="5" style="text-align:center;">Memuat...</td></tr></tbody></table></div>`;
-        }
-        
-        async function loadDisposisiData() {
-            try {
-                const res = await apiCall('disposisi.list', { limit: 20 });
-                if (res.status === 'success') {
-                    const items = res.data.items;
-                    const tbody = document.getElementById('dispTableBody');
-                    if (!items || items.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon">📋</div><h3>Tidak ada disposisi</h3></div></td></tr>';
-                    } else {
-                        tbody.innerHTML = items.map(item => `
-                            <tr><td>${item.dariNama||'-'}</td><td>${item.kepadaNama||'-'}</td><td>${item.instruksi||'-'}</td>
-                            <td><span class="badge badge-${item.status==='selesai'?'success':'warning'}">${item.status}</span></td>
-                            <td>${item.createdAt?new Date(item.createdAt).toLocaleDateString('id-ID'):'-'}</td></tr>
-                        `).join('');
-                    }
-                }
-            } catch (error) { console.error('Error:', error); }
-        }
-        
-        // ========== APPROVAL ==========
-        function renderApproval() {
-            return `<div class="page-header"><h1 class="page-title">✅ Approval</h1></div>
-                <div class="table-container"><table><thead><tr><th>Surat Keluar ID</th><th>Approver</th><th>Status</th><th>Aksi</th></tr></thead>
-                <tbody id="apprTableBody"><tr><td colspan="4" style="text-align:center;">Memuat...</td></tr></tbody></table></div>`;
-        }
-        
-        async function loadApprovalData() {
-            try {
-                const res = await apiCall('approval.list', { limit: 20 });
-                if (res.status === 'success') {
-                    const items = res.data.items;
-                    const tbody = document.getElementById('apprTableBody');
-                    if (!items || items.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><div class="icon">✅</div><h3>Tidak ada approval</h3></div></td></tr>';
-                    } else {
-                        tbody.innerHTML = items.map(item => `
-                            <tr><td>${item.suratKeluarId}</td><td>${item.approverNama||'-'}</td>
-                            <td><span class="badge badge-${item.status==='approved'?'success':item.status==='rejected'?'error':'warning'}">${item.status}</span></td>
-                            <td>${item.status==='pending'?`<button class="btn btn-sm btn-success" onclick="processApproval('${item.id}','approved')">✅ Setujui</button> <button class="btn btn-sm btn-error" onclick="processApproval('${item.id}','rejected')">❌ Tolak</button>`:'-'}</td></tr>
-                        `).join('');
-                    }
-                }
-            } catch (error) { console.error('Error:', error); }
-        }
-        
-        async function processApproval(id, status) {
-            const komentar = prompt('Komentar (opsional):');
-            showLoading(true);
-            try {
-                const res = await apiCall('approval.process', { id, status, komentar }, 'POST');
-                if (res.status === 'success') {
-                    showToast('✅ Approval ' + (status==='approved'?'disetujui':'ditolak'), 'success');
-                    loadApprovalData();
-                } else { showToast('❌ ' + res.message, 'error'); }
-            } catch (error) { showToast('❌ Error: ' + error.message, 'error'); }
-            showLoading(false);
-        }
-        
-        // ========== NOTIFIKASI ==========
-        function renderNotifikasi() {
-            return `<div class="page-header"><h1 class="page-title">🔔 Notifikasi</h1><button class="btn btn-outline btn-sm" onclick="readAllNotifikasi()">✓ Tandai Semua Dibaca</button></div>
-                <div id="notifList">Memuat...</div>`;
-        }
-        
-        async function loadNotifikasiData() {
-            try {
-                const res = await apiCall('notifikasi.list', { limit: 50 });
-                if (res.status === 'success') {
-                    const items = res.data.items;
-                    const container = document.getElementById('notifList');
-                    if (!items || items.length === 0) {
-                        container.innerHTML = '<div class="empty-state"><div class="icon">🔔</div><h3>Tidak ada notifikasi</h3></div>';
-                    } else {
-                        container.innerHTML = items.map(item => `
-                            <div class="card" style="margin-bottom:8px;opacity:${item.isRead?'0.6':'1'};">
-                                <div style="display:flex;justify-content:space-between;">
-                                    <div><strong>${item.judul}</strong><p style="color:var(--text-secondary);">${item.pesan}</p><small>${new Date(item.createdAt).toLocaleString('id-ID')}</small></div>
-                                    ${!item.isRead?`<button class="btn btn-sm btn-outline" onclick="readNotifikasi('${item.id}')">✓</button>`:''}
-                                </div>
-                            </div>
-                        `).join('');
-                    }
-                }
-            } catch (error) { console.error('Error:', error); }
-        }
-        
-        async function readNotifikasi(id) {
-            await apiCall('notifikasi.read', { id });
-            loadNotifikasiData();
-            updateSidebarCounts();
-        }
-        
-        async function readAllNotifikasi() {
-            await apiCall('notifikasi.readAll');
-            loadNotifikasiData();
-            updateSidebarCounts();
-            showToast('✅ Semua notifikasi ditandai dibaca', 'success');
-        }
-        
-        // ========== PENGATURAN ==========
-        function renderPengaturan() {
-            return `<div class="page-header"><h1 class="page-title">⚙️ Pengaturan</h1></div>
-                <div class="card"><h3>Informasi Sistem</h3><div id="systemInfo">Memuat...</div></div>
-                <div class="card"><h3>Fitur</h3><p>🤖 AI Auto-Tagging: <span class="badge badge-success">Aktif</span></p>
-                <p>🔗 Blockchain: <span class="badge badge-success">Aktif</span></p>
-                <p>🔐 Biometric: <span class="badge badge-success">Aktif</span></p></div>
-                <div class="card"><button class="btn btn-error" onclick="handleLogout()">🚪 Logout</button></div>`;
-        }
-        
-        async function loadPengaturanData() {
-            try {
-                const res = await apiCall('system.status');
-                if (res.status === 'success') {
-                    document.getElementById('systemInfo').innerHTML = `
-                        <p><strong>Version:</strong> ${res.data.version}</p>
-                        <p><strong>API Version:</strong> ${res.data.apiVersion}</p>
-                        <p><strong>Timezone:</strong> ${res.data.timezone}</p>
-                        <p><strong>Total Sheets:</strong> ${res.data.totalSheets}</p>
-                    `;
-                }
-            } catch (error) { console.error('Error:', error); }
-        }
-        
-        // ========== HELPERS ==========
-        function showLoading(show) {
-            document.getElementById('loadingOverlay').classList.toggle('show', show);
-        }
-        
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.style.background = type === 'success' ? '#4CAF50' : type === 'error' ? '#F44336' : type === 'warning' ? '#FF9800' : '#2196F3';
-            toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
-        }
-        
-        function renderPagination(containerId, pagination, callback) {
-            const container = document.getElementById(containerId);
-            if (!container || !pagination || pagination.totalPages <= 1) { if (container) container.innerHTML = ''; return; }
-            
-            let html = `<button ${pagination.hasPrev?'':'disabled'} data-page="${pagination.page-1}">«</button>`;
-            for (let i = 1; i <= pagination.totalPages; i++) {
-                if (i===1 || i===pagination.totalPages || (i>=pagination.page-2 && i<=pagination.page+2)) {
-                    html += `<button class="${i===pagination.page?'active':''}" data-page="${i}">${i}</button>`;
-                } else if (i===pagination.page-3 || i===pagination.page+3) {
-                    html += '<button disabled>...</button>';
-                }
-            }
-            html += `<button ${pagination.hasNext?'':'disabled'} data-page="${pagination.page+1}">»</button>`;
-            container.innerHTML = html;
-            container.querySelectorAll('button:not([disabled])').forEach(btn => {
-                btn.addEventListener('click', () => callback(parseInt(btn.dataset.page)));
-            });
-        }
-        
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-        }
-        
-        async function updateSidebarCounts() {
-            try {
-                const [smRes, skRes, notifRes] = await Promise.all([
-                    apiCall('suratMasuk.list', { limit: 1 }),
-                    apiCall('suratKeluar.list', { limit: 1 }),
-                    apiCall('notifikasi.unreadCount'),
-                ]);
-                document.getElementById('sm-count').textContent = smRes.data?.pagination?.total || 0;
-                document.getElementById('sk-count').textContent = skRes.data?.pagination?.total || 0;
-                const unread = notifRes.data?.count || 0;
-                const notifCount = document.getElementById('notifCount');
-                if (unread > 0) { notifCount.style.display = 'flex'; notifCount.textContent = unread > 99 ? '99+' : unread; }
-                else { notifCount.style.display = 'none'; }
-            } catch (error) { console.error('Error updating counts:', error); }
-        }
-        
-        function updateOnlineStatus() {
-            const indicator = document.getElementById('onlineIndicator');
-            if (navigator.onLine) { indicator.className = 'online-indicator'; indicator.title = 'Online'; }
-            else { indicator.className = 'online-indicator offline'; indicator.title = 'Offline'; }
-        }
-        
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme') || 'light';
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-        }
-        
-        function applyTheme() {
-            const saved = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', saved);
-        }
-        
-        function updateUserInfo(user) {
-            document.getElementById('userName').textContent = user.namaLengkap || user.username || 'User';
-            document.getElementById('userRole').textContent = user.role || 'User';
-            document.getElementById('userAvatar').textContent = (user.namaLengkap || user.username || 'A').charAt(0).toUpperCase();
-        }
-        
-        function handleGlobalSearch() {
-            const query = document.getElementById('globalSearch').value.trim();
-            if (query) navigateTo('surat-masuk');
-            document.getElementById('smSearch').value = query;
-            smPage = 1;
-            setTimeout(() => loadSuratMasukData(), 300);
-        }
-        
-        function handleLogout() {
-            if (confirm('Yakin ingin logout?')) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.replace('/login.html');
-            }
-        }
-        
-        console.log('✅ Index.html v30.1.0 - STANDALONE - NO DEPENDENCIES');
+
+        async function loadSMData(page){const res=await apiCall('suratMasuk.list',{page,limit:20});const tbody=document.getElementById('smTable');if(res.data?.items?.length){tbody.innerHTML=res.data.items.map(r=>`<tr><td><strong>${r.nomorAgenda||'-'}</strong></td><td>${r.pengirim||'-'}</td><td>${r.perihal||'-'}</td><td><span class="badge badge-${r.status==='selesai'?'success':'info'}">${r.status}</span></td><td><button class="btn btn-sm btn-outline" onclick="viewSM('${r.id}')">👁️</button> <button class="btn btn-sm btn-outline" onclick="editSM('${r.id}')">✏️</button></td></tr>`).join('');renderPagination('smPage',res.data.pagination,loadSMData);}else{tbody.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div><h3>Tidak ada data</h3></div></td></tr>';}}
+        function showSMForm(){showModal('Tambah Surat Masuk',`<form onsubmit="saveSM(event)" style="display:flex;flex-direction:column;gap:10px;"><input name="nomorSurat" placeholder="Nomor Surat" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="pengirim" placeholder="Pengirim" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="perihal" placeholder="Perihal" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input type="date" name="tanggalSurat" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input type="date" name="tanggalTerima" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><textarea name="catatan" placeholder="Catatan" rows="2" style="padding:8px;border:1px solid var(--border);border-radius:4px;"></textarea><button type="submit" class="btn btn-primary">💾 Simpan</button></form>`);}
+        async function saveSM(e){e.preventDefault();const data=Object.fromEntries(new FormData(e.target));const res=await apiCall('suratMasuk.create',data,'POST');if(res.status==='success'){closeModal();loadSMData(1);showToast('✅ Berhasil disimpan','success');}else showToast('❌ '+res.message,'error');}
+        async function viewSM(id){const res=await apiCall('suratMasuk.detail',{id});if(res.status==='success'){const d=res.data;showModal('Detail Surat Masuk',`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><div><strong>No. Agenda:</strong> ${d.nomorAgenda}</div><div><strong>No. Surat:</strong> ${d.nomorSurat||'-'}</div><div><strong>Pengirim:</strong> ${d.pengirim}</div><div><strong>Perihal:</strong> ${d.perihal}</div><div><strong>Status:</strong> ${d.status}</div><div><strong>Sifat:</strong> ${d.sifat}</div><div style="grid-column:1/-1;"><strong>Catatan:</strong> ${d.catatan||'-'}</div></div>`);}}
+        async function editSM(id){const res=await apiCall('suratMasuk.detail',{id});if(res.status==='success'){const d=res.data;showModal('Edit Surat Masuk',`<form onsubmit="updateSM(event,'${id}')" style="display:flex;flex-direction:column;gap:10px;"><input name="nomorSurat" value="${d.nomorSurat||''}" style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="pengirim" value="${d.pengirim||''}" style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="perihal" value="${d.perihal||''}" style="padding:8px;border:1px solid var(--border);border-radius:4px;"><select name="status" style="padding:8px;border:1px solid var(--border);border-radius:4px;"><option value="diterima" ${d.status==='diterima'?'selected':''}>Diterima</option><option value="diproses" ${d.status==='diproses'?'selected':''}>Diproses</option><option value="selesai" ${d.status==='selesai'?'selected':''}>Selesai</option></select><textarea name="catatan" rows="2" style="padding:8px;border:1px solid var(--border);border-radius:4px;">${d.catatan||''}</textarea><button type="submit" class="btn btn-primary">💾 Update</button></form>`);}}
+        async function updateSM(e,id){e.preventDefault();const data=Object.fromEntries(new FormData(e.target));const res=await apiCall('suratMasuk.update',{id,...data},'POST');if(res.status==='success'){closeModal();loadSMData(1);showToast('✅ Diupdate','success');}else showToast('❌ '+res.message,'error');}
+
+        async function loadSKData(page){const res=await apiCall('suratKeluar.list',{page,limit:20});const tbody=document.getElementById('skTable');if(res.data?.items?.length){tbody.innerHTML=res.data.items.map(r=>`<tr><td>${r.nomorSurat||'-'}</td><td>${r.tujuan||'-'}</td><td>${r.perihal||'-'}</td><td><span class="badge badge-info">${r.status||'draft'}</span></td><td><button class="btn btn-sm btn-outline" onclick="viewSK('${r.id}')">👁️</button></td></tr>`).join('');renderPagination('skPage',res.data.pagination,loadSKData);}else{tbody.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div><h3>Tidak ada data</h3></div></td></tr>';}}
+        function showSKForm(){showModal('Tambah Surat Keluar',`<form onsubmit="saveSK(event)" style="display:flex;flex-direction:column;gap:10px;"><input name="nomorSurat" placeholder="Nomor Surat" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="tujuan" placeholder="Tujuan" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input name="perihal" placeholder="Perihal" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><input type="date" name="tanggalSurat" required style="padding:8px;border:1px solid var(--border);border-radius:4px;"><textarea name="catatan" placeholder="Catatan" rows="2" style="padding:8px;border:1px solid var(--border);border-radius:4px;"></textarea><button type="submit" class="btn btn-primary">💾 Simpan</button></form>`);}
+        async function saveSK(e){e.preventDefault();const data=Object.fromEntries(new FormData(e.target));const res=await apiCall('suratKeluar.create',data,'POST');if(res.status==='success'){closeModal();loadSKData(1);showToast('✅ Berhasil','success');}else showToast('❌ '+res.message,'error');}
+        async function viewSK(id){const res=await apiCall('suratKeluar.detail',{id});if(res.status==='success'){const d=res.data;showModal('Detail Surat Keluar',`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><div><strong>No. Surat:</strong> ${d.nomorSurat||'-'}</div><div><strong>Tanggal:</strong> ${d.tanggalSurat?new Date(d.tanggalSurat).toLocaleDateString('id-ID'):'-'}</div><div><strong>Tujuan:</strong> ${d.tujuan||'-'}</div><div><strong>Perihal:</strong> ${d.perihal||'-'}</div><div><strong>Status:</strong> ${d.status||'-'}</div><div><strong>Approval:</strong> ${d.approvalStatus||'pending'}</div><div style="grid-column:1/-1;"><strong>Catatan:</strong> ${d.catatan||'-'}</div></div>`);}}
+
+        async function processAppr(id,status){const komentar=prompt('Komentar (opsional):');const res=await apiCall('approval.process',{id,status,komentar},'POST');if(res.status==='success'){navigateTo('approval');showToast('✅ Approval '+(status==='approved'?'disetujui':'ditolak'),'success');}else showToast('❌ '+res.message,'error');}
+        async function readNotif(id){await apiCall('notifikasi.read',{id});navigateTo('notifikasi');}
+        async function readAllNotif(){await apiCall('notifikasi.readAll');navigateTo('notifikasi');showToast('✅ Semua ditandai dibaca','success');}
+
+        function showLoading(s){document.getElementById('loadingOverlay').classList.toggle('show',s);}
+        function showToast(m,t){const c=document.getElementById('toastContainer');const el=document.createElement('div');el.className='toast';el.style.background=t==='success'?'#4CAF50':t==='error'?'#F44336':'#2196F3';el.textContent=m;c.appendChild(el);setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.remove(),300);},3000);}
+        function renderPagination(id,pag,cb){const c=document.getElementById(id);if(!pag||pag.totalPages<=1){c.innerHTML='';return;}let h=`<button ${pag.hasPrev?'':'disabled'} onclick="void(0)">«</button>`;for(let i=1;i<=pag.totalPages;i++){if(i===1||i===pag.totalPages||(i>=pag.page-2&&i<=pag.page+2))h+=`<button class="${i===pag.page?'active':''}" onclick="void(0)">${i}</button>`;else if(i===pag.page-3||i===pag.page+3)h+='<button disabled>...</button>';}h+=`<button ${pag.hasNext?'':'disabled'} onclick="void(0)">»</button>`;c.innerHTML=h;c.querySelectorAll('button:not([disabled])').forEach((b)=>{if(b.textContent==='«')b.onclick=()=>cb(pag.page-1);else if(b.textContent==='»')b.onclick=()=>cb(pag.page+1);else b.onclick=()=>cb(parseInt(b.textContent));});}
+        function showModal(title,body){const el=document.createElement('div');el.className='modal-overlay';el.id='currentModal';el.innerHTML=`<div class="modal"><div class="modal-header"><h3>${title}</h3><button class="modal-close" onclick="closeModal()">✕</button></div>${body}</div>`;document.body.appendChild(el);}
+        function closeModal(){const m=document.getElementById('currentModal');if(m)m.remove();}
+        function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+        function toggleTheme(){const cur=document.documentElement.getAttribute('data-theme')||'light';const next=cur==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);localStorage.setItem('theme',next);}
+        function applyTheme(){document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light');}
+        function handleLogout(){if(confirm('Yakin ingin logout?')){localStorage.clear();window.location.replace('/login.html');}}
+        window.addEventListener('hashchange',()=>{const h=window.location.hash.replace('#','');if(h&&h!==currentPage)navigateTo(h);});
+        if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js?v=3.1.0').catch(()=>{});});}
     </script>
 </body>
 </html>
