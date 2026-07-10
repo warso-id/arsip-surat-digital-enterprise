@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup v3.1.0 - Arsip Surat Digital Enterprise</title>
+    
+    <link rel="stylesheet" href="css/custom.css?v=3.1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Setup styles v3.1.0 */
+        .setup-wrapper {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .setup-container {
+            width: 100%;
+            max-width: 650px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .setup-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 40px 32px;
+            text-align: center;
+        }
+        
+        .setup-body {
+            padding: 32px;
+        }
+        
+        .steps-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-bottom: 32px;
+            position: relative;
+        }
+        
+        .steps-indicator::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 2px;
+            background: #E0E0E0;
+        }
+        
+        .step-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #E0E0E0;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+        
+        .step-dot.active {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.2);
+        }
+        
+        .step-dot.completed {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .setup-step {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        .setup-step.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #F5F5F5;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .setup-footer {
+            padding: 16px 32px;
+            background: #FAFAFA;
+            border-top: 1px solid #EEE;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-wrapper">
+        <div class="setup-container">
+            <div class="setup-header">
+                <span class="material-icons" style="font-size:48px;margin-bottom:12px;">build</span>
+                <h1>Setup v3.1.0</h1>
+                <p>Konfigurasi AI & Blockchain Ready</p>
+            </div>
+            
+            <div class="setup-body">
+                <div class="steps-indicator">
+                    <div class="step-dot active" id="dot-1">1</div>
+                    <div class="step-dot" id="dot-2">2</div>
+                    <div class="step-dot" id="dot-3">3</div>
+                </div>
+                
+                <form id="setup-form">
+                    <!-- Step 1: Admin -->
+                    <div class="setup-step active" id="step-1">
+                        <h3>👤 Akun Administrator</h3>
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-input" id="admin-username" value="admin" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" id="admin-email" value="admin@instansi.id" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nama Lengkap</label>
+                            <input type="text" class="form-input" id="admin-nama" value="Administrator" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-input" id="admin-password" required minlength="8">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Konfirmasi Password</label>
+                            <input type="password" class="form-input" id="admin-password-confirm" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Instansi & AI -->
+                    <div class="setup-step" id="step-2">
+                        <h3>🏢 Informasi Instansi</h3>
+                        <div class="form-group">
+                            <label class="form-label">Nama Instansi</label>
+                            <input type="text" class="form-input" id="instansi-nama" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Alamat</label>
+                            <textarea class="form-textarea" id="instansi-alamat" rows="2"></textarea>
+                        </div>
+                        
+                        <h3 style="margin-top:24px;">🤖 Fitur v3.1.0</h3>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <span>🤖</span> AI Engine
+                            </div>
+                            <div class="feature-item">
+                                <span>🔗</span> Blockchain
+                            </div>
+                            <div class="feature-item">
+                                <span>🔐</span> Biometric
+                            </div>
+                            <div class="feature-item">
+                                <span>🎤</span> Voice
+                            </div>
+                            <div class="feature-item">
+                                <span>🌙</span> Dark Mode
+                            </div>
+                            <div class="feature-item">
+                                <span>🌐</span> Multi-Language
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Confirm -->
+                    <div class="setup-step" id="step-3">
+                        <h3>✅ Konfirmasi</h3>
+                        <div id="summary" style="padding:16px;background:#F5F5F5;border-radius:8px;margin-bottom:16px;">
+                            Memuat ringkasan...
+                        </div>
+                        <label class="form-check">
+                            <input type="checkbox" id="confirm" required>
+                            <span>Saya yakin ingin menyelesaikan setup v3.1.0</span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="setup-footer">
+                <button class="btn btn-secondary" id="prev-btn" style="display:none;">Sebelumnya</button>
+                <div></div>
+                <button class="btn btn-primary" id="next-btn">Selanjutnya</button>
+                <button class="btn btn-success" id="submit-btn" style="display:none;">🤖 Selesaikan Setup</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/app.js?v=3.1.0"></script>
+    <script>
+        let currentStep = 1;
+        const totalSteps = 3;
+        
+        function showStep(step) {
+            document.querySelectorAll('.setup-step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            
+            document.querySelectorAll('.step-dot').forEach((el, i) => {
+                el.classList.remove('active', 'completed');
+                if (i + 1 === step) el.classList.add('active');
+                else if (i + 1 < step) el.classList.add('completed');
+            });
+            
+            document.getElementById('prev-btn').style.display = step > 1 ? 'inline-flex' : 'none';
+            document.getElementById('next-btn').style.display = step < totalSteps ? 'inline-flex' : 'none';
+            document.getElementById('submit-btn').style.display = step === totalSteps ? 'inline-flex' : 'none';
+            
+            currentStep = step;
+            
+            if (step === 3) updateSummary();
+        }
+        
+        function updateSummary() {
+            document.getElementById('summary').innerHTML = `
+                <p><strong>Admin:</strong> ${document.getElementById('admin-username').value}</p>
+                <p><strong>Instansi:</strong> ${document.getElementById('instansi-nama').value}</p>
+                <p><strong>Fitur:</strong> 🤖 AI • 🔗 Blockchain • 🔐 Biometric • 🎤 Voice</p>
+                <p><strong>Versi:</strong> 3.1.0 (2026)</p>
+            `;
+        }
+        
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if (validateStep(currentStep)) showStep(currentStep + 1);
+        });
+        
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            showStep(currentStep - 1);
+        });
+        
+        document.getElementById('setup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!validateStep(3)) return;
+            
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner spinner-sm"></span> Setup...';
+            
+            try {
+                const data = {
+                    admin: {
+                        username: document.getElementById('admin-username').value,
+                        email: document.getElementById('admin-email').value,
+                        namaLengkap: document.getElementById('admin-nama').value,
+                        password: document.getElementById('admin-password').value,
+                    },
+                    instansi: {
+                        nama: document.getElementById('instansi-nama').value,
+                        alamat: document.getElementById('instansi-alamat').value,
+                    }
+                };
+                
+                const response = await fetch(`${APP_CONFIG.API_BASE_URL}?action=setup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    alert('✅ Setup v3.1.0 berhasil!\n\nSilakan login dengan akun administrator.');
+                    window.location.href = '/login.html';
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                alert('❌ Setup gagal: ' + error.message);
+                btn.disabled = false;
+                btn.innerHTML = '🤖 Selesaikan Setup';
+            }
+        });
+        
+        function validateStep(step) {
+            if (step === 1) {
+                const pw = document.getElementById('admin-password').value;
+                const confirm = document.getElementById('admin-password-confirm').value;
+                if (pw.length < 8) { alert('Password minimal 8 karakter'); return false; }
+                if (pw !== confirm) { alert('Password tidak cocok'); return false; }
+            }
+            if (step === 2) {
+                if (!document.getElementById('instansi-nama').value) {
+                    alert('Nama instansi wajib diisi'); return false;
+                }
+            }
+            if (step === 3) {
+                if (!document.getElementById('confirm').checked) {
+                    alert('Centang konfirmasi'); return false;
+                }
+            }
+            return true;
+        }
+        
+        showStep(1);
+    </script>
+</body>
+</html>

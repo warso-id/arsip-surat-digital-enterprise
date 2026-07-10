@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disposisi v3.1.0 - Arsip Surat Digital</title>
+    
+    <link rel="stylesheet" href="../css/custom.css?v=3.1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        .module-container { padding: 20px; }
+        .module-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+        
+        .disposisi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; }
+        
+        .disposisi-card {
+            background: var(--white, #fff); border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden;
+            border-left: 4px solid #1976D2; transition: all 0.3s;
+        }
+        .disposisi-card.segera { border-left-color: #F44336; }
+        .disposisi-card.penting { border-left-color: #FF9800; }
+        .disposisi-card.selesai { border-left-color: #4CAF50; opacity: 0.8; }
+        .disposisi-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.15); transform: translateY(-2px); }
+        
+        .disposisi-header { padding: 16px 20px; border-bottom: 1px solid var(--gray-200, #eee); display: flex; justify-content: space-between; align-items: flex-start; }
+        .disposisi-body { padding: 16px 20px; }
+        .disposisi-footer { padding: 12px 20px; border-top: 1px solid var(--gray-200, #eee); background: var(--gray-50, #fafafa); display: flex; justify-content: space-between; align-items: center; }
+        
+        .deadline-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .deadline-normal { background: #E8F5E9; color: #2E7D32; }
+        .deadline-warning { background: #FFF3E0; color: #E65100; }
+        .deadline-overdue { background: #FFEBEE; color: #C62828; }
+        
+        .tindak-lanjut-box { margin-top: 12px; padding: 12px; background: var(--gray-50, #f9f9f9); border-radius: 8px; border-left: 3px solid #4CAF50; font-size: 13px; }
+        
+        .empty-state { text-align: center; padding: 60px 20px; grid-column: 1/-1; color: var(--gray-500, #999); }
+        
+        .ai-badge-mini { font-size: 10px; background: linear-gradient(135deg,#667eea,#764ba2); color: white; padding: 2px 6px; border-radius: 6px; }
+        
+        @media (max-width: 480px) { .disposisi-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="module-container">
+        <div class="module-header">
+            <div>
+                <h1 style="margin:0;">📝 Disposisi</h1>
+                <p style="color:var(--gray-600,#666);margin:4px 0 0;">Manajemen disposisi surat • <span class="ai-badge-mini">🤖 AI v3.1.0</span></p>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <button class="btn btn-outline btn-sm" onclick="voiceCommander?.start()">🎤</button>
+                <select id="filter-status" onchange="loadDisposisi()" class="form-select" style="width:auto;">
+                    <option value="all">Semua</option>
+                    <option value="pending">Menunggu</option>
+                    <option value="proses">Diproses</option>
+                    <option value="selesai">Selesai</option>
+                </select>
+                <button class="btn btn-primary" onclick="showFormBuat()">
+                    <span class="material-icons">add</span> Buat Disposisi
+                </button>
+            </div>
+        </div>
+        
+        <div class="grid grid-3" style="gap:16px;margin-bottom:20px;">
+            <div class="stat-card stat-card-warning">
+                <div class="stat-card-icon"><span class="material-icons">pending</span></div>
+                <div class="stat-card-content"><h3 id="count-pending">0</h3><p>Menunggu</p></div>
+            </div>
+            <div class="stat-card stat-card-info">
+                <div class="stat-card-icon"><span class="material-icons">autorenew</span></div>
+                <div class="stat-card-content"><h3 id="count-proses">0</h3><p>Diproses</p></div>
+            </div>
+            <div class="stat-card stat-card-success">
+                <div class="stat-card-icon"><span class="material-icons">task_alt</span></div>
+                <div class="stat-card-content"><h3 id="count-selesai">0</h3><p>Selesai</p></div>
+            </div>
+        </div>
+        
+        <div class="disposisi-grid" id="disposisi-list">
+            <div class="empty-state"><span class="spinner"></span><p>Memuat data...</p></div>
+        </div>
+    </div>
+    
+    <!-- Modal Tindak Lanjut -->
+    <div class="modal-overlay" id="tindak-lanjut-modal">
+        <div class="modal" style="max-width:550px;width:90%;">
+            <div class="modal-header">
+                <h3>Tindak Lanjut Disposisi</h3>
+                <button class="btn btn-icon" onclick="closeTindakLanjutModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="tl-id">
+                <div id="tl-info" style="margin-bottom:16px;padding:12px;background:var(--gray-50,#f5f5f5);border-radius:8px;"></div>
+                <div class="form-group">
+                    <label class="form-label required">Tindak Lanjut</label>
+                    <textarea class="form-textarea" id="tl-tindak-lanjut" rows="3" placeholder="Tulis hasil tindak lanjut..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="tl-status">
+                        <option value="proses">Masih Diproses</option>
+                        <option value="selesai">Selesai</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeTindakLanjutModal()">Batal</button>
+                <button class="btn btn-success" onclick="simpanTindakLanjut()">✅ Simpan</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/app.js?v=3.1.0"></script>
+    <script>
+        async function loadDisposisi() {
+            const status = document.getElementById('filter-status')?.value || 'all';
+            try {
+                const response = await api.get('disposisi.list', { status: status === 'all' ? '' : status });
+                renderDisposisi(response.data.items);
+                updateStats(response.data.stats);
+            } catch (error) {
+                document.getElementById('disposisi-list').innerHTML = `<div class="empty-state"><span class="material-icons">error</span><p>Gagal</p></div>`;
+            }
+        }
+        
+        function renderDisposisi(data) {
+            const container = document.getElementById('disposisi-list');
+            if (!data?.length) {
+                container.innerHTML = `<div class="empty-state"><span class="material-icons">assignment</span><p>Tidak ada disposisi</p></div>`;
+                return;
+            }
+            
+            container.innerHTML = data.map(item => {
+                const deadlineStatus = getDeadlineStatus(item.batasWaktu, item.status);
+                return `
+                    <div class="disposisi-card ${item.sifat || ''} ${item.status === 'selesai' ? 'selesai' : ''}">
+                        <div class="disposisi-header">
+                            <div>
+                                <strong>${item.suratMasuk?.nomorSurat || '-'}</strong>
+                                <p style="font-size:13px;color:var(--gray-600,#666);margin-top:4px;">${item.suratMasuk?.perihal || '-'}</p>
+                            </div>
+                            <span class="status-badge status-${item.status || 'pending'}">${(item.status || 'pending').toUpperCase()}</span>
+                        </div>
+                        <div class="disposisi-body">
+                            <div style="margin-bottom:8px;"><strong>📋 Instruksi:</strong><p style="margin:4px 0;font-size:14px;">${item.instruksi || '-'}</p></div>
+                            <div class="info-row" style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--gray-600,#666);">Dari:</span><span>${item.dari || '-'}</span></div>
+                            <div class="info-row" style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--gray-600,#666);">Kepada:</span><span>${item.kepada || '-'}</span></div>
+                            ${item.batasWaktu ? `<div style="margin-top:8px;"><span class="deadline-badge deadline-${deadlineStatus}">⏰ ${UI.formatDate(item.batasWaktu, 'short')}</span></div>` : ''}
+                            ${item.tindakLanjut ? `<div class="tindak-lanjut-box"><strong>📝 Tindak Lanjut:</strong><p style="margin:4px 0;">${item.tindakLanjut}</p></div>` : ''}
+                        </div>
+                        ${item.status !== 'selesai' ? `
+                            <div class="disposisi-footer">
+                                <span style="font-size:12px;color:var(--gray-500,#999);">${UI.formatDate(item.createdAt, 'time')}</span>
+                                <button class="btn btn-sm btn-primary" onclick="showTindakLanjut('${item.id}')">📝 Tindak Lanjut</button>
+                            </div>
+                        ` : `
+                            <div class="disposisi-footer">
+                                <span style="font-size:12px;color:#4CAF50;">✅ Selesai</span>
+                                <span style="font-size:12px;color:var(--gray-500,#999);">${UI.formatDate(item.completedAt, 'time')}</span>
+                            </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateStats(stats) {
+            if (!stats) return;
+            document.getElementById('count-pending').textContent = stats.pending || 0;
+            document.getElementById('count-proses').textContent = stats.proses || 0;
+            document.getElementById('count-selesai').textContent = stats.selesai || 0;
+        }
+        
+        function getDeadlineStatus(batasWaktu, status) {
+            if (status === 'selesai' || !batasWaktu) return 'normal';
+            const diff = new Date(batasWaktu) - new Date();
+            const days = Math.ceil(diff / (1000*60*60*24));
+            if (days < 0) return 'overdue';
+            if (days <= 2) return 'warning';
+            return 'normal';
+        }
+        
+        function showFormBuat() {
+            window.location.href = 'disposisi-form.html';
+        }
+        
+        async function showTindakLanjut(id) {
+            try {
+                const response = await api.get('disposisi.detail', { id });
+                const data = response.data;
+                document.getElementById('tl-id').value = data.id;
+                document.getElementById('tl-info').innerHTML = `<strong>${data.suratMasuk?.nomorSurat || '-'}</strong><br><span style="font-size:13px;">${data.instruksi || '-'}</span>`;
+                document.getElementById('tl-tindak-lanjut').value = data.tindakLanjut || '';
+                document.getElementById('tl-status').value = data.status || 'proses';
+                document.getElementById('tindak-lanjut-modal').classList.add('active');
+            } catch (error) { UI.showNotification('Gagal', 'error'); }
+        }
+        
+        async function simpanTindakLanjut() {
+            const id = document.getElementById('tl-id').value;
+            const data = {
+                tindakLanjut: document.getElementById('tl-tindak-lanjut').value,
+                status: document.getElementById('tl-status').value,
+            };
+            if (!data.tindakLanjut) { alert('Tindak lanjut wajib diisi'); return; }
+            
+            try {
+                UI.showLoading('Menyimpan...');
+                await api.put('disposisi.tindakLanjut', data, { params: { id } });
+                UI.hideLoading();
+                UI.showNotification('Berhasil', 'success');
+                closeTindakLanjutModal();
+                loadDisposisi();
+            } catch (error) {
+                UI.hideLoading();
+                UI.showNotification('Gagal: ' + error.message, 'error');
+            }
+        }
+        
+        function closeTindakLanjutModal() {
+            document.getElementById('tindak-lanjut-modal').classList.remove('active');
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => loadDisposisi());
+        document.querySelectorAll('.modal-overlay').forEach(o => {
+            o.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
+        });
+    </script>
+</body>
+</html>

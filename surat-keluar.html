@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surat Keluar v3.1.0 - Arsip Surat Digital</title>
+    
+    <link rel="stylesheet" href="../css/custom.css?v=3.1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        .module-container { padding: 20px; }
+        .module-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+        .filter-bar { display: flex; gap: 12px; margin-bottom: 20px; padding: 16px; background: var(--white, #fff); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-wrap: wrap; align-items: center; }
+        .data-table { width: 100%; background: var(--white, #fff); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
+        .data-table th { background: var(--gray-50, #f5f5f5); padding: 12px 16px; text-align: left; font-weight: 600; font-size: 13px; text-transform: uppercase; color: var(--gray-700, #666); }
+        .data-table td { padding: 12px 16px; border-bottom: 1px solid var(--gray-200, #eee); font-size: 14px; }
+        .data-table tr:hover { background: var(--gray-50, #f9f9f9); }
+        
+        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .status-draft { background: #FFF3E0; color: #E65100; }
+        .status-review { background: #E3F2FD; color: #1565C0; }
+        .status-approved { background: #E8F5E9; color: #2E7D32; }
+        .status-dikirim { background: #F3E5F5; color: #6A1B9A; }
+        .status-rejected { background: #FFEBEE; color: #C62828; }
+        
+        .ai-tag { display: inline-flex; align-items: center; gap: 2px; padding: 1px 6px; border-radius: 8px; font-size: 10px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; margin: 1px; }
+        .blockchain-badge-mini { font-size: 10px; color: #F7931A; }
+        
+        .action-buttons { display: flex; gap: 4px; }
+        .action-btn { padding: 6px 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+        .action-btn:hover { opacity: 0.8; transform: scale(1.05); }
+        
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+        .pagination button { padding: 8px 16px; border: 1px solid var(--gray-300, #ddd); background: var(--white, #fff); border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .pagination button.active { background: #1976D2; color: white; border-color: #1976D2; }
+        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-500, #999); }
+        .empty-state .material-icons { font-size: 64px; color: var(--gray-300, #ccc); }
+        
+        @media (max-width: 768px) {
+            .filter-bar { flex-direction: column; }
+            .hide-mobile { display: none; }
+            .data-table th, .data-table td { padding: 8px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="module-container">
+        <!-- Header -->
+        <div class="module-header">
+            <div>
+                <h1 style="margin:0;">📤 Surat Keluar</h1>
+                <p style="color:var(--gray-600,#666);margin:4px 0 0;">Manajemen surat keluar • <span class="ai-tag">🤖 AI v3.1.0</span></p>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <button class="btn btn-outline btn-sm" onclick="voiceCommander?.start()" title="Voice Command (Ctrl+Shift+V)">
+                    <span class="material-icons">mic</span>
+                </button>
+                <button class="btn btn-primary" onclick="showFormTambah()">
+                    <span class="material-icons">add</span> Buat Surat Keluar
+                </button>
+            </div>
+        </div>
+        
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <select id="filter-status" onchange="loadData()" class="form-select" style="width:auto;">
+                <option value="">Semua Status</option>
+                <option value="draft">Draft</option>
+                <option value="review">Review</option>
+                <option value="approved">Approved</option>
+                <option value="dikirim">Dikirim</option>
+            </select>
+            
+            <select id="filter-sifat" onchange="loadData()" class="form-select" style="width:auto;">
+                <option value="">Semua Sifat</option>
+                <option value="biasa">Biasa</option>
+                <option value="penting">Penting</option>
+                <option value="segera">Segera</option>
+                <option value="rahasia">Rahasia</option>
+            </select>
+            
+            <div class="ai-search-wrapper" style="flex:1;min-width:200px;position:relative;">
+                <input type="text" id="filter-search" placeholder="🤖 AI Search..." 
+                       onkeyup="debounceSearch()" class="form-input" style="width:100%;">
+                <span class="material-icons ai-search-icon">search</span>
+            </div>
+            
+            <button class="btn btn-secondary btn-sm" onclick="resetFilter()">
+                <span class="material-icons">refresh</span> Reset
+            </button>
+            
+            <button class="btn btn-outline btn-sm" onclick="exportData()">
+                <span class="material-icons">download</span> Export
+            </button>
+        </div>
+        
+        <!-- Data Table -->
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No. Surat</th>
+                        <th>Tanggal</th>
+                        <th class="hide-mobile">Tujuan</th>
+                        <th>Perihal</th>
+                        <th class="hide-mobile">AI Tags</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table-body">
+                    <tr><td colspan="7" class="empty-state"><span class="spinner"></span><p>Memuat data...</p></td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+    </div>
+    
+    <!-- Modal Form -->
+    <div class="modal-overlay" id="form-modal">
+        <div class="modal" style="max-width:650px;width:90%;">
+            <div class="modal-header">
+                <h3 id="modal-title">Buat Surat Keluar</h3>
+                <button class="btn btn-icon" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="surat-keluar-form">
+                    <input type="hidden" id="form-id">
+                    
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Nomor Surat</label>
+                            <input type="text" class="form-input" id="form-nomor" placeholder="Auto-generate">
+                            <small class="form-hint">Kosongkan untuk auto-generate</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required">Tanggal Surat</label>
+                            <input type="date" class="form-input" id="form-tanggal" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required">Tujuan</label>
+                        <input type="text" class="form-input" id="form-tujuan" placeholder="Nama instansi/orang tujuan" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required">Perihal</label>
+                        <textarea class="form-textarea" id="form-perihal" rows="2" placeholder="Perihal surat" required></textarea>
+                    </div>
+                    
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Sifat</label>
+                            <select class="form-select" id="form-sifat">
+                                <option value="biasa">Biasa</option>
+                                <option value="penting">Penting</option>
+                                <option value="segera">Segera</option>
+                                <option value="rahasia">Rahasia</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Jenis Surat</label>
+                            <select class="form-select" id="form-jenis">
+                                <option value="Surat Dinas">Surat Dinas</option>
+                                <option value="Nota Dinas">Nota Dinas</option>
+                                <option value="Surat Edaran">Surat Edaran</option>
+                                <option value="Undangan">Undangan</option>
+                                <option value="Laporan">Laporan</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Upload File</label>
+                        <input type="file" class="form-input" id="form-file" accept=".pdf,.doc,.docx">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Catatan</label>
+                        <textarea class="form-textarea" id="form-catatan" rows="2" placeholder="Catatan tambahan"></textarea>
+                    </div>
+                    
+                    <!-- AI Suggestions -->
+                    <div id="ai-suggestions" style="display:none;padding:12px;background:linear-gradient(135deg,#667eea10,#764ba210);border-radius:8px;margin-top:12px;">
+                        <strong>🤖 AI Suggestions:</strong>
+                        <div id="ai-tags-preview" style="margin-top:8px;"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
+                <button class="btn btn-outline" id="btn-draft" onclick="simpanDraft()">💾 Simpan Draft</button>
+                <button class="btn btn-primary" id="btn-submit" onclick="simpanSurat()">✅ Simpan & Ajukan</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Detail -->
+    <div class="modal-overlay" id="detail-modal">
+        <div class="modal" style="max-width:700px;width:90%;">
+            <div class="modal-header">
+                <h3>Detail Surat Keluar</h3>
+                <button class="btn btn-icon" onclick="closeDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="detail-content"></div>
+        </div>
+    </div>
+    
+    <script src="../js/app.js?v=3.1.0"></script>
+    
+    <script>
+        let currentPage = 1;
+        let searchTimeout;
+        
+        // ========== LOAD DATA ==========
+        async function loadData(page = 1) {
+            currentPage = page;
+            try {
+                const params = {
+                    page, limit: 10,
+                    status: document.getElementById('filter-status')?.value || '',
+                    sifat: document.getElementById('filter-sifat')?.value || '',
+                    search: document.getElementById('filter-search')?.value || '',
+                };
+                
+                const response = await api.get('suratKeluar.list', params);
+                renderTable(response.data.items);
+                renderPagination(response.data.pagination);
+            } catch (error) {
+                UI.showNotification('Gagal memuat data: ' + error.message, 'error');
+            }
+        }
+        
+        // ========== RENDER TABLE ==========
+        function renderTable(data) {
+            const tbody = document.getElementById('data-table-body');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><span class="material-icons">inbox</span><p>Tidak ada data</p></td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td><strong>${item.nomorSurat || '-'}</strong></td>
+                    <td>${UI.formatDate(item.tanggalSurat, 'short')}</td>
+                    <td class="hide-mobile">${item.tujuan || '-'}</td>
+                    <td>${item.perihal || '-'}</td>
+                    <td class="hide-mobile">
+                        ${(item.aiTags || '').split(',').filter(Boolean).map(t => `<span class="ai-tag">${t.trim()}</span>`).join('') || '-'}
+                    </td>
+                    <td><span class="status-badge status-${item.status || 'draft'}">${(item.status || 'DRAFT').toUpperCase()}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn" style="background:#E3F2FD;color:#1976D2;" onclick="lihatDetail('${item.id}')" title="Detail">👁</button>
+                            ${item.status === 'draft' ? `
+                                <button class="action-btn" style="background:#FFF3E0;color:#E65100;" onclick="editSurat('${item.id}')" title="Edit">✏️</button>
+                            ` : ''}
+                            ${item.approvalStatus !== 'approved' ? `
+                                <button class="action-btn" style="background:#E8F5E9;color:#2E7D32;" onclick="submitApproval('${item.id}')" title="Ajukan">📤</button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // ========== PAGINATION ==========
+        function renderPagination(pagination) {
+            if (!pagination) return;
+            const container = document.getElementById('pagination');
+            const { currentPage, totalPages } = pagination;
+            
+            let html = `<button ${currentPage <= 1 ? 'disabled' : ''} onclick="loadData(${currentPage - 1})">«</button>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
+                    html += `<button class="${i === currentPage ? 'active' : ''}" onclick="loadData(${i})">${i}</button>`;
+                } else if (Math.abs(i - currentPage) === 3) {
+                    html += '<span>...</span>';
+                }
+            }
+            
+            html += `<button ${currentPage >= totalPages ? 'disabled' : ''} onclick="loadData(${currentPage + 1})">»</button>`;
+            container.innerHTML = html;
+        }
+        
+        // ========== FORM ==========
+        function showFormTambah() {
+            document.getElementById('modal-title').textContent = 'Buat Surat Keluar';
+            document.getElementById('form-id').value = '';
+            document.getElementById('surat-keluar-form').reset();
+            document.getElementById('form-tanggal').value = new Date().toISOString().split('T')[0];
+            document.getElementById('form-modal').classList.add('active');
+            document.getElementById('ai-suggestions').style.display = 'none';
+        }
+        
+        async function editSurat(id) {
+            try {
+                const response = await api.get('suratKeluar.detail', { id });
+                const data = response.data;
+                
+                document.getElementById('modal-title').textContent = 'Edit Surat Keluar';
+                document.getElementById('form-id').value = data.id;
+                document.getElementById('form-nomor').value = data.nomorSurat || '';
+                document.getElementById('form-tanggal').value = data.tanggalSurat || '';
+                document.getElementById('form-tujuan').value = data.tujuan || '';
+                document.getElementById('form-perihal').value = data.perihal || '';
+                document.getElementById('form-sifat').value = data.sifat || 'biasa';
+                document.getElementById('form-jenis').value = data.jenisSurat || '';
+                document.getElementById('form-catatan').value = data.catatan || '';
+                document.getElementById('form-modal').classList.add('active');
+                document.getElementById('ai-suggestions').style.display = 'none';
+            } catch (error) {
+                UI.showNotification('Gagal memuat data', 'error');
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('form-modal').classList.remove('active');
+        }
+        
+        // ========== AI AUTO-TAGGING ==========
+        document.getElementById('form-perihal')?.addEventListener('blur', async function() {
+            const text = this.value + ' ' + (document.getElementById('form-catatan')?.value || '');
+            if (text.trim().length < 10) return;
+            
+            try {
+                const response = await api.post('ai.suggestTags', { text });
+                const tags = response.data?.tags || [];
+                
+                if (tags.length > 0) {
+                    document.getElementById('ai-tags-preview').innerHTML = 
+                        '<span style="font-size:12px;">Tags: ' + 
+                        tags.map(t => `<span class="ai-tag">${t.tag} (${Math.round(t.confidence * 100)}%)</span>`).join(' ') + 
+                        '</span>';
+                    document.getElementById('ai-suggestions').style.display = 'block';
+                }
+            } catch (e) {}
+        });
+        
+        // ========== SAVE ==========
+        async function simpanDraft() { await simpanData('draft'); }
+        
+        async function simpanSurat() {
+            await simpanData('review');
+        }
+        
+        async function simpanData(status) {
+            const form = document.getElementById('surat-keluar-form');
+            if (!form.checkValidity()) { form.reportValidity(); return; }
+            
+            const id = document.getElementById('form-id').value;
+            const data = {
+                nomorSurat: document.getElementById('form-nomor').value || null,
+                tanggalSurat: document.getElementById('form-tanggal').value,
+                tujuan: document.getElementById('form-tujuan').value,
+                perihal: document.getElementById('form-perihal').value,
+                sifat: document.getElementById('form-sifat').value,
+                jenisSurat: document.getElementById('form-jenis').value,
+                catatan: document.getElementById('form-catatan').value,
+                status,
+                submitApproval: status === 'review',
+            };
+            
+            try {
+                UI.showLoading('Menyimpan...');
+                
+                if (id) {
+                    await api.put('suratKeluar.update', data, { params: { id } });
+                } else {
+                    await api.post('suratKeluar.create', data);
+                }
+                
+                UI.hideLoading();
+                UI.showNotification('Surat berhasil disimpan', 'success');
+                closeModal();
+                loadData(currentPage);
+            } catch (error) {
+                UI.hideLoading();
+                UI.showNotification('Gagal: ' + error.message, 'error');
+            }
+        }
+        
+        // ========== SUBMIT APPROVAL ==========
+        async function submitApproval(id) {
+            UI.showConfirm('Ajukan Approval?', 'Surat akan diajukan untuk persetujuan.', async () => {
+                try {
+                    await api.post('suratKeluar.submitApproval', {}, { params: { id } });
+                    UI.showNotification('Surat diajukan', 'success');
+                    loadData(currentPage);
+                } catch (error) {
+                    UI.showNotification('Gagal: ' + error.message, 'error');
+                }
+            });
+        }
+        
+        // ========== DETAIL ==========
+        async function lihatDetail(id) {
+            try {
+                const response = await api.get('suratKeluar.detail', { id });
+                const data = response.data;
+                
+                document.getElementById('detail-content').innerHTML = `
+                    <h4>${data.nomorSurat || 'No. Surat: Auto'}</h4>
+                    <table style="width:100%;margin-top:16px;">
+                        <tr><td style="padding:8px;font-weight:600;width:150px;">Tanggal</td><td>: ${UI.formatDate(data.tanggalSurat, 'full')}</td></tr>
+                        <tr><td style="padding:8px;font-weight:600;">Tujuan</td><td>: ${data.tujuan || '-'}</td></tr>
+                        <tr><td style="padding:8px;font-weight:600;">Perihal</td><td>: ${data.perihal || '-'}</td></tr>
+                        <tr><td style="padding:8px;font-weight:600;">Status</td><td>: ${data.status?.toUpperCase() || '-'}</td></tr>
+                        <tr><td style="padding:8px;font-weight:600;">Approval</td><td>: ${data.approvalStatus?.toUpperCase() || '-'}</td></tr>
+                        <tr><td style="padding:8px;font-weight:600;">AI Tags</td><td>: ${data.aiTags || '-'}</td></tr>
+                        <tr><td style="padding:8px;font-weight:600;">Blockchain</td><td>: ${data.blockchainHash ? '<span class="blockchain-badge-mini">🔗 Verified</span>' : '-'}</td></tr>
+                    </table>
+                    ${data.fileUrl ? `<div style="margin-top:16px;"><a href="${data.fileUrl}" target="_blank" class="btn btn-outline">📎 Download</a></div>` : ''}
+                `;
+                
+                document.getElementById('detail-modal').classList.add('active');
+            } catch (error) {
+                UI.showNotification('Gagal memuat detail', 'error');
+            }
+        }
+        
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.remove('active');
+        }
+        
+        // ========== UTILITIES ==========
+        function debounceSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => loadData(1), 500);
+        }
+        
+        function resetFilter() {
+            document.getElementById('filter-status').value = '';
+            document.getElementById('filter-sifat').value = '';
+            document.getElementById('filter-search').value = '';
+            loadData(1);
+        }
+        
+        async function exportData() {
+            try {
+                const response = await api.get('suratKeluar.export');
+                if (response.data?.url) window.open(response.data.url, '_blank');
+                UI.showNotification('Export berhasil', 'success');
+            } catch (error) {
+                UI.showNotification('Export gagal', 'error');
+            }
+        }
+        
+        // ========== INIT ==========
+        document.addEventListener('DOMContentLoaded', () => loadData(1));
+        
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+            }
+        });
+    </script>
+</body>
+</html>

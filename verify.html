@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi v3.1.0 - Arsip Surat Digital</title>
+    <meta name="theme-color" content="#1976D2">
+    <link rel="stylesheet" href="css/custom.css?v=3.1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        .verify-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            padding: 20px;
+        }
+        .verify-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            padding: 48px 32px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+        }
+        .verify-icon { font-size: 80px; margin-bottom: 24px; }
+        .verify-title { font-size: 24px; margin-bottom: 12px; color: #333; }
+        .verify-message { font-size: 15px; color: #666; margin-bottom: 32px; line-height: 1.6; }
+        .verify-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 32px; background: #1976D2; color: white;
+            border: none; border-radius: 12px; font-size: 16px; font-weight: 500;
+            cursor: pointer; text-decoration: none; transition: all 0.3s;
+        }
+        .verify-btn:hover { background: #1565C0; box-shadow: 0 4px 15px rgba(25,118,210,0.3); }
+        .spinner { width: 40px; height: 40px; border: 3px solid #E0E0E0; border-top-color: #1976D2; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="verify-wrapper">
+        <div class="verify-container" id="verify-content">
+            <div class="spinner"></div>
+            <h1 class="verify-title">Memverifikasi...</h1>
+            <p class="verify-message">Mohon tunggu, kami sedang memverifikasi akun Anda.</p>
+            <p style="font-size:12px;color:#999;">v3.1.0 (2026)</p>
+        </div>
+    </div>
+    
+    <script src="js/app.js?v=3.1.0"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = new URLSearchParams(window.location.search).get('token');
+            const container = document.getElementById('verify-content');
+            
+            if (!token) {
+                showError('Token tidak ditemukan');
+                return;
+            }
+            
+            try {
+                const response = await api.get('verify', { token });
+                
+                if (response.status === 'success') {
+                    showSuccess('Verifikasi Berhasil!', 'Akun Anda telah diverifikasi. Silakan login.');
+                } else {
+                    throw new Error(response.message);
+                }
+            } catch (error) {
+                showError(error.message || 'Verifikasi gagal');
+            }
+        });
+        
+        function showSuccess(title, message) {
+            document.getElementById('verify-content').innerHTML = `
+                <div class="verify-icon">✅</div>
+                <h1 class="verify-title">${title}</h1>
+                <p class="verify-message">${message}</p>
+                <a href="login.html" class="verify-btn">
+                    <span class="material-icons">login</span> Login Sekarang
+                </a>
+                <p style="font-size:12px;color:#999;margin-top:16px;">v3.1.0 (2026)</p>
+            `;
+            setTimeout(() => { window.location.href = 'login.html'; }, 3000);
+        }
+        
+        function showError(message) {
+            document.getElementById('verify-content').innerHTML = `
+                <div class="verify-icon">❌</div>
+                <h1 class="verify-title">Verifikasi Gagal</h1>
+                <p class="verify-message">${message}</p>
+                <a href="login.html" class="verify-btn" style="background:#F44336;">
+                    <span class="material-icons">arrow_back</span> Kembali
+                </a>
+                <p style="font-size:12px;color:#999;margin-top:16px;">v3.1.0 (2026)</p>
+            `;
+        }
+    </script>
+</body>
+</html>

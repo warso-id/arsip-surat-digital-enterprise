@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    
+    <title>Offline - Arsip Surat Digital Enterprise v3.1.0</title>
+    <meta name="description" content="Anda sedang offline - Arsip Surat Digital Enterprise v3.1.0">
+    <meta name="theme-color" content="#1976D2">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1E1E1E">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png?v=3.1.0">
+    <link rel="apple-touch-icon" href="icons/icon-512x512.png?v=3.1.0">
+    <link rel="manifest" href="manifest.json?v=3.1.0">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="css/custom.css?v=3.1.0">
+    
+    <style>
+        :root {
+            --offline-bg: #FAFAFA;
+            --offline-card: #FFFFFF;
+            --offline-text: #333333;
+            --offline-text-secondary: #666666;
+            --offline-primary: #1976D2;
+            --offline-success: #4CAF50;
+            --offline-warning: #FF9800;
+            --offline-danger: #F44336;
+            --offline-border: #E0E0E0;
+        }
+        
+        [data-theme="dark"] {
+            --offline-bg: #121212;
+            --offline-card: #1E1E1E;
+            --offline-text: #FFFFFF;
+            --offline-text-secondary: #B0B0B0;
+            --offline-primary: #64B5F6;
+            --offline-success: #81C784;
+            --offline-warning: #FFB74D;
+            --offline-danger: #EF5350;
+            --offline-border: #333333;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: var(--offline-bg);
+            color: var(--offline-text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .offline-container {
+            background: var(--offline-card);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+            padding: 48px 32px;
+            max-width: 540px;
+            width: 100%;
+            text-align: center;
+            transition: background 0.3s, box-shadow 0.3s;
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .offline-icon-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 28px;
+        }
+        
+        .offline-cloud {
+            font-size: 80px;
+            color: var(--offline-primary);
+            animation: float 3s ease-in-out infinite;
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .offline-wifi {
+            font-size: 44px;
+            color: var(--offline-danger);
+            animation: pulse 2s ease-in-out infinite;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .offline-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--offline-text);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .offline-subtitle {
+            font-size: 13px;
+            color: var(--offline-primary);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .offline-message {
+            font-size: 15px;
+            color: var(--offline-text-secondary);
+            line-height: 1.7;
+            margin-bottom: 28px;
+        }
+        
+        .offline-features {
+            background: var(--offline-bg);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            text-align: left;
+            border: 1px solid var(--offline-border);
+        }
+        
+        .offline-features h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--offline-text);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 0;
+            font-size: 14px;
+            color: var(--offline-text-secondary);
+        }
+        
+        .feature-list .icon-available { 
+            color: var(--offline-success); 
+            font-size: 18px;
+        }
+        
+        .feature-list .icon-unavailable { 
+            color: var(--offline-danger); 
+            font-size: 18px;
+        }
+        
+        .offline-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .offline-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            width: 100%;
+            font-family: 'Roboto', sans-serif;
+            letter-spacing: 0.3px;
+        }
+        
+        .offline-btn-primary {
+            background: var(--offline-primary);
+            color: #FFFFFF;
+        }
+        
+        .offline-btn-primary:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 6px 20px rgba(25, 118, 210, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .offline-btn-secondary {
+            background: transparent;
+            color: var(--offline-primary);
+            border: 2px solid var(--offline-primary);
+        }
+        
+        .offline-btn-secondary:hover {
+            background: rgba(25, 118, 210, 0.08);
+            transform: translateY(-1px);
+        }
+        
+        .offline-btn-outline {
+            background: transparent;
+            color: var(--offline-text-secondary);
+            border: 2px solid var(--offline-border);
+            font-size: 13px;
+            padding: 10px 16px;
+        }
+        
+        .offline-btn-outline:hover {
+            border-color: var(--offline-primary);
+            color: var(--offline-primary);
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--offline-text-secondary);
+            padding: 10px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--offline-danger);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .status-dot.online {
+            background: var(--offline-success);
+            animation: none;
+        }
+        
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .blockchain-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            background: linear-gradient(135deg, #F7931A, #FF6B00);
+            color: white;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        
+        .version-info {
+            font-size: 11px;
+            color: var(--offline-text-secondary);
+            margin-top: 16px;
+            opacity: 0.7;
+        }
+        
+        .cached-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--offline-success);
+            margin-top: 12px;
+        }
+        
+        @media (max-width: 480px) {
+            .offline-container {
+                padding: 32px 20px;
+                border-radius: 20px;
+            }
+            
+            .offline-title {
+                font-size: 24px;
+            }
+            
+            .offline-icon-container {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .offline-cloud {
+                font-size: 64px;
+            }
+            
+            .offline-wifi {
+                font-size: 36px;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            .offline-cloud { animation: none; }
+            .offline-wifi { animation: none; }
+            .status-dot { animation: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        
+        <!-- Icon -->
+        <div class="offline-icon-container">
+            <span class="material-icons offline-cloud">cloud_off</span>
+            <span class="material-icons offline-wifi">wifi_off</span>
+        </div>
+        
+        <!-- Title -->
+        <h1 class="offline-title">Anda Sedang Offline</h1>
+        <p class="offline-subtitle">
+            v3.1.0 
+            <span class="ai-badge">🤖 AI Ready</span>
+            <span class="blockchain-badge">🔗 BC</span>
+        </p>
+        
+        <!-- Message -->
+        <p class="offline-message">
+            Tidak ada koneksi internet terdeteksi. Jangan khawatir! 
+            Beberapa fitur tetap dapat digunakan secara offline. 
+            Data akan otomatis disinkronkan saat koneksi pulih.
+        </p>
+        
+        <!-- Available Features -->
+        <div class="offline-features">
+            <h3>🤖 Fitur Tersedia Offline:</h3>
+            <ul class="feature-list">
+                <li>
+                    <span class="material-icons icon-available">check_circle</span>
+                    <span>Lihat surat yang sudah di-cache</span>
+                </li>
+                <li>
+                    <span class="material-icons icon-available">check_circle</span>
+                    <span>AI Smart Search (data lokal)</span>
+                </li>
+                <li>
+                    <span class="material-icons icon-available">check_circle</span>
+                    <span>Buat draft surat baru</span>
+                </li>
+                <li>
+                    <span class="material-icons icon-available">check_circle</span>
+                    <span>Blockchain audit trail (lokal)</span>
+                </li>
+                <li>
+                    <span class="material-icons icon-available">check_circle</span>
+                    <span>Dark mode & pengaturan</span>
+                </li>
+                <li>
+                    <span class="material-icons icon-unavailable">cancel</span>
+                    <span>Upload file ke Drive</span>
+                </li>
+                <li>
+                    <span class="material-icons icon-unavailable">cancel</span>
+                    <span>Approval & notifikasi real-time</span>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Actions -->
+        <div class="offline-actions">
+            <button class="offline-btn offline-btn-primary" onclick="retryConnection()">
+                <span class="material-icons">refresh</span>
+                Coba Lagi
+            </button>
+            <a href="/index.html" class="offline-btn offline-btn-secondary">
+                <span class="material-icons">home</span>
+                Ke Halaman Utama
+            </a>
+            <button class="offline-btn offline-btn-outline" onclick="toggleTheme()">
+                <span class="material-icons" id="theme-icon-offline">dark_mode</span>
+                <span id="theme-text-offline">Dark Mode</span>
+            </button>
+        </div>
+        
+        <!-- Connection Status -->
+        <div class="connection-status">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-text">Mengecek koneksi...</span>
+        </div>
+        
+        <!-- Cached Data Indicator -->
+        <div class="cached-indicator" id="cached-indicator" style="display:none;">
+            <span class="material-icons" style="font-size:16px;">storage</span>
+            <span id="cached-count">0 data tersimpan di cache</span>
+        </div>
+        
+        <!-- Version -->
+        <p class="version-info">
+            Arsip Surat Digital Enterprise v3.1.0 (2026) • Build 2026-07-10
+        </p>
+    </div>
+    
+    <!-- Scripts -->
+    <script>
+        (function() {
+            'use strict';
+            
+            // ========== THEME ==========
+            function loadTheme() {
+                const saved = localStorage.getItem('app_theme') || 'auto';
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                
+                if (saved === 'dark' || (saved === 'auto' && prefersDark)) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    const icon = document.getElementById('theme-icon-offline');
+                    const text = document.getElementById('theme-text-offline');
+                    if (icon) icon.textContent = 'light_mode';
+                    if (text) text.textContent = 'Light Mode';
+                }
+            }
+            
+            window.toggleTheme = function() {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                const newTheme = isDark ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('app_theme', newTheme);
+                
+                const icon = document.getElementById('theme-icon-offline');
+                const text = document.getElementById('theme-text-offline');
+                
+                if (icon) icon.textContent = newTheme === 'dark' ? 'light_mode' : 'dark_mode';
+                if (text) text.textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+            };
+            
+            // ========== CONNECTION ==========
+            function updateConnectionStatus() {
+                const dot = document.getElementById('status-dot');
+                const text = document.getElementById('status-text');
+                
+                if (navigator.onLine) {
+                    if (dot) dot.classList.add('online');
+                    if (text) text.textContent = '✅ Koneksi tersedia! Mengalihkan...';
+                    
+                    setTimeout(function() {
+                        window.location.href = '/index.html';
+                    }, 1500);
+                } else {
+                    if (dot) dot.classList.remove('online');
+                    if (text) text.textContent = '🔴 Tidak ada koneksi internet';
+                }
+            }
+            
+            window.retryConnection = function() {
+                const dot = document.getElementById('status-dot');
+                const text = document.getElementById('status-text');
+                
+                if (dot) dot.classList.add('online');
+                if (text) text.textContent = '🔄 Mencoba menghubungkan...';
+                
+                // Try fetching a small resource
+                fetch('/version.json?v=3.1.0', { 
+                    method: 'HEAD', 
+                    cache: 'no-cache',
+                    mode: 'cors'
+                })
+                .then(function() {
+                    window.location.href = '/index.html';
+                })
+                .catch(function() {
+                    if (dot) dot.classList.remove('online');
+                    if (text) text.textContent = '🔴 Gagal terhubung. Coba lagi.';
+                    
+                    setTimeout(function() {
+                        updateConnectionStatus();
+                    }, 2000);
+                });
+            };
+            
+            // ========== CACHE INFO ==========
+            function loadCacheInfo() {
+                if ('caches' in window) {
+                    caches.keys().then(function(cacheNames) {
+                        var totalItems = 0;
+                        var promises = cacheNames.map(function(name) {
+                            return caches.open(name).then(function(cache) {
+                                return cache.keys().then(function(keys) {
+                                    totalItems += keys.length;
+                                });
+                            });
+                        });
+                        
+                        Promise.all(promises).then(function() {
+                            var indicator = document.getElementById('cached-indicator');
+                            var count = document.getElementById('cached-count');
+                            
+                            if (indicator && totalItems > 0) {
+                                indicator.style.display = 'flex';
+                                if (count) count.textContent = totalItems + ' data tersimpan di cache';
+                            }
+                        });
+                    });
+                }
+            };
+            
+            // ========== SERVICE WORKER ==========
+            function registerSW() {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/sw.js?v=3.1.0')
+                        .then(function(reg) {
+                            console.log('✅ SW v3.1.0 registered (offline page)');
+                        })
+                        .catch(function(err) {
+                            console.log('SW registration failed:', err);
+                        });
+                }
+            };
+            
+            // ========== INIT ==========
+            function init() {
+                loadTheme();
+                updateConnectionStatus();
+                loadCacheInfo();
+                registerSW();
+                
+                // Listen for connection changes
+                window.addEventListener('online', updateConnectionStatus);
+                window.addEventListener('offline', updateConnectionStatus);
+                
+                // Auto-retry every 5 seconds
+                setInterval(function() {
+                    if (navigator.onLine) {
+                        updateConnectionStatus();
+                    }
+                }, 5000);
+            };
+            
+            // Run when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
+    </script>
+</body>
+</html>

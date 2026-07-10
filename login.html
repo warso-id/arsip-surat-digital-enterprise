@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    
+    <title>Login v3.1.0 - Arsip Surat Digital Enterprise</title>
+    <meta name="description" content="Login dengan AI & Biometric - v3.1.0 (2026)">
+    <meta name="version" content="3.1.0">
+    
+    <meta name="theme-color" content="#1976D2">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1E1E1E">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png?v=3.1.0">
+    <link rel="apple-touch-icon" href="icons/icon-512x512.png?v=3.1.0">
+    <link rel="manifest" href="manifest.json?v=3.1.0">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="css/custom.css?v=3.1.0">
+    
+    <style>
+        :root {
+            --login-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: #FFFFFF;
+            --text: #333333;
+            --text-secondary: #666666;
+            --input-bg: #FFFFFF;
+            --input-border: #E0E0E0;
+        }
+        
+        [data-theme="dark"] {
+            --login-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --card-bg: #1E1E1E;
+            --text: #FFFFFF;
+            --text-secondary: #B0B0B0;
+            --input-bg: #2D2D2D;
+            --input-border: #4E4E4E;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--login-bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .login-wrapper {
+            width: 100%;
+            max-width: 460px;
+        }
+        
+        .login-container {
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+            transition: all 0.3s;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 40px 32px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .login-header .version-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            background: white;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .login-header h1 {
+            font-size: 24px;
+            margin: 0 0 4px;
+            font-weight: 500;
+        }
+        
+        .login-header p {
+            font-size: 13px;
+            opacity: 0.9;
+            margin: 0;
+        }
+        
+        .login-body {
+            padding: 32px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        
+        .form-input {
+            width: 100%;
+            height: 48px;
+            padding: 0 16px;
+            border: 2px solid var(--input-border);
+            border-radius: 12px;
+            font-size: 15px;
+            background: var(--input-bg);
+            color: var(--text);
+            transition: all 0.3s;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        .form-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            outline: none;
+        }
+        
+        .password-wrapper {
+            position: relative;
+        }
+        
+        .password-wrapper .form-input {
+            padding-right: 50px;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 10px;
+            font-size: 20px;
+        }
+        
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        
+        .forgot-password {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-btn {
+            width: 100%;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .biometric-btn {
+            width: 100%;
+            height: 48px;
+            background: var(--input-bg);
+            color: var(--text);
+            border: 2px solid var(--input-border);
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        .biometric-btn:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--input-border);
+        }
+        
+        .divider span {
+            padding: 0 12px;
+        }
+        
+        .error-message {
+            background: #FFEBEE;
+            color: #C62828;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+            border-left: 4px solid #F44336;
+        }
+        
+        [data-theme="dark"] .error-message {
+            background: #4A1525;
+            color: #EF5350;
+        }
+        
+        .login-footer {
+            text-align: center;
+            padding: 20px 32px;
+            background: var(--input-bg);
+            border-top: 1px solid var(--input-border);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            margin-left: 4px;
+        }
+        
+        .theme-toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        
+        .theme-toggle-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(30deg);
+        }
+        
+        @media (max-width: 480px) {
+            .login-header { padding: 32px 20px; }
+            .login-body { padding: 24px 20px; }
+            .login-logo { width: 60px; height: 60px; }
+            .login-header h1 { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark Mode">
+        <span id="theme-icon">🌙</span>
+    </button>
+    
+    <div class="login-wrapper">
+        <div class="login-container">
+            <!-- Header -->
+            <div class="login-header">
+                <span class="version-badge">v3.1.0</span>
+                <img src="icons/icon-192x192.png" alt="Logo" class="login-logo">
+                <h1>Arsip Surat Digital</h1>
+                <p>Enterprise Document Management <span class="ai-badge">🤖 AI</span></p>
+            </div>
+            
+            <!-- Body -->
+            <div class="login-body">
+                <!-- Error Message -->
+                <div class="error-message" id="error-message"></div>
+                
+                <!-- Login Form -->
+                <form id="login-form" autocomplete="off">
+                    <div class="form-group">
+                        <label class="form-label">Username / Email</label>
+                        <input type="text" id="username" class="form-input" 
+                               placeholder="Masukkan username atau email" required autofocus>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" class="form-input" 
+                                   placeholder="Masukkan password" required>
+                            <button type="button" class="toggle-password" id="toggle-password">
+                                <span class="material-icons">visibility_off</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="login-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="remember-me">
+                            <span>Ingat saya</span>
+                        </label>
+                        <a href="#" class="forgot-password" id="forgot-password">Lupa password?</a>
+                    </div>
+                    
+                    <button type="submit" class="login-btn" id="login-btn">
+                        <span class="material-icons">login</span>
+                        Masuk
+                    </button>
+                </form>
+                
+                <!-- Biometric Divider -->
+                <div class="divider" id="biometric-divider" style="display:none;">
+                    <span>atau</span>
+                </div>
+                
+                <!-- Biometric Login -->
+                <button class="biometric-btn" id="biometric-btn" style="display:none;" 
+                        onclick="loginWithBiometric()">
+                    <span class="material-icons">fingerprint</span>
+                    Login dengan Biometric
+                </button>
+            </div>
+            
+            <!-- Footer -->
+            <div class="login-footer">
+                <p>&copy; 2024-2026 Arsip Surat Digital Enterprise</p>
+                <p style="margin-top: 4px;">
+                    v3.1.0 (2026) • 
+                    <a href="#" onclick="toggleTheme()" style="color: #667eea;">🌙 Tema</a> •
+                    <a href="#" onclick="switchLanguage()" style="color: #667eea;" id="lang-switch">EN</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/app.js?v=3.1.0"></script>
+    <script src="js/auth.js?v=3.1.0"></script>
+    
+    <script>
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🔐 Login v3.1.0 (2026)');
+            
+            // Check if already logged in
+            if (typeof AuthGuard !== 'undefined') {
+                const isAuth = await AuthGuard.redirectIfAuthenticated();
+                if (isAuth) return;
+            }
+            
+            // Load saved theme
+            loadTheme();
+            
+            // Check biometric availability
+            await checkBiometric();
+            
+            // Toggle password visibility
+            document.getElementById('toggle-password')?.addEventListener('click', function() {
+                const pw = document.getElementById('password');
+                const icon = this.querySelector('.material-icons');
+                if (pw.type === 'password') {
+                    pw.type = 'text';
+                    icon.textContent = 'visibility';
+                } else {
+                    pw.type = 'password';
+                    icon.textContent = 'visibility_off';
+                }
+            });
+            
+            // Form submit
+            document.getElementById('login-form')?.addEventListener('submit', handleLogin);
+            
+            // Forgot password
+            document.getElementById('forgot-password')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                handleForgotPassword();
+            });
+            
+            // Enter key
+            document.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('login-form')?.dispatchEvent(new Event('submit'));
+                }
+            });
+        });
+        
+        // ========== THEME ==========
+        function loadTheme() {
+            const saved = localStorage.getItem('app_theme') || 'auto';
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (saved === 'dark' || (saved === 'auto' && prefersDark)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+            }
+        }
+        
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('app_theme', newTheme);
+        }
+        
+        function switchLanguage() {
+            const current = localStorage.getItem('app_locale') || 'id';
+            const newLang = current === 'id' ? 'en' : 'id';
+            localStorage.setItem('app_locale', newLang);
+            document.getElementById('lang-switch').textContent = newLang === 'id' ? 'EN' : 'ID';
+            location.reload();
+        }
+        
+        // ========== BIOMETRIC ==========
+        async function checkBiometric() {
+            if (typeof biometricAuth === 'undefined') return;
+            
+            try {
+                const available = await biometricAuth.isAvailable();
+                if (available) {
+                    const registered = localStorage.getItem('biometric_registered') === 'true';
+                    if (registered) {
+                        document.getElementById('biometric-divider').style.display = 'flex';
+                        document.getElementById('biometric-btn').style.display = 'flex';
+                    }
+                }
+            } catch (e) {
+                console.log('Biometric not available');
+            }
+        }
+        
+        async function loginWithBiometric() {
+            if (typeof biometricAuth === 'undefined') {
+                alert('Biometric tidak didukung di browser ini');
+                return;
+            }
+            
+            const btn = document.getElementById('biometric-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner spinner-sm"></span> Verifikasi...';
+            
+            try {
+                const result = await biometricAuth.authenticate();
+                
+                if (result) {
+                    // Get stored token
+                    const token = localStorage.getItem('app_token');
+                    if (token) {
+                        api.setToken(JSON.parse(token));
+                        appState.set('isAuthenticated', true);
+                        window.location.href = '/index.html';
+                    } else {
+                        throw new Error('Session tidak ditemukan');
+                    }
+                } else {
+                    throw new Error('Verifikasi biometric gagal');
+                }
+            } catch (error) {
+                showError(error.message);
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-icons">fingerprint</span> Login dengan Biometric';
+            }
+        }
+        
+        // ========== LOGIN ==========
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username')?.value?.trim();
+            const password = document.getElementById('password')?.value;
+            const rememberMe = document.getElementById('remember-me')?.checked;
+            
+            if (!username) { showError('Username wajib diisi'); return; }
+            if (!password) { showError('Password wajib diisi'); return; }
+            
+            const btn = document.getElementById('login-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner spinner-sm" style="border-color:white;border-top-color:transparent;"></span> Login...';
+            
+            hideError();
+            
+            try {
+                const result = await authManager.login(username, password, rememberMe);
+                // Redirect handled by auth.js
+            } catch (error) {
+                showError(error.message || 'Login gagal');
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-icons">login</span> Masuk';
+            }
+        }
+        
+        // ========== FORGOT PASSWORD ==========
+        async function handleForgotPassword() {
+            const email = prompt('Masukkan email Anda untuk reset password:');
+            if (!email) return;
+            
+            try {
+                await authManager.forgotPassword(email);
+                alert('Link reset password telah dikirim ke email Anda.');
+            } catch (error) {
+                alert('Gagal: ' + error.message);
+            }
+        }
+        
+        // ========== HELPERS ==========
+        function showError(message) {
+            const el = document.getElementById('error-message');
+            if (el) {
+                el.textContent = message;
+                el.style.display = 'block';
+            }
+        }
+        
+        function hideError() {
+            const el = document.getElementById('error-message');
+            if (el) el.style.display = 'none';
+        }
+    </script>
+    
+    <!-- Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js?v=3.1.0')
+                .then(reg => console.log('SW v3.1.0 registered'))
+                .catch(err => console.log('SW failed:', err));
+        }
+    </script>
+</body>
+</html>

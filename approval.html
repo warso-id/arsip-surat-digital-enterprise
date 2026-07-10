@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approval v3.1.0 - Arsip Surat Digital</title>
+    
+    <link rel="stylesheet" href="../css/custom.css?v=3.1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        .module-container { padding: 20px; }
+        .module-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+        
+        .approval-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
+        
+        .approval-card {
+            background: var(--white, #fff); border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden;
+            border-left: 4px solid #FF9800; transition: all 0.3s;
+        }
+        .approval-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.15); transform: translateY(-2px); }
+        .approval-card.approved { border-left-color: #4CAF50; opacity: 0.85; }
+        .approval-card.rejected { border-left-color: #F44336; opacity: 0.85; }
+        
+        .approval-card-header {
+            padding: 16px 20px; border-bottom: 1px solid var(--gray-200, #eee);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .approval-card-body { padding: 16px 20px; }
+        .approval-card-footer {
+            padding: 12px 20px; border-top: 1px solid var(--gray-200, #eee);
+            display: flex; gap: 8px; justify-content: flex-end; background: var(--gray-50, #fafafa);
+        }
+        
+        .approval-status { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+        .approval-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-pending { background: #FF9800; animation: pulse 2s infinite; }
+        .dot-approved { background: #4CAF50; }
+        .dot-rejected { background: #F44336; }
+        
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+        
+        .info-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; color: var(--text, #333); }
+        .info-label { color: var(--gray-600, #666); min-width: 100px; }
+        .info-value { font-weight: 500; text-align: right; }
+        
+        .empty-state { text-align: center; padding: 60px 20px; grid-column: 1/-1; color: var(--gray-500, #999); }
+        .empty-state .material-icons { font-size: 64px; color: var(--gray-300, #ccc); }
+        
+        .ai-badge-mini { font-size: 10px; background: linear-gradient(135deg,#667eea,#764ba2); color: white; padding: 2px 6px; border-radius: 6px; }
+        .blockchain-verified { font-size: 11px; color: #F7931A; }
+        
+        @media (max-width: 480px) {
+            .approval-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="module-container">
+        <div class="module-header">
+            <div>
+                <h1 style="margin:0;">✅ Approval Surat</h1>
+                <p style="color:var(--gray-600,#666);margin:4px 0 0;">
+                    Daftar surat menunggu persetujuan • <span class="ai-badge-mini">🤖 AI v3.1.0</span>
+                </p>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <button class="btn btn-outline btn-sm" onclick="voiceCommander?.start()" title="Voice Command">🎤</button>
+                <select id="filter-status" onchange="loadApprovals()" class="form-select" style="width:auto;">
+                    <option value="pending">Menunggu</option>
+                    <option value="approved">Disetujui</option>
+                    <option value="rejected">Ditolak</option>
+                    <option value="all">Semua</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Stats -->
+        <div class="grid grid-3" style="gap:16px;margin-bottom:20px;">
+            <div class="stat-card stat-card-warning">
+                <div class="stat-card-icon"><span class="material-icons">hourglass_empty</span></div>
+                <div class="stat-card-content"><h3 id="count-pending">0</h3><p>Menunggu</p></div>
+            </div>
+            <div class="stat-card stat-card-success">
+                <div class="stat-card-icon"><span class="material-icons">check_circle</span></div>
+                <div class="stat-card-content"><h3 id="count-approved">0</h3><p>Disetujui</p></div>
+            </div>
+            <div class="stat-card stat-card-danger">
+                <div class="stat-card-icon"><span class="material-icons">cancel</span></div>
+                <div class="stat-card-content"><h3 id="count-rejected">0</h3><p>Ditolak</p></div>
+            </div>
+        </div>
+        
+        <!-- Approval Cards -->
+        <div class="approval-grid" id="approval-list">
+            <div class="empty-state"><span class="spinner"></span><p>Memuat data...</p></div>
+        </div>
+    </div>
+    
+    <!-- Modal Action -->
+    <div class="modal-overlay" id="action-modal">
+        <div class="modal" style="max-width:500px;width:90%;">
+            <div class="modal-header">
+                <h3 id="action-title">Proses Approval</h3>
+                <button class="btn btn-icon" onclick="closeActionModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="action-id">
+                <input type="hidden" id="action-type">
+                <div id="action-summary" style="margin-bottom:16px;padding:12px;background:var(--gray-50,#f5f5f5);border-radius:8px;"></div>
+                <div class="form-group">
+                    <label class="form-label">Komentar</label>
+                    <textarea class="form-textarea" id="action-komentar" rows="3" placeholder="Masukkan komentar..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeActionModal()">Batal</button>
+                <button class="btn btn-success" id="btn-approve" onclick="prosesApproval('approved')">✅ Setujui</button>
+                <button class="btn btn-danger" id="btn-reject" onclick="prosesApproval('rejected')">❌ Tolak</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/app.js?v=3.1.0"></script>
+    <script>
+        let currentApprovalId = null;
+        
+        async function loadApprovals() {
+            const status = document.getElementById('filter-status')?.value || 'pending';
+            try {
+                const response = await api.get('approval.list', { status: status === 'all' ? '' : status });
+                renderApprovals(response.data.items);
+                updateStats(response.data.stats);
+            } catch (error) {
+                document.getElementById('approval-list').innerHTML = `<div class="empty-state"><span class="material-icons">error</span><p>Gagal memuat data</p></div>`;
+            }
+        }
+        
+        function renderApprovals(data) {
+            const container = document.getElementById('approval-list');
+            if (!data?.length) {
+                container.innerHTML = `<div class="empty-state"><span class="material-icons">check_circle</span><p>Tidak ada surat yang perlu di-approve</p></div>`;
+                return;
+            }
+            
+            container.innerHTML = data.map(item => `
+                <div class="approval-card ${item.status}">
+                    <div class="approval-card-header">
+                        <div>
+                            <strong>${item.suratKeluar?.nomorSurat || item.nomorSurat || '-'}</strong>
+                            <p style="font-size:12px;color:var(--gray-500,#999);">Level ${item.level || 1}</p>
+                        </div>
+                        <div class="approval-status">
+                            <span class="approval-dot dot-${item.status || 'pending'}"></span>
+                            ${(item.status || 'pending').toUpperCase()}
+                        </div>
+                    </div>
+                    <div class="approval-card-body">
+                        <div class="info-row"><span class="info-label">Perihal</span><span class="info-value">${item.suratKeluar?.perihal || item.perihal || '-'}</span></div>
+                        <div class="info-row"><span class="info-label">Tujuan</span><span class="info-value">${item.suratKeluar?.tujuan || item.tujuan || '-'}</span></div>
+                        <div class="info-row"><span class="info-label">Tanggal</span><span class="info-value">${UI.formatDate(item.createdAt, 'short')}</span></div>
+                        ${item.komentar ? `<div style="margin-top:8px;padding:8px;background:var(--gray-50,#f9f9f9);border-radius:6px;font-size:13px;"><strong>Komentar:</strong> ${item.komentar}</div>` : ''}
+                    </div>
+                    ${item.status === 'pending' ? `
+                        <div class="approval-card-footer">
+                            <button class="btn btn-sm btn-outline" onclick="previewSurat('${item.suratKeluarId}')">👁 Preview</button>
+                            <button class="btn btn-sm btn-danger" onclick="showRejectModal('${item.id}')">❌ Tolak</button>
+                            <button class="btn btn-sm btn-success" onclick="showApproveModal('${item.id}')">✅ Setujui</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+        
+        function updateStats(stats) {
+            if (!stats) return;
+            document.getElementById('count-pending').textContent = stats.pending || 0;
+            document.getElementById('count-approved').textContent = stats.approved || 0;
+            document.getElementById('count-rejected').textContent = stats.rejected || 0;
+        }
+        
+        async function showApproveModal(id) {
+            currentApprovalId = id;
+            try {
+                const response = await api.get('approval.detail', { id });
+                const data = response.data;
+                document.getElementById('action-title').textContent = '✅ Setujui Surat';
+                document.getElementById('action-summary').innerHTML = `<strong>${data.suratKeluar?.nomorSurat || '-'}</strong><br><span style="font-size:13px;">${data.suratKeluar?.perihal || '-'}</span>`;
+                document.getElementById('action-type').value = 'approved';
+                document.getElementById('btn-approve').style.display = 'inline-flex';
+                document.getElementById('btn-reject').style.display = 'none';
+                document.getElementById('action-modal').classList.add('active');
+            } catch (error) { UI.showNotification('Gagal memuat detail', 'error'); }
+        }
+        
+        async function showRejectModal(id) {
+            currentApprovalId = id;
+            try {
+                const response = await api.get('approval.detail', { id });
+                const data = response.data;
+                document.getElementById('action-title').textContent = '❌ Tolak Surat';
+                document.getElementById('action-summary').innerHTML = `<strong>${data.suratKeluar?.nomorSurat || '-'}</strong><br><span style="font-size:13px;">${data.suratKeluar?.perihal || '-'}</span>`;
+                document.getElementById('action-type').value = 'rejected';
+                document.getElementById('btn-approve').style.display = 'none';
+                document.getElementById('btn-reject').style.display = 'inline-flex';
+                document.getElementById('action-modal').classList.add('active');
+            } catch (error) { UI.showNotification('Gagal memuat detail', 'error'); }
+        }
+        
+        async function prosesApproval(status) {
+            const komentar = document.getElementById('action-komentar')?.value || '';
+            try {
+                UI.showLoading('Memproses...');
+                await api.post('approval.process', { status, komentar }, { params: { id: currentApprovalId } });
+                UI.hideLoading();
+                UI.showNotification(status === 'approved' ? '✅ Disetujui' : '❌ Ditolak', status === 'approved' ? 'success' : 'warning');
+                closeActionModal();
+                loadApprovals();
+            } catch (error) {
+                UI.hideLoading();
+                UI.showNotification('Gagal: ' + error.message, 'error');
+            }
+        }
+        
+        async function previewSurat(id) {
+            try {
+                const response = await api.get('suratKeluar.detail', { id });
+                if (response.data?.fileUrl) window.open(response.data.fileUrl, '_blank');
+                else UI.showNotification('File tidak tersedia', 'warning');
+            } catch (error) { UI.showNotification('Gagal', 'error'); }
+        }
+        
+        function closeActionModal() {
+            document.getElementById('action-modal').classList.remove('active');
+            document.getElementById('action-komentar').value = '';
+            currentApprovalId = null;
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => loadApprovals());
+        
+        document.querySelectorAll('.modal-overlay').forEach(o => {
+            o.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+        });
+    </script>
+</body>
+</html>

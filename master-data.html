@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Data v3.1.0 - Arsip Surat Digital</title>
+    
+    <link rel="stylesheet" href="../css/custom.css?v=3.1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        .module-container { padding: 20px; }
+        .module-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+        
+        .master-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px; }
+        
+        .master-card { background: var(--white,#fff); border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+        .master-card-header { padding: 16px 20px; border-bottom: 1px solid var(--gray-200,#eee); display: flex; justify-content: space-between; align-items: center; }
+        .master-card-body { padding: 0; max-height: 400px; overflow-y: auto; }
+        
+        .master-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid var(--gray-100,#f0f0f0); transition: background 0.2s; }
+        .master-item:hover { background: var(--gray-50,#f9f9f9); }
+        .master-item:last-child { border-bottom: none; }
+        
+        .master-item-actions { display: flex; gap: 4px; }
+        .action-btn { padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+        .action-btn:hover { opacity: 0.8; }
+        
+        .add-new-row { padding: 12px 20px; border-top: 1px solid var(--gray-200,#eee); background: var(--gray-50,#fafafa); display: flex; gap: 8px; }
+        .add-new-row input { flex: 1; padding: 8px 12px; border: 1px solid var(--gray-300,#ddd); border-radius: 6px; font-size: 14px; }
+        
+        .ai-suggestion { font-size: 11px; color: #667eea; margin-top: 2px; }
+        
+        @media (max-width: 480px) { .master-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="module-container">
+        <div class="module-header">
+            <div>
+                <h1 style="margin:0;">⚙️ Master Data</h1>
+                <p style="color:var(--gray-600,#666);margin:4px 0 0;">Kelola data referensi • <span class="ai-tag">🤖 AI v3.1.0</span></p>
+            </div>
+        </div>
+        
+        <div class="master-grid">
+            <!-- Klasifikasi Surat -->
+            <div class="master-card">
+                <div class="master-card-header">
+                    <h3>📋 Klasifikasi Surat</h3>
+                    <span class="badge badge-info" id="count-klasifikasi">0</span>
+                </div>
+                <div class="master-card-body" id="list-klasifikasi"><p style="text-align:center;padding:20px;color:var(--gray-500,#999);">Memuat...</p></div>
+                <div class="add-new-row">
+                    <input type="text" id="new-klasifikasi" placeholder="Tambah klasifikasi..." onkeypress="if(event.key==='Enter')tambahMasterData('klasifikasi_surat')">
+                    <button class="btn btn-sm btn-primary" onclick="tambahMasterData('klasifikasi_surat')">+ Tambah</button>
+                </div>
+            </div>
+            
+            <!-- Unit Kerja -->
+            <div class="master-card">
+                <div class="master-card-header">
+                    <h3>🏢 Unit Kerja</h3>
+                    <span class="badge badge-success" id="count-unit">0</span>
+                </div>
+                <div class="master-card-body" id="list-unit"><p style="text-align:center;padding:20px;color:var(--gray-500,#999);">Memuat...</p></div>
+                <div class="add-new-row">
+                    <input type="text" id="new-unit" placeholder="Tambah unit kerja..." onkeypress="if(event.key==='Enter')tambahMasterData('unit_kerja')">
+                    <button class="btn btn-sm btn-primary" onclick="tambahMasterData('unit_kerja')">+ Tambah</button>
+                </div>
+            </div>
+            
+            <!-- Jenis Surat -->
+            <div class="master-card">
+                <div class="master-card-header">
+                    <h3>📄 Jenis Surat</h3>
+                    <span class="badge badge-warning" id="count-jenis">0</span>
+                </div>
+                <div class="master-card-body" id="list-jenis"><p style="text-align:center;padding:20px;color:var(--gray-500,#999);">Memuat...</p></div>
+                <div class="add-new-row">
+                    <input type="text" id="new-jenis" placeholder="Tambah jenis surat..." onkeypress="if(event.key==='Enter')tambahMasterData('jenis_surat')">
+                    <button class="btn btn-sm btn-primary" onclick="tambahMasterData('jenis_surat')">+ Tambah</button>
+                </div>
+            </div>
+            
+            <!-- Sifat Surat -->
+            <div class="master-card">
+                <div class="master-card-header">
+                    <h3>🔖 Sifat Surat</h3>
+                    <span class="badge badge-danger" id="count-sifat">0</span>
+                </div>
+                <div class="master-card-body" id="list-sifat"><p style="text-align:center;padding:20px;color:var(--gray-500,#999);">Memuat...</p></div>
+                <div class="add-new-row">
+                    <input type="text" id="new-sifat" placeholder="Tambah sifat surat..." onkeypress="if(event.key==='Enter')tambahMasterData('sifat_surat')">
+                    <button class="btn btn-sm btn-primary" onclick="tambahMasterData('sifat_surat')">+ Tambah</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/app.js?v=3.1.0"></script>
+    <script>
+        async function loadMasterData() {
+            try {
+                const response = await api.get('masterData.list');
+                const data = response.data;
+                
+                renderMasterList('list-klasifikasi', 'klasifikasi_surat', data.klasifikasi_surat);
+                renderMasterList('list-unit', 'unit_kerja', data.unit_kerja);
+                renderMasterList('list-jenis', 'jenis_surat', data.jenis_surat);
+                renderMasterList('list-sifat', 'sifat_surat', data.sifat_surat);
+                
+                document.getElementById('count-klasifikasi').textContent = (data.klasifikasi_surat || []).length;
+                document.getElementById('count-unit').textContent = (data.unit_kerja || []).length;
+                document.getElementById('count-jenis').textContent = (data.jenis_surat || []).length;
+                document.getElementById('count-sifat').textContent = (data.sifat_surat || []).length;
+            } catch (error) { UI.showNotification('Gagal memuat', 'error'); }
+        }
+        
+        function renderMasterList(containerId, kategori, items) {
+            const container = document.getElementById(containerId);
+            if (!items?.length) {
+                container.innerHTML = '<p style="text-align:center;padding:20px;color:var(--gray-500,#999);">Belum ada data</p>';
+                return;
+            }
+            container.innerHTML = items.map(item => `
+                <div class="master-item">
+                    <div>
+                        <strong>${item.nama}</strong>
+                        ${item.nilai ? `<p style="font-size:12px;color:var(--gray-500,#999);">${item.nilai}</p>` : ''}
+                    </div>
+                    <div class="master-item-actions">
+                        <button class="action-btn" style="background:#FFF3E0;color:#E65100;" onclick="editMasterData('${item.id}','${item.nama}')">✏️</button>
+                        <button class="action-btn" style="background:#FFEBEE;color:#C62828;" onclick="hapusMasterData('${item.id}','${kategori}')">🗑</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        async function tambahMasterData(kategori) {
+            const inputId = `new-${kategori.split('_')[0]}`;
+            const nama = document.getElementById(inputId)?.value?.trim();
+            if (!nama) { alert('Nama tidak boleh kosong'); return; }
+            
+            try {
+                await api.post('masterData.create', { kategori, nama });
+                UI.showNotification('Berhasil ditambahkan', 'success');
+                document.getElementById(inputId).value = '';
+                loadMasterData();
+            } catch (error) { UI.showNotification('Gagal: ' + error.message, 'error'); }
+        }
+        
+        async function editMasterData(id, currentName) {
+            const newName = prompt('Edit nama:', currentName);
+            if (newName && newName !== currentName) {
+                try {
+                    await api.put('masterData.update', { nama: newName }, { params: { id } });
+                    UI.showNotification('Berhasil diupdate', 'success');
+                    loadMasterData();
+                } catch (error) { UI.showNotification('Gagal', 'error'); }
+            }
+        }
+        
+        async function hapusMasterData(id, kategori) {
+            if (!confirm('Hapus data ini?')) return;
+            try {
+                await api.delete('masterData.delete', { params: { id } });
+                UI.showNotification('Berhasil dihapus', 'success');
+                loadMasterData();
+            } catch (error) { UI.showNotification('Gagal', 'error'); }
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadMasterData);
+    </script>
+</body>
+</html>

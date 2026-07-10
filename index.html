@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    
+    <!-- v3.1.0 Meta Tags -->
+    <title>Arsip Surat Digital Enterprise v3.1.0</title>
+    <meta name="description" content="Enterprise Digital Document Management System v3.1.0 - AI-Powered PWA">
+    <meta name="version" content="3.1.0">
+    <meta name="build-date" content="2026-07-10">
+    <meta name="author" content="Arsip Surat Digital Team">
+    <meta name="robots" content="index, follow">
+    <meta name="google" content="notranslate">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Arsip Surat Digital Enterprise v3.1.0">
+    <meta property="og:description" content="Enterprise Digital Document Management System - AI-Powered PWA">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://arsip.instansi.id">
+    <meta property="og:image" content="icons/icon-512x512.png">
+    
+    <!-- PWA Meta Tags v3.1.0 -->
+    <meta name="theme-color" content="#1976D2">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1E1E1E">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ArsipSurat v3.1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- Window Controls Overlay -->
+    <meta name="display-override" content="window-controls-overlay">
+    <meta name="theme-color" media="(display-mode: window-controls-overlay)" content="transparent">
+    
+    <!-- Icons v3.1.0 -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png?v=3.1.0">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png?v=3.1.0">
+    <link rel="apple-touch-icon" href="icons/icon-512x512.png?v=3.1.0">
+    <link rel="mask-icon" href="icons/maskable-512x512.png" color="#1976D2">
+    <link rel="shortcut icon" href="icons/favicon.ico?v=3.1.0">
+    
+    <!-- PWA Manifest v3.1.0 -->
+    <link rel="manifest" href="manifest.json?v=3.1.0">
+    
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://script.google.com">
+    <link rel="dns-prefetch" href="https://script.google.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    <!-- External Libraries v3.1.0 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.js" defer></script>
+    
+    <!-- CSS v3.1.0 -->
+    <link rel="stylesheet" href="css/custom.css?v=3.1.0">
+    
+    <!-- CSP v3.1.0 -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src 'self' https://fonts.gstatic.com;
+        img-src 'self' data: https:;
+        connect-src 'self' https://script.google.com https://*.googleapis.com wss://script.google.com;
+        media-src 'self';
+        worker-src 'self' blob:;
+    ">
+    
+    <style>
+        /* Critical CSS - Inline untuk fast render */
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background: var(--gray-50, #FAFAFA); color: var(--gray-900, #212121); }
+        #app-loading { display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; gap: 16px; }
+        #app-loading .spinner { width: 48px; height: 48px; border: 4px solid #E0E0E0; border-top-color: #1976D2; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="app-loading">
+        <div class="spinner"></div>
+        <p style="color: #666;">Memuat aplikasi...</p>
+        <small style="color: #999;">v3.1.0 (2026)</small>
+    </div>
+
+    <!-- App Container (hidden until ready) -->
+    <div id="app" style="display: none;">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="icons/icon-192x192.png" alt="Logo" class="sidebar-logo" width="40" height="40">
+                <span class="sidebar-title">Arsip Surat Digital</span>
+                <small class="sidebar-version">v3.1.0</small>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <!-- Dashboard -->
+                <a href="#" data-route="/" class="nav-item active" onclick="APP.router.navigate('/')">
+                    <span class="material-icons">dashboard</span>
+                    <span class="nav-text" data-i18n="dashboard">Dashboard</span>
+                </a>
+                
+                <!-- Surat Masuk -->
+                <div class="nav-group">
+                    <div class="nav-item" onclick="APP.ui.toggleNavGroup(this)">
+                        <span class="material-icons">mail</span>
+                        <span class="nav-text" data-i18n="surat_masuk">Surat Masuk</span>
+                        <span class="material-icons nav-arrow">expand_more</span>
+                    </div>
+                    <div class="nav-submenu">
+                        <a href="#" data-route="/surat-masuk/tambah" class="nav-item">
+                            <span class="material-icons">add</span>
+                            <span class="nav-text">Tambah Baru</span>
+                        </a>
+                        <a href="#" data-route="/surat-masuk" class="nav-item">
+                            <span class="material-icons">list</span>
+                            <span class="nav-text">Daftar Surat</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Surat Keluar -->
+                <div class="nav-group">
+                    <div class="nav-item" onclick="APP.ui.toggleNavGroup(this)">
+                        <span class="material-icons">send</span>
+                        <span class="nav-text" data-i18n="surat_keluar">Surat Keluar</span>
+                        <span class="material-icons nav-arrow">expand_more</span>
+                    </div>
+                    <div class="nav-submenu">
+                        <a href="#" data-route="/surat-keluar/tambah" class="nav-item">
+                            <span class="material-icons">add</span>
+                            <span class="nav-text">Buat Surat</span>
+                        </a>
+                        <a href="#" data-route="/surat-keluar" class="nav-item">
+                            <span class="material-icons">list</span>
+                            <span class="nav-text">Daftar Surat</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Disposisi -->
+                <a href="#" data-route="/disposisi" class="nav-item">
+                    <span class="material-icons">assignment</span>
+                    <span class="nav-text" data-i18n="disposisi">Disposisi</span>
+                </a>
+                
+                <!-- Approval -->
+                <a href="#" data-route="/approval" class="nav-item">
+                    <span class="material-icons">check_circle</span>
+                    <span class="nav-text" data-i18n="approval">Approval</span>
+                    <span class="badge badge-warning" id="approval-count" style="display:none;">0</span>
+                </a>
+                
+                <!-- Arsip -->
+                <a href="#" data-route="/arsip" class="nav-item">
+                    <span class="material-icons">archive</span>
+                    <span class="nav-text" data-i18n="arsip">Arsip</span>
+                </a>
+                
+                <div class="nav-divider"></div>
+                
+                <!-- Master Data -->
+                <a href="#" data-route="/master-data" class="nav-item">
+                    <span class="material-icons">settings</span>
+                    <span class="nav-text">Master Data</span>
+                </a>
+                
+                <!-- Audit Log -->
+                <a href="#" data-route="/audit-log" class="nav-item">
+                    <span class="material-icons">history</span>
+                    <span class="nav-text">Audit Log</span>
+                    <span class="blockchain-badge" id="bc-status" title="Blockchain Status">🔗</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <small style="color:var(--gray-500,#999);">© 2026 v3.1.0</small>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content" id="main-content">
+            
+            <!-- Header -->
+            <header class="header">
+                <button class="header-menu-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+                    <span class="material-icons">menu</span>
+                </button>
+                
+                <h1 class="header-title" id="page-title">Dashboard</h1>
+                
+                <div class="header-actions">
+                    <!-- AI Search -->
+                    <div class="ai-search-wrapper" id="search-wrapper">
+                        <input type="text" id="global-search" 
+                               placeholder="🤖 AI Search..." 
+                               data-i18n-placeholder="search"
+                               autocomplete="off">
+                        <span class="material-icons ai-search-icon">search</span>
+                        <div class="ai-suggestions" id="search-suggestions"></div>
+                    </div>
+                    
+                    <!-- Voice Command Button -->
+                    <button class="voice-btn" id="voice-btn" onclick="APP.voice.start()" 
+                            title="Voice Command (Ctrl+Shift+V)" aria-label="Voice Command">
+                        <span class="material-icons">mic</span>
+                    </button>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button class="theme-toggle" onclick="APP.theme.toggle()" 
+                            title="Toggle Dark Mode (Ctrl+D)" aria-label="Toggle Theme">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+                    
+                    <!-- Language Switcher -->
+                    <button class="lang-switcher" onclick="APP.i18n.set(APP.lang === 'id' ? 'en' : 'id')"
+                            title="Switch Language (Ctrl+L)" aria-label="Switch Language">
+                        <span id="lang-text">ID</span>
+                    </button>
+                    
+                    <!-- Notifications -->
+                    <button class="btn btn-icon" id="notification-btn" aria-label="Notifications"
+                            onclick="APP.ui.toggleNotificationPanel()">
+                        <span class="material-icons">notifications</span>
+                        <span class="badge badge-danger" id="notification-badge" style="display:none;">0</span>
+                    </button>
+                    
+                    <!-- User Menu -->
+                    <div class="user-menu" onclick="APP.ui.toggleUserMenu(event)">
+                        <div class="user-avatar" id="user-avatar">
+                            <span class="material-icons">account_circle</span>
+                        </div>
+                        <span class="user-name hide-mobile" id="user-display">User</span>
+                        <span class="material-icons">arrow_drop_down</span>
+                        
+                        <div class="user-dropdown" id="user-dropdown">
+                            <a href="#" data-route="/pengaturan/profil">
+                                <span class="material-icons">person</span> Profil
+                            </a>
+                            <a href="#" data-route="/pengaturan">
+                                <span class="material-icons">settings</span> Pengaturan
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" id="logout-btn" class="text-danger">
+                                <span class="material-icons">logout</span> Keluar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Notification Panel -->
+            <div class="notification-panel" id="notification-panel" style="display:none;">
+                <div class="notification-header">
+                    <h3>Notifikasi</h3>
+                    <button class="btn btn-sm btn-outline" onclick="APP.notif.markAllAsRead()">
+                        Tandai Semua Dibaca
+                    </button>
+                </div>
+                <div id="notification-list">
+                    <p style="text-align:center;padding:20px;color:#999;">Memuat notifikasi...</p>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="content" id="content-area">
+                <!-- Dashboard Content -->
+                <div id="dashboard-content">
+                    
+                    <!-- AI Insights Bar -->
+                    <div id="ai-insights-bar" style="display:none;margin-bottom:16px;padding:12px 16px;background:linear-gradient(135deg,#667eea10,#764ba210);border-radius:12px;border-left:4px solid #667eea;">
+                        <strong>🤖 AI Insights:</strong>
+                        <span id="ai-insights-text">Menganalisis data...</span>
+                    </div>
+                    
+                    <!-- Stats Cards -->
+                    <div class="dashboard-grid" id="stats-cards">
+                        <div class="stat-card stat-card-primary" onclick="APP.router.navigate('/surat-masuk')" style="cursor:pointer;">
+                            <div class="stat-card-icon">
+                                <span class="material-icons">mail</span>
+                            </div>
+                            <div class="stat-card-content">
+                                <h3 id="total-surat-masuk">-</h3>
+                                <p>Surat Masuk Bulan Ini</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card stat-card-success" onclick="APP.router.navigate('/surat-keluar')" style="cursor:pointer;">
+                            <div class="stat-card-icon">
+                                <span class="material-icons">send</span>
+                            </div>
+                            <div class="stat-card-content">
+                                <h3 id="total-surat-keluar">-</h3>
+                                <p>Surat Keluar Bulan Ini</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card stat-card-warning" onclick="APP.router.navigate('/disposisi')" style="cursor:pointer;">
+                            <div class="stat-card-icon">
+                                <span class="material-icons">assignment</span>
+                            </div>
+                            <div class="stat-card-content">
+                                <h3 id="total-disposisi">-</h3>
+                                <p>Disposisi Menunggu</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card stat-card-danger" onclick="APP.router.navigate('/approval')" style="cursor:pointer;">
+                            <div class="stat-card-icon">
+                                <span class="material-icons">check_circle</span>
+                            </div>
+                            <div class="stat-card-content">
+                                <h3 id="total-approval">-</h3>
+                                <p>Approval Pending</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h3>Aksi Cepat</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="quick-actions">
+                                <button class="quick-action-btn" onclick="APP.router.navigate('/surat-masuk/tambah')">
+                                    <span class="material-icons">mail</span>
+                                    <span>Input Surat Masuk</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="APP.router.navigate('/surat-keluar/tambah')">
+                                    <span class="material-icons">send</span>
+                                    <span>Buat Surat Keluar</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="APP.router.navigate('/approval')">
+                                    <span class="material-icons">check_circle</span>
+                                    <span>Approval Cepat</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="APP.export.showExportDialog([], 'Export Data')">
+                                    <span class="material-icons">download</span>
+                                    <span>Export Data</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts Row -->
+                    <div class="grid grid-2 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Grafik Surat Masuk & Keluar</h3>
+                                <select class="form-select" style="width:auto;" onchange="APP.dashboard.updateChartPeriod(this.value)">
+                                    <option value="6">6 Bulan</option>
+                                    <option value="12">1 Tahun</option>
+                                </select>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="surat-bar-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Status Surat</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="status-pie-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Predictive Chart -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h3>🤖 AI Prediksi Tren Surat</h3>
+                            <span class="ai-badge">v3.1.0</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container chart-container-lg">
+                                <canvas id="ai-predictive-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h3>Aktivitas Terbaru</h3>
+                            <a href="#" data-route="/audit-log" class="btn btn-sm btn-outline">Lihat Semua</a>
+                        </div>
+                        <div class="card-body" style="padding:0;">
+                            <div class="recent-activity" id="recent-activity">
+                                <div class="activity-item">
+                                    <p style="text-align:center;padding:20px;color:#999;">Memuat aktivitas...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div><!-- /dashboard-content -->
+            </div><!-- /content-area -->
+            
+            <!-- Footer -->
+            <footer class="footer">
+                <p>© 2024-2026 <span id="footer-instansi">Arsip Surat Digital Enterprise</span> | v3.1.0</p>
+                <p style="font-size:11px;margin-top:2px;">
+                    🤖 AI-Powered | 🔗 Blockchain Secured | 🔐 Biometric Ready
+                </p>
+            </footer>
+            
+        </main>
+    </div><!-- /app -->
+    
+    <!-- PWA Install Banner -->
+    <div id="pwa-install-banner" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:white;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2);padding:16px 24px;z-index:9999;display:flex;align-items:center;gap:12px;max-width:450px;width:calc(100%-40px);">
+        <span style="font-size:32px;">📱</span>
+        <div style="flex:1;">
+            <strong>Install Aplikasi</strong>
+            <p style="font-size:12px;color:#666;margin:2px 0;">Pasang di homescreen untuk akses cepat</p>
+        </div>
+        <button class="btn btn-primary btn-sm" id="pwa-install-btn">Install</button>
+        <button id="pwa-dismiss-btn" style="background:none;border:none;font-size:18px;cursor:pointer;">×</button>
+    </div>
+    
+    <!-- Offline Bar -->
+    <div id="offline-bar" style="display:none;position:fixed;top:0;left:0;right:0;background:#F44336;color:white;text-align:center;padding:8px;z-index:99999;font-size:14px;">
+        ⚠️ Anda sedang offline
+    </div>
+    
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+    
+    <!-- Scripts v3.1.0 -->
+    <script src="js/app.js?v=3.1.0"></script>
+    <script src="js/auth.js?v=3.1.0"></script>
+    <script src="js/db.js?v=3.1.0"></script>
+    <script src="js/notifications.js?v=3.1.0"></script>
+    <script src="js/security.js?v=3.1.0"></script>
+    <script src="js/export.js?v=3.1.0"></script>
+    <script src="js/chart-init.js?v=3.1.0"></script>
+    
+    <!-- Initialize Application -->
+    <script>
+        (function() {
+            // Hide loading, show app
+            function showApp() {
+                document.getElementById('app-loading').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+            }
+            
+            // Wait for DOM and scripts
+            function initApp() {
+                if (typeof APP === 'undefined') {
+                    setTimeout(initApp, 100);
+                    return;
+                }
+                
+                showApp();
+                
+                // Initialize after DOM ready
+                APP.init().then(() => {
+                    // Check auth
+                    if (!APP.auth.isAuthenticated()) {
+                        window.location.href = '/login.html';
+                        return;
+                    }
+                    
+                    // Initialize UI
+                    APP.ui.initSidebar();
+                    APP.ui.initHeader();
+                    APP.ui.initNavigation();
+                    APP.ui.initSearch();
+                    
+                    // Load dashboard
+                    APP.dashboard.load();
+                    
+                    // Load notifications
+                    APP.dashboard.loadNotifications();
+                    
+                    // Check blockchain status
+                    APP.dashboard.checkBlockchainStatus();
+                    
+                    // Initialize PWA features
+                    APP.pwa.init();
+                    
+                    console.log('✅ App v3.1.0 fully initialized');
+                });
+            }
+            
+            // Start when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initApp);
+            } else {
+                initApp();
+            }
+        })();
+    </script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js?v=3.1.0')
+                    .then(function(registration) {
+                        console.log('✅ SW v3.1.0 registered:', registration.scope);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', function() {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', function() {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    APP.ui.toast('🔄 Update tersedia! Refresh untuk memperbarui.', 'info', 10000);
+                                }
+                            });
+                        });
+                    })
+                    .catch(function(error) {
+                        console.log('❌ SW registration failed:', error);
+                    });
+            });
+            
+            // Handle SW messages
+            navigator.serviceWorker.addEventListener('message', function(event) {
+                if (event.data?.type === 'UPDATE_AVAILABLE') {
+                    APP.ui.toast('🔄 Versi baru tersedia: v' + event.data.version, 'info', 10000);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

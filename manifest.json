@@ -1,0 +1,257 @@
+{
+  "name": "Arsip Surat Digital Enterprise",
+  "short_name": "ArsipSurat",
+  "description": "Enterprise Digital Document Management System v3.1.0 - AI-Powered PWA with Blockchain, Biometric, Voice Commands, Dark Mode, and Multi-Language Support",
+  "version": "3.1.0",
+  "build_date": "2026-07-10",
+  
+  "start_url": "/index.html?utm_source=pwa&utm_medium=standalone&v=3.1.0",
+  "scope": "/",
+  
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+  
+  "orientation": "any",
+  
+  "background_color": "#FAFAFA",
+  "theme_color": "#1976D2",
+  
+  "lang": "id-ID",
+  "dir": "ltr",
+  
+  "id": "arsip-surat-digital-v3.1.0",
+  
+  "categories": [
+    "business",
+    "productivity",
+    "utilities",
+    "office"
+  ],
+  
+  "prefer_related_applications": false,
+  
+  "icons": [
+    {
+      "src": "icons/icon-72x72.png?v=3.1.0",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-96x96.png?v=3.1.0",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-128x128.png?v=3.1.0",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-144x144.png?v=3.1.0",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-152x152.png?v=3.1.0",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192x192.png?v=3.1.0",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-384x384.png?v=3.1.0",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512x512.png?v=3.1.0",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/maskable-512x512.png?v=3.1.0",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  
+  "screenshots": [
+    {
+      "src": "screenshots/dashboard-desktop-v3.1.0.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard v3.1.0 with AI Insights"
+    },
+    {
+      "src": "screenshots/dashboard-mobile-v3.1.0.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile Dashboard with Dark Mode"
+    },
+    {
+      "src": "screenshots/surat-masuk-v3.1.0.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Surat Masuk with AI Auto-Tagging"
+    },
+    {
+      "src": "screenshots/approval-v3.1.0.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Approval with Blockchain Verification"
+    }
+  ],
+  
+  "shortcuts": [
+    {
+      "name": "📨 Surat Masuk Baru",
+      "short_name": "+ Surat Masuk",
+      "description": "Input surat masuk baru dengan AI auto-tagging",
+      "url": "/modules/surat-masuk.html?action=tambah&v=3.1.0",
+      "icons": [
+        {
+          "src": "icons/shortcut-surat-masuk.png?v=3.1.0",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "📤 Buat Surat Keluar",
+      "short_name": "+ Surat Keluar",
+      "description": "Buat surat keluar dengan smart template AI",
+      "url": "/modules/surat-keluar.html?action=tambah&v=3.1.0",
+      "icons": [
+        {
+          "src": "icons/shortcut-surat-keluar.png?v=3.1.0",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "✅ Approval Cepat",
+      "short_name": "Approval",
+      "description": "Lihat dan proses approval dengan cepat",
+      "url": "/modules/approval.html?v=3.1.0",
+      "icons": [
+        {
+          "src": "icons/shortcut-approval.png?v=3.1.0",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "🤖 AI Search",
+      "short_name": "AI Search",
+      "description": "Pencarian pintar dengan AI",
+      "url": "/index.html?action=ai-search&v=3.1.0",
+      "icons": [
+        {
+          "src": "icons/shortcut-search.png?v=3.1.0",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  
+  "share_target": {
+    "action": "/modules/surat-masuk.html?action=share&v=3.1.0",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "perihal",
+      "text": "catatan",
+      "url": "url",
+      "files": [
+        {
+          "name": "file",
+          "accept": [
+            "application/pdf",
+            "image/*",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          ]
+        }
+      ]
+    }
+  },
+  
+  "file_handlers": [
+    {
+      "action": "/modules/surat-masuk.html?action=file-open&v=3.1.0",
+      "accept": {
+        "application/pdf": [".pdf"],
+        "image/png": [".png"],
+        "image/jpeg": [".jpg", ".jpeg"],
+        "application/msword": [".doc"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"]
+      },
+      "icons": [
+        {
+          "src": "icons/file-handler.png?v=3.1.0",
+          "sizes": "256x256",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  
+  "protocol_handlers": [
+    {
+      "protocol": "web+arsip",
+      "url": "/index.html?protocol=%s&v=3.1.0"
+    },
+    {
+      "protocol": "mailto",
+      "url": "/modules/surat-keluar.html?email=%s&v=3.1.0"
+    }
+  ],
+  
+  "edge_side_panel": {
+    "preferred_width": 420
+  },
+  
+  "handle_links": "preferred",
+  
+  "launch_handler": {
+    "client_mode": ["focus-existing", "navigate-existing", "auto"]
+  },
+  
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://arsip.instansi.id/manifest.json",
+      "id": "arsip-surat-digital-v3.1.0"
+    }
+  ],
+  
+  "iarc_rating_id": "",
+  
+  "note_taking": {
+    "new_note_url": "/modules/surat-masuk.html?action=quick-note&v=3.1.0"
+  }
+}

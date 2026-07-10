@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surat Masuk v3.1.0 - Arsip Surat Digital</title>
+    
+    <link rel="stylesheet" href="../css/custom.css?v=3.1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        .module-container { padding: 20px; }
+        .module-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+        .filter-bar { display: flex; gap: 12px; margin-bottom: 20px; padding: 16px; background: var(--white, #fff); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-wrap: wrap; align-items: center; }
+        .data-table { width: 100%; background: var(--white, #fff); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
+        .data-table th { background: var(--gray-50, #f5f5f5); padding: 12px 16px; text-align: left; font-weight: 600; font-size: 13px; text-transform: uppercase; color: var(--gray-700, #666); }
+        .data-table td { padding: 12px 16px; border-bottom: 1px solid var(--gray-200, #eee); font-size: 14px; }
+        .data-table tr:hover { background: var(--gray-50, #f9f9f9); }
+        
+        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .status-diterima { background: #E3F2FD; color: #1565C0; }
+        .status-disposisi { background: #FFF3E0; color: #E65100; }
+        .status-selesai { background: #E8F5E9; color: #2E7D32; }
+        
+        .sifat-biasa { background: #F5F5F5; color: #666; }
+        .sifat-penting { background: #FFF3E0; color: #E65100; }
+        .sifat-rahasia { background: #FFEBEE; color: #C62828; }
+        .sifat-segera { background: #F3E5F5; color: #6A1B9A; }
+        
+        .ai-tag { display: inline-flex; align-items: center; gap: 2px; padding: 1px 6px; border-radius: 8px; font-size: 10px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; margin: 1px; }
+        .anomaly-warning { color: #F44336; font-size: 14px; cursor: help; }
+        
+        .qr-code-cell { cursor: pointer; text-align: center; }
+        .qr-code-cell img { width: 30px; height: 30px; transition: transform 0.2s; }
+        .qr-code-cell img:hover { transform: scale(4); position: relative; z-index: 10; }
+        
+        .action-buttons { display: flex; gap: 4px; }
+        .action-btn { padding: 6px 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+        .action-btn:hover { opacity: 0.8; transform: scale(1.05); }
+        
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+        .pagination button { padding: 8px 16px; border: 1px solid var(--gray-300, #ddd); background: var(--white, #fff); border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .pagination button.active { background: #1976D2; color: white; border-color: #1976D2; }
+        
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-500, #999); }
+        
+        @media (max-width: 768px) {
+            .filter-bar { flex-direction: column; }
+            .hide-mobile { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="module-container">
+        <div class="module-header">
+            <div>
+                <h1 style="margin:0;">📨 Surat Masuk</h1>
+                <p style="color:var(--gray-600,#666);margin:4px 0 0;">Manajemen surat masuk • <span class="ai-tag">🤖 AI v3.1.0</span></p>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <button class="btn btn-outline btn-sm" onclick="voiceCommander?.start()">🎤</button>
+                <button class="btn btn-primary" onclick="showFormTambah()">
+                    <span class="material-icons">add</span> Tambah Surat Masuk
+                </button>
+            </div>
+        </div>
+        
+        <div class="filter-bar">
+            <select id="filter-status" onchange="loadData()" class="form-select" style="width:auto;">
+                <option value="">Semua Status</option>
+                <option value="diterima">Diterima</option>
+                <option value="disposisi">Disposisi</option>
+                <option value="selesai">Selesai</option>
+            </select>
+            <select id="filter-sifat" onchange="loadData()" class="form-select" style="width:auto;">
+                <option value="">Semua Sifat</option>
+                <option value="biasa">Biasa</option>
+                <option value="penting">Penting</option>
+                <option value="segera">Segera</option>
+                <option value="rahasia">Rahasia</option>
+            </select>
+            <div class="ai-search-wrapper" style="flex:1;min-width:200px;position:relative;">
+                <input type="text" id="filter-search" placeholder="🤖 AI Search..." onkeyup="debounceSearch()" class="form-input" style="width:100%;">
+                <span class="material-icons ai-search-icon">search</span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="resetFilter()"><span class="material-icons">refresh</span></button>
+        </div>
+        
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:50px;">QR</th>
+                        <th>No. Agenda</th>
+                        <th>No. Surat</th>
+                        <th class="hide-mobile">Pengirim</th>
+                        <th>Perihal</th>
+                        <th class="hide-mobile">AI Tags</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table-body">
+                    <tr><td colspan="8" class="empty-state"><span class="spinner"></span><p>Memuat data...</p></td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="pagination" id="pagination"></div>
+    </div>
+    
+    <script src="../js/app.js?v=3.1.0"></script>
+    <script>
+        let currentPage = 1, searchTimeout;
+        
+        async function loadData(page = 1) {
+            currentPage = page;
+            try {
+                const params = {
+                    page, limit: 10,
+                    status: document.getElementById('filter-status')?.value || '',
+                    sifat: document.getElementById('filter-sifat')?.value || '',
+                    search: document.getElementById('filter-search')?.value || '',
+                };
+                const response = await api.get('suratMasuk.list', params);
+                renderTable(response.data.items);
+                renderPagination(response.data.pagination);
+            } catch (error) {
+                UI.showNotification('Gagal: ' + error.message, 'error');
+            }
+        }
+        
+        function renderTable(data) {
+            const tbody = document.getElementById('data-table-body');
+            if (!data?.length) {
+                tbody.innerHTML = `<tr><td colspan="8" class="empty-state"><span class="material-icons">inbox</span><p>Tidak ada data</p></td></tr>`;
+                return;
+            }
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td class="qr-code-cell">${item.qrCode ? `<img src="${item.qrCode}" onclick="window.open('${item.qrCode}')">` : '-'}</td>
+                    <td><strong>${item.nomorAgenda || '-'}</strong></td>
+                    <td>${item.nomorSurat || '-'}</td>
+                    <td class="hide-mobile">${item.pengirim || '-'}</td>
+                    <td>${item.perihal || '-'}</td>
+                    <td class="hide-mobile">${(item.aiTags || '').split(',').filter(Boolean).map(t => `<span class="ai-tag">${t.trim()}</span>`).join('') || '-'}</td>
+                    <td>
+                        <span class="status-badge status-${item.status || 'diterima'}">${(item.status || 'DITERIMA').toUpperCase()}</span>
+                        ${item.anomalyScore > 50 ? `<span class="anomaly-warning" title="Anomaly Score: ${item.anomalyScore}">⚠️</span>` : ''}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn" style="background:#E3F2FD;color:#1976D2;" onclick="lihatDetail('${item.id}')">👁</button>
+                            <button class="action-btn" style="background:#E8F5E9;color:#2E7D32;" onclick="buatDisposisi('${item.id}')">📝</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderPagination(pagination) {
+            if (!pagination) return;
+            const { currentPage, totalPages } = pagination;
+            const container = document.getElementById('pagination');
+            let html = `<button ${currentPage <= 1 ? 'disabled' : ''} onclick="loadData(${currentPage - 1})">«</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2)
+                    html += `<button class="${i === currentPage ? 'active' : ''}" onclick="loadData(${i})">${i}</button>`;
+                else if (Math.abs(i - currentPage) === 3) html += '<span>...</span>';
+            }
+            html += `<button ${currentPage >= totalPages ? 'disabled' : ''} onclick="loadData(${currentPage + 1})">»</button>`;
+            container.innerHTML = html;
+        }
+        
+        function showFormTambah() {
+            window.location.href = 'surat-masuk-form.html';
+        }
+        
+        async function lihatDetail(id) {
+            try {
+                const response = await api.get('suratMasuk.detail', { id });
+                const data = response.data;
+                let html = `<h4>${data.nomorAgenda || '-'}</h4>
+                    <p>Nomor Surat: ${data.nomorSurat || '-'}</p>
+                    <table style="width:100%;margin-top:16px;">
+                        <tr><td style="padding:8px;font-weight:600;">Pengirim</td><td>: ${data.pengirim}</td></tr>
+                        <tr><td style="padding:8px;font-weight:600;">Perihal</td><td>: ${data.perihal}</td></tr>
+                        <tr><td style="padding:8px;font-weight:600;">Tanggal</td><td>: ${UI.formatDate(data.tanggalSurat, 'full')}</td></tr>
+                        <tr><td style="padding:8px;font-weight:600;">AI Tags</td><td>: ${data.aiTags || '-'}</td></tr>
+                        ${data.anomalyScore > 50 ? `<tr><td style="padding:8px;font-weight:600;color:#F44336;">⚠️ Anomaly</td><td style="color:#F44336;">Score: ${data.anomalyScore}</td></tr>` : ''}
+                    </table>`;
+                
+                UI.showModal('Detail Surat Masuk', html, { confirmText: 'Tutup' });
+            } catch (error) {
+                UI.showNotification('Gagal: ' + error.message, 'error');
+            }
+        }
+        
+        function buatDisposisi(id) {
+            window.location.href = `disposisi.html?suratId=${id}`;
+        }
+        
+        function debounceSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => loadData(1), 500);
+        }
+        
+        function resetFilter() {
+            document.getElementById('filter-status').value = '';
+            document.getElementById('filter-sifat').value = '';
+            document.getElementById('filter-search').value = '';
+            loadData(1);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => loadData(1));
+    </script>
+</body>
+</html>
