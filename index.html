@@ -12,15 +12,14 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   
-  <!-- 🔥 MANIFEST INLINE - Tidak perlu file terpisah -->
+  <!-- 🔥 MANIFEST INLINE - Fix start_url -->
   <script>
-    // Register manifest secara programmatic untuk menghindari 404
     (function() {
       const manifestData = {
         name: 'Arsip Surat Digital Enterprise',
         short_name: 'ArsipSurat',
         description: 'Sistem Manajemen Arsip Surat Digital Enterprise v3.1.0',
-        start_url: '/arsip-surat-digital-enterprise/',
+        start_url: '.',
         display: 'standalone',
         background_color: '#F5F5F5',
         theme_color: '#1976D2',
@@ -40,21 +39,19 @@
         ]
       };
       
-      // Buat blob URL untuk manifest
       const blob = new Blob([JSON.stringify(manifestData)], { type: 'application/manifest+json' });
       const manifestUrl = URL.createObjectURL(blob);
       
-      // Set manifest link
       const link = document.createElement('link');
       link.rel = 'manifest';
       link.href = manifestUrl;
       document.head.appendChild(link);
       
-      console.log('✅ Manifest registered inline');
+      console.log('✅ Manifest registered');
     })();
   </script>
   
-  <!-- Icons (Data URI - No 404) -->
+  <!-- Icons Data URI -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231976D2'/%3E%3Crect x='8' y='10' width='16' height='2' rx='1' fill='white'/%3E%3Crect x='8' y='14' width='16' height='2' rx='1' fill='white'/%3E%3Crect x='8' y='18' width='11' height='2' rx='1' fill='white'/%3E%3Cpath d='M22 20l5 5-5 5' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%231976D2'/%3E%3Crect x='45' y='54' width='90' height='11' rx='5.5' fill='white'/%3E%3Crect x='45' y='75' width='90' height='11' rx='5.5' fill='white'/%3E%3Crect x='45' y='96' width='64' height='11' rx='5.5' fill='white'/%3E%3Cpath d='M117 107l26 26-26 26' stroke='white' stroke-width='7' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
   
@@ -64,41 +61,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <style>
-    /* ============================================ */
-    /* CRITICAL CSS                                 */
-    /* ============================================ */
     :root {
-      --primary: #1976D2;
-      --primary-dark: #0D47A1;
-      --success: #4CAF50;
-      --warning: #FF9800;
-      --danger: #F44336;
-      --info: #2196F3;
-      --bg: #F5F5F5;
-      --white: #FFFFFF;
-      --text: #212121;
-      --text-secondary: #757575;
-      --border: #E0E0E0;
-      --radius: 12px;
-      --shadow: 0 2px 15px rgba(0,0,0,0.08);
+      --primary: #1976D2; --primary-dark: #0D47A1;
+      --success: #4CAF50; --warning: #FF9800; --danger: #F44336; --info: #2196F3;
+      --bg: #F5F5F5; --white: #FFFFFF; --text: #212121; --text-secondary: #757575;
+      --border: #E0E0E0; --radius: 12px; --shadow: 0 2px 15px rgba(0,0,0,0.08);
     }
-    
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
     body {
       font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
-      color: var(--text);
-      background: var(--bg);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      min-height: 100vh;
+      font-size: 16px; line-height: 1.6; color: var(--text); background: var(--bg);
+      -webkit-font-smoothing: antialiased; min-height: 100vh;
     }
-    
     #app { min-height: 100vh; }
     
-    /* Splash Screen */
     .splash-screen {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #1976D2 100%);
@@ -120,7 +96,6 @@
     @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
     @keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(380%); } }
     
-    /* Login Page */
     .login-page { display: none; min-height: 100vh; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #1976D2 100%); }
     .login-page.active { display: flex; }
     .login-card { background: white; border-radius: 16px; padding: 40px 36px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: fadeInUp 0.5s ease-out; }
@@ -128,63 +103,58 @@
     .login-logo { font-size: 56px; margin-bottom: 12px; }
     .login-title { font-size: 1.5rem; font-weight: 700; color: #1976D2; margin-bottom: 4px; }
     .login-desc { font-size: 0.875rem; color: #757575; }
-    
     .form-group { margin-bottom: 20px; }
     .form-group label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.875rem; color: #333; }
     .form-input { width: 100%; padding: 12px 16px; border: 2px solid #E0E0E0; border-radius: 8px; font-size: 0.9375rem; transition: all 0.2s ease; font-family: inherit; }
     .form-input:focus { outline: none; border-color: #1976D2; box-shadow: 0 0 0 3px rgba(25,118,210,0.1); }
-    
     .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; font-family: inherit; text-align: center; text-decoration: none; }
     .btn-primary { background: #1976D2; color: white; }
     .btn-primary:hover { background: #1565C0; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(25,118,210,0.3); }
+    .btn-primary:disabled { background: #90CAF9; cursor: not-allowed; transform: none; box-shadow: none; }
     .btn-outline { background: transparent; color: #1976D2; border: 2px solid #1976D2; margin-top: 12px; }
     .btn-outline:hover { background: #E3F2FD; }
-    
     .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.875rem; display: none; }
     .alert-error { background: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; }
     .alert-success { background: #E8F5E9; color: #2E7D32; border: 1px solid #C8E6C9; }
+    .alert-info { background: #E3F2FD; color: #0D47A1; border: 1px solid #BBDEFB; }
     .alert.show { display: block; }
-    
     .divider { display: flex; align-items: center; margin: 20px 0; color: #9E9E9E; font-size: 0.8125rem; }
     .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #E0E0E0; }
     .divider span { padding: 0 16px; }
     .login-footer { text-align: center; margin-top: 24px; font-size: 0.75rem; color: #BDBDBD; }
     
-    /* Dashboard */
     .dashboard-page { display: none; min-height: 100vh; background: #F5F5F5; }
     .dashboard-page.active { display: block; }
     .dashboard-header { background: white; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #E0E0E0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 12px; }
     .dashboard-brand { font-size: 1.125rem; font-weight: 700; color: #1976D2; }
-    .dashboard-user { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 500; }
+    .dashboard-user { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 500; flex-wrap: wrap; }
     .dashboard-avatar { width: 36px; height: 36px; background: #1976D2; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.75rem; }
     .dashboard-content { padding: 24px; max-width: 1200px; margin: 0 auto; }
-    
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #E0E0E0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .stat-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #E0E0E0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .stat-icon { font-size: 28px; margin-bottom: 8px; }
     .stat-value { font-size: 1.5rem; font-weight: 700; color: #212121; }
     .stat-label { font-size: 0.8125rem; color: #757575; margin-top: 2px; }
-    
     .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .card { background: white; border-radius: 12px; border: 1px solid #E0E0E0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
     .card-header { padding: 16px 20px; border-bottom: 1px solid #E0E0E0; font-weight: 600; font-size: 0.9375rem; }
     .card-body { padding: 20px; }
-    
     .menu-list { list-style: none; }
     .menu-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 8px; cursor: pointer; transition: background 0.2s; font-size: 0.875rem; border: none; background: none; width: 100%; text-align: left; font-family: inherit; }
     .menu-item:hover { background: #F5F5F5; }
-    
     .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
     .badge-success { background: #E8F5E9; color: #2E7D32; }
     .badge-warning { background: #FFF3E0; color: #E65100; }
     .badge-info { background: #E3F2FD; color: #0D47A1; }
-    
+    .badge-danger { background: #FFEBEE; color: #C62828; }
     .btn-logout { background: #F44336; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.8125rem; font-weight: 500; font-family: inherit; white-space: nowrap; }
     .btn-logout:hover { background: #D32F2F; }
-    
-    .connection-status { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: 500; }
+    .connection-status { font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
     .connection-status.online { background: #E8F5E9; color: #2E7D32; }
-    .connection-status.offline { background: #FFEBEE; color: #C62828; }
+    .connection-status.offline { background: #FFF3E0; color: #E65100; }
+    .connection-status.error { background: #FFEBEE; color: #C62828; }
+    .api-info { margin-top: 8px; font-size: 0.7rem; color: #9E9E9E; word-break: break-all; }
     
     @media (max-width: 768px) {
       .login-card { padding: 28px 20px; }
@@ -202,7 +172,7 @@
 </head>
 <body>
   
-  <!-- Splash Screen -->
+  <!-- SPLASH -->
   <div id="splash-screen" class="splash-screen">
     <div class="splash-content">
       <span class="splash-logo">📁</span>
@@ -220,7 +190,7 @@
     </div>
   </div>
   
-  <!-- Login Page -->
+  <!-- LOGIN -->
   <div id="login-page" class="login-page">
     <div class="login-card">
       <div class="login-header">
@@ -231,7 +201,7 @@
       
       <div id="login-alert" class="alert"></div>
       
-      <form id="login-form" onsubmit="handleLogin(event)">
+      <form id="login-form" onsubmit="return handleLogin(event)">
         <div class="form-group">
           <label for="username">👤 Username</label>
           <input type="text" id="username" class="form-input" placeholder="Masukkan username" value="admin" required autocomplete="username">
@@ -248,11 +218,12 @@
       <div class="login-footer">
         <p>© 2026 Arsip Surat Digital Enterprise</p>
         <p>Default: admin / Admin123!</p>
+        <p class="api-info" id="api-status-text">🔗 API: Menunggu koneksi...</p>
       </div>
     </div>
   </div>
   
-  <!-- Dashboard Page -->
+  <!-- DASHBOARD -->
   <div id="dashboard-page" class="dashboard-page">
     <header class="dashboard-header">
       <div class="dashboard-brand">📁 Arsip Surat Digital Enterprise</div>
@@ -268,22 +239,22 @@
       <h2 style="margin-bottom: 20px;">📊 Dashboard</h2>
       
       <div class="stats-grid">
-        <div class="stat-card">
+        <div class="stat-card" onclick="showFeatureAlert('Surat Masuk')">
           <div class="stat-icon">📥</div>
           <div class="stat-value" id="stat-masuk">156</div>
           <div class="stat-label">Total Surat Masuk</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" onclick="showFeatureAlert('Surat Keluar')">
           <div class="stat-icon">📤</div>
           <div class="stat-value" id="stat-keluar">89</div>
           <div class="stat-label">Total Surat Keluar</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" onclick="showFeatureAlert('Disposisi')">
           <div class="stat-icon">📋</div>
           <div class="stat-value" id="stat-disposisi">45</div>
           <div class="stat-label">Disposisi</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" onclick="showFeatureAlert('Approval')">
           <div class="stat-icon">✅</div>
           <div class="stat-value" id="stat-approval">12</div>
           <div class="stat-label">Approval Pending</div>
@@ -300,10 +271,10 @@
               <li><button class="menu-item" onclick="showFeatureAlert('Disposisi')">📋 Disposisi <span class="badge badge-warning">8 pending</span></button></li>
               <li><button class="menu-item" onclick="showFeatureAlert('Approval')">✅ Approval <span class="badge badge-warning">3 pending</span></button></li>
               <li><button class="menu-item" onclick="showFeatureAlert('Pencarian')">🔍 Pencarian Global</button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('Notifikasi')">🔔 Notifikasi</button></li>
             </ul>
           </div>
         </div>
-        
         <div class="card">
           <div class="card-header">⚙️ Administrasi</div>
           <div class="card-body">
@@ -313,10 +284,10 @@
               <li><button class="menu-item" onclick="showFeatureAlert('Konfigurasi')">⚙️ Konfigurasi Sistem</button></li>
               <li><button class="menu-item" onclick="showFeatureAlert('Blockchain')">⛓️ Blockchain Audit</button></li>
               <li><button class="menu-item" onclick="showFeatureAlert('Backup')">💾 Backup & Restore</button></li>
+              <li><button class="menu-item" onclick="showFeatureAlert('System Status')">🖥️ Status Sistem</button></li>
             </ul>
           </div>
         </div>
-        
         <div class="card" style="grid-column: 1 / -1;">
           <div class="card-header">🤖 Fitur AI & Keamanan</div>
           <div class="card-body">
@@ -347,44 +318,41 @@
   </div>
   
   <!-- ============================================ -->
-  <!-- MAIN APPLICATION SCRIPT                      -->
+  <!-- MAIN SCRIPT - FINAL VERSION                  -->
   <!-- ============================================ -->
   <script>
     // ============================================
-    // ARSIP SURAT DIGITAL ENTERPRISE v3.1.0
-    // STANDALONE APPLICATION
+    // STATE
     // ============================================
-    
-    const APP_STATE = {
+    const STATE = {
       isAuthenticated: false,
       user: null,
       token: null,
-      currentPage: 'login',
-      apiConnected: false
+      apiConnected: false,
+      apiChecked: false
     };
     
-    // 🔥 API Configuration
-    const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbzzmttzSRYsM7KodsEdFqHRdwBs2kY7VTzFPOpsiab3p3v-6CBl-eKIuUI0Vhqd0opYtA/exec';
+    // 🔥 API CONFIG - Google Apps Script
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzzmttzSRYsM7KodsEdFqHRdwBs2kY7VTzFPOpsiab3p3v-6CBl-eKIuUI0Vhqd0opYtA/exec';
     
     // ============================================
-    // INITIALIZATION
+    // INIT
     // ============================================
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('%c📁 Arsip Surat Digital Enterprise v3.1.0', 'font-size: 16px; font-weight: bold;');
-      console.log('%c🚀 Initializing application...', 'color: #1976D2;');
+      console.log('%c📁 Arsip Surat Digital Enterprise v3.1.0', 'font-size:16px;font-weight:bold;color:#1976D2');
+      console.log('%c🚀 Initializing...', 'color:#666');
       
-      // Check saved auth
-      const savedToken = localStorage.getItem('asd_token');
-      const savedUser = localStorage.getItem('asd_user');
+      // Cek saved auth
+      const savedToken = localStorage.getItem('asd_token_v2');
+      const savedUser = localStorage.getItem('asd_user_v2');
       
       if (savedToken && savedUser) {
         try {
-          APP_STATE.token = savedToken;
-          APP_STATE.user = JSON.parse(savedUser);
-          APP_STATE.isAuthenticated = true;
+          STATE.token = savedToken;
+          STATE.user = JSON.parse(savedUser);
+          STATE.isAuthenticated = true;
           showDashboard();
-          testApiConnection();
-          loadDashboardData();
+          checkApiConnection();
         } catch(e) {
           clearAuth();
           showLogin();
@@ -393,23 +361,17 @@
         showLogin();
       }
       
-      // Hide splash
       setTimeout(hideSplash, 1500);
-      
-      // Handle hash
-      handleHashChange();
-      window.addEventListener('hashchange', handleHashChange);
+      handleHash();
+      window.addEventListener('hashchange', handleHash);
     });
     
     // ============================================
     // SPLASH
     // ============================================
     function hideSplash() {
-      const splash = document.getElementById('splash-screen');
-      if (splash) {
-        splash.classList.add('hidden');
-        setTimeout(() => { if (splash.parentNode) splash.parentNode.removeChild(splash); }, 500);
-      }
+      const s = document.getElementById('splash-screen');
+      if (s) { s.classList.add('hidden'); setTimeout(() => { if(s.parentNode)s.parentNode.removeChild(s); }, 500); }
     }
     
     // ============================================
@@ -418,116 +380,141 @@
     function showLogin() {
       document.getElementById('login-page').classList.add('active');
       document.getElementById('dashboard-page').classList.remove('active');
-      APP_STATE.currentPage = 'login';
       window.location.hash = '#/login';
     }
     
     function showDashboard() {
       document.getElementById('login-page').classList.remove('active');
       document.getElementById('dashboard-page').classList.add('active');
-      APP_STATE.currentPage = 'dashboard';
       window.location.hash = '#/dashboard';
       
-      if (APP_STATE.user) {
-        document.getElementById('user-name').textContent = APP_STATE.user.namaLengkap || APP_STATE.user.username || 'User';
-        document.getElementById('user-avatar').textContent = getInitials(APP_STATE.user.namaLengkap || APP_STATE.user.username || 'U');
+      if (STATE.user) {
+        document.getElementById('user-name').textContent = STATE.user.namaLengkap || STATE.user.username || 'User';
+        document.getElementById('user-avatar').textContent = getInitials(STATE.user.namaLengkap || STATE.user.username || 'U');
       }
     }
     
-    function handleHashChange() {
-      const hash = window.location.hash;
-      if (hash.includes('login') && !APP_STATE.isAuthenticated) {
-        showLogin();
-      } else if (hash.includes('dashboard') && APP_STATE.isAuthenticated) {
-        showDashboard();
-      } else if (!APP_STATE.isAuthenticated && !hash.includes('login')) {
-        showLogin();
-      }
+    function handleHash() {
+      const h = window.location.hash;
+      if (h.includes('login') && !STATE.isAuthenticated) showLogin();
+      else if (STATE.isAuthenticated && !h.includes('login')) showDashboard();
+      else if (!STATE.isAuthenticated) showLogin();
     }
     
     // ============================================
-    // 🔥 API FUNCTIONS
+    // 🔥 API - FIX CORS DENGAN MODE no-cors
     // ============================================
     
-    async function apiCall(action, params = {}, method = 'GET') {
-      const token = APP_STATE.token || '';
-      let url = API_BASE_URL + '?action=' + encodeURIComponent(action);
-      
-      if (token) {
-        url += '&token=' + encodeURIComponent(token);
-      }
-      
-      const options = { method: method };
-      
-      if (method === 'POST') {
-        options.headers = { 'Content-Type': 'application/json' };
-        options.body = JSON.stringify(params);
-      } else if (method === 'GET' && Object.keys(params).length > 0) {
-        Object.keys(params).forEach(k => {
-          if (params[k] !== undefined && params[k] !== '') {
-            url += '&' + k + '=' + encodeURIComponent(params[k]);
-          }
-        });
-      }
-      
+    async function checkApiConnection() {
       try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-        return data;
-      } catch(e) {
-        console.error('API Error:', e.message);
-        return { status: 'error', message: 'Gagal terhubung ke server' };
-      }
-    }
-    
-    async function testApiConnection() {
-      try {
-        const result = await apiCall('ping');
+        // 🔥 Gunakan mode no-cors untuk menghindari CORS error
+        const result = await apiCallGet('ping');
         if (result && result.status === 'success') {
-          APP_STATE.apiConnected = true;
-          updateConnectionBadge(true);
-          console.log('✅ API Connected:', result.message);
+          STATE.apiConnected = true;
+          STATE.apiChecked = true;
+          updateConnectionUI('online', '🟢 API Connected');
+          console.log('✅ API Connected');
+          loadDashboardFromApi();
           return true;
         }
-        updateConnectionBadge(false);
-        return false;
       } catch(e) {
-        updateConnectionBadge(false);
-        return false;
-      }
-    }
-    
-    function updateConnectionBadge(connected) {
-      const badge = document.getElementById('connection-badge');
-      if (badge) {
-        if (connected) {
-          badge.textContent = '🟢 API Connected';
-          badge.className = 'connection-status online';
-        } else {
-          badge.textContent = '🔴 Demo Mode';
-          badge.className = 'connection-status offline';
-        }
-      }
-    }
-    
-    async function loadDashboardData() {
-      if (!APP_STATE.apiConnected) {
-        const isConnected = await testApiConnection();
-        if (!isConnected) return;
+        console.log('⚠️ API check failed:', e.message);
       }
       
-      try {
-        const result = await apiCall('dashboard.stats');
-        if (result && result.status === 'success' && result.data) {
-          updateStatsUI(result.data);
-          console.log('✅ Dashboard data loaded from API');
+      STATE.apiConnected = false;
+      STATE.apiChecked = true;
+      updateConnectionUI('offline', '🔴 Demo Mode');
+      return false;
+    }
+    
+    // 🔥 API GET Call (dengan fallback)
+    async function apiCallGet(action, params = {}) {
+      let url = API_URL + '?action=' + encodeURIComponent(action);
+      
+      // Add token
+      if (STATE.token) {
+        url += '&token=' + encodeURIComponent(STATE.token);
+      }
+      
+      // Add params
+      Object.keys(params).forEach(k => {
+        if (params[k] !== undefined && params[k] !== '') {
+          url += '&' + k + '=' + encodeURIComponent(params[k]);
         }
+      });
+      
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          return data;
+        }
+        
+        throw new Error('HTTP ' + response.status);
       } catch(e) {
-        console.log('ℹ️ Using demo data');
+        // 🔥 Fallback: Jika fetch gagal (CORS/network), return null
+        console.warn('API GET failed:', e.message);
+        return null;
       }
     }
     
-    function updateStatsUI(data) {
+    // 🔥 API POST Call (dengan fallback)
+    async function apiCallPost(action, body = {}) {
+      const url = API_URL + '?action=' + encodeURIComponent(action);
+      
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ ...body, token: STATE.token || '' })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          return data;
+        }
+        
+        throw new Error('HTTP ' + response.status);
+      } catch(e) {
+        console.warn('API POST failed:', e.message);
+        return null;
+      }
+    }
+    
+    function updateConnectionUI(status, text) {
+      const badge = document.getElementById('connection-badge');
+      const apiText = document.getElementById('api-status-text');
+      
+      if (badge) {
+        badge.textContent = text;
+        badge.className = 'connection-status ' + status;
+      }
+      if (apiText) {
+        if (status === 'online') {
+          apiText.textContent = '🔗 API: Connected ✅';
+        } else {
+          apiText.textContent = '🔗 API: Demo Mode (CORS - perlu deploy ulang GAS)';
+        }
+      }
+    }
+    
+    async function loadDashboardFromApi() {
+      try {
+        const result = await apiCallGet('dashboard.stats');
+        if (result && result.status === 'success' && result.data) {
+          updateStats(result.data);
+          console.log('✅ Dashboard loaded from API');
+        }
+      } catch(e) {
+        console.log('ℹ️ Using demo stats');
+      }
+    }
+    
+    function updateStats(data) {
       if (data.suratMasuk) {
         document.getElementById('stat-masuk').textContent = data.suratMasuk.total || 0;
       }
@@ -541,7 +528,7 @@
     }
     
     // ============================================
-    // 🔥 LOGIN (WITH API FALLBACK)
+    // 🔥 LOGIN - API + DEMO FALLBACK
     // ============================================
     
     async function handleLogin(event) {
@@ -553,97 +540,90 @@
       
       if (!username || !password) {
         showAlert('❌ Harap isi username dan password', 'error');
-        return;
+        return false;
       }
       
       btn.disabled = true;
       btn.textContent = '⏳ Menghubungkan...';
       hideAlert();
       
-      // 🔥 Coba login via API dulu
-      try {
-        const result = await apiCall('login', { username, password }, 'POST');
+      // 🔥 STEP 1: Coba login via API
+      const apiResult = await apiCallPost('login', { username, password });
+      
+      if (apiResult && apiResult.status === 'success' && apiResult.data) {
+        // API LOGIN SUKSES
+        STATE.isAuthenticated = true;
+        STATE.user = apiResult.data.user;
+        STATE.token = apiResult.data.token;
+        STATE.apiConnected = true;
         
-        if (result && result.status === 'success' && result.data) {
-          // Sukses login via API
-          APP_STATE.isAuthenticated = true;
-          APP_STATE.user = result.data.user;
-          APP_STATE.token = result.data.token;
-          APP_STATE.apiConnected = true;
-          
-          localStorage.setItem('asd_token', result.data.token);
-          localStorage.setItem('asd_user', JSON.stringify(result.data.user));
-          
-          showAlert('✅ Login berhasil! Terhubung ke server.', 'success');
-          updateConnectionBadge(true);
-          
-          setTimeout(() => {
-            showDashboard();
-            loadDashboardData();
-            btn.disabled = false;
-            btn.textContent = '🔐 Masuk';
-            hideAlert();
-          }, 800);
-          return;
-        } else if (result && result.needSetup) {
-          // Perlu setup
-          showAlert('⚠️ Sistem belum di-setup. Jalankan setup terlebih dahulu.', 'error');
+        localStorage.setItem('asd_token_v2', apiResult.data.token);
+        localStorage.setItem('asd_user_v2', JSON.stringify(apiResult.data.user));
+        
+        updateConnectionUI('online', '🟢 API Connected');
+        showAlert('✅ Login berhasil! Terhubung ke server.', 'success');
+        
+        setTimeout(() => {
+          showDashboard();
+          loadDashboardFromApi();
           btn.disabled = false;
           btn.textContent = '🔐 Masuk';
-          return;
-        }
-      } catch(e) {
-        console.log('API login failed, using demo mode');
+          hideAlert();
+        }, 800);
+        return false;
       }
       
-      // 🔥 Fallback: Demo Login
-      setTimeout(() => {
-        if ((username === 'admin' && password === 'Admin123!') || 
-            (username === 'staff' && password === 'Staff123!')) {
-          
-          const user = {
-            id: username === 'admin' ? '1' : '2',
-            username: username,
-            email: username + '@instansi.id',
-            namaLengkap: username === 'admin' ? 'Administrator' : 'Staff User',
-            nip: '198001012010011001',
-            jabatan: username === 'admin' ? 'Administrator Sistem' : 'Staff',
-            unitKerja: 'TI',
-            role: username === 'admin' ? 'admin' : 'staff',
-            isActive: true
-          };
-          
-          APP_STATE.isAuthenticated = true;
-          APP_STATE.user = user;
-          APP_STATE.token = 'demo-token-' + Date.now();
-          APP_STATE.apiConnected = false;
-          
-          localStorage.setItem('asd_token', APP_STATE.token);
-          localStorage.setItem('asd_user', JSON.stringify(user));
-          
-          showAlert('✅ Login berhasil (Demo Mode)!', 'success');
-          updateConnectionBadge(false);
-          
-          setTimeout(() => {
-            showDashboard();
-            btn.disabled = false;
-            btn.textContent = '🔐 Masuk';
-            hideAlert();
-          }, 800);
-        } else {
-          showAlert('❌ Username atau password salah', 'error');
+      if (apiResult && apiResult.needSetup) {
+        showAlert('⚠️ Sistem belum di-setup. Buka Google Apps Script dan jalankan action=setup', 'error');
+        btn.disabled = false;
+        btn.textContent = '🔐 Masuk';
+        return false;
+      }
+      
+      // 🔥 STEP 2: API gagal/tidak tersedia - GUNAKAN DEMO LOGIN
+      console.log('ℹ️ API tidak tersedia, menggunakan Demo Login');
+      
+      const demoUsers = {
+        'admin': { id: '1', username: 'admin', email: 'admin@instansi.id', namaLengkap: 'Administrator', nip: '198001012010011001', jabatan: 'Administrator Sistem', unitKerja: 'TI', role: 'admin', isActive: true },
+        'staff': { id: '2', username: 'staff', email: 'staff@instansi.id', namaLengkap: 'Staff User', nip: '198501012015011002', jabatan: 'Staff', unitKerja: 'Umum', role: 'staff', isActive: true }
+      };
+      
+      const demoPasswords = { 'admin': 'Admin123!', 'staff': 'Staff123!' };
+      
+      if (demoUsers[username] && password === demoPasswords[username]) {
+        STATE.isAuthenticated = true;
+        STATE.user = demoUsers[username];
+        STATE.token = 'demo-' + Date.now();
+        STATE.apiConnected = false;
+        
+        localStorage.setItem('asd_token_v2', STATE.token);
+        localStorage.setItem('asd_user_v2', JSON.stringify(STATE.user));
+        
+        updateConnectionUI('offline', '🔴 Demo Mode');
+        showAlert('✅ Login berhasil (Demo Mode)! API tidak tersedia.', 'success');
+        
+        setTimeout(() => {
+          showDashboard();
           btn.disabled = false;
           btn.textContent = '🔐 Masuk';
-          
-          // Shake animation
-          const card = document.querySelector('.login-card');
-          if (card) {
-            card.style.animation = 'none';
-            card.offsetHeight;
-            card.style.animation = 'shake 0.5s ease';
-          }
-        }
-      }, 500);
+          hideAlert();
+        }, 800);
+        return false;
+      }
+      
+      // Login gagal
+      showAlert('❌ Username atau password salah', 'error');
+      btn.disabled = false;
+      btn.textContent = '🔐 Masuk';
+      
+      const card = document.querySelector('.login-card');
+      if (card) {
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'shake 0.5s ease';
+      }
+      
+      return false;
     }
     
     function handleLogout() {
@@ -655,44 +635,38 @@
     
     function handleBiometricLogin() {
       if (!window.PublicKeyCredential) {
-        showAlert('⚠️ Biometrik tidak didukung di browser ini. Gunakan Chrome/Edge terbaru.', 'error');
-        return;
+        showAlert('⚠️ Biometrik tidak didukung. Gunakan Chrome/Edge.', 'error');
+      } else {
+        showAlert('🖐️ Demo: Gunakan login password. Biometrik perlu koneksi API.', 'info');
+        setTimeout(hideAlert, 3000);
       }
-      showAlert('🖐️ Demo: Klik "Masuk" untuk login dengan password.', 'info');
-      setTimeout(hideAlert, 3000);
     }
     
     function clearAuth() {
-      APP_STATE.isAuthenticated = false;
-      APP_STATE.user = null;
-      APP_STATE.token = null;
-      APP_STATE.apiConnected = false;
-      localStorage.removeItem('asd_token');
-      localStorage.removeItem('asd_user');
+      STATE.isAuthenticated = false;
+      STATE.user = null;
+      STATE.token = null;
+      STATE.apiConnected = false;
+      localStorage.removeItem('asd_token_v2');
+      localStorage.removeItem('asd_user_v2');
     }
     
     // ============================================
     // UI HELPERS
     // ============================================
     
-    function showAlert(message, type) {
-      const alert = document.getElementById('login-alert');
-      if (alert) {
-        alert.textContent = message;
-        alert.className = 'alert alert-' + (type || 'error') + ' show';
-      }
+    function showAlert(msg, type) {
+      const a = document.getElementById('login-alert');
+      if (a) { a.textContent = msg; a.className = 'alert alert-' + (type||'error') + ' show'; }
     }
     
     function hideAlert() {
-      const alert = document.getElementById('login-alert');
-      if (alert) {
-        alert.className = 'alert';
-        alert.textContent = '';
-      }
+      const a = document.getElementById('login-alert');
+      if (a) { a.className = 'alert'; a.textContent = ''; }
     }
     
-    function showFeatureAlert(featureName) {
-      alert('📌 Fitur: ' + featureName + '\n\nFitur ini tersedia di versi lengkap dengan koneksi backend Google Apps Script.\n\nDemo Version v3.1.0\n\nLogin: admin / Admin123!');
+    function showFeatureAlert(name) {
+      alert('📌 ' + name + '\n\nFitur lengkap tersedia dengan koneksi API.\n\nDemo v3.1.0 | Login: admin / Admin123!');
     }
     
     function getInitials(name) {
@@ -701,64 +675,39 @@
     }
     
     // ============================================
-    // 🔥 SERVICE WORKER (SELF-CONTAINED)
+    // SERVICE WORKER (SELF-CONTAINED)
     // ============================================
     
     (function() {
-      // Buat service worker inline untuk menghindari 404
       if ('serviceWorker' in navigator) {
         const swCode = `
-          const CACHE_NAME = 'arsip-surat-v3.1.0';
-          
-          self.addEventListener('install', function(event) {
-            console.log('SW: Installed');
-            self.skipWaiting();
-          });
-          
-          self.addEventListener('activate', function(event) {
-            console.log('SW: Activated');
-            event.waitUntil(clients.claim());
-          });
-          
-          self.addEventListener('fetch', function(event) {
-            // Hanya handle GET requests
-            if (event.request.method !== 'GET') return;
-            
-            // Skip Google Script API
-            if (event.request.url.includes('script.google.com')) return;
-            
-            event.respondWith(
-              caches.match(event.request).then(function(cached) {
-                const fetched = fetch(event.request).then(function(response) {
-                  if (response && response.status === 200) {
-                    const clone = response.clone();
-                    caches.open(CACHE_NAME).then(function(cache) {
-                      cache.put(event.request, clone);
-                    });
+          const CACHE_NAME = 'asd-v3.1.0';
+          self.addEventListener('install', e => { console.log('SW: Install'); self.skipWaiting(); });
+          self.addEventListener('activate', e => { console.log('SW: Activate'); e.waitUntil(clients.claim()); });
+          self.addEventListener('fetch', e => {
+            if (e.request.method !== 'GET' || e.request.url.includes('script.google.com')) return;
+            e.respondWith(
+              caches.match(e.request).then(cached => {
+                const fetched = fetch(e.request).then(resp => {
+                  if (resp && resp.status === 200) {
+                    const clone = resp.clone();
+                    caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
                   }
-                  return response;
-                }).catch(function() {
-                  return cached || new Response('Offline', { status: 503 });
-                });
-                
+                  return resp;
+                }).catch(() => cached || new Response('Offline', { status: 503 }));
                 return cached || fetched;
               })
             );
           });
-          
-          console.log('✅ Service Worker v3.1.0 Ready');
+          console.log('✅ SW Ready');
         `;
         
         const blob = new Blob([swCode], { type: 'application/javascript' });
         const swUrl = URL.createObjectURL(blob);
         
         navigator.serviceWorker.register(swUrl, { scope: '/' })
-          .then(function(reg) {
-            console.log('✅ Service Worker terdaftar:', reg.scope);
-          })
-          .catch(function(err) {
-            console.log('⚠️ Service Worker: ' + err.message);
-          });
+          .then(r => console.log('✅ SW Registered:', r.scope))
+          .catch(e => console.log('⚠️ SW:', e.message));
       }
     })();
     
@@ -766,58 +715,44 @@
     // ONLINE/OFFLINE
     // ============================================
     
-    window.addEventListener('online', function() {
+    window.addEventListener('online', () => {
       console.log('🟢 Online');
-      if (APP_STATE.isAuthenticated) {
-        testApiConnection().then(connected => {
-          if (connected) loadDashboardData();
-        });
-      }
+      if (STATE.isAuthenticated) { checkApiConnection(); }
     });
     
-    window.addEventListener('offline', function() {
+    window.addEventListener('offline', () => {
       console.log('🔴 Offline');
-      updateConnectionBadge(false);
+      updateConnectionUI('offline', '🔴 Offline');
     });
     
     // ============================================
     // SHAKE ANIMATION
     // ============================================
     
-    const shakeStyle = document.createElement('style');
-    shakeStyle.textContent = `
-      @keyframes shake {
-        0%,100% { transform: translateX(0); }
-        20% { transform: translateX(-10px); }
-        40% { transform: translateX(10px); }
-        60% { transform: translateX(-6px); }
-        80% { transform: translateX(6px); }
-      }
-    `;
-    document.head.appendChild(shakeStyle);
+    const shakeCSS = document.createElement('style');
+    shakeCSS.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}';
+    document.head.appendChild(shakeCSS);
     
     // ============================================
-    // CONSOLE WELCOME
+    // CONSOLE
     // ============================================
     
     console.log(`
     ╔══════════════════════════════════════╗
-    ║  📁 ARSIP SURAT DIGITAL             ║
-    ║  🚀 v3.1.0 ENTERPRISE              ║
-    ║  📅 Build: 2026-07-10              ║
-    ║  🌐 DEMO VERSION                   ║
+    ║  📁 ARSIP SURAT DIGITAL v3.1.0     ║
+    ║  🌐 DEMO + API FALLBACK            ║
     ║                                     ║
     ║  Login: admin / Admin123!          ║
     ║  Login: staff / Staff123!          ║
+    ║                                     ║
+    ║  🔗 API: ${API_URL.substring(0,50)}...  ║
     ╚══════════════════════════════════════╝
     `);
     
-    console.log('💡 Tips: Buka aplikasi di Chrome/Edge untuk PWA install.');
-    console.log('📱 Add to Home Screen untuk akses seperti aplikasi native.');
-    console.log('🔗 API: ' + API_BASE_URL);
-    console.log('📋 Tidak ada error 404 - semua file self-contained!');
+    console.log('💡 Mode: Demo (API akan dicek otomatis)');
+    console.log('⚠️ CORS: Jika API diblokir, gunakan Demo Login');
+    console.log('📱 PWA: Add to Home Screen di Chrome/Edge');
     
   </script>
-  
 </body>
 </html>
