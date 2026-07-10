@@ -8,9 +8,11 @@
     <title>Login - Arsip Surat Digital Enterprise v30.1.0</title>
     
     <style>
+        /* ========== CSS VARIABLES ========== */
         :root {
             --primary: #1976D2;
             --primary-dark: #1565C0;
+            --primary-light: #42A5F5;
             --bg: #F0F4F8;
             --surface: #FFFFFF;
             --text: #212121;
@@ -20,7 +22,11 @@
             --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
             --radius: 16px;
             --radius-sm: 10px;
-            --font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --error: #F44336;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --info: #2196F3;
         }
 
         [data-theme="dark"] {
@@ -33,6 +39,7 @@
             --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
         }
 
+        /* ========== RESET ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -43,10 +50,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.3s;
+            transition: background 0.3s ease;
             padding: 20px;
         }
 
+        /* ========== BACKGROUND PATTERN ========== */
         .bg-pattern {
             position: fixed;
             inset: 0;
@@ -58,6 +66,7 @@
             z-index: 0;
         }
 
+        /* ========== LOGIN CONTAINER ========== */
         .login-container {
             position: relative;
             z-index: 1;
@@ -71,6 +80,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* ========== LOGO SECTION ========== */
         .logo-section {
             text-align: center;
             margin-bottom: 32px;
@@ -80,7 +90,7 @@
             width: 80px;
             height: 80px;
             margin: 0 auto 16px;
-            background: linear-gradient(135deg, var(--primary), #42A5F5);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             border-radius: 20px;
             display: flex;
             align-items: center;
@@ -108,6 +118,7 @@
             font-weight: 500;
         }
 
+        /* ========== LOGIN CARD ========== */
         .login-card {
             background: var(--surface);
             border-radius: var(--radius);
@@ -123,13 +134,14 @@
             text-align: center;
         }
 
-        .login-card .welcome-text {
+        .welcome-text {
             text-align: center;
             color: var(--text-secondary);
             font-size: 13px;
             margin-bottom: 24px;
         }
 
+        /* ========== FORM ========== */
         .form-group {
             margin-bottom: 18px;
         }
@@ -146,7 +158,7 @@
             position: relative;
         }
 
-        .input-wrapper .icon {
+        .input-icon {
             position: absolute;
             left: 14px;
             top: 50%;
@@ -154,6 +166,7 @@
             font-size: 18px;
             color: var(--text-secondary);
             pointer-events: none;
+            z-index: 1;
         }
 
         .input-wrapper input {
@@ -165,7 +178,7 @@
             font-family: var(--font-family);
             background: var(--bg);
             color: var(--text);
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             outline: none;
         }
 
@@ -191,8 +204,14 @@
             font-size: 18px;
             color: var(--text-secondary);
             padding: 4px;
+            z-index: 1;
         }
 
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+
+        /* ========== FORM OPTIONS ========== */
         .form-options {
             display: flex;
             justify-content: space-between;
@@ -206,12 +225,14 @@
             align-items: center;
             gap: 6px;
             cursor: pointer;
+            color: var(--text-secondary);
         }
 
         .remember-me input[type="checkbox"] {
             width: 16px;
             height: 16px;
             accent-color: var(--primary);
+            cursor: pointer;
         }
 
         .forgot-password {
@@ -225,6 +246,7 @@
             text-decoration: underline;
         }
 
+        /* ========== BUTTON ========== */
         .btn-login {
             width: 100%;
             padding: 14px;
@@ -235,10 +257,11 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             font-family: var(--font-family);
             position: relative;
             overflow: hidden;
+            min-height: 48px;
         }
 
         .btn-login:hover {
@@ -275,15 +298,17 @@
             to { transform: rotate(360deg); }
         }
 
+        /* ========== ERROR MESSAGE ========== */
         .error-message {
             background: rgba(244,67,54,0.08);
-            color: #F44336;
+            color: var(--error);
             padding: 12px 16px;
             border-radius: var(--radius-sm);
             font-size: 13px;
             margin-bottom: 16px;
             display: none;
             border: 1px solid rgba(244,67,54,0.2);
+            text-align: center;
         }
 
         .error-message.show {
@@ -297,6 +322,7 @@
             75% { transform: translateX(8px); }
         }
 
+        /* ========== BIOMETRIC ========== */
         .biometric-section {
             text-align: center;
             margin-top: 20px;
@@ -316,7 +342,7 @@
             font-size: 13px;
             font-weight: 500;
             color: var(--text);
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             font-family: var(--font-family);
         }
 
@@ -325,6 +351,7 @@
             background: rgba(25,118,210,0.05);
         }
 
+        /* ========== FEATURES ========== */
         .features {
             display: flex;
             justify-content: center;
@@ -339,12 +366,13 @@
             color: var(--text-secondary);
         }
 
-        .feature-item .feature-icon {
+        .feature-icon {
             font-size: 20px;
             display: block;
             margin-bottom: 4px;
         }
 
+        /* ========== VERSION ========== */
         .version {
             text-align: center;
             font-size: 11px;
@@ -353,31 +381,7 @@
             opacity: 0.7;
         }
 
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-            z-index: 9999;
-            animation: slideIn 0.3s;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-        }
-
-        .toast.success { background: #4CAF50; }
-        .toast.error { background: #F44336; }
-        .toast.info { background: #2196F3; }
-        .toast.warning { background: #FF9800; }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(100px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .quick-login-info {
+        .quick-info {
             background: rgba(25,118,210,0.05);
             border: 1px dashed rgba(25,118,210,0.3);
             border-radius: var(--radius-sm);
@@ -388,35 +392,77 @@
             text-align: center;
         }
 
+        /* ========== TOAST ========== */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
+            min-width: 280px;
+        }
+
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); }
+        .toast.info { background: var(--info); }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* ========== RESPONSIVE ========== */
         @media (max-width: 480px) {
             .login-card { padding: 24px 20px; }
             .logo { width: 64px; height: 64px; font-size: 32px; }
             .app-title { font-size: 18px; }
             .features { gap: 16px; }
+            .feature-item { font-size: 10px; }
+            .feature-icon { font-size: 16px; }
         }
     </style>
 </head>
 <body>
+    <!-- Background Pattern -->
     <div class="bg-pattern"></div>
     
+    <!-- Login Container -->
     <div class="login-container">
+        
+        <!-- Logo Section -->
         <div class="logo-section">
             <div class="logo">📄</div>
             <h1 class="app-title">Arsip Surat Digital</h1>
-            <p class="app-subtitle">Enterprise v30.1.0 | AI Powered</p>
+            <p class="app-subtitle">Enterprise v30.1.0 • AI Powered</p>
         </div>
         
+        <!-- Login Card -->
         <div class="login-card">
             <h2>👋 Selamat Datang</h2>
             <p class="welcome-text">Silakan login untuk mengakses sistem</p>
             
+            <!-- Error Message -->
             <div class="error-message" id="errorMessage"></div>
             
-            <form id="loginForm" onsubmit="return false;">
+            <!-- Login Form -->
+            <form id="loginForm" autocomplete="off">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <div class="input-wrapper">
-                        <span class="icon">👤</span>
+                        <span class="input-icon">👤</span>
                         <input 
                             type="text" 
                             id="username" 
@@ -432,7 +478,7 @@
                 <div class="form-group">
                     <label for="password">Password</label>
                     <div class="input-wrapper">
-                        <span class="icon">🔒</span>
+                        <span class="input-icon">🔒</span>
                         <input 
                             type="password" 
                             id="password" 
@@ -441,7 +487,7 @@
                             required 
                             autocomplete="current-password"
                         >
-                        <button type="button" class="password-toggle" onclick="togglePassword()" title="Tampilkan password">
+                        <button type="button" class="password-toggle" id="togglePassword" title="Tampilkan password">
                             👁️
                         </button>
                     </div>
@@ -452,31 +498,34 @@
                         <input type="checkbox" id="rememberMe">
                         <span>Ingat saya</span>
                     </label>
-                    <a class="forgot-password" onclick="forgotPassword()">Lupa password?</a>
+                    <a class="forgot-password" id="forgotPassword">Lupa password?</a>
                 </div>
                 
-                <button type="button" class="btn-login" id="btnLogin" onclick="handleLogin()">
+                <button type="submit" class="btn-login" id="btnLogin">
                     <span class="btn-text">🔐 Masuk</span>
                     <span class="spinner"></span>
                 </button>
             </form>
             
+            <!-- Biometric Login -->
             <div class="biometric-section" id="biometricSection" style="display:none;">
-                <button class="btn-biometric" onclick="loginWithBiometric()">
+                <button type="button" class="btn-biometric" id="btnBiometric">
                     <span>🖐️</span>
                     <span>Login dengan Fingerprint / Face ID</span>
                 </button>
             </div>
             
-            <div class="quick-login-info">
+            <!-- Quick Info -->
+            <div class="quick-info">
                 ℹ️ Hubungi <strong>Administrator</strong> jika belum memiliki akun.
             </div>
         </div>
         
+        <!-- Features -->
         <div class="features">
             <div class="feature-item">
                 <span class="feature-icon">🤖</span>
-                AI Smart Search
+                AI Smart
             </div>
             <div class="feature-item">
                 <span class="feature-icon">🔗</span>
@@ -496,134 +545,161 @@
             </div>
         </div>
         
+        <!-- Version -->
         <div class="version">
             Arsip Surat Digital Enterprise v30.1.0 &copy; 2026
         </div>
     </div>
     
-    <div id="toastContainer"></div>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
+    <!-- ========== JAVASCRIPT - ALL INLINE, NO EXTERNAL FILES ========== -->
     <script>
-        // ========== KONFIGURASI ==========
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxhx4JXI_yX9MIEhYmSVAjxy-_9McM0-2WKzA2OvW4h8T9QT2nh5bJcio0KiWEyL4VRsQ/exec';
+        // ========================================
+        // KONFIGURASI
+        // ========================================
+        var API_URL = 'https://script.google.com/macros/s/AKfycbxhx4JXI_yX9MIEhYmSVAjxy-_9McM0-2WKzA2OvW4h8T9QT2nh5bJcio0KiWEyL4VRsQ/exec';
+        var APP_VERSION = '30.1.0';
         
-        // ========== INISIALISASI ==========
-        (function() {
-            console.log('🚀 Login v30.1.0 initializing...');
-            console.log('🔗 API URL:', API_URL);
+        // ========================================
+        // DOM ELEMENTS
+        // ========================================
+        var usernameInput = document.getElementById('username');
+        var passwordInput = document.getElementById('password');
+        var btnLogin = document.getElementById('btnLogin');
+        var errorMessage = document.getElementById('errorMessage');
+        var togglePasswordBtn = document.getElementById('togglePassword');
+        var rememberMeCheckbox = document.getElementById('rememberMe');
+        var forgotPasswordLink = document.getElementById('forgotPassword');
+        var biometricSection = document.getElementById('biometricSection');
+        var btnBiometric = document.getElementById('btnBiometric');
+        var toastContainer = document.getElementById('toastContainer');
+        var loginForm = document.getElementById('loginForm');
+        
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        (function init() {
+            console.log('========================================');
+            console.log('🚀 Arsip Surat Digital Enterprise');
+            console.log('📦 Version: v' + APP_VERSION);
+            console.log('🔗 API URL: ' + API_URL);
+            console.log('========================================');
             
             // Cek apakah sudah login
-            const token = localStorage.getItem('token');
-            const user = localStorage.getItem('user');
-            
-            if (token && user) {
-                console.log('✅ Token ditemukan, verifikasi...');
-                verifyTokenAndRedirect(token);
-            } else {
-                console.log('ℹ️ Belum login, tampilkan form');
-            }
+            checkExistingSession();
             
             // Load saved username
-            const savedUsername = localStorage.getItem('savedUsername');
-            if (savedUsername) {
-                document.getElementById('username').value = savedUsername;
-                document.getElementById('rememberMe').checked = true;
-            }
+            loadSavedUsername();
             
-            // Cek biometric
-            checkBiometricAvailability();
+            // Cek biometric availability
+            checkBiometric();
             
-            // Apply theme
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
+            // Apply saved theme
+            applyTheme();
             
+            // Event listeners
+            setupEventListeners();
+            
+            console.log('✅ Login page initialized successfully');
         })();
         
-        // ========== VERIFIKASI TOKEN ==========
-        async function verifyTokenAndRedirect(token) {
+        // ========================================
+        // CHECK EXISTING SESSION
+        // ========================================
+        function checkExistingSession() {
+            var token = localStorage.getItem('token');
+            var user = localStorage.getItem('user');
+            
+            if (token && user) {
+                console.log('🔍 Token ditemukan, melakukan verifikasi...');
+                verifyToken(token);
+            } else {
+                console.log('ℹ️ Tidak ada sesi aktif');
+            }
+        }
+        
+        async function verifyToken(token) {
             try {
-                const url = API_URL + '?action=me&token=' + encodeURIComponent(token);
-                console.log('🔍 Verifikasi token ke:', url);
+                var url = API_URL + '?action=me&token=' + encodeURIComponent(token);
+                console.log('📡 Verifikasi ke: ' + url);
                 
-                const response = await fetch(url);
-                const data = await response.json();
-                console.log('📥 Response verifikasi:', data);
+                var response = await fetch(url);
+                var data = await response.json();
+                console.log('📥 Response:', data);
                 
                 if (data.status === 'success' && data.data) {
-                    console.log('✅ Token valid, redirect ke dashboard');
-                    // Update user data di localStorage
+                    console.log('✅ Token valid! Redirect ke dashboard...');
+                    // Update user data
                     localStorage.setItem('user', JSON.stringify(data.data));
-                    // Redirect ke index.html
-                    window.location.replace('/index.html');
+                    // Redirect
+                    redirectToDashboard();
                 } else {
-                    console.log('❌ Token tidak valid, hapus storage');
-                    // Token expired atau invalid
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
+                    console.log('❌ Token tidak valid');
+                    clearSession();
                     showToast('Sesi telah berakhir, silakan login kembali', 'warning');
                 }
             } catch (error) {
-                console.error('❌ Error verifikasi token:', error);
-                // Jika network error, biarkan user tetap login (offline mode)
+                console.error('❌ Verifikasi gagal:', error.message);
+                // Jika offline, tetap izinkan akses
                 if (!navigator.onLine) {
-                    console.log('⚠️ Offline, gunakan data cached');
-                    window.location.replace('/index.html');
+                    console.log('⚠️ Mode offline - gunakan sesi tersimpan');
+                    redirectToDashboard();
                 } else {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
+                    clearSession();
                 }
             }
         }
         
-        // ========== HANDLE LOGIN ==========
-        async function handleLogin() {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const rememberMe = document.getElementById('rememberMe').checked;
-            const btnLogin = document.getElementById('btnLogin');
-            const errorMessage = document.getElementById('errorMessage');
+        // ========================================
+        // HANDLE LOGIN
+        // ========================================
+        async function doLogin() {
+            var username = usernameInput.value.trim();
+            var password = passwordInput.value;
+            var rememberMe = rememberMeCheckbox.checked;
             
             // Validasi
             if (!username) {
-                showError('Username harus diisi');
-                document.getElementById('username').focus();
+                showError('⚠️ Username harus diisi');
+                usernameInput.focus();
                 return;
             }
             if (!password) {
-                showError('Password harus diisi');
-                document.getElementById('password').focus();
+                showError('⚠️ Password harus diisi');
+                passwordInput.focus();
                 return;
             }
             
-            // Show loading
-            btnLogin.classList.add('loading');
-            btnLogin.disabled = true;
+            // Tampilkan loading
+            setLoading(true);
             hideError();
             
-            console.log('🔐 Mencoba login dengan username:', username);
+            console.log('🔐 Mencoba login...');
+            console.log('👤 Username: ' + username);
             
             try {
-                const url = API_URL + '?action=login';
-                console.log('📤 POST ke:', url);
+                var url = API_URL + '?action=login';
                 
-                const response = await fetch(url, {
+                var response = await fetch(url, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ 
-                        username: username, 
-                        password: password 
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
                     })
                 });
                 
-                const data = await response.json();
+                var data = await response.json();
                 console.log('📥 Response login:', data);
                 
                 if (data.status === 'success' && data.data && data.data.token) {
-                    console.log('✅ Login berhasil');
+                    console.log('✅ LOGIN BERHASIL!');
                     
-                    // SIMPAN TOKEN & USER - SAMA SEPERTI DI INDEX.HTML
+                    // SIMPAN TOKEN DAN USER
                     localStorage.setItem('token', data.data.token);
                     localStorage.setItem('user', JSON.stringify(data.data.user));
                     
@@ -634,116 +710,133 @@
                         localStorage.removeItem('savedUsername');
                     }
                     
-                    // Tambahkan flag biometric untuk testing
+                    // Simpan flag biometric
                     localStorage.setItem('hasBiometric', 'true');
                     
+                    // Blockchain log
+                    addBlockchainLog(data.data.user);
+                    
+                    // Tampilkan pesan sukses
                     showToast('✅ Login berhasil! Mengalihkan...', 'success');
                     
-                    // Blockchain log
-                    logBlockchainLogin(data.data.user);
+                    // Redirect setelah delay singkat
+                    setTimeout(function() {
+                        redirectToDashboard();
+                    }, 600);
                     
-                    // Redirect ke dashboard
-                    setTimeout(() => {
-                        window.location.replace('/index.html');
-                    }, 500);
-                    
-                } else if (data.status === 'error' && data.code === 401) {
-                    showError('Username atau password salah');
+                } else if (data.code === 401) {
+                    showError('❌ Username atau password salah');
                 } else {
-                    showError(data.message || 'Login gagal, silakan coba lagi');
+                    showError('❌ ' + (data.message || 'Login gagal, silakan coba lagi'));
                 }
                 
             } catch (error) {
-                console.error('❌ Login error:', error);
+                console.error('❌ Login error:', error.message);
                 
                 if (!navigator.onLine) {
-                    showError('Tidak ada koneksi internet. Periksa koneksi Anda.');
+                    showError('📡 Tidak ada koneksi internet');
                     // Coba offline login
-                    attemptOfflineLogin(username, password);
+                    attemptOfflineLogin(username);
                 } else {
-                    showError('Gagal terhubung ke server. Silakan coba lagi.');
+                    showError('❌ Gagal terhubung ke server. Silakan coba lagi.');
                 }
             } finally {
-                btnLogin.classList.remove('loading');
-                btnLogin.disabled = false;
+                setLoading(false);
             }
         }
         
-        // ========== OFFLINE LOGIN ==========
-        function attemptOfflineLogin(username, password) {
-            const cachedUser = localStorage.getItem('user');
-            const cachedToken = localStorage.getItem('token');
+        // ========================================
+        // OFFLINE LOGIN
+        // ========================================
+        function attemptOfflineLogin(username) {
+            var cachedUser = localStorage.getItem('user');
+            var cachedToken = localStorage.getItem('token');
             
             if (cachedUser && cachedToken) {
                 try {
-                    const user = JSON.parse(cachedUser);
+                    var user = JSON.parse(cachedUser);
                     if (user.username === username) {
                         showToast('⚠️ Mode offline - menggunakan data tersimpan', 'warning');
-                        setTimeout(() => {
-                            window.location.replace('/index.html');
+                        setTimeout(function() {
+                            redirectToDashboard();
                         }, 1000);
                         return;
                     }
                 } catch (e) {}
             }
             
-            showError('Tidak dapat login offline. Diperlukan koneksi internet untuk login pertama kali.');
+            showError('📡 Tidak dapat login offline. Diperlukan koneksi internet untuk login pertama kali.');
         }
         
-        // ========== BLOCKCHAIN LOG ==========
-        function logBlockchainLogin(user) {
+        // ========================================
+        // BLOCKCHAIN LOG
+        // ========================================
+        function addBlockchainLog(user) {
             try {
-                let chain = JSON.parse(localStorage.getItem('bc_chain') || '[]');
+                var chain = JSON.parse(localStorage.getItem('bc_chain') || '[]');
+                
                 if (chain.length === 0) {
-                    chain = [{ index: 0, hash: '0', prevHash: '0', data: 'Genesis v30.1.0' }];
+                    chain = [{
+                        index: 0,
+                        hash: '0',
+                        prevHash: '0',
+                        data: 'Genesis Block v' + APP_VERSION,
+                        timestamp: new Date().toISOString()
+                    }];
                 }
                 
-                const prev = chain[chain.length - 1];
-                const blockData = JSON.stringify({
+                var prev = chain[chain.length - 1];
+                var blockData = JSON.stringify({
                     action: 'LOGIN',
                     user: user.username,
-                    role: user.role,
+                    role: user.role || 'staff',
                     timestamp: new Date().toISOString()
                 });
                 
-                let hash = 0;
-                const str = (prev.index + 1) + JSON.stringify(blockData) + prev.hash;
-                for (let i = 0; i < str.length; i++) {
-                    const char = str.charCodeAt(i);
-                    hash = ((hash << 5) - hash) + char;
-                    hash |= 0;
-                }
+                // Simple hash
+                var hashInput = (prev.index + 1) + blockData + prev.hash;
+                var hash = simpleHash(hashInput);
                 
-                const block = {
+                var block = {
                     index: prev.index + 1,
                     timestamp: new Date().toISOString(),
                     data: blockData,
                     prevHash: prev.hash,
-                    hash: Math.abs(hash).toString(16)
+                    hash: hash
                 };
                 
                 chain.push(block);
                 localStorage.setItem('bc_chain', JSON.stringify(chain));
-                console.log('🔗 Blockchain login recorded');
+                console.log('🔗 Blockchain: Block #' + block.index + ' ditambahkan');
             } catch (e) {
-                console.log('Blockchain log error:', e);
+                console.log('Blockchain error:', e.message);
             }
         }
         
-        // ========== BIOMETRIC ==========
-        async function checkBiometricAvailability() {
-            try {
-                if (window.PublicKeyCredential) {
-                    document.getElementById('biometricSection').style.display = 'block';
-                    console.log('✅ Biometric tersedia');
-                }
-            } catch (error) {
-                console.log('Biometric tidak tersedia');
+        function simpleHash(str) {
+            var hash = 0;
+            for (var i = 0; i < str.length; i++) {
+                var char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash).toString(16);
+        }
+        
+        // ========================================
+        // BIOMETRIC
+        // ========================================
+        function checkBiometric() {
+            if (window.PublicKeyCredential) {
+                biometricSection.style.display = 'block';
+                console.log('✅ Biometric WebAuthn tersedia');
+            } else {
+                console.log('ℹ️ Biometric tidak tersedia di browser ini');
             }
         }
         
-        async function loginWithBiometric() {
-            const credentialId = localStorage.getItem('biometricCredentialId');
+        async function doBiometricLogin() {
+            var credentialId = localStorage.getItem('biometricCredentialId');
             
             if (!credentialId) {
                 showToast('⚠️ Belum ada biometric terdaftar. Login dengan username/password terlebih dahulu.', 'info');
@@ -753,31 +846,30 @@
             showToast('🔐 Memindai biometric...', 'info');
             
             try {
-                const publicKey = {
+                var publicKey = {
                     challenge: new Uint8Array(32),
                     rpId: window.location.hostname,
                     allowCredentials: [{
-                        id: Uint8Array.from(atob(credentialId), c => c.charCodeAt(0)),
-                        type: 'public-key',
+                        id: base64ToUint8Array(credentialId),
+                        type: 'public-key'
                     }],
                     userVerification: 'required',
-                    timeout: 30000,
+                    timeout: 30000
                 };
                 
-                const assertion = await navigator.credentials.get({ publicKey });
+                var assertion = await navigator.credentials.get({ publicKey: publicKey });
                 
                 if (assertion) {
-                    const token = localStorage.getItem('token');
+                    var token = localStorage.getItem('token');
                     if (token) {
-                        // Verify with backend
-                        const url = API_URL + '?action=biometric.verify&token=' + encodeURIComponent(token) + '&credentialId=' + encodeURIComponent(credentialId);
-                        const response = await fetch(url);
-                        const data = await response.json();
+                        var url = API_URL + '?action=biometric.verify&token=' + encodeURIComponent(token) + '&credentialId=' + encodeURIComponent(credentialId);
+                        var response = await fetch(url);
+                        var data = await response.json();
                         
                         if (data.status === 'success') {
                             showToast('✅ Biometric verified! Mengalihkan...', 'success');
-                            setTimeout(() => {
-                                window.location.replace('/index.html');
+                            setTimeout(function() {
+                                redirectToDashboard();
                             }, 500);
                         } else {
                             showToast('❌ Biometric gagal, silakan gunakan password', 'error');
@@ -787,102 +879,158 @@
                     }
                 }
             } catch (error) {
-                console.error('Biometric error:', error);
+                console.error('Biometric error:', error.message);
                 showToast('❌ Biometric error: ' + error.message, 'error');
             }
         }
         
-        // ========== TOGGLE PASSWORD ==========
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const toggleBtn = document.querySelector('.password-toggle');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleBtn.textContent = '🙈';
+        function base64ToUint8Array(base64) {
+            var binary = atob(base64);
+            var bytes = new Uint8Array(binary.length);
+            for (var i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes;
+        }
+        
+        // ========================================
+        // UI HELPERS
+        // ========================================
+        function setLoading(isLoading) {
+            if (isLoading) {
+                btnLogin.classList.add('loading');
+                btnLogin.disabled = true;
             } else {
-                passwordInput.type = 'password';
-                toggleBtn.textContent = '👁️';
+                btnLogin.classList.remove('loading');
+                btnLogin.disabled = false;
             }
         }
         
-        // ========== FORGOT PASSWORD ==========
-        function forgotPassword() {
-            showToast('ℹ️ Hubungi Administrator untuk reset password', 'info');
-        }
-        
-        // ========== UI HELPERS ==========
         function showError(message) {
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = '❌ ' + message;
+            errorMessage.textContent = message;
             errorMessage.classList.add('show');
-            
+            // Trigger reflow untuk restart animasi
             errorMessage.style.animation = 'none';
             errorMessage.offsetHeight;
             errorMessage.style.animation = 'shake 0.4s';
         }
         
         function hideError() {
-            const errorMessage = document.getElementById('errorMessage');
             errorMessage.classList.remove('show');
             errorMessage.textContent = '';
         }
         
-        function showToast(message, type = 'info') {
-            // Hapus toast yang sudah ada
-            document.querySelectorAll('.toast').forEach(t => {
+        function showToast(message, type) {
+            type = type || 'info';
+            
+            // Hapus toast lama
+            var oldToasts = document.querySelectorAll('.toast');
+            oldToasts.forEach(function(t) {
                 t.style.opacity = '0';
-                setTimeout(() => t.remove(), 300);
+                t.style.transition = 'opacity 0.3s';
+                setTimeout(function() { t.remove(); }, 300);
             });
             
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'toast ' + type;
-            
-            const iconMap = {
-                success: '✅',
-                error: '❌',
-                warning: '⚠️',
-                info: 'ℹ️'
+            var icons = {
+                success: '✅ ',
+                error: '❌ ',
+                warning: '⚠️ ',
+                info: 'ℹ️ '
             };
             
-            toast.textContent = (iconMap[type] || '') + ' ' + message;
-            container.appendChild(toast);
+            var toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = (icons[type] || '') + message;
+            toastContainer.appendChild(toast);
             
-            setTimeout(() => {
+            // Auto remove
+            setTimeout(function() {
                 toast.style.opacity = '0';
                 toast.style.transition = 'opacity 0.3s';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+                setTimeout(function() { toast.remove(); }, 300);
+            }, 3500);
         }
         
-        // ========== KEYBOARD SHORTCUTS ==========
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                handleLogin();
+        function togglePasswordVisibility() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                togglePasswordBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                togglePasswordBtn.textContent = '👁️';
             }
-        });
+        }
         
-        // ========== ENTER KEY PADA FORM ==========
-        document.getElementById('username').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                document.getElementById('password').focus();
+        function redirectToDashboard() {
+            window.location.replace('/index.html');
+        }
+        
+        function clearSession() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+        }
+        
+        function loadSavedUsername() {
+            var savedUsername = localStorage.getItem('savedUsername');
+            if (savedUsername) {
+                usernameInput.value = savedUsername;
+                rememberMeCheckbox.checked = true;
             }
-        });
+        }
         
-        document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
+        function applyTheme() {
+            var savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+        function setupEventListeners() {
+            // Form submit
+            loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                handleLogin();
-            }
-        });
+                doLogin();
+            });
+            
+            // Toggle password
+            togglePasswordBtn.addEventListener('click', togglePasswordVisibility);
+            
+            // Forgot password
+            forgotPasswordLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showToast('ℹ️ Hubungi Administrator untuk reset password', 'info');
+            });
+            
+            // Biometric button
+            btnBiometric.addEventListener('click', doBiometricLogin);
+            
+            // Enter key pada username -> pindah ke password
+            usernameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    passwordInput.focus();
+                }
+            });
+            
+            // Enter key pada password -> submit
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    doLogin();
+                }
+            });
+        }
         
-        console.log('✅ Login.html v30.1.0 - SINKRON DENGAN INDEX.HTML');
-        console.log('📋 Token akan disimpan di localStorage dengan key: token');
-        console.log('📋 User akan disimpan di localStorage dengan key: user');
-        console.log('🔗 Redirect ke: /index.html setelah login sukses');
+        // ========================================
+        // LOG
+        // ========================================
+        console.log('========================================');
+        console.log('✅ Login.html v' + APP_VERSION + ' LOADED');
+        console.log('📋 Token storage key: token');
+        console.log('📋 User storage key: user');
+        console.log('🔗 Dashboard URL: /index.html');
+        console.log('========================================');
     </script>
 </body>
 </html>
