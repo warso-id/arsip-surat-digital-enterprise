@@ -380,13 +380,13 @@
     function showLogin() {
       document.getElementById('login-page').classList.add('active');
       document.getElementById('dashboard-page').classList.remove('active');
-      window.location.hash = '#/login';
+      window.location.hash = 'login';
     }
     
     function showDashboard() {
       document.getElementById('login-page').classList.remove('active');
       document.getElementById('dashboard-page').classList.add('active');
-      window.location.hash = '#/dashboard';
+      window.location.hash = 'dashboard';
       
       if (STATE.user) {
         document.getElementById('user-name').textContent = STATE.user.namaLengkap || STATE.user.username || 'User';
