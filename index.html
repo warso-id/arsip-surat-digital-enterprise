@@ -27,7 +27,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <style>
-    :root{--p:#1976D2;--pd:#0D47A1;--s:#4CAF50;--w:#FF9800;--d:#F44336;--i:#2196F3;--bg:#F5F5F5;--w2:#FFF;--t:#212121;--t2:#757575;--b:#E0E0E0;--r:12px}
+    :root{--p:#1976D2;--pd:#0D47A1;--s:#4CAF50;--w:#FF9800;--d:#F44336;--i:#2196F3;--bg:#F5F5F5;--w2:#FFF;--t:#212121;--t2:#757575;--b:#E0E0E0}
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.6;color:var(--t);background:var(--bg);-webkit-font-smoothing:antialiased;min-height:100vh}
     
@@ -118,7 +118,7 @@
     <span class="splash-logo">📁</span>
     <h1 class="splash-title">Arsip Surat Digital</h1>
     <p class="splash-sub">Enterprise System</p>
-    <p class="splash-ver">v3.1.0 • Build 2026-07-10</p>
+    <p class="splash-ver">v3.1.0</p>
     <div class="splash-bar"><div class="splash-bar-fill"></div></div>
   </div>
 </div>
@@ -181,16 +181,12 @@
 </div>
 
 <script>
-// ============================================
-// 🔥 KONFIGURASI - GANTI DENGAN URL DEPLOY ANDA
-// ============================================
+// 🔥 GANTI dengan URL deploy Google Apps Script Anda
 var API_URL = 'https://script.google.com/macros/s/AKfycbzzmttzSRYsM7KodsEdFqHRdwBs2kY7VTzFPOpsiab3p3v-6CBl-eKIuUI0Vhqd0opYtA/exec';
 
 var A = { auth: false, user: null, token: null, ok: false };
 
-// ============================================
 // INIT
-// ============================================
 (function() {
   console.log('📁 Arsip Surat Digital Enterprise v3.1.0');
   var t = localStorage.getItem('asd_tk'), u = localStorage.getItem('asd_us');
@@ -205,15 +201,12 @@ function showDash() { document.getElementById('login-page').classList.remove('on
   if (A.user) { document.getElementById('un').textContent = A.user.namaLengkap||A.user.username; document.getElementById('av').textContent = (A.user.namaLengkap||A.user.username||'U').split(' ').map(function(w){return w[0]}).join('').toUpperCase().substring(0,2); }
 }
 
-// ============================================
-// 🔥 API - SEMUA PAKAI GET (NO CORS)
-// ============================================
+// API
 function api(action, params) {
   return new Promise(function(ok) {
     var url = API_URL + '?action=' + encodeURIComponent(action);
     if (A.token) url += '&token=' + encodeURIComponent(A.token);
     if (params) { Object.keys(params).forEach(function(k) { if (params[k] !== undefined && params[k] !== '') url += '&' + k + '=' + encodeURIComponent(params[k]); }); }
-    
     fetch(url).then(function(r) { return r.json(); }).then(function(d) { ok(d); }).catch(function(e) { ok({ status: 'error', message: 'Gagal terhubung: ' + e.message }); });
   });
 }
@@ -228,25 +221,17 @@ function ping() {
 
 function setCS(c, t) { var b = document.getElementById('cs-badge'); if (b) { b.textContent = t; b.className = 'cs cs-' + c; } }
 
-// ============================================
-// 🔥 LOGIN - VIA GET DENGAN PARAMETER QUERY
-// ============================================
+// LOGIN
 function doLogin(e) {
   e.preventDefault();
-  var u = document.getElementById('user').value.trim();
-  var p = document.getElementById('pass').value.trim();
-  var btn = document.getElementById('btn-login');
-  
+  var u = document.getElementById('user').value.trim(), p = document.getElementById('pass').value.trim(), btn = document.getElementById('btn-login');
   if (!u || !p) { msg('❌ Isi username dan password', 'err'); return false; }
   
   btn.disabled = true; btn.textContent = '⏳ Menghubungkan...'; hideMsg();
   
-  // 🔥 KIRIM username & password SEBAGAI PARAMETER URL
   api('login', { username: u, password: p }).then(function(r) {
-    console.log('Login response:', r);
-    
+    console.log('Login:', r);
     if (r && r.status === 'success' && r.data && r.data.token) {
-      // SUKSES
       A.auth = true; A.user = r.data.user; A.token = r.data.token; A.ok = true;
       localStorage.setItem('asd_tk', r.data.token); localStorage.setItem('asd_us', JSON.stringify(r.data.user));
       msg('✅ Login berhasil!', 'ok'); setCS('on', '🟢 Connected');
@@ -255,23 +240,20 @@ function doLogin(e) {
       msg('⚠️ Sistem belum di-setup. Buka: ' + API_URL + '?action=setup', 'err');
       btn.disabled = false; btn.textContent = '🔐 Masuk';
     } else {
-      msg('❌ ' + (r.message || 'Login gagal! Username/password salah.'), 'err');
+      msg('❌ ' + (r.message || 'Login gagal!'), 'err');
       btn.disabled = false; btn.textContent = '🔐 Masuk';
     }
-  }).catch(function(e) {
-    msg('❌ Gagal terhubung ke server. Cek koneksi internet.', 'err');
+  }).catch(function() {
+    msg('❌ Gagal terhubung ke server.', 'err');
     btn.disabled = false; btn.textContent = '🔐 Masuk';
   });
-  
   return false;
 }
 
-function doLogout() { if (confirm('Keluar?')) { api('logout'); cls(); document.getElementById('data-area').innerHTML = ''; showLogin(); } }
+function doLogout() { if (confirm('Keluar?')) { cls(); document.getElementById('data-area').innerHTML = ''; showLogin(); } }
 function cls() { A.auth = false; A.user = null; A.token = null; A.ok = false; localStorage.removeItem('asd_tk'); localStorage.removeItem('asd_us'); }
 
-// ============================================
 // DASHBOARD
-// ============================================
 function loadStats() {
   api('dashboard.stats').then(function(r) {
     if (r && r.status === 'success' && r.data) {
@@ -284,9 +266,7 @@ function loadStats() {
   });
 }
 
-// ============================================
 // MODULES
-// ============================================
 function loadMod(m) {
   var acts = { suratMasuk:'suratMasuk.list', suratKeluar:'suratKeluar.list', disposisi:'disposisi.list', approval:'approval.list', users:'users.list', blockchain:'blockchain.getChain', backup:'backup.list', config:'config.get', system:'system.status' };
   var titles = { suratMasuk:'📥 Surat Masuk', suratKeluar:'📤 Surat Keluar', disposisi:'📋 Disposisi', approval:'✅ Approval', users:'👥 Users', blockchain:'⛓️ Blockchain', backup:'💾 Backup', config:'⚙️ Config', system:'🖥️ Status' };
@@ -355,9 +335,7 @@ function errArea(msg) {
   document.getElementById('data-area').innerHTML = '<div class="card"><div class="card-body" style="text-align:center;padding:40px;">❌<p style="color:#F44336;">'+msg+'</p></div></div>';
 }
 
-// ============================================
 // HELPERS
-// ============================================
 function msg(m, t) { var e = document.getElementById('alert'); if (e) { e.textContent = m; e.className = 'alert alert-' + (t||'err') + ' show'; } }
 function hideMsg() { var e = document.getElementById('alert'); if (e) { e.className = 'alert'; e.textContent = ''; } }
 function fmt(d) { if (!d) return '-'; try { return new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}); } catch(e) { return d; } }
