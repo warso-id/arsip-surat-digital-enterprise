@@ -5,12 +5,11 @@
   "version": "3.1.0",
   "build_date": "2026-07-10",
   
-  "start_url": "/index.html?utm_source=pwa&utm_medium=standalone&v=3.1.0",
+  "start_url": "/login.html?v=3.1.0",
   "scope": "/",
   
   "display": "standalone",
   "display_override": [
-    "window-controls-overlay",
     "standalone",
     "minimal-ui",
     "browser"
@@ -18,7 +17,7 @@
   
   "orientation": "any",
   
-  "background_color": "#FAFAFA",
+  "background_color": "#F0F4F8",
   "theme_color": "#1976D2",
   
   "lang": "id-ID",
@@ -37,205 +36,112 @@
   
   "icons": [
     {
-      "src": "icons/icon-72x72.png?v=3.1.0",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'%3E%3Crect width='72' height='72' rx='16' fill='%231976D2'/%3E%3Ctext x='36' y='52' font-size='44' text-anchor='middle' fill='white'%3E📄%3C/text%3E%3C/svg%3E",
       "sizes": "72x72",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-96x96.png?v=3.1.0",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='20' fill='%231976D2'/%3E%3Ctext x='48' y='68' font-size='56' text-anchor='middle' fill='white'%3E📄%3C/text%3E%3C/svg%3E",
       "sizes": "96x96",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-128x128.png?v=3.1.0",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='24' fill='%231976D2'/%3E%3Ctext x='64' y='90' font-size='72' text-anchor='middle' fill='white'%3E📄%3C/text%3E%3C/svg%3E",
       "sizes": "128x128",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-144x144.png?v=3.1.0",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 144 144'%3E%3Crect width='144' height='144' rx='28' fill='%231976D2'/%3E%3Ctext x='72' y='100' font-size='80' text-anchor='middle' fill='white'%3E📄%3C/text%3E%3C/svg%3E",
       "sizes": "144x144",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-152x152.png?v=3.1.0",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-192x192.png?v=3.1.0",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='36' fill='%231976D2'/%3E%3Ctext x='96' y='132' font-size='100' text-anchor='middle' fill='white'%3E📄%3C/text%3E%3C/svg%3E",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-384x384.png?v=3.1.0",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 384'%3E%3Crect width='384' height='384' rx='48' fill='%231976D2'/%3E%3Ctext x='192' y='260' font-size='200' text-anchor='middle' fill='white'%3E📄%3C/text%3E%3C/svg%3E",
       "sizes": "384x384",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-512x512.png?v=3.1.0",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='64' fill='%231976D2'/%3E%3Ctext x='256' y='340' font-size='280' text-anchor='middle' fill='white'%3E📄%3C/text%3E%3C/svg%3E",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
-    },
-    {
-      "src": "icons/maskable-512x512.png?v=3.1.0",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  
-  "screenshots": [
-    {
-      "src": "screenshots/dashboard-desktop-v3.1.0.png",
-      "sizes": "1920x1080",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Dashboard v3.1.0 with AI Insights"
-    },
-    {
-      "src": "screenshots/dashboard-mobile-v3.1.0.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Mobile Dashboard with Dark Mode"
-    },
-    {
-      "src": "screenshots/surat-masuk-v3.1.0.png",
-      "sizes": "1920x1080",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Surat Masuk with AI Auto-Tagging"
-    },
-    {
-      "src": "screenshots/approval-v3.1.0.png",
-      "sizes": "1920x1080",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Approval with Blockchain Verification"
     }
   ],
   
   "shortcuts": [
     {
-      "name": "📨 Surat Masuk Baru",
-      "short_name": "+ Surat Masuk",
-      "description": "Input surat masuk baru dengan AI auto-tagging",
-      "url": "/modules/surat-masuk.html?action=tambah&v=3.1.0",
+      "name": "📨 Surat Masuk",
+      "short_name": "Surat Masuk",
+      "description": "Lihat daftar surat masuk",
+      "url": "/index.html#surat-masuk",
       "icons": [
         {
-          "src": "icons/shortcut-surat-masuk.png?v=3.1.0",
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='20' fill='%231976D2'/%3E%3Ctext x='48' y='68' font-size='50' text-anchor='middle'%3E📨%3C/text%3E%3C/svg%3E",
           "sizes": "96x96",
-          "type": "image/png"
+          "type": "image/svg+xml"
         }
       ]
     },
     {
-      "name": "📤 Buat Surat Keluar",
-      "short_name": "+ Surat Keluar",
-      "description": "Buat surat keluar dengan smart template AI",
-      "url": "/modules/surat-keluar.html?action=tambah&v=3.1.0",
+      "name": "📤 Surat Keluar",
+      "short_name": "Surat Keluar",
+      "description": "Lihat daftar surat keluar",
+      "url": "/index.html#surat-keluar",
       "icons": [
         {
-          "src": "icons/shortcut-surat-keluar.png?v=3.1.0",
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='20' fill='%23388E3C'/%3E%3Ctext x='48' y='68' font-size='50' text-anchor='middle'%3E📤%3C/text%3E%3C/svg%3E",
           "sizes": "96x96",
-          "type": "image/png"
+          "type": "image/svg+xml"
         }
       ]
     },
     {
-      "name": "✅ Approval Cepat",
+      "name": "✅ Approval",
       "short_name": "Approval",
-      "description": "Lihat dan proses approval dengan cepat",
-      "url": "/modules/approval.html?v=3.1.0",
+      "description": "Lihat dan proses approval",
+      "url": "/index.html#approval",
       "icons": [
         {
-          "src": "icons/shortcut-approval.png?v=3.1.0",
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='20' fill='%23FF9800'/%3E%3Ctext x='48' y='68' font-size='50' text-anchor='middle'%3E✅%3C/text%3E%3C/svg%3E",
           "sizes": "96x96",
-          "type": "image/png"
+          "type": "image/svg+xml"
         }
       ]
     },
     {
-      "name": "🤖 AI Search",
-      "short_name": "AI Search",
-      "description": "Pencarian pintar dengan AI",
-      "url": "/index.html?action=ai-search&v=3.1.0",
+      "name": "📊 Dashboard",
+      "short_name": "Dashboard",
+      "description": "Kembali ke dashboard utama",
+      "url": "/index.html#dashboard",
       "icons": [
         {
-          "src": "icons/shortcut-search.png?v=3.1.0",
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='20' fill='%231976D2'/%3E%3Ctext x='48' y='68' font-size='50' text-anchor='middle'%3E📊%3C/text%3E%3C/svg%3E",
           "sizes": "96x96",
-          "type": "image/png"
+          "type": "image/svg+xml"
         }
       ]
     }
   ],
   
   "share_target": {
-    "action": "/modules/surat-masuk.html?action=share&v=3.1.0",
-    "method": "POST",
-    "enctype": "multipart/form-data",
+    "action": "/index.html#surat-masuk",
+    "method": "GET",
     "params": {
       "title": "perihal",
-      "text": "catatan",
-      "url": "url",
-      "files": [
-        {
-          "name": "file",
-          "accept": [
-            "application/pdf",
-            "image/*",
-            "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-          ]
-        }
-      ]
+      "text": "catatan"
     }
   },
-  
-  "file_handlers": [
-    {
-      "action": "/modules/surat-masuk.html?action=file-open&v=3.1.0",
-      "accept": {
-        "application/pdf": [".pdf"],
-        "image/png": [".png"],
-        "image/jpeg": [".jpg", ".jpeg"],
-        "application/msword": [".doc"],
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"]
-      },
-      "icons": [
-        {
-          "src": "icons/file-handler.png?v=3.1.0",
-          "sizes": "256x256",
-          "type": "image/png"
-        }
-      ]
-    }
-  ],
-  
-  "protocol_handlers": [
-    {
-      "protocol": "web+arsip",
-      "url": "/index.html?protocol=%s&v=3.1.0"
-    },
-    {
-      "protocol": "mailto",
-      "url": "/modules/surat-keluar.html?email=%s&v=3.1.0"
-    }
-  ],
-  
-  "edge_side_panel": {
-    "preferred_width": 420
-  },
-  
-  "handle_links": "preferred",
   
   "launch_handler": {
     "client_mode": ["focus-existing", "navigate-existing", "auto"]
@@ -244,14 +150,8 @@
   "related_applications": [
     {
       "platform": "webapp",
-      "url": "https://arsip.instansi.id/manifest.json",
+      "url": "https://warso-id.github.io/manifest.json",
       "id": "arsip-surat-digital-v3.1.0"
     }
-  ],
-  
-  "iarc_rating_id": "",
-  
-  "note_taking": {
-    "new_note_url": "/modules/surat-masuk.html?action=quick-note&v=3.1.0"
-  }
+  ]
 }
