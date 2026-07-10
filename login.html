@@ -47,7 +47,6 @@
             padding: 20px;
         }
 
-        /* Background Pattern */
         .bg-pattern {
             position: fixed;
             inset: 0;
@@ -59,7 +58,6 @@
             z-index: 0;
         }
 
-        /* Login Container */
         .login-container {
             position: relative;
             z-index: 1;
@@ -73,7 +71,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Logo Section */
         .logo-section {
             text-align: center;
             margin-bottom: 32px;
@@ -111,7 +108,6 @@
             font-weight: 500;
         }
 
-        /* Login Card */
         .login-card {
             background: var(--surface);
             border-radius: var(--radius);
@@ -134,7 +130,6 @@
             margin-bottom: 24px;
         }
 
-        /* Form */
         .form-group {
             margin-bottom: 18px;
         }
@@ -185,7 +180,6 @@
             opacity: 0.6;
         }
 
-        /* Password Toggle */
         .password-toggle {
             position: absolute;
             right: 14px;
@@ -199,7 +193,6 @@
             padding: 4px;
         }
 
-        /* Remember & Forgot */
         .form-options {
             display: flex;
             justify-content: space-between;
@@ -232,7 +225,6 @@
             text-decoration: underline;
         }
 
-        /* Button */
         .btn-login {
             width: 100%;
             padding: 14px;
@@ -264,6 +256,7 @@
             transform: none;
         }
 
+        .btn-login .btn-text { display: inline; }
         .btn-login .spinner {
             display: none;
             width: 20px;
@@ -282,7 +275,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Error Message */
         .error-message {
             background: rgba(244,67,54,0.08);
             color: #F44336;
@@ -292,10 +284,12 @@
             margin-bottom: 16px;
             display: none;
             border: 1px solid rgba(244,67,54,0.2);
-            animation: shake 0.4s;
         }
 
-        .error-message.show { display: block; }
+        .error-message.show {
+            display: block;
+            animation: shake 0.4s;
+        }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -303,7 +297,6 @@
             75% { transform: translateX(8px); }
         }
 
-        /* Biometric */
         .biometric-section {
             text-align: center;
             margin-top: 20px;
@@ -332,11 +325,6 @@
             background: rgba(25,118,210,0.05);
         }
 
-        .btn-biometric .fingerprint {
-            font-size: 20px;
-        }
-
-        /* Features */
         .features {
             display: flex;
             justify-content: center;
@@ -357,7 +345,6 @@
             margin-bottom: 4px;
         }
 
-        /* Version */
         .version {
             text-align: center;
             font-size: 11px;
@@ -366,7 +353,6 @@
             opacity: 0.7;
         }
 
-        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
@@ -384,21 +370,13 @@
         .toast.success { background: #4CAF50; }
         .toast.error { background: #F44336; }
         .toast.info { background: #2196F3; }
+        .toast.warning { background: #FF9800; }
 
         @keyframes slideIn {
             from { opacity: 0; transform: translateX(100px); }
             to { opacity: 1; transform: translateX(0); }
         }
 
-        /* Responsive */
-        @media (max-width: 480px) {
-            .login-card { padding: 24px 20px; }
-            .logo { width: 64px; height: 64px; font-size: 32px; }
-            .app-title { font-size: 18px; }
-            .features { gap: 16px; }
-        }
-
-        /* Quick Login Info */
         .quick-login-info {
             background: rgba(25,118,210,0.05);
             border: 1px dashed rgba(25,118,210,0.3);
@@ -410,8 +388,11 @@
             text-align: center;
         }
 
-        .quick-login-info strong {
-            color: var(--primary);
+        @media (max-width: 480px) {
+            .login-card { padding: 24px 20px; }
+            .logo { width: 64px; height: 64px; font-size: 32px; }
+            .app-title { font-size: 18px; }
+            .features { gap: 16px; }
         }
     </style>
 </head>
@@ -419,23 +400,19 @@
     <div class="bg-pattern"></div>
     
     <div class="login-container">
-        <!-- Logo -->
         <div class="logo-section">
             <div class="logo">📄</div>
             <h1 class="app-title">Arsip Surat Digital</h1>
             <p class="app-subtitle">Enterprise v30.1.0 | AI Powered</p>
         </div>
         
-        <!-- Login Card -->
         <div class="login-card">
             <h2>👋 Selamat Datang</h2>
             <p class="welcome-text">Silakan login untuk mengakses sistem</p>
             
-            <!-- Error Message -->
             <div class="error-message" id="errorMessage"></div>
             
-            <!-- Login Form -->
-            <form id="loginForm" onsubmit="handleLogin(event)">
+            <form id="loginForm" onsubmit="return false;">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <div class="input-wrapper">
@@ -478,28 +455,24 @@
                     <a class="forgot-password" onclick="forgotPassword()">Lupa password?</a>
                 </div>
                 
-                <button type="submit" class="btn-login" id="btnLogin">
+                <button type="button" class="btn-login" id="btnLogin" onclick="handleLogin()">
                     <span class="btn-text">🔐 Masuk</span>
                     <span class="spinner"></span>
                 </button>
             </form>
             
-            <!-- Biometric -->
             <div class="biometric-section" id="biometricSection" style="display:none;">
                 <button class="btn-biometric" onclick="loginWithBiometric()">
-                    <span class="fingerprint">🖐️</span>
+                    <span>🖐️</span>
                     <span>Login dengan Fingerprint / Face ID</span>
                 </button>
             </div>
             
-            <!-- Quick Login Info -->
             <div class="quick-login-info">
-                ℹ️ Login dengan akun yang sudah terdaftar.<br>
-                Hubungi <strong>Administrator</strong> jika belum memiliki akun.
+                ℹ️ Hubungi <strong>Administrator</strong> jika belum memiliki akun.
             </div>
         </div>
         
-        <!-- Features -->
         <div class="features">
             <div class="feature-item">
                 <span class="feature-icon">🤖</span>
@@ -523,29 +496,31 @@
             </div>
         </div>
         
-        <!-- Version -->
         <div class="version">
             Arsip Surat Digital Enterprise v30.1.0 &copy; 2026
         </div>
     </div>
     
-    <!-- Toast Container -->
     <div id="toastContainer"></div>
 
     <script>
-        // ========== CONFIGURATION ==========
+        // ========== KONFIGURASI ==========
         const API_URL = 'https://script.google.com/macros/s/AKfycbxhx4JXI_yX9MIEhYmSVAjxy-_9McM0-2WKzA2OvW4h8T9QT2nh5bJcio0KiWEyL4VRsQ/exec';
-        const APP_VERSION = '30.1.0';
         
-        // ========== INITIALIZATION ==========
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check if already logged in
+        // ========== INISIALISASI ==========
+        (function() {
+            console.log('🚀 Login v30.1.0 initializing...');
+            console.log('🔗 API URL:', API_URL);
+            
+            // Cek apakah sudah login
             const token = localStorage.getItem('token');
             const user = localStorage.getItem('user');
             
             if (token && user) {
-                // Verify token is still valid
-                verifyAndRedirect(token);
+                console.log('✅ Token ditemukan, verifikasi...');
+                verifyTokenAndRedirect(token);
+            } else {
+                console.log('ℹ️ Belum login, tampilkan form');
             }
             
             // Load saved username
@@ -555,54 +530,68 @@
                 document.getElementById('rememberMe').checked = true;
             }
             
-            // Check biometric availability
+            // Cek biometric
             checkBiometricAvailability();
             
-            // Apply saved theme
+            // Apply theme
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
             
-            console.log('✅ Login page v' + APP_VERSION + ' loaded');
-            console.log('🔗 API URL:', API_URL);
-        });
+        })();
         
-        // ========== VERIFY EXISTING TOKEN ==========
-        async function verifyAndRedirect(token) {
+        // ========== VERIFIKASI TOKEN ==========
+        async function verifyTokenAndRedirect(token) {
             try {
-                const url = new URL(API_URL);
-                url.searchParams.set('action', 'me');
-                url.searchParams.set('token', token);
+                const url = API_URL + '?action=me&token=' + encodeURIComponent(token);
+                console.log('🔍 Verifikasi token ke:', url);
                 
-                const response = await fetch(url.toString());
+                const response = await fetch(url);
                 const data = await response.json();
+                console.log('📥 Response verifikasi:', data);
                 
                 if (data.status === 'success' && data.data) {
-                    // Token valid, redirect to dashboard
-                    window.location.href = '/index.html';
+                    console.log('✅ Token valid, redirect ke dashboard');
+                    // Update user data di localStorage
+                    localStorage.setItem('user', JSON.stringify(data.data));
+                    // Redirect ke index.html
+                    window.location.replace('/index.html');
                 } else {
-                    // Token invalid, clear storage
+                    console.log('❌ Token tidak valid, hapus storage');
+                    // Token expired atau invalid
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    showToast('Sesi telah berakhir, silakan login kembali', 'warning');
+                }
+            } catch (error) {
+                console.error('❌ Error verifikasi token:', error);
+                // Jika network error, biarkan user tetap login (offline mode)
+                if (!navigator.onLine) {
+                    console.log('⚠️ Offline, gunakan data cached');
+                    window.location.replace('/index.html');
+                } else {
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
                 }
-            } catch (error) {
-                console.log('Token verification failed:', error.message);
-                // Stay on login page
             }
         }
         
         // ========== HANDLE LOGIN ==========
-        async function handleLogin(event) {
-            event.preventDefault();
-            
+        async function handleLogin() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const rememberMe = document.getElementById('rememberMe').checked;
             const btnLogin = document.getElementById('btnLogin');
             const errorMessage = document.getElementById('errorMessage');
             
-            // Validation
-            if (!username || !password) {
-                showError('Username dan password harus diisi');
+            // Validasi
+            if (!username) {
+                showError('Username harus diisi');
+                document.getElementById('username').focus();
+                return;
+            }
+            if (!password) {
+                showError('Password harus diisi');
+                document.getElementById('password').focus();
                 return;
             }
             
@@ -611,88 +600,159 @@
             btnLogin.disabled = true;
             hideError();
             
+            console.log('🔐 Mencoba login dengan username:', username);
+            
             try {
-                const url = new URL(API_URL);
-                url.searchParams.set('action', 'login');
+                const url = API_URL + '?action=login';
+                console.log('📤 POST ke:', url);
                 
-                const response = await fetch(url.toString(), {
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ 
+                        username: username, 
+                        password: password 
+                    })
                 });
                 
                 const data = await response.json();
+                console.log('📥 Response login:', data);
                 
-                if (data.status === 'success' && data.data) {
-                    // Save token and user data
+                if (data.status === 'success' && data.data && data.data.token) {
+                    console.log('✅ Login berhasil');
+                    
+                    // SIMPAN TOKEN & USER - SAMA SEPERTI DI INDEX.HTML
                     localStorage.setItem('token', data.data.token);
                     localStorage.setItem('user', JSON.stringify(data.data.user));
                     
-                    // Save username if remember me
+                    // Simpan username jika remember me
                     if (rememberMe) {
                         localStorage.setItem('savedUsername', username);
                     } else {
                         localStorage.removeItem('savedUsername');
                     }
                     
+                    // Tambahkan flag biometric untuk testing
+                    localStorage.setItem('hasBiometric', 'true');
+                    
                     showToast('✅ Login berhasil! Mengalihkan...', 'success');
                     
-                    // Redirect to dashboard
-                    setTimeout(() => {
-                        window.location.href = '/index.html';
-                    }, 800);
+                    // Blockchain log
+                    logBlockchainLogin(data.data.user);
                     
+                    // Redirect ke dashboard
+                    setTimeout(() => {
+                        window.location.replace('/index.html');
+                    }, 500);
+                    
+                } else if (data.status === 'error' && data.code === 401) {
+                    showError('Username atau password salah');
                 } else {
-                    showError(data.message || 'Username atau password salah');
+                    showError(data.message || 'Login gagal, silakan coba lagi');
                 }
                 
             } catch (error) {
-                console.error('Login error:', error);
+                console.error('❌ Login error:', error);
                 
                 if (!navigator.onLine) {
                     showError('Tidak ada koneksi internet. Periksa koneksi Anda.');
+                    // Coba offline login
+                    attemptOfflineLogin(username, password);
                 } else {
                     showError('Gagal terhubung ke server. Silakan coba lagi.');
                 }
             } finally {
-                // Hide loading
                 btnLogin.classList.remove('loading');
                 btnLogin.disabled = false;
             }
         }
         
-        // ========== BIOMETRIC LOGIN ==========
+        // ========== OFFLINE LOGIN ==========
+        function attemptOfflineLogin(username, password) {
+            const cachedUser = localStorage.getItem('user');
+            const cachedToken = localStorage.getItem('token');
+            
+            if (cachedUser && cachedToken) {
+                try {
+                    const user = JSON.parse(cachedUser);
+                    if (user.username === username) {
+                        showToast('⚠️ Mode offline - menggunakan data tersimpan', 'warning');
+                        setTimeout(() => {
+                            window.location.replace('/index.html');
+                        }, 1000);
+                        return;
+                    }
+                } catch (e) {}
+            }
+            
+            showError('Tidak dapat login offline. Diperlukan koneksi internet untuk login pertama kali.');
+        }
+        
+        // ========== BLOCKCHAIN LOG ==========
+        function logBlockchainLogin(user) {
+            try {
+                let chain = JSON.parse(localStorage.getItem('bc_chain') || '[]');
+                if (chain.length === 0) {
+                    chain = [{ index: 0, hash: '0', prevHash: '0', data: 'Genesis v30.1.0' }];
+                }
+                
+                const prev = chain[chain.length - 1];
+                const blockData = JSON.stringify({
+                    action: 'LOGIN',
+                    user: user.username,
+                    role: user.role,
+                    timestamp: new Date().toISOString()
+                });
+                
+                let hash = 0;
+                const str = (prev.index + 1) + JSON.stringify(blockData) + prev.hash;
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash |= 0;
+                }
+                
+                const block = {
+                    index: prev.index + 1,
+                    timestamp: new Date().toISOString(),
+                    data: blockData,
+                    prevHash: prev.hash,
+                    hash: Math.abs(hash).toString(16)
+                };
+                
+                chain.push(block);
+                localStorage.setItem('bc_chain', JSON.stringify(chain));
+                console.log('🔗 Blockchain login recorded');
+            } catch (e) {
+                console.log('Blockchain log error:', e);
+            }
+        }
+        
+        // ========== BIOMETRIC ==========
         async function checkBiometricAvailability() {
             try {
-                // Check if WebAuthn is supported
                 if (window.PublicKeyCredential) {
-                    // Check if user has registered biometric before
-                    const hasBiometric = localStorage.getItem('hasBiometric') === 'true';
-                    
-                    if (hasBiometric || true) { // Show button regardless
-                        document.getElementById('biometricSection').style.display = 'block';
-                    }
+                    document.getElementById('biometricSection').style.display = 'block';
+                    console.log('✅ Biometric tersedia');
                 }
             } catch (error) {
-                console.log('Biometric not available:', error.message);
+                console.log('Biometric tidak tersedia');
             }
         }
         
         async function loginWithBiometric() {
+            const credentialId = localStorage.getItem('biometricCredentialId');
+            
+            if (!credentialId) {
+                showToast('⚠️ Belum ada biometric terdaftar. Login dengan username/password terlebih dahulu.', 'info');
+                return;
+            }
+            
+            showToast('🔐 Memindai biometric...', 'info');
+            
             try {
-                // Check if we have saved credential ID
-                const credentialId = localStorage.getItem('biometricCredentialId');
-                
-                if (!credentialId) {
-                    showToast('⚠️ Belum ada biometric terdaftar. Login dengan username/password terlebih dahulu.', 'info');
-                    return;
-                }
-                
-                showToast('🔐 Memindai biometric...', 'info');
-                
-                // WebAuthn get assertion
                 const publicKey = {
                     challenge: new Uint8Array(32),
                     rpId: window.location.hostname,
@@ -707,35 +767,28 @@
                 const assertion = await navigator.credentials.get({ publicKey });
                 
                 if (assertion) {
-                    // Verify with backend
-                    const url = new URL(API_URL);
-                    url.searchParams.set('action', 'biometric.verify');
-                    url.searchParams.set('credentialId', credentialId);
-                    
-                    const response = await fetch(url.toString());
-                    const data = await response.json();
-                    
-                    if (data.status === 'success') {
-                        // Get user from stored data
-                        const user = JSON.parse(localStorage.getItem('user') || '{}');
-                        const token = localStorage.getItem('token');
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        // Verify with backend
+                        const url = API_URL + '?action=biometric.verify&token=' + encodeURIComponent(token) + '&credentialId=' + encodeURIComponent(credentialId);
+                        const response = await fetch(url);
+                        const data = await response.json();
                         
-                        if (token && user.username) {
+                        if (data.status === 'success') {
                             showToast('✅ Biometric verified! Mengalihkan...', 'success');
                             setTimeout(() => {
-                                window.location.href = '/index.html';
-                            }, 800);
+                                window.location.replace('/index.html');
+                            }, 500);
                         } else {
-                            showToast('⚠️ Silakan login dengan username/password terlebih dahulu', 'info');
+                            showToast('❌ Biometric gagal, silakan gunakan password', 'error');
                         }
                     } else {
-                        showToast('❌ Biometric verification gagal', 'error');
+                        showToast('⚠️ Silakan login dengan password terlebih dahulu', 'warning');
                     }
                 }
-                
             } catch (error) {
-                console.error('Biometric login error:', error);
-                showToast('❌ Biometric login gagal: ' + error.message, 'error');
+                console.error('Biometric error:', error);
+                showToast('❌ Biometric error: ' + error.message, 'error');
             }
         }
         
@@ -758,15 +811,14 @@
             showToast('ℹ️ Hubungi Administrator untuk reset password', 'info');
         }
         
-        // ========== ERROR HANDLING ==========
+        // ========== UI HELPERS ==========
         function showError(message) {
             const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = message;
+            errorMessage.textContent = '❌ ' + message;
             errorMessage.classList.add('show');
             
-            // Shake animation
             errorMessage.style.animation = 'none';
-            errorMessage.offsetHeight; // Trigger reflow
+            errorMessage.offsetHeight;
             errorMessage.style.animation = 'shake 0.4s';
         }
         
@@ -776,12 +828,25 @@
             errorMessage.textContent = '';
         }
         
-        // ========== TOAST ==========
         function showToast(message, type = 'info') {
+            // Hapus toast yang sudah ada
+            document.querySelectorAll('.toast').forEach(t => {
+                t.style.opacity = '0';
+                setTimeout(() => t.remove(), 300);
+            });
+            
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            
+            const iconMap = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            
+            toast.textContent = (iconMap[type] || '') + ' ' + message;
             container.appendChild(toast);
             
             setTimeout(() => {
@@ -792,14 +857,32 @@
         }
         
         // ========== KEYBOARD SHORTCUTS ==========
-        document.addEventListener('keydown', (e) => {
-            // Enter to submit
-            if (e.key === 'Enter' && document.activeElement?.tagName !== 'BUTTON') {
-                document.getElementById('loginForm').requestSubmit();
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleLogin();
             }
         });
         
-        console.log('✅ Login script v30.1.0 loaded');
+        // ========== ENTER KEY PADA FORM ==========
+        document.getElementById('username').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('password').focus();
+            }
+        });
+        
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleLogin();
+            }
+        });
+        
+        console.log('✅ Login.html v30.1.0 - SINKRON DENGAN INDEX.HTML');
+        console.log('📋 Token akan disimpan di localStorage dengan key: token');
+        console.log('📋 User akan disimpan di localStorage dengan key: user');
+        console.log('🔗 Redirect ke: /index.html setelah login sukses');
     </script>
 </body>
 </html>
