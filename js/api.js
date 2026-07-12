@@ -7,7 +7,7 @@
 
 const API = {
     // ========== CONFIGURATION ==========
-    baseUrl: '', // Will be set from environment
+    baseUrl: 'https://script.google.com/macros/s/AKfycbzzmttzSRYsM7KodsEdFqHRdwBs2kY7VTzFPOpsiab3p3v-6CBl-eKIuUI0Vhqd0opYtA/exec', // Will be set from environment
     
     // ========== SETUP ==========
     init(baseUrl) {
