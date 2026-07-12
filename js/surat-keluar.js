@@ -2,6 +2,7 @@
  * ============================================
  * SURAT-KELUAR.JS - Surat Keluar Module
  * ARSIP SURAT DIGITAL v3.2.2
+ * FIXED: Delete and Update with proper ID handling
  * ============================================
  */
 
@@ -464,7 +465,8 @@ const SuratKeluar = {
                     const formObject = Object.fromEntries(formData.entries());
                     
                     try {
-                        const response = await API.post('suratKeluar.update', {
+                        // 🔥 FIX: Kirim id di data untuk API.put
+                        const response = await API.put('suratKeluar.update', {
                             id: id,
                             ...formObject
                         }, App.token);
@@ -510,10 +512,8 @@ const SuratKeluar = {
         if (!confirm('Apakah Anda yakin ingin menghapus surat ini?')) return;
         
         try {
-            const response = await API.get('suratKeluar.delete', {
-                token: App.token,
-                id: id
-            });
+            // 🔥 FIX: Gunakan API.delete dengan id sebagai parameter
+            const response = await API.delete('suratKeluar.delete', id, App.token);
             
             if (response.status === 'success') {
                 showToast('success', 'Berhasil', 'Surat berhasil dihapus');
