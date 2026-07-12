@@ -2,6 +2,7 @@
  * ============================================
  * APP.JS - Main Application Controller - FINAL FIX
  * ARSIP SURAT DIGITAL v3.2.2
+ * FIXED: Connection, Error Handling, Session
  * ============================================
  */
 
@@ -14,6 +15,7 @@ const App = {
     theme: 'light',
     notifications: [],
     unreadCount: 0,
+    connectionFailed: false,
     
     // ========== INIT ==========
     init() {
@@ -54,33 +56,46 @@ const App = {
         this.applyTheme();
         
         // 🔥 FIX: Test connection WITHOUT sending token
-        this.testConnection();
+        setTimeout(() => {
+            this.testConnection();
+        }, 1000);
     },
     
     // ========== TEST CONNECTION ==========
     async testConnection() {
         try {
             console.log('🔗 Testing connection to backend...');
+            
             // 🔥 FIX: Jangan kirim token untuk ping
             const result = await API.get('ping', { token: null });
             console.log('✅ Connection successful:', result);
             
             if (result.status === 'success') {
                 console.log('📦 Backend version:', result.data?.version);
-                console.log('📊 Features:', result.data?.features);
+                console.log('📊 Public actions:', result.data?.publicActions);
+                this.connectionFailed = false;
                 
                 // Cek apakah sistem sudah di-setup
-                const setupCheck = await API.get('checkSetup', { token: null });
-                console.log('📋 Setup status:', setupCheck);
-                
-                if (setupCheck.status === 'success' && !setupCheck.data?.isSetup) {
-                    console.warn('⚠️ System not setup yet');
-                    showToast('warning', 'Setup Required', 'Sistem belum di-setup. Jalankan setup.');
+                try {
+                    const setupCheck = await API.get('checkSetup', { token: null });
+                    console.log('📋 Setup status:', setupCheck);
+                    
+                    if (setupCheck.status === 'success' && setupCheck.data?.isSetup === false) {
+                        console.warn('⚠️ System not setup yet');
+                        showToast('warning', 'Setup Required', 'Sistem belum di-setup. Jalankan setup.');
+                    }
+                } catch (e) {
+                    console.warn('Setup check failed:', e);
                 }
+            } else {
+                console.warn('⚠️ Connection failed:', result);
+                this.connectionFailed = true;
+                showToast('error', 'Koneksi Gagal', 'Gagal terhubung ke server. Periksa URL backend.');
             }
         } catch (error) {
             console.warn('⚠️ Connection test failed:', error.message);
-            showToast('warning', 'Koneksi', 'Gagal terhubung ke server. Periksa URL backend.');
+            this.connectionFailed = true;
+            showToast('error', 'Koneksi Gagal', 'Gagal terhubung ke server. Periksa koneksi internet.');
         }
     },
     
@@ -91,7 +106,7 @@ const App = {
             const response = await API.get('me', { token: this.token });
             
             if (response.status === 'success') {
-                this.user = response.data;
+                this.user = response.data.user || response.data;
                 localStorage.setItem('user', JSON.stringify(this.user));
                 console.log('✅ Session verified:', this.user.username);
                 this.showApp();
