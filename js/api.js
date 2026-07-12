@@ -2,12 +2,13 @@
  * ============================================
  * API.JS - API Communication Layer - FINAL FIX
  * ARSIP SURAT DIGITAL v3.2.2
- * FIXED: CORS, ID parameter handling, CSRF refresh, Error handling
+ * FIXED: CORS, ID parameter handling, CSRF refresh
  * ============================================
  */
 
 const API = {
     // ========== CONFIGURATION ==========
+    // 🔥 PASTIKAN URL INI ADALAH URL DEPLOYMENT TERBARU DENGAN ACCESS: ANYONE
     baseUrl: 'https://script.google.com/macros/s/AKfycbyV2a5DBBJWCNKYE_AXbu_rM_8inZv9L1d2uLRi8_dVZQfDtAt9ldBPge2FOs0dyGS5TA/exec',
     
     // ========== SETUP ==========
@@ -414,6 +415,7 @@ const API = {
 };
 
 // ========== AUTO INIT ==========
+// 🔥 PASTIKAN URL INI SESUAI DENGAN DEPLOYMENT TERBARU
 API.init('https://script.google.com/macros/s/AKfycbyV2a5DBBJWCNKYE_AXbu_rM_8inZv9L1d2uLRi8_dVZQfDtAt9ldBPge2FOs0dyGS5TA/exec');
 
 console.log('✅ API Module Loaded');
