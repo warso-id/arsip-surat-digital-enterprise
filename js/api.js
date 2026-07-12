@@ -2,7 +2,7 @@
  * ============================================
  * API.JS - API Communication Layer - FINAL FIX
  * ARSIP SURAT DIGITAL v3.2.2
- * FIXED: CORS, Connection, Error Handling
+ * FIXED: ID parameter handling, CSRF refresh
  * ============================================
  */
 
@@ -27,6 +27,11 @@ const API = {
                 url.searchParams.set('token', token);
             }
             
+            // 🔥 FIX: Kirim ID sebagai parameter URL untuk update/delete
+            if (data && data.id) {
+                url.searchParams.set('id', data.id);
+            }
+            
             if (csrf && method !== 'GET') {
                 url.searchParams.set('csrf', csrf);
             }
@@ -40,8 +45,11 @@ const API = {
                 }
             };
             
+            // 🔥 FIX: Untuk POST/PUT, kirim data di body (tanpa id di body)
             if (data && (method === 'POST' || method === 'PUT')) {
-                options.body = JSON.stringify(data);
+                const bodyData = { ...data };
+                delete bodyData.id; // Hapus id dari body karena sudah di URL
+                options.body = JSON.stringify(bodyData);
             }
             
             console.log(`📡 ${method} Request:`, {
@@ -83,6 +91,12 @@ const API = {
                     App.showAuth();
                     showToast('error', 'Session Expired', 'Silakan login kembali');
                 }
+            }
+            
+            // 🔥 FIX: Refresh CSRF jika ada token baru
+            if (result.data && result.data.csrf) {
+                App.csrf = result.data.csrf;
+                localStorage.setItem('csrf', App.csrf);
             }
             
             return result;
@@ -137,6 +151,13 @@ const API = {
             }
             
             console.log('📥 GET Response:', result);
+            
+            // Refresh CSRF jika ada
+            if (result.data && result.data.csrf) {
+                App.csrf = result.data.csrf;
+                localStorage.setItem('csrf', App.csrf);
+            }
+            
             return result;
         } catch (error) {
             console.error('❌ API GET Error:', error);
@@ -167,8 +188,9 @@ const API = {
     },
     
     // ========== DELETE REQUEST ==========
-    async delete(action, token = null) {
-        return this.request(action, 'DELETE', null, token || App.token, App.csrf);
+    async delete(action, id = null, token = null) {
+        const data = id ? { id: id } : null;
+        return this.request(action, 'DELETE', data, token || App.token, App.csrf);
     },
     
     // ========== UPLOAD FILE ==========
@@ -242,13 +264,11 @@ const API = {
     async testConnection() {
         try {
             console.log('🔗 Testing connection...');
-            // 🔥 FIX: Jangan kirim token untuk ping
             const response = await this.get('ping', { token: null });
             console.log('✅ Connection test:', response);
             return response;
         } catch (error) {
             console.error('❌ Connection test failed:', error);
-            // 🔥 FIX: Jangan throw error, return object dengan status error
             return {
                 status: 'error',
                 message: error.message || 'Koneksi gagal'
