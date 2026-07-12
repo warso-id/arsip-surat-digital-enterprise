@@ -8,7 +8,7 @@
 
 const API = {
     // ========== CONFIGURATION ==========
-    baseUrl: 'https://script.google.com/macros/s/AKfycbwA_QzyMeftZk9jkquYlpZcHXTClvDWQTYSt1j9Cr7SrmMC1VWk3bpm_2cMW1AHMXNxIQ/exec',
+    baseUrl: 'https://script.google.com/macros/s/AKfycbyV2a5DBBJWCNKYE_AXbu_rM_8inZv9L1d2uLRi8_dVZQfDtAt9ldBPge2FOs0dyGS5TA/exec',
     
     // ========== SETUP ==========
     init(baseUrl) {
@@ -414,7 +414,7 @@ const API = {
 };
 
 // ========== AUTO INIT ==========
-API.init('https://script.google.com/macros/s/AKfycbwA_QzyMeftZk9jkquYlpZcHXTClvDWQTYSt1j9Cr7SrmMC1VWk3bpm_2cMW1AHMXNxIQ/exec');
+API.init('https://script.google.com/macros/s/AKfycbyV2a5DBBJWCNKYE_AXbu_rM_8inZv9L1d2uLRi8_dVZQfDtAt9ldBPge2FOs0dyGS5TA/exec');
 
 console.log('✅ API Module Loaded');
 console.log('📍 API Base URL:', API.baseUrl);
