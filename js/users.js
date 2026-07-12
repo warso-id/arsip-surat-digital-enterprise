@@ -2,6 +2,7 @@
  * ============================================
  * USERS.JS - Users Module
  * ARSIP SURAT DIGITAL v3.2.2
+ * FIXED: Delete and Update with proper ID handling
  * ============================================
  */
 
@@ -348,7 +349,8 @@ const Users = {
                     if (!data.password) delete data.password;
                     
                     try {
-                        const response = await API.post('users.update', {
+                        // 🔥 FIX: Kirim id di data untuk API.put
+                        const response = await API.put('users.update', {
                             id: id,
                             ...data
                         }, App.token);
@@ -376,7 +378,8 @@ const Users = {
         if (!confirm(`Apakah Anda yakin ingin ${action} user ini?`)) return;
         
         try {
-            const response = await API.post('users.update', {
+            // 🔥 FIX: Kirim id di data untuk API.put
+            const response = await API.put('users.update', {
                 id: id,
                 isActive: !currentActive
             }, App.token);
@@ -402,9 +405,8 @@ const Users = {
         if (!confirm('Apakah Anda yakin ingin menonaktifkan user ini?')) return;
         
         try {
-            const response = await API.post('users.delete', {
-                id: id
-            }, App.token);
+            // 🔥 FIX: Gunakan API.delete dengan id sebagai parameter
+            const response = await API.delete('users.delete', id, App.token);
             
             if (response.status === 'success') {
                 showToast('success', 'Berhasil', 'User berhasil dinonaktifkan');
