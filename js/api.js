@@ -2,7 +2,7 @@
  * ============================================
  * API.JS - API Communication Layer - FINAL FIX
  * ARSIP SURAT DIGITAL v3.2.2
- * FIXED: ID parameter handling, CSRF refresh, Error handling
+ * FIXED: CORS, ID parameter handling, CSRF refresh, Error handling
  * ============================================
  */
 
@@ -32,17 +32,14 @@ const API = {
             const url = new URL(this.baseUrl);
             url.searchParams.set('action', action);
             
-            // 🔥 FIX: Hanya kirim token jika ada
             if (token) {
                 url.searchParams.set('token', token);
             }
             
-            // 🔥 FIX: Kirim ID sebagai parameter URL untuk update/delete
             if (data && data.id) {
                 url.searchParams.set('id', data.id);
             }
             
-            // 🔥 FIX: CSRF hanya untuk method non-GET
             if (csrf && method !== 'GET') {
                 url.searchParams.set('csrf', csrf);
             }
@@ -56,10 +53,9 @@ const API = {
                 }
             };
             
-            // 🔥 FIX: Untuk POST/PUT, kirim data di body (tanpa id di body)
             if (data && (method === 'POST' || method === 'PUT')) {
                 const bodyData = { ...data };
-                delete bodyData.id; // Hapus id dari body karena sudah di URL
+                delete bodyData.id;
                 if (Object.keys(bodyData).length > 0) {
                     options.body = JSON.stringify(bodyData);
                 }
@@ -72,7 +68,6 @@ const API = {
                 hasData: !!data
             });
             
-            // 🔥 FIX: Tambahkan timeout
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 30000);
             options.signal = controller.signal;
@@ -80,9 +75,14 @@ const API = {
             const response = await fetch(url.toString(), options);
             clearTimeout(timeoutId);
             
-            // Cek response
+            // 🔥 FIX: Cek response status
+            if (!response.ok && response.status !== 200) {
+                console.error('❌ HTTP Error:', response.status);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             const text = await response.text();
-            console.log('📥 Raw Response:', text.substring(0, 200));
+            console.log('📥 Raw Response:', text.substring(0, 300));
             
             let result;
             try {
@@ -94,7 +94,6 @@ const API = {
             
             console.log('📥 Parsed Response:', result);
             
-            // 🔥 FIX: Handle 401 dengan lebih baik
             if (result.status === 'error' && result.code === 401) {
                 if (action === 'login') {
                     return result;
@@ -109,7 +108,6 @@ const API = {
                 }
             }
             
-            // 🔥 FIX: Refresh CSRF jika ada token baru
             if (result.data && result.data.csrf) {
                 try {
                     const app = this._getApp();
@@ -137,18 +135,14 @@ const API = {
     // ========== GET REQUEST ==========
     async get(action, params = {}) {
         try {
-            // 🔥 FIX: Ambil token dengan aman
             let token = null;
             try {
                 const app = this._getApp();
                 if (app && app.token) {
                     token = app.token;
                 }
-            } catch (e) {
-                // Ignore
-            }
+            } catch (e) {}
             
-            // Override dengan token dari params jika ada
             if (params.token !== undefined) {
                 token = params.token;
             }
@@ -182,6 +176,11 @@ const API = {
             });
             clearTimeout(timeoutId);
             
+            if (!response.ok && response.status !== 200) {
+                console.error('❌ HTTP Error:', response.status);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             const text = await response.text();
             let result;
             try {
@@ -193,7 +192,6 @@ const API = {
             
             console.log('📥 GET Response:', result);
             
-            // 🔥 FIX: Refresh CSRF jika ada
             if (result.data && result.data.csrf) {
                 try {
                     const app = this._getApp();
@@ -220,7 +218,6 @@ const API = {
     
     // ========== POST REQUEST ==========
     async post(action, data = {}, token = null) {
-        // 🔥 FIX: Ambil token dengan aman
         let useToken = token;
         let useCsrf = null;
         try {
@@ -231,9 +228,7 @@ const API = {
             if (app && app.csrf) {
                 useCsrf = app.csrf;
             }
-        } catch (e) {
-            // Ignore
-        }
+        } catch (e) {}
         
         console.log(`📡 POST Request: ${action}`, { 
             data: data, 
@@ -246,7 +241,6 @@ const API = {
     
     // ========== PUT REQUEST ==========
     async put(action, data = {}, token = null) {
-        // 🔥 FIX: Ambil token dan CSRF dengan aman
         let useToken = token;
         let useCsrf = null;
         try {
@@ -257,16 +251,13 @@ const API = {
             if (app && app.csrf) {
                 useCsrf = app.csrf;
             }
-        } catch (e) {
-            // Ignore
-        }
+        } catch (e) {}
         
         return this.request(action, 'PUT', data, useToken, useCsrf);
     },
     
     // ========== DELETE REQUEST ==========
     async delete(action, id = null, token = null) {
-        // 🔥 FIX: Ambil token dan CSRF dengan aman
         let useToken = token;
         let useCsrf = null;
         try {
@@ -277,9 +268,7 @@ const API = {
             if (app && app.csrf) {
                 useCsrf = app.csrf;
             }
-        } catch (e) {
-            // Ignore
-        }
+        } catch (e) {}
         
         const data = id ? { id: id } : null;
         return this.request(action, 'DELETE', data, useToken, useCsrf);
@@ -287,7 +276,6 @@ const API = {
     
     // ========== UPLOAD FILE ==========
     async uploadFile(file, token = null) {
-        // 🔥 FIX: Ambil token dan CSRF dengan aman
         let useToken = token;
         let useCsrf = null;
         try {
@@ -298,15 +286,11 @@ const API = {
             if (app && app.csrf) {
                 useCsrf = app.csrf;
             }
-        } catch (e) {
-            // Ignore
-        }
+        } catch (e) {}
         
-        // 🔥 FIX: Buat FormData dengan benar
         const formData = new FormData();
         formData.append('file', file);
         
-        // 🔥 FIX: Action di URL, bukan di FormData
         const url = new URL(this.baseUrl);
         url.searchParams.set('action', 'file.upload');
         
@@ -329,16 +313,21 @@ const API = {
             });
             clearTimeout(timeoutId);
             
-            return await response.json();
+            const text = await response.text();
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('❌ Invalid JSON:', text);
+                throw new Error('Upload gagal: response tidak valid');
+            }
         } catch (error) {
             console.error('Upload Error:', error);
-            throw new Error('Upload file gagal');
+            throw new Error('Upload file gagal: ' + error.message);
         }
     },
     
     // ========== UPLOAD MULTIPLE FILES ==========
     async uploadMultipleFiles(files, token = null) {
-        // 🔥 FIX: Ambil token dan CSRF dengan aman
         let useToken = token;
         let useCsrf = null;
         try {
@@ -349,18 +338,14 @@ const API = {
             if (app && app.csrf) {
                 useCsrf = app.csrf;
             }
-        } catch (e) {
-            // Ignore
-        }
+        } catch (e) {}
         
-        // 🔥 FIX: Buat FormData dengan benar
         const formData = new FormData();
         files.forEach((file, index) => {
             formData.append(`file${index}`, file);
         });
         formData.append('filenames', files.map(f => f.name).join(','));
         
-        // 🔥 FIX: Action di URL, bukan di FormData
         const url = new URL(this.baseUrl);
         url.searchParams.set('action', 'file.uploadMultiple');
         
@@ -383,10 +368,16 @@ const API = {
             });
             clearTimeout(timeoutId);
             
-            return await response.json();
+            const text = await response.text();
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('❌ Invalid JSON:', text);
+                throw new Error('Upload multiple gagal: response tidak valid');
+            }
         } catch (error) {
             console.error('Upload Error:', error);
-            throw new Error('Upload multiple file gagal');
+            throw new Error('Upload multiple file gagal: ' + error.message);
         }
     },
     
