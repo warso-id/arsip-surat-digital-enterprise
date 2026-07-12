@@ -2,6 +2,7 @@
  * ============================================
  * SURAT-MASUK.JS - Surat Masuk Module
  * ARSIP SURAT DIGITAL v3.2.2
+ * FIXED: Delete and Update with proper ID handling
  * ============================================
  */
 
@@ -450,7 +451,8 @@ const SuratMasuk = {
                     const formObject = Object.fromEntries(formData.entries());
                     
                     try {
-                        const response = await API.post('suratMasuk.update', {
+                        // 🔥 FIX: Kirim id di data untuk API.put
+                        const response = await API.put('suratMasuk.update', {
                             id: id,
                             ...formObject
                         }, App.token);
@@ -477,10 +479,8 @@ const SuratMasuk = {
         if (!confirm('Apakah Anda yakin ingin menghapus surat ini?')) return;
         
         try {
-            const response = await API.get('suratMasuk.delete', {
-                token: App.token,
-                id: id
-            });
+            // 🔥 FIX: Gunakan API.delete dengan id sebagai parameter
+            const response = await API.delete('suratMasuk.delete', id, App.token);
             
             if (response.status === 'success') {
                 showToast('success', 'Berhasil', 'Surat berhasil dihapus');
