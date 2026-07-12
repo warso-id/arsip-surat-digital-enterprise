@@ -2,6 +2,7 @@
  * ============================================
  * TEMPLATE.JS - Template Module
  * ARSIP SURAT DIGITAL v3.2.2
+ * FIXED: Delete and Update with proper ID handling
  * ============================================
  */
 
@@ -408,7 +409,8 @@ const Template = {
                     data.isPublic = data.isPublic === 'true';
                     
                     try {
-                        const response = await API.post('template.update', {
+                        // 🔥 FIX: Kirim id di data untuk API.put
+                        const response = await API.put('template.update', {
                             id: id,
                             ...data
                         }, App.token);
@@ -435,10 +437,8 @@ const Template = {
         if (!confirm('Apakah Anda yakin ingin menghapus template ini?')) return;
         
         try {
-            const response = await API.get('template.delete', {
-                token: App.token,
-                id: id
-            });
+            // 🔥 FIX: Gunakan API.delete dengan id sebagai parameter
+            const response = await API.delete('template.delete', id, App.token);
             
             if (response.status === 'success') {
                 showToast('success', 'Berhasil', 'Template berhasil dihapus');
