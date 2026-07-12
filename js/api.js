@@ -1,8 +1,7 @@
 /**
  * ============================================
- * API.JS - API Communication Layer
+ * API.JS - API Communication Layer - FINAL FIX
  * ARSIP SURAT DIGITAL v3.2.2
- * FIXED: CORS & Connection Issues
  * ============================================
  */
 
@@ -22,6 +21,7 @@ const API = {
             const url = new URL(this.baseUrl);
             url.searchParams.set('action', action);
             
+            // 🔥 FIX: Hanya kirim token jika ada dan action bukan public
             if (token) {
                 url.searchParams.set('token', token);
             }
@@ -35,6 +35,7 @@ const API = {
                 mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 }
             };
             
@@ -42,21 +43,36 @@ const API = {
                 options.body = JSON.stringify(data);
             }
             
-            console.log(`📡 ${method} Request:`, url.toString());
+            console.log(`📡 ${method} Request:`, {
+                url: url.toString(),
+                hasToken: !!token,
+                hasCsrf: !!csrf,
+                hasData: !!data
+            });
             
             const response = await fetch(url.toString(), options);
             
-            // Cek response status
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('HTTP Error:', response.status, errorText);
-                throw new Error(`HTTP ${response.status}: ${errorText || 'Unknown error'}`);
+            // Cek response
+            const text = await response.text();
+            console.log('📥 Raw Response:', text.substring(0, 200));
+            
+            let result;
+            try {
+                result = JSON.parse(text);
+            } catch (e) {
+                console.error('❌ Invalid JSON response:', text);
+                throw new Error('Respons dari server tidak valid');
             }
             
-            const result = await response.json();
-            console.log('📥 Response:', result);
+            console.log('📥 Parsed Response:', result);
             
+            // 🔥 FIX: Handle 401 dengan lebih baik
             if (result.status === 'error' && result.code === 401) {
+                // Jika action adalah login, kembalikan error tanpa clear session
+                if (action === 'login') {
+                    return result;
+                }
+                // Untuk action lain, clear session
                 if (token) {
                     App.clearSession();
                     App.showAuth();
@@ -84,6 +100,7 @@ const API = {
                 }
             });
             
+            // 🔥 FIX: Hanya kirim token jika ada
             if (token) {
                 url.searchParams.set('token', token);
             }
@@ -94,19 +111,24 @@ const API = {
                 mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 }
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+            const text = await response.text();
+            let result;
+            try {
+                result = JSON.parse(text);
+            } catch (e) {
+                console.error('❌ Invalid JSON:', text);
+                throw new Error('Respons dari server tidak valid');
             }
             
-            const result = await response.json();
-            console.log('📥 Response:', result);
+            console.log('📥 GET Response:', result);
             return result;
         } catch (error) {
             console.error('❌ API GET Error:', error);
-            throw new Error('Koneksi ke server gagal: ' + error.message);
+            throw error;
         }
     },
     
@@ -115,7 +137,11 @@ const API = {
         const useToken = token || App.token;
         const useCsrf = App.csrf;
         
-        console.log(`📡 POST Request: ${action}`, { data, hasToken: !!useToken, hasCsrf: !!useCsrf });
+        console.log(`📡 POST Request: ${action}`, { 
+            data: data, 
+            hasToken: !!useToken, 
+            hasCsrf: !!useCsrf 
+        });
         
         return this.request(action, 'POST', data, useToken, useCsrf);
     },
@@ -188,7 +214,8 @@ const API = {
     // ========== TEST CONNECTION ==========
     async testConnection() {
         try {
-            const response = await this.get('ping');
+            console.log('🔗 Testing connection...');
+            const response = await this.get('ping', { token: null });
             console.log('✅ Connection test:', response);
             return response;
         } catch (error) {
@@ -199,7 +226,6 @@ const API = {
 };
 
 // ========== AUTO INIT ==========
-// Initialize with the deployment URL
 API.init('https://script.google.com/macros/s/AKfycbzzmttzSRYsM7KodsEdFqHRdwBs2kY7VTzFPOpsiab3p3v-6CBl-eKIuUI0Vhqd0opYtA/exec');
 
 console.log('✅ API Module Loaded');
