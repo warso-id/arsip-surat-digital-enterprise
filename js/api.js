@@ -2,6 +2,7 @@
  * ============================================
  * API.JS - API Communication Layer - FINAL FIX
  * ARSIP SURAT DIGITAL v3.2.2
+ * FIXED: CORS, Connection, Error Handling
  * ============================================
  */
 
@@ -21,7 +22,7 @@ const API = {
             const url = new URL(this.baseUrl);
             url.searchParams.set('action', action);
             
-            // 🔥 FIX: Hanya kirim token jika ada dan action bukan public
+            // 🔥 FIX: Hanya kirim token jika ada
             if (token) {
                 url.searchParams.set('token', token);
             }
@@ -50,7 +51,13 @@ const API = {
                 hasData: !!data
             });
             
+            // 🔥 FIX: Tambahkan timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
+            options.signal = controller.signal;
+            
             const response = await fetch(url.toString(), options);
+            clearTimeout(timeoutId);
             
             // Cek response
             const text = await response.text();
@@ -68,11 +75,9 @@ const API = {
             
             // 🔥 FIX: Handle 401 dengan lebih baik
             if (result.status === 'error' && result.code === 401) {
-                // Jika action adalah login, kembalikan error tanpa clear session
                 if (action === 'login') {
                     return result;
                 }
-                // Untuk action lain, clear session
                 if (token) {
                     App.clearSession();
                     App.showAuth();
@@ -83,6 +88,9 @@ const API = {
             return result;
         } catch (error) {
             console.error('❌ API Error:', error);
+            if (error.name === 'AbortError') {
+                throw new Error('Koneksi timeout. Periksa koneksi internet.');
+            }
             throw new Error('Koneksi ke server gagal: ' + error.message);
         }
     },
@@ -100,20 +108,24 @@ const API = {
                 }
             });
             
-            // 🔥 FIX: Hanya kirim token jika ada
             if (token) {
                 url.searchParams.set('token', token);
             }
             
             console.log(`📡 GET Request:`, url.toString());
             
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
+            
             const response = await fetch(url.toString(), {
                 mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
-                }
+                },
+                signal: controller.signal
             });
+            clearTimeout(timeoutId);
             
             const text = await response.text();
             let result;
@@ -128,6 +140,9 @@ const API = {
             return result;
         } catch (error) {
             console.error('❌ API GET Error:', error);
+            if (error.name === 'AbortError') {
+                throw new Error('Koneksi timeout. Periksa koneksi internet.');
+            }
             throw error;
         }
     },
@@ -170,11 +185,17 @@ const API = {
         }
         
         try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000);
+            
             const response = await fetch(this.baseUrl, {
                 method: 'POST',
                 mode: 'cors',
-                body: formData
+                body: formData,
+                signal: controller.signal
             });
+            clearTimeout(timeoutId);
+            
             return await response.json();
         } catch (error) {
             console.error('Upload Error:', error);
@@ -199,11 +220,17 @@ const API = {
         }
         
         try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000);
+            
             const response = await fetch(this.baseUrl, {
                 method: 'POST',
                 mode: 'cors',
-                body: formData
+                body: formData,
+                signal: controller.signal
             });
+            clearTimeout(timeoutId);
+            
             return await response.json();
         } catch (error) {
             console.error('Upload Error:', error);
@@ -215,12 +242,17 @@ const API = {
     async testConnection() {
         try {
             console.log('🔗 Testing connection...');
+            // 🔥 FIX: Jangan kirim token untuk ping
             const response = await this.get('ping', { token: null });
             console.log('✅ Connection test:', response);
             return response;
         } catch (error) {
             console.error('❌ Connection test failed:', error);
-            throw error;
+            // 🔥 FIX: Jangan throw error, return object dengan status error
+            return {
+                status: 'error',
+                message: error.message || 'Koneksi gagal'
+            };
         }
     }
 };
