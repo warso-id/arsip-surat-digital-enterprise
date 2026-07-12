@@ -1,18 +1,15 @@
 /**
  * ============================================
- * APP.JS - Main Application Controller
+ * APP.JS - Main Application Controller - FINAL FIX
  * ARSIP SURAT DIGITAL v3.2.2
- * FIXED: Login & Session Management
  * ============================================
  */
 
-// ========== APP STATE ==========
 const App = {
     user: null,
     token: null,
     csrf: null,
     currentPage: 'dashboard',
-    apiBase: '',
     initialized: false,
     theme: 'light',
     notifications: [],
@@ -21,9 +18,6 @@ const App = {
     // ========== INIT ==========
     init() {
         console.log('🚀 App Initializing...');
-        
-        // Get API base
-        this.apiBase = API.baseUrl || window.API_BASE || '';
         
         // Check authentication
         this.token = localStorage.getItem('token');
@@ -49,20 +43,17 @@ const App = {
                 this.showAuth();
             }
         } else if (this.token && this.csrf) {
-            // Verify session
             this.verifySession();
         } else {
             this.showAuth();
         }
         
-        // Setup event listeners
         this.setupEventListeners();
         
-        // Load theme preference
         this.theme = localStorage.getItem('theme') || 'light';
         this.applyTheme();
         
-        // Test connection
+        // 🔥 FIX: Test connection WITHOUT sending token
         this.testConnection();
     },
     
@@ -70,16 +61,26 @@ const App = {
     async testConnection() {
         try {
             console.log('🔗 Testing connection to backend...');
-            const result = await API.get('ping');
+            // 🔥 FIX: Jangan kirim token untuk ping
+            const result = await API.get('ping', { token: null });
             console.log('✅ Connection successful:', result);
             
             if (result.status === 'success') {
                 console.log('📦 Backend version:', result.data?.version);
                 console.log('📊 Features:', result.data?.features);
+                
+                // Cek apakah sistem sudah di-setup
+                const setupCheck = await API.get('checkSetup', { token: null });
+                console.log('📋 Setup status:', setupCheck);
+                
+                if (setupCheck.status === 'success' && !setupCheck.data?.isSetup) {
+                    console.warn('⚠️ System not setup yet');
+                    showToast('warning', 'Setup Required', 'Sistem belum di-setup. Jalankan setup.');
+                }
             }
         } catch (error) {
             console.warn('⚠️ Connection test failed:', error.message);
-            showToast('warning', 'Koneksi', 'Gagal terhubung ke server. Periksa koneksi internet.');
+            showToast('warning', 'Koneksi', 'Gagal terhubung ke server. Periksa URL backend.');
         }
     },
     
@@ -110,24 +111,39 @@ const App = {
     
     // ========== SHOW/HIDE PAGES ==========
     showAuth() {
-        document.getElementById('authPage').style.display = 'flex';
-        document.getElementById('mainApp').style.display = 'none';
-        document.getElementById('loadingScreen').style.display = 'none';
+        const authPage = document.getElementById('authPage');
+        const mainApp = document.getElementById('mainApp');
+        const loading = document.getElementById('loadingScreen');
+        
+        if (authPage) authPage.style.display = 'flex';
+        if (mainApp) mainApp.style.display = 'none';
+        if (loading) loading.style.display = 'none';
+        
         console.log('📄 Showing Auth Page');
     },
     
     showApp() {
-        document.getElementById('authPage').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'flex';
-        document.getElementById('loadingScreen').style.display = 'none';
+        const authPage = document.getElementById('authPage');
+        const mainApp = document.getElementById('mainApp');
+        const loading = document.getElementById('loadingScreen');
+        
+        if (authPage) authPage.style.display = 'none';
+        if (mainApp) mainApp.style.display = 'flex';
+        if (loading) loading.style.display = 'none';
         
         if (this.user) {
-            document.getElementById('userName').textContent = this.user.namaLengkap || this.user.username;
-            document.getElementById('userRole').textContent = this.user.role || 'Staff';
-            document.getElementById('userAvatar').textContent = (this.user.namaLengkap || this.user.username).charAt(0).toUpperCase();
+            const userName = document.getElementById('userName');
+            const userRole = document.getElementById('userRole');
+            const userAvatar = document.getElementById('userAvatar');
+            const menuUsers = document.getElementById('menuUsers');
+            
+            if (userName) userName.textContent = this.user.namaLengkap || this.user.username;
+            if (userRole) userRole.textContent = this.user.role || 'Staff';
+            if (userAvatar) userAvatar.textContent = (this.user.namaLengkap || this.user.username).charAt(0).toUpperCase();
             
             const isAdmin = this.user.role === 'admin';
-            document.getElementById('menuUsers').style.display = isAdmin ? 'flex' : 'none';
+            if (menuUsers) menuUsers.style.display = isAdmin ? 'flex' : 'none';
+            
             console.log('👤 User logged in:', this.user.username, 'Role:', this.user.role);
         }
     },
@@ -151,6 +167,7 @@ const App = {
         
         this.currentPage = page;
         const container = document.getElementById('pageContent');
+        if (!container) return;
         
         // Update active menu
         document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
@@ -171,11 +188,11 @@ const App = {
             backup: 'Backup & Restore',
             audit: 'Audit Log'
         };
-        document.getElementById('pageTitle').textContent = titles[page] || page;
+        const titleEl = document.getElementById('pageTitle');
+        if (titleEl) titleEl.textContent = titles[page] || page;
         
         console.log('📄 Loading page:', page);
         
-        // Load page content
         try {
             let html = '';
             switch (page) {
@@ -217,8 +234,6 @@ const App = {
             }
             
             container.innerHTML = html;
-            
-            // Execute page-specific scripts
             this.executePageScripts(page);
             
         } catch (error) {
@@ -264,186 +279,7 @@ const App = {
             case 'settings':
                 if (typeof Settings.init === 'function') Settings.init();
                 break;
-            case 'backup':
-                if (typeof Backup.init === 'function') Backup.init();
-                break;
-            case 'audit':
-                if (typeof Audit.init === 'function') Audit.init();
-                break;
         }
-    },
-    
-    // ========== NOTIFICATIONS ==========
-    startNotificationPolling() {
-        this.fetchNotifications();
-        setInterval(() => this.fetchNotifications(), 30000);
-    },
-    
-    async fetchNotifications() {
-        try {
-            const response = await API.get('notifikasi.list', { token: this.token });
-            if (response.status === 'success') {
-                this.notifications = response.data.items || [];
-                this.unreadCount = this.notifications.filter(n => !n.isRead).length;
-                this.updateNotificationBadge();
-            }
-        } catch (error) {
-            console.error('Error fetching notifications:', error);
-        }
-    },
-    
-    updateNotificationBadge() {
-        const badge = document.getElementById('notifBadge');
-        const smBadge = document.getElementById('smBadge');
-        const skBadge = document.getElementById('skBadge');
-        const dispBadge = document.getElementById('dispBadge');
-        const apprBadge = document.getElementById('apprBadge');
-        
-        if (badge) {
-            badge.textContent = this.unreadCount;
-            badge.style.display = this.unreadCount > 0 ? 'flex' : 'none';
-        }
-        
-        // Update other badges from dashboard
-        this.updateBadges();
-    },
-    
-    async updateBadges() {
-        try {
-            const response = await API.get('dashboard.stats', { token: this.token });
-            if (response.status === 'success') {
-                const stats = response.data;
-                if (smBadge) smBadge.textContent = stats.suratMasuk?.pending || 0;
-                if (skBadge) skBadge.textContent = stats.suratKeluar?.pending || 0;
-                if (dispBadge) dispBadge.textContent = stats.disposisi?.pending || 0;
-                if (apprBadge) apprBadge.textContent = stats.suratKeluar?.pending || 0;
-            }
-        } catch (error) {
-            console.error('Error updating badges:', error);
-        }
-    },
-    
-    // ========== THEME ==========
-    applyTheme() {
-        document.documentElement.setAttribute('data-theme', this.theme);
-        const icon = document.querySelector('#themeToggle i');
-        if (icon) {
-            icon.className = this.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-    },
-    
-    toggleTheme() {
-        this.theme = this.theme === 'dark' ? 'light' : 'dark';
-        localStorage.setItem('theme', this.theme);
-        this.applyTheme();
-    },
-    
-    // ========== SETUP EVENT LISTENERS ==========
-    setupEventListeners() {
-        // Auth tabs
-        document.querySelectorAll('.auth-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-                const formId = tab.dataset.tab + 'Form';
-                const form = document.getElementById(formId);
-                if (form) form.classList.add('active');
-            });
-        });
-        
-        // Login form
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                await this.handleLogin();
-            });
-        }
-        
-        // Register form
-        const registerForm = document.getElementById('registerForm');
-        if (registerForm) {
-            registerForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                await this.handleRegister();
-            });
-        }
-        
-        // Logout
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                this.handleLogout();
-            });
-        }
-        
-        // Sidebar toggle
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', () => {
-                document.getElementById('sidebar').classList.toggle('collapsed');
-            });
-        }
-        
-        // Menu items
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const page = item.dataset.page;
-                if (page) this.loadPage(page);
-                if (window.innerWidth <= 768) {
-                    document.getElementById('sidebar').classList.remove('open');
-                }
-            });
-        });
-        
-        // Theme toggle
-        const themeToggle = document.getElementById('themeToggle');
-        if (themeToggle) {
-            themeToggle.addEventListener('click', () => {
-                this.toggleTheme();
-            });
-        }
-        
-        // Notification panel
-        const notifBtn = document.getElementById('notifBtn');
-        if (notifBtn) {
-            notifBtn.addEventListener('click', () => {
-                this.toggleNotificationPanel();
-            });
-        }
-        
-        const notifClose = document.getElementById('notifClose');
-        if (notifClose) {
-            notifClose.addEventListener('click', () => {
-                document.getElementById('notifPanel').style.display = 'none';
-            });
-        }
-        
-        const notifReadAll = document.getElementById('notifReadAll');
-        if (notifReadAll) {
-            notifReadAll.addEventListener('click', () => {
-                this.readAllNotifications();
-            });
-        }
-        
-        // Modal close
-        const modalClose = document.getElementById('modalClose');
-        if (modalClose) {
-            modalClose.addEventListener('click', closeModal);
-        }
-        const modalOverlay = document.getElementById('modalOverlay');
-        if (modalOverlay) {
-            modalOverlay.addEventListener('click', closeModal);
-        }
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeModal();
-                document.getElementById('notifPanel').style.display = 'none';
-            }
-        });
     },
     
     // ========== AUTH HANDLERS ==========
@@ -462,7 +298,8 @@ const App = {
             errorEl.style.display = 'none';
             console.log('🔐 Attempting login for:', username);
             
-            const response = await API.post('login', { username, password });
+            // 🔥 FIX: Jangan kirim token untuk login
+            const response = await API.post('login', { username, password }, null);
             console.log('📥 Login response:', response);
             
             if (response.status === 'success') {
@@ -570,12 +407,191 @@ const App = {
                 await API.get('logout', { token: this.token });
             }
         } catch (error) {
-            // Ignore logout errors
+            // Ignore
         }
         
         this.clearSession();
         this.showAuth();
         showToast('info', 'Logout', 'Anda telah logout');
+    },
+    
+    // ========== NOTIFICATIONS ==========
+    startNotificationPolling() {
+        this.fetchNotifications();
+        setInterval(() => this.fetchNotifications(), 30000);
+    },
+    
+    async fetchNotifications() {
+        if (!this.token) return;
+        try {
+            const response = await API.get('notifikasi.list', { token: this.token });
+            if (response.status === 'success') {
+                this.notifications = response.data.items || [];
+                this.unreadCount = this.notifications.filter(n => !n.isRead).length;
+                this.updateNotificationBadge();
+            }
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
+        }
+    },
+    
+    updateNotificationBadge() {
+        const badge = document.getElementById('notifBadge');
+        const smBadge = document.getElementById('smBadge');
+        const skBadge = document.getElementById('skBadge');
+        const dispBadge = document.getElementById('dispBadge');
+        const apprBadge = document.getElementById('apprBadge');
+        
+        if (badge) {
+            badge.textContent = this.unreadCount;
+            badge.style.display = this.unreadCount > 0 ? 'flex' : 'none';
+        }
+        
+        this.updateBadges();
+    },
+    
+    async updateBadges() {
+        if (!this.token) return;
+        try {
+            const response = await API.get('dashboard.stats', { token: this.token });
+            if (response.status === 'success') {
+                const stats = response.data;
+                const smBadge = document.getElementById('smBadge');
+                const skBadge = document.getElementById('skBadge');
+                const dispBadge = document.getElementById('dispBadge');
+                const apprBadge = document.getElementById('apprBadge');
+                
+                if (smBadge) smBadge.textContent = stats.suratMasuk?.pending || 0;
+                if (skBadge) skBadge.textContent = stats.suratKeluar?.pending || 0;
+                if (dispBadge) dispBadge.textContent = stats.disposisi?.pending || 0;
+                if (apprBadge) apprBadge.textContent = stats.suratKeluar?.pending || 0;
+            }
+        } catch (error) {
+            console.error('Error updating badges:', error);
+        }
+    },
+    
+    // ========== THEME ==========
+    applyTheme() {
+        document.documentElement.setAttribute('data-theme', this.theme);
+        const icon = document.querySelector('#themeToggle i');
+        if (icon) {
+            icon.className = this.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+    },
+    
+    toggleTheme() {
+        this.theme = this.theme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('theme', this.theme);
+        this.applyTheme();
+    },
+    
+    // ========== EVENT LISTENERS ==========
+    setupEventListeners() {
+        // Auth tabs
+        document.querySelectorAll('.auth-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+                const formId = tab.dataset.tab + 'Form';
+                const form = document.getElementById(formId);
+                if (form) form.classList.add('active');
+            });
+        });
+        
+        // Login
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleLogin();
+            });
+        }
+        
+        // Register
+        const registerForm = document.getElementById('registerForm');
+        if (registerForm) {
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleRegister();
+            });
+        }
+        
+        // Logout
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                this.handleLogout();
+            });
+        }
+        
+        // Sidebar toggle
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('collapsed');
+            });
+        }
+        
+        // Menu items
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const page = item.dataset.page;
+                if (page) this.loadPage(page);
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('open');
+                }
+            });
+        });
+        
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                this.toggleTheme();
+            });
+        }
+        
+        // Notification panel
+        const notifBtn = document.getElementById('notifBtn');
+        if (notifBtn) {
+            notifBtn.addEventListener('click', () => {
+                this.toggleNotificationPanel();
+            });
+        }
+        
+        const notifClose = document.getElementById('notifClose');
+        if (notifClose) {
+            notifClose.addEventListener('click', () => {
+                document.getElementById('notifPanel').style.display = 'none';
+            });
+        }
+        
+        const notifReadAll = document.getElementById('notifReadAll');
+        if (notifReadAll) {
+            notifReadAll.addEventListener('click', () => {
+                this.readAllNotifications();
+            });
+        }
+        
+        // Modal
+        const modalClose = document.getElementById('modalClose');
+        if (modalClose) {
+            modalClose.addEventListener('click', closeModal);
+        }
+        const modalOverlay = document.getElementById('modalOverlay');
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', closeModal);
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.getElementById('notifPanel').style.display = 'none';
+            }
+        });
     },
     
     // ========== NOTIFICATION PANEL ==========
@@ -625,7 +641,7 @@ const App = {
             await API.get('notifikasi.read', { token: this.token, id });
             this.fetchNotifications();
         } catch (error) {
-            console.error('Error marking notification as read:', error);
+            console.error('Error:', error);
         }
     },
     
@@ -635,12 +651,12 @@ const App = {
             this.fetchNotifications();
             showToast('success', 'Berhasil', 'Semua notifikasi ditandai dibaca');
         } catch (error) {
-            console.error('Error reading all notifications:', error);
+            console.error('Error:', error);
         }
     }
 };
 
-// ========== MODAL FUNCTIONS ==========
+// ========== MODAL ==========
 function openModal(title, bodyHTML, footerHTML = '') {
     const modal = document.getElementById('modalContainer');
     const titleEl = document.getElementById('modalTitle');
@@ -660,7 +676,7 @@ function closeModal() {
     if (modal) modal.style.display = 'none';
 }
 
-// ========== TOAST FUNCTIONS ==========
+// ========== TOAST ==========
 function showToast(type, title, message) {
     const container = document.getElementById('toastContainer');
     if (!container) return;
@@ -696,7 +712,6 @@ function showToast(type, title, message) {
     }, 5000);
 }
 
-// ========== LOADING PROGRESS ==========
 function updateLoadingProgress(percent) {
     const bar = document.getElementById('progressBar');
     if (bar) bar.style.width = percent + '%';
