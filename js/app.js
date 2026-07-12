@@ -2,6 +2,7 @@
  * ============================================
  * APP.JS - Main Application Controller
  * ARSIP SURAT DIGITAL v3.2.2
+ * FIXED: Login & Session Management
  * ============================================
  */
 
@@ -19,14 +20,36 @@ const App = {
     
     // ========== INIT ==========
     init() {
-        // Get API base from URL or config
-        this.apiBase = window.API_BASE || '';
+        console.log('🚀 App Initializing...');
+        
+        // Get API base
+        this.apiBase = API.baseUrl || window.API_BASE || '';
         
         // Check authentication
         this.token = localStorage.getItem('token');
         this.csrf = localStorage.getItem('csrf');
+        const savedUser = localStorage.getItem('user');
         
-        if (this.token && this.csrf) {
+        console.log('🔐 Auth Check:', { 
+            hasToken: !!this.token, 
+            hasCsrf: !!this.csrf, 
+            hasUser: !!savedUser 
+        });
+        
+        if (this.token && this.csrf && savedUser) {
+            try {
+                this.user = JSON.parse(savedUser);
+                console.log('👤 User loaded from storage:', this.user.username);
+                this.showApp();
+                this.loadPage('dashboard');
+                this.startNotificationPolling();
+            } catch (e) {
+                console.error('Error parsing user:', e);
+                this.clearSession();
+                this.showAuth();
+            }
+        } else if (this.token && this.csrf) {
+            // Verify session
             this.verifySession();
         } else {
             this.showAuth();
@@ -39,25 +62,47 @@ const App = {
         this.theme = localStorage.getItem('theme') || 'light';
         this.applyTheme();
         
-        // Start notification polling
-        if (this.user) {
-            this.startNotificationPolling();
+        // Test connection
+        this.testConnection();
+    },
+    
+    // ========== TEST CONNECTION ==========
+    async testConnection() {
+        try {
+            console.log('🔗 Testing connection to backend...');
+            const result = await API.get('ping');
+            console.log('✅ Connection successful:', result);
+            
+            if (result.status === 'success') {
+                console.log('📦 Backend version:', result.data?.version);
+                console.log('📊 Features:', result.data?.features);
+            }
+        } catch (error) {
+            console.warn('⚠️ Connection test failed:', error.message);
+            showToast('warning', 'Koneksi', 'Gagal terhubung ke server. Periksa koneksi internet.');
         }
     },
     
     // ========== SESSION VERIFICATION ==========
     async verifySession() {
         try {
+            console.log('🔐 Verifying session...');
             const response = await API.get('me', { token: this.token });
+            
             if (response.status === 'success') {
                 this.user = response.data;
+                localStorage.setItem('user', JSON.stringify(this.user));
+                console.log('✅ Session verified:', this.user.username);
                 this.showApp();
                 this.loadPage('dashboard');
+                this.startNotificationPolling();
             } else {
+                console.warn('⚠️ Session invalid:', response.message);
                 this.clearSession();
                 this.showAuth();
             }
         } catch (error) {
+            console.error('❌ Session verification failed:', error);
             this.clearSession();
             this.showAuth();
         }
@@ -68,6 +113,7 @@ const App = {
         document.getElementById('authPage').style.display = 'flex';
         document.getElementById('mainApp').style.display = 'none';
         document.getElementById('loadingScreen').style.display = 'none';
+        console.log('📄 Showing Auth Page');
     },
     
     showApp() {
@@ -75,15 +121,14 @@ const App = {
         document.getElementById('mainApp').style.display = 'flex';
         document.getElementById('loadingScreen').style.display = 'none';
         
-        // Update user info
         if (this.user) {
             document.getElementById('userName').textContent = this.user.namaLengkap || this.user.username;
             document.getElementById('userRole').textContent = this.user.role || 'Staff';
             document.getElementById('userAvatar').textContent = (this.user.namaLengkap || this.user.username).charAt(0).toUpperCase();
             
-            // Show/hide admin menus
             const isAdmin = this.user.role === 'admin';
             document.getElementById('menuUsers').style.display = isAdmin ? 'flex' : 'none';
+            console.log('👤 User logged in:', this.user.username, 'Role:', this.user.role);
         }
     },
     
@@ -94,11 +139,15 @@ const App = {
         localStorage.removeItem('token');
         localStorage.removeItem('csrf');
         localStorage.removeItem('user');
+        console.log('🔐 Session cleared');
     },
     
     // ========== PAGE LOADING ==========
     async loadPage(page, params = {}) {
-        if (!this.user) return;
+        if (!this.user) {
+            console.warn('⚠️ Cannot load page: No user');
+            return;
+        }
         
         this.currentPage = page;
         const container = document.getElementById('pageContent');
@@ -123,6 +172,8 @@ const App = {
             audit: 'Audit Log'
         };
         document.getElementById('pageTitle').textContent = titles[page] || page;
+        
+        console.log('📄 Loading page:', page);
         
         // Load page content
         try {
@@ -171,11 +222,14 @@ const App = {
             this.executePageScripts(page);
             
         } catch (error) {
-            console.error('Error loading page:', error);
+            console.error('❌ Error loading page:', error);
             container.innerHTML = `
                 <div class="card">
                     <h3>Error</h3>
                     <p class="text-danger">Gagal memuat halaman: ${error.message}</p>
+                    <button class="btn btn-primary mt-2" onclick="App.loadPage('${page}')">
+                        <i class="fas fa-sync"></i> Coba Lagi
+                    </button>
                 </div>
             `;
         }
@@ -184,37 +238,37 @@ const App = {
     executePageScripts(page) {
         switch (page) {
             case 'dashboard':
-                Dashboard.init();
+                if (typeof Dashboard.init === 'function') Dashboard.init();
                 break;
             case 'surat-masuk':
-                SuratMasuk.init();
+                if (typeof SuratMasuk.init === 'function') SuratMasuk.init();
                 break;
             case 'surat-keluar':
-                SuratKeluar.init();
+                if (typeof SuratKeluar.init === 'function') SuratKeluar.init();
                 break;
             case 'disposisi':
-                Disposisi.init();
+                if (typeof Disposisi.init === 'function') Disposisi.init();
                 break;
             case 'approval':
-                Approval.init();
+                if (typeof Approval.init === 'function') Approval.init();
                 break;
             case 'template':
-                Template.init();
+                if (typeof Template.init === 'function') Template.init();
                 break;
             case 'users':
-                Users.init();
+                if (typeof Users.init === 'function') Users.init();
                 break;
             case 'report':
-                Report.init();
+                if (typeof Report.init === 'function') Report.init();
                 break;
             case 'settings':
-                Settings.init();
+                if (typeof Settings.init === 'function') Settings.init();
                 break;
             case 'backup':
-                Backup.init();
+                if (typeof Backup.init === 'function') Backup.init();
                 break;
             case 'audit':
-                Audit.init();
+                if (typeof Audit.init === 'function') Audit.init();
                 break;
         }
     },
@@ -245,8 +299,10 @@ const App = {
         const dispBadge = document.getElementById('dispBadge');
         const apprBadge = document.getElementById('apprBadge');
         
-        badge.textContent = this.unreadCount;
-        badge.style.display = this.unreadCount > 0 ? 'flex' : 'none';
+        if (badge) {
+            badge.textContent = this.unreadCount;
+            badge.style.display = this.unreadCount > 0 ? 'flex' : 'none';
+        }
         
         // Update other badges from dashboard
         this.updateBadges();
@@ -257,10 +313,10 @@ const App = {
             const response = await API.get('dashboard.stats', { token: this.token });
             if (response.status === 'success') {
                 const stats = response.data;
-                document.getElementById('smBadge').textContent = stats.suratMasuk?.pending || 0;
-                document.getElementById('skBadge').textContent = stats.suratKeluar?.pending || 0;
-                document.getElementById('dispBadge').textContent = stats.disposisi?.pending || 0;
-                document.getElementById('apprBadge').textContent = stats.suratKeluar?.pending || 0;
+                if (smBadge) smBadge.textContent = stats.suratMasuk?.pending || 0;
+                if (skBadge) skBadge.textContent = stats.suratKeluar?.pending || 0;
+                if (dispBadge) dispBadge.textContent = stats.disposisi?.pending || 0;
+                if (apprBadge) apprBadge.textContent = stats.suratKeluar?.pending || 0;
             }
         } catch (error) {
             console.error('Error updating badges:', error);
@@ -290,38 +346,51 @@ const App = {
                 document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-                document.getElementById(tab.dataset.tab + 'Form').classList.add('active');
+                const formId = tab.dataset.tab + 'Form';
+                const form = document.getElementById(formId);
+                if (form) form.classList.add('active');
             });
         });
         
         // Login form
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await this.handleLogin();
-        });
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await this.handleLogin();
+            });
+        }
         
         // Register form
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await this.handleRegister();
-        });
+        const registerForm = document.getElementById('registerForm');
+        if (registerForm) {
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await this.handleRegister();
+            });
+        }
         
         // Logout
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            this.handleLogout();
-        });
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                this.handleLogout();
+            });
+        }
         
         // Sidebar toggle
-        document.getElementById('sidebarToggle').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-        });
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('collapsed');
+            });
+        }
         
         // Menu items
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', () => {
                 const page = item.dataset.page;
                 if (page) this.loadPage(page);
-                // Close sidebar on mobile
                 if (window.innerWidth <= 768) {
                     document.getElementById('sidebar').classList.remove('open');
                 }
@@ -329,30 +398,44 @@ const App = {
         });
         
         // Theme toggle
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            this.toggleTheme();
-        });
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                this.toggleTheme();
+            });
+        }
         
         // Notification panel
-        document.getElementById('notifBtn').addEventListener('click', () => {
-            this.toggleNotificationPanel();
-        });
+        const notifBtn = document.getElementById('notifBtn');
+        if (notifBtn) {
+            notifBtn.addEventListener('click', () => {
+                this.toggleNotificationPanel();
+            });
+        }
         
-        document.getElementById('notifClose').addEventListener('click', () => {
-            document.getElementById('notifPanel').style.display = 'none';
-        });
+        const notifClose = document.getElementById('notifClose');
+        if (notifClose) {
+            notifClose.addEventListener('click', () => {
+                document.getElementById('notifPanel').style.display = 'none';
+            });
+        }
         
-        document.getElementById('notifReadAll').addEventListener('click', () => {
-            this.readAllNotifications();
-        });
+        const notifReadAll = document.getElementById('notifReadAll');
+        if (notifReadAll) {
+            notifReadAll.addEventListener('click', () => {
+                this.readAllNotifications();
+            });
+        }
         
         // Modal close
-        document.getElementById('modalClose').addEventListener('click', () => {
-            closeModal();
-        });
-        document.getElementById('modalOverlay').addEventListener('click', () => {
-            closeModal();
-        });
+        const modalClose = document.getElementById('modalClose');
+        if (modalClose) {
+            modalClose.addEventListener('click', closeModal);
+        }
+        const modalOverlay = document.getElementById('modalOverlay');
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', closeModal);
+        }
         
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -377,8 +460,10 @@ const App = {
         
         try {
             errorEl.style.display = 'none';
+            console.log('🔐 Attempting login for:', username);
             
             const response = await API.post('login', { username, password });
+            console.log('📥 Login response:', response);
             
             if (response.status === 'success') {
                 this.token = response.data.token;
@@ -389,16 +474,20 @@ const App = {
                 localStorage.setItem('csrf', this.csrf);
                 localStorage.setItem('user', JSON.stringify(this.user));
                 
+                console.log('✅ Login successful:', this.user.username);
+                
                 this.showApp();
                 this.loadPage('dashboard');
                 this.startNotificationPolling();
                 
                 showToast('success', 'Login Berhasil', `Selamat datang, ${this.user.namaLengkap || this.user.username}!`);
             } else {
+                console.warn('⚠️ Login failed:', response.message);
                 errorEl.textContent = response.message || 'Login gagal';
                 errorEl.style.display = 'block';
             }
         } catch (error) {
+            console.error('❌ Login error:', error);
             errorEl.textContent = error.message || 'Terjadi kesalahan saat login';
             errorEl.style.display = 'block';
         }
@@ -432,6 +521,7 @@ const App = {
         
         try {
             errorEl.style.display = 'none';
+            console.log('📝 Registering user:', username);
             
             const response = await API.post('users.create', {
                 username,
@@ -441,14 +531,18 @@ const App = {
                 role: 'staff'
             });
             
+            console.log('📥 Register response:', response);
+            
             if (response.status === 'success') {
                 showToast('success', 'Registrasi Berhasil', 'Akun berhasil dibuat. Silakan login.');
                 
                 // Switch to login tab
                 document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-                document.querySelector('.auth-tab[data-tab="login"]').classList.add('active');
+                const loginTab = document.querySelector('.auth-tab[data-tab="login"]');
+                if (loginTab) loginTab.classList.add('active');
                 document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-                document.getElementById('loginForm').classList.add('active');
+                const loginForm = document.getElementById('loginForm');
+                if (loginForm) loginForm.classList.add('active');
                 
                 // Clear register form
                 document.getElementById('registerUsername').value = '';
@@ -464,6 +558,7 @@ const App = {
                 errorEl.style.display = 'block';
             }
         } catch (error) {
+            console.error('❌ Register error:', error);
             errorEl.textContent = error.message || 'Terjadi kesalahan saat registrasi';
             errorEl.style.display = 'block';
         }
@@ -486,7 +581,9 @@ const App = {
     // ========== NOTIFICATION PANEL ==========
     toggleNotificationPanel() {
         const panel = document.getElementById('notifPanel');
-        if (panel.style.display === 'none') {
+        if (!panel) return;
+        
+        if (panel.style.display === 'none' || panel.style.display === '') {
             panel.style.display = 'flex';
             this.renderNotifications();
         } else {
@@ -496,6 +593,7 @@ const App = {
     
     renderNotifications() {
         const body = document.getElementById('notifBody');
+        if (!body) return;
         
         if (this.notifications.length === 0) {
             body.innerHTML = `
@@ -515,7 +613,6 @@ const App = {
             </div>
         `).join('');
         
-        // Click to mark as read
         body.querySelectorAll('.notif-item.unread').forEach(el => {
             el.addEventListener('click', () => {
                 this.markNotificationRead(el.dataset.id);
@@ -546,19 +643,28 @@ const App = {
 // ========== MODAL FUNCTIONS ==========
 function openModal(title, bodyHTML, footerHTML = '') {
     const modal = document.getElementById('modalContainer');
-    document.getElementById('modalTitle').textContent = title;
-    document.getElementById('modalBody').innerHTML = bodyHTML;
-    document.getElementById('modalFooter').innerHTML = footerHTML;
+    const titleEl = document.getElementById('modalTitle');
+    const bodyEl = document.getElementById('modalBody');
+    const footerEl = document.getElementById('modalFooter');
+    
+    if (!modal || !titleEl || !bodyEl || !footerEl) return;
+    
+    titleEl.textContent = title;
+    bodyEl.innerHTML = bodyHTML;
+    footerEl.innerHTML = footerHTML;
     modal.style.display = 'flex';
 }
 
 function closeModal() {
-    document.getElementById('modalContainer').style.display = 'none';
+    const modal = document.getElementById('modalContainer');
+    if (modal) modal.style.display = 'none';
 }
 
 // ========== TOAST FUNCTIONS ==========
 function showToast(type, title, message) {
     const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
     const icons = {
         success: 'fa-check-circle',
         error: 'fa-exclamation-circle',
@@ -592,12 +698,14 @@ function showToast(type, title, message) {
 
 // ========== LOADING PROGRESS ==========
 function updateLoadingProgress(percent) {
-    document.getElementById('progressBar').style.width = percent + '%';
+    const bar = document.getElementById('progressBar');
+    if (bar) bar.style.width = percent + '%';
 }
 
 // ========== INIT ==========
 document.addEventListener('DOMContentLoaded', () => {
-    // Show loading
+    console.log('📄 DOM loaded, initializing app...');
+    
     let progress = 0;
     const interval = setInterval(() => {
         progress += Math.random() * 15;
@@ -611,3 +719,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 150);
 });
+
+console.log('📦 App Module Loaded');
