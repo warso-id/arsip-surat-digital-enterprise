@@ -61,8 +61,7 @@ const App = {
         }, 1000);
     },
     
-    
-   // ========== TEST CONNECTION ==========
+    // ========== TEST CONNECTION ==========
     async testConnection() {
         try {
             console.log('🔗 Testing connection to backend...');
@@ -70,18 +69,15 @@ const App = {
             
             // 🔥 FIX: Jangan kirim token untuk ping
             const result = await API.get('ping', { token: null });
-            console.log('✅ Connection successful:', result);
+            console.log('📥 Connection response:', result);
             
-            
-           if (result.status === 'success') {
-                console.log('📦 Backend version:', result.data?.version);
-                console.log('📊 Public actions:', result.data?.publicActions);
-                this.connectionFailed = false;
-
             if (result.status === 'success') {
                 console.log('📦 Backend version:', result.data?.version);
                 console.log('📊 Public actions:', result.data?.publicActions);
                 this.connectionFailed = false;
+                
+                // 🔥 FIX: Tampilkan pesan sukses
+                showToast('success', 'Koneksi Berhasil', 'Terhubung ke server!');
                 
                 // Cek apakah sistem sudah di-setup
                 try {
@@ -98,27 +94,14 @@ const App = {
             } else {
                 console.warn('⚠️ Connection failed:', result);
                 this.connectionFailed = true;
-                showToast('error', 'Koneksi Gagal', 'Gagal terhubung ke server. Periksa URL backend.');
+                showToast('error', 'Koneksi Gagal', result.message || 'Gagal terhubung ke server. Periksa URL backend.');
             }
         } catch (error) {
             console.warn('⚠️ Connection test failed:', error.message);
             this.connectionFailed = true;
-            showToast('error', 'Koneksi Gagal', 'Gagal terhubung ke server. Periksa koneksi internet.');
-
-        // 🔥 FIX: Tampilkan pesan sukses
-                showToast('success', 'Koneksi Berhasil', 'Terhubung ke server!');
-                } else {
-                    console.warn('⚠️ Connection failed:', result);
-                    this.connectionFailed = true;
-                    showToast('error', 'Koneksi Gagal', 'Gagal terhubung ke server. Periksa URL backend.');
-                }
-                } catch (error) {
-                    console.warn('⚠️ Connection test failed:', error.message);
-                    this.connectionFailed = true;
-                    showToast('error', 'Koneksi Gagal', 'Gagal terhubung ke server: ' + error.message);
-     
-                }
-                },
+            showToast('error', 'Koneksi Gagal', 'Gagal terhubung ke server: ' + error.message);
+        }
+    },
     
     // ========== SESSION VERIFICATION ==========
     async verifySession() {
