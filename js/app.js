@@ -21,7 +21,6 @@ const App = {
     init() {
         console.log('🚀 App Initializing...');
         
-        // Check authentication
         this.token = localStorage.getItem('token');
         this.csrf = localStorage.getItem('csrf');
         const savedUser = localStorage.getItem('user');
@@ -55,7 +54,6 @@ const App = {
         this.theme = localStorage.getItem('theme') || 'light';
         this.applyTheme();
         
-        // 🔥 FIX: Test connection WITHOUT sending token
         setTimeout(() => {
             this.testConnection();
         }, 1000);
@@ -67,7 +65,6 @@ const App = {
             console.log('🔗 Testing connection to backend...');
             console.log('📍 URL:', API.baseUrl);
             
-            // 🔥 FIX: Jangan kirim token untuk ping
             const result = await API.get('ping', { token: null });
             console.log('📥 Connection response:', result);
             
@@ -75,11 +72,8 @@ const App = {
                 console.log('📦 Backend version:', result.data?.version);
                 console.log('📊 Public actions:', result.data?.publicActions);
                 this.connectionFailed = false;
-                
-                // 🔥 FIX: Tampilkan pesan sukses
                 showToast('success', 'Koneksi Berhasil', 'Terhubung ke server!');
                 
-                // Cek apakah sistem sudah di-setup
                 try {
                     const setupCheck = await API.get('checkSetup', { token: null });
                     console.log('📋 Setup status:', setupCheck);
@@ -188,12 +182,10 @@ const App = {
         const container = document.getElementById('pageContent');
         if (!container) return;
         
-        // Update active menu
         document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
         const menuItem = document.querySelector(`.menu-item[data-page="${page}"]`);
         if (menuItem) menuItem.classList.add('active');
         
-        // Update title
         const titles = {
             dashboard: 'Dashboard',
             'surat-masuk': 'Surat Masuk',
@@ -216,37 +208,31 @@ const App = {
             let html = '';
             switch (page) {
                 case 'dashboard':
-                    html = await Dashboard.render();
+                    html = typeof Dashboard !== 'undefined' ? await Dashboard.render() : '<div class="card"><p>Dashboard</p></div>';
                     break;
                 case 'surat-masuk':
-                    html = await SuratMasuk.render(params);
+                    html = typeof SuratMasuk !== 'undefined' ? await SuratMasuk.render(params) : '<div class="card"><p>Surat Masuk</p></div>';
                     break;
                 case 'surat-keluar':
-                    html = await SuratKeluar.render(params);
+                    html = typeof SuratKeluar !== 'undefined' ? await SuratKeluar.render(params) : '<div class="card"><p>Surat Keluar</p></div>';
                     break;
                 case 'disposisi':
-                    html = await Disposisi.render(params);
+                    html = typeof Disposisi !== 'undefined' ? await Disposisi.render(params) : '<div class="card"><p>Disposisi</p></div>';
                     break;
                 case 'approval':
-                    html = await Approval.render(params);
+                    html = typeof Approval !== 'undefined' ? await Approval.render(params) : '<div class="card"><p>Approval</p></div>';
                     break;
                 case 'template':
-                    html = await Template.render(params);
+                    html = typeof Template !== 'undefined' ? await Template.render(params) : '<div class="card"><p>Template</p></div>';
                     break;
                 case 'users':
-                    html = await Users.render(params);
+                    html = typeof Users !== 'undefined' ? await Users.render(params) : '<div class="card"><p>Users</p></div>';
                     break;
                 case 'report':
-                    html = await Report.render(params);
+                    html = typeof Report !== 'undefined' ? await Report.render(params) : '<div class="card"><p>Report</p></div>';
                     break;
                 case 'settings':
-                    html = await Settings.render(params);
-                    break;
-                case 'backup':
-                    html = await Backup.render(params);
-                    break;
-                case 'audit':
-                    html = await Audit.render(params);
+                    html = typeof Settings !== 'undefined' ? await Settings.render(params) : '<div class="card"><p>Settings</p></div>';
                     break;
                 default:
                     html = '<div class="card"><h3>Halaman tidak ditemukan</h3></div>';
@@ -270,34 +256,38 @@ const App = {
     },
     
     executePageScripts(page) {
-        switch (page) {
-            case 'dashboard':
-                if (typeof Dashboard.init === 'function') Dashboard.init();
-                break;
-            case 'surat-masuk':
-                if (typeof SuratMasuk.init === 'function') SuratMasuk.init();
-                break;
-            case 'surat-keluar':
-                if (typeof SuratKeluar.init === 'function') SuratKeluar.init();
-                break;
-            case 'disposisi':
-                if (typeof Disposisi.init === 'function') Disposisi.init();
-                break;
-            case 'approval':
-                if (typeof Approval.init === 'function') Approval.init();
-                break;
-            case 'template':
-                if (typeof Template.init === 'function') Template.init();
-                break;
-            case 'users':
-                if (typeof Users.init === 'function') Users.init();
-                break;
-            case 'report':
-                if (typeof Report.init === 'function') Report.init();
-                break;
-            case 'settings':
-                if (typeof Settings.init === 'function') Settings.init();
-                break;
+        try {
+            switch (page) {
+                case 'dashboard':
+                    if (typeof Dashboard !== 'undefined' && typeof Dashboard.init === 'function') Dashboard.init();
+                    break;
+                case 'surat-masuk':
+                    if (typeof SuratMasuk !== 'undefined' && typeof SuratMasuk.init === 'function') SuratMasuk.init();
+                    break;
+                case 'surat-keluar':
+                    if (typeof SuratKeluar !== 'undefined' && typeof SuratKeluar.init === 'function') SuratKeluar.init();
+                    break;
+                case 'disposisi':
+                    if (typeof Disposisi !== 'undefined' && typeof Disposisi.init === 'function') Disposisi.init();
+                    break;
+                case 'approval':
+                    if (typeof Approval !== 'undefined' && typeof Approval.init === 'function') Approval.init();
+                    break;
+                case 'template':
+                    if (typeof Template !== 'undefined' && typeof Template.init === 'function') Template.init();
+                    break;
+                case 'users':
+                    if (typeof Users !== 'undefined' && typeof Users.init === 'function') Users.init();
+                    break;
+                case 'report':
+                    if (typeof Report !== 'undefined' && typeof Report.init === 'function') Report.init();
+                    break;
+                case 'settings':
+                    if (typeof Settings !== 'undefined' && typeof Settings.init === 'function') Settings.init();
+                    break;
+            }
+        } catch (e) {
+            console.warn('⚠️ Page init error:', e);
         }
     },
     
@@ -317,7 +307,6 @@ const App = {
             errorEl.style.display = 'none';
             console.log('🔐 Attempting login for:', username);
             
-            // 🔥 FIX: Jangan kirim token untuk login
             const response = await API.post('login', { username, password }, null);
             console.log('📥 Login response:', response);
             
@@ -392,7 +381,6 @@ const App = {
             if (response.status === 'success') {
                 showToast('success', 'Registrasi Berhasil', 'Akun berhasil dibuat. Silakan login.');
                 
-                // Switch to login tab
                 document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
                 const loginTab = document.querySelector('.auth-tab[data-tab="login"]');
                 if (loginTab) loginTab.classList.add('active');
@@ -400,14 +388,12 @@ const App = {
                 const loginForm = document.getElementById('loginForm');
                 if (loginForm) loginForm.classList.add('active');
                 
-                // Clear register form
                 document.getElementById('registerUsername').value = '';
                 document.getElementById('registerEmail').value = '';
                 document.getElementById('registerNama').value = '';
                 document.getElementById('registerPassword').value = '';
                 document.getElementById('registerConfirm').value = '';
                 
-                // Fill login form
                 document.getElementById('loginUsername').value = username;
             } else {
                 errorEl.textContent = response.message || 'Registrasi gagal';
@@ -425,9 +411,7 @@ const App = {
             if (this.token) {
                 await API.get('logout', { token: this.token });
             }
-        } catch (error) {
-            // Ignore
-        }
+        } catch (error) {}
         
         this.clearSession();
         this.showAuth();
@@ -456,16 +440,10 @@ const App = {
     
     updateNotificationBadge() {
         const badge = document.getElementById('notifBadge');
-        const smBadge = document.getElementById('smBadge');
-        const skBadge = document.getElementById('skBadge');
-        const dispBadge = document.getElementById('dispBadge');
-        const apprBadge = document.getElementById('apprBadge');
-        
         if (badge) {
             badge.textContent = this.unreadCount;
             badge.style.display = this.unreadCount > 0 ? 'flex' : 'none';
         }
-        
         this.updateBadges();
     },
     
@@ -507,7 +485,6 @@ const App = {
     
     // ========== EVENT LISTENERS ==========
     setupEventListeners() {
-        // Auth tabs
         document.querySelectorAll('.auth-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -519,7 +496,6 @@ const App = {
             });
         });
         
-        // Login
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
             loginForm.addEventListener('submit', (e) => {
@@ -528,7 +504,6 @@ const App = {
             });
         }
         
-        // Register
         const registerForm = document.getElementById('registerForm');
         if (registerForm) {
             registerForm.addEventListener('submit', (e) => {
@@ -537,7 +512,6 @@ const App = {
             });
         }
         
-        // Logout
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', () => {
@@ -545,7 +519,6 @@ const App = {
             });
         }
         
-        // Sidebar toggle
         const sidebarToggle = document.getElementById('sidebarToggle');
         if (sidebarToggle) {
             sidebarToggle.addEventListener('click', () => {
@@ -553,7 +526,6 @@ const App = {
             });
         }
         
-        // Menu items
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', () => {
                 const page = item.dataset.page;
@@ -564,7 +536,6 @@ const App = {
             });
         });
         
-        // Theme toggle
         const themeToggle = document.getElementById('themeToggle');
         if (themeToggle) {
             themeToggle.addEventListener('click', () => {
@@ -572,7 +543,6 @@ const App = {
             });
         }
         
-        // Notification panel
         const notifBtn = document.getElementById('notifBtn');
         if (notifBtn) {
             notifBtn.addEventListener('click', () => {
@@ -594,7 +564,6 @@ const App = {
             });
         }
         
-        // Modal
         const modalClose = document.getElementById('modalClose');
         if (modalClose) {
             modalClose.addEventListener('click', closeModal);
@@ -604,7 +573,6 @@ const App = {
             modalOverlay.addEventListener('click', closeModal);
         }
         
-        // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
