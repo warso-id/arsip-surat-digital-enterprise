@@ -2,13 +2,13 @@
  * ============================================
  * API.JS - API Communication Layer - FINAL FIX
  * ARSIP SURAT DIGITAL v3.2.2
- * FIXED: CORS, ID parameter handling, CSRF refresh
+ * FIXED: CORS, Error Handling, Timeout
  * ============================================
  */
 
 const API = {
     // ========== CONFIGURATION ==========
-    // 🔥 PASTIKAN URL INI ADALAH URL DEPLOYMENT TERBARU DENGAN ACCESS: ANYONE
+    // 🔥 UPDATE DENGAN URL DEPLOYMENT TERBARU
     baseUrl: 'https://script.google.com/macros/s/AKfycbyV2a5DBBJWCNKYE_AXbu_rM_8inZv9L1d2uLRi8_dVZQfDtAt9ldBPge2FOs0dyGS5TA/exec',
     
     // ========== SETUP ==========
@@ -18,7 +18,7 @@ const API = {
         return this;
     },
     
-    // ========== GET APP REFERENCE SAFELY ==========
+    // ========== GET APP REFERENCE ==========
     _getApp() {
         try {
             return typeof App !== 'undefined' ? App : null;
@@ -77,7 +77,7 @@ const API = {
             clearTimeout(timeoutId);
             
             // 🔥 FIX: Cek response status
-            if (!response.ok && response.status !== 200) {
+            if (!response.ok) {
                 console.error('❌ HTTP Error:', response.status);
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
@@ -106,20 +106,6 @@ const API = {
                         app.showAuth();
                     }
                     this._showToast('error', 'Session Expired', 'Silakan login kembali');
-                }
-            }
-            
-            if (result.data && result.data.csrf) {
-                try {
-                    const app = this._getApp();
-                    if (app) {
-                        app.csrf = result.data.csrf;
-                        if (typeof localStorage !== 'undefined') {
-                            localStorage.setItem('csrf', result.data.csrf);
-                        }
-                    }
-                } catch (e) {
-                    console.warn('⚠️ Could not save CSRF:', e);
                 }
             }
             
@@ -177,7 +163,7 @@ const API = {
             });
             clearTimeout(timeoutId);
             
-            if (!response.ok && response.status !== 200) {
+            if (!response.ok) {
                 console.error('❌ HTTP Error:', response.status);
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
@@ -192,21 +178,6 @@ const API = {
             }
             
             console.log('📥 GET Response:', result);
-            
-            if (result.data && result.data.csrf) {
-                try {
-                    const app = this._getApp();
-                    if (app) {
-                        app.csrf = result.data.csrf;
-                        if (typeof localStorage !== 'undefined') {
-                            localStorage.setItem('csrf', result.data.csrf);
-                        }
-                    }
-                } catch (e) {
-                    console.warn('⚠️ Could not save CSRF:', e);
-                }
-            }
-            
             return result;
         } catch (error) {
             console.error('❌ API GET Error:', error);
@@ -275,113 +246,6 @@ const API = {
         return this.request(action, 'DELETE', data, useToken, useCsrf);
     },
     
-    // ========== UPLOAD FILE ==========
-    async uploadFile(file, token = null) {
-        let useToken = token;
-        let useCsrf = null;
-        try {
-            const app = this._getApp();
-            if (!useToken && app && app.token) {
-                useToken = app.token;
-            }
-            if (app && app.csrf) {
-                useCsrf = app.csrf;
-            }
-        } catch (e) {}
-        
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        const url = new URL(this.baseUrl);
-        url.searchParams.set('action', 'file.upload');
-        
-        if (useToken) {
-            url.searchParams.set('token', useToken);
-        }
-        if (useCsrf) {
-            url.searchParams.set('csrf', useCsrf);
-        }
-        
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 60000);
-            
-            const response = await fetch(url.toString(), {
-                method: 'POST',
-                mode: 'cors',
-                body: formData,
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-            
-            const text = await response.text();
-            try {
-                return JSON.parse(text);
-            } catch (e) {
-                console.error('❌ Invalid JSON:', text);
-                throw new Error('Upload gagal: response tidak valid');
-            }
-        } catch (error) {
-            console.error('Upload Error:', error);
-            throw new Error('Upload file gagal: ' + error.message);
-        }
-    },
-    
-    // ========== UPLOAD MULTIPLE FILES ==========
-    async uploadMultipleFiles(files, token = null) {
-        let useToken = token;
-        let useCsrf = null;
-        try {
-            const app = this._getApp();
-            if (!useToken && app && app.token) {
-                useToken = app.token;
-            }
-            if (app && app.csrf) {
-                useCsrf = app.csrf;
-            }
-        } catch (e) {}
-        
-        const formData = new FormData();
-        files.forEach((file, index) => {
-            formData.append(`file${index}`, file);
-        });
-        formData.append('filenames', files.map(f => f.name).join(','));
-        
-        const url = new URL(this.baseUrl);
-        url.searchParams.set('action', 'file.uploadMultiple');
-        
-        if (useToken) {
-            url.searchParams.set('token', useToken);
-        }
-        if (useCsrf) {
-            url.searchParams.set('csrf', useCsrf);
-        }
-        
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 60000);
-            
-            const response = await fetch(url.toString(), {
-                method: 'POST',
-                mode: 'cors',
-                body: formData,
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-            
-            const text = await response.text();
-            try {
-                return JSON.parse(text);
-            } catch (e) {
-                console.error('❌ Invalid JSON:', text);
-                throw new Error('Upload multiple gagal: response tidak valid');
-            }
-        } catch (error) {
-            console.error('Upload Error:', error);
-            throw new Error('Upload multiple file gagal: ' + error.message);
-        }
-    },
-    
     // ========== TEST CONNECTION ==========
     async testConnection() {
         try {
@@ -400,7 +264,7 @@ const API = {
         }
     },
     
-    // ========== TOAST HELPER (SAFE) ==========
+    // ========== TOAST HELPER ==========
     _showToast(type, title, message) {
         try {
             if (typeof showToast === 'function') {
@@ -415,7 +279,7 @@ const API = {
 };
 
 // ========== AUTO INIT ==========
-// 🔥 PASTIKAN URL INI SESUAI DENGAN DEPLOYMENT TERBARU
+// 🔥 UPDATE DENGAN URL DEPLOYMENT TERBARU
 API.init('https://script.google.com/macros/s/AKfycbyV2a5DBBJWCNKYE_AXbu_rM_8inZv9L1d2uLRi8_dVZQfDtAt9ldBPge2FOs0dyGS5TA/exec');
 
 console.log('✅ API Module Loaded');
