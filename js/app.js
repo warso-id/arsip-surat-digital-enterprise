@@ -61,43 +61,76 @@ const App = {
         }, 1000);
     },
     
+    
+
+
     // ========== TEST CONNECTION ==========
-    async testConnection() {
-        try {
-            console.log('🔗 Testing connection to backend...');
+async testConnection() {
+    try {
+        console.log('🔗 Testing connection to backend...');
+        console.log('📍 URL:', API.baseUrl);
+        
+        // 🔥 FIX: Jangan kirim token untuk ping
+        const result = await API.get('ping', { token: null });
+        console.log('✅ Connection successful:', result);
+        
+        if (result.status === 'success') {
+            console.log('📦 Backend version:', result.data?.version);
+            console.log('📊 Public actions:', result.data?.publicActions);
+            this.connectionFailed = false;
+            
+            // 🔥 FIX: Tampilkan pesan sukses
+            showToast('success', 'Koneksi Berhasil', 'Terhubung ke server!');
+        } else {
+            console.warn('⚠️ Connection failed:', result);
+            this.connectionFailed = true;
+            showToast('error', 'Koneksi Gagal', 'Gagal terhubung ke server. Periksa URL backend.');
+        }
+    } catch (error) {
+        console.warn('⚠️ Connection test failed:', error.message);
+        this.connectionFailed = true;
+        showToast('error', 'Koneksi Gagal', 'Gagal terhubung ke server: ' + error.message);
+    }
+}
+    
+    
+    // ========== TEST CONNECTION ==========
+    //async testConnection() {
+      //  try {
+        //    console.log('🔗 Testing connection to backend...');
             
             // 🔥 FIX: Jangan kirim token untuk ping
-            const result = await API.get('ping', { token: null });
-            console.log('✅ Connection successful:', result);
+          //  const result = await API.get('ping', { token: null });
+            //console.log('✅ Connection successful:', result);
             
-            if (result.status === 'success') {
-                console.log('📦 Backend version:', result.data?.version);
-                console.log('📊 Public actions:', result.data?.publicActions);
-                this.connectionFailed = false;
+            //if (result.status === 'success') {
+              //  console.log('📦 Backend version:', result.data?.version);
+                //console.log('📊 Public actions:', result.data?.publicActions);
+                //this.connectionFailed = false;
                 
                 // Cek apakah sistem sudah di-setup
-                try {
-                    const setupCheck = await API.get('checkSetup', { token: null });
-                    console.log('📋 Setup status:', setupCheck);
+                //try {
+                  //  const setupCheck = await API.get('checkSetup', { token: null });
+                    //console.log('📋 Setup status:', setupCheck);
                     
-                    if (setupCheck.status === 'success' && setupCheck.data?.isSetup === false) {
-                        console.warn('⚠️ System not setup yet');
-                        showToast('warning', 'Setup Required', 'Sistem belum di-setup. Jalankan setup.');
-                    }
-                } catch (e) {
-                    console.warn('Setup check failed:', e);
-                }
-            } else {
-                console.warn('⚠️ Connection failed:', result);
-                this.connectionFailed = true;
-                showToast('error', 'Koneksi Gagal', 'Gagal terhubung ke server. Periksa URL backend.');
-            }
-        } catch (error) {
-            console.warn('⚠️ Connection test failed:', error.message);
-            this.connectionFailed = true;
-            showToast('error', 'Koneksi Gagal', 'Gagal terhubung ke server. Periksa koneksi internet.');
-        }
-    },
+                    //if (setupCheck.status === 'success' && setupCheck.data?.isSetup === false) {
+                      //  console.warn('⚠️ System not setup yet');
+                        //showToast('warning', 'Setup Required', 'Sistem belum di-setup. Jalankan setup.');
+                    //}
+                //} catch (e) {
+                  //  console.warn('Setup check failed:', e);
+                //}
+            //} else {
+              //  console.warn('⚠️ Connection failed:', result);
+                //this.connectionFailed = true;
+                //showToast('error', 'Koneksi Gagal', 'Gagal terhubung ke server. Periksa URL backend.');
+            //}
+        //} catch (error) {
+          //  console.warn('⚠️ Connection test failed:', error.message);
+            //this.connectionFailed = true;
+            //showToast('error', 'Koneksi Gagal', 'Gagal terhubung ke server. Periksa koneksi internet.');
+        //}
+    //},
     
     // ========== SESSION VERIFICATION ==========
     async verifySession() {
