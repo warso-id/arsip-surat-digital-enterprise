@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Arsip Surat Digital</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #1a2332 0%, #2c3e50 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .register-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+        .register-box {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .register-logo {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .register-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a2332;
+        }
+        .register-header .subtitle {
+            color: #5a6a7a;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #5a6a7a;
+            margin-bottom: 5px;
+        }
+        .form-group label i {
+            margin-right: 8px;
+        }
+        .form-group label .required {
+            color: #F44336;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #1976D2;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        }
+        .form-group input.error {
+            border-color: #F44336;
+        }
+        .form-group input.success {
+            border-color: #4CAF50;
+        }
+        .form-group .helper-text {
+            font-size: 12px;
+            color: #5a6a7a;
+            margin-top: 4px;
+        }
+        .form-group .helper-text.error {
+            color: #F44336;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #388E3C;
+        }
+        .btn-success:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-link {
+            background: transparent;
+            color: #1976D2;
+            padding: 8px;
+        }
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+            display: none;
+        }
+        .alert-danger {
+            background: #FFEBEE;
+            color: #C62828;
+            border: 1px solid #FFCDD2;
+        }
+        .alert-success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border: 1px solid #C8E6C9;
+        }
+        .alert-info {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border: 1px solid #BBDEFB;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+            color: #5a6a7a;
+        }
+        .login-link a {
+            color: #1976D2;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 12px; }
+        .mb-2 { margin-bottom: 12px; }
+        .hidden { display: none !important; }
+
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .register-box {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-box">
+            <div class="register-header">
+                <span class="register-logo">📁</span>
+                <h1>Daftar Akun</h1>
+                <p class="subtitle">Arsip Surat Digital Enterprise v3.2.2</p>
+            </div>
+
+            <!-- Register Form -->
+            <form id="registerForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username <span class="required">*</span></label>
+                    <input type="text" id="registerUsername" placeholder="Pilih username" required autocomplete="username" />
+                    <div class="helper-text" id="usernameHelp">Minimal 3 karakter, tanpa spasi</div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email <span class="required">*</span></label>
+                    <input type="email" id="registerEmail" placeholder="Email aktif" required autocomplete="email" />
+                    <div class="helper-text" id="emailHelp">Masukkan email yang valid</div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user-tag"></i> Nama Lengkap <span class="required">*</span></label>
+                    <input type="text" id="registerNama" placeholder="Nama lengkap" required autocomplete="name" />
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Password <span class="required">*</span></label>
+                        <input type="password" id="registerPassword" placeholder="Minimal 8 karakter" required minlength="8" autocomplete="new-password" />
+                        <div class="helper-text" id="passwordHelp">Minimal 8 karakter</div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Konfirmasi <span class="required">*</span></label>
+                        <input type="password" id="registerConfirm" placeholder="Konfirmasi password" required autocomplete="new-password" />
+                        <div class="helper-text" id="confirmHelp">Ketik ulang password</div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success" id="registerBtn">
+                    <i class="fas fa-user-plus"></i> Daftar
+                </button>
+                <div id="registerError" class="alert alert-danger"></div>
+                <div id="registerSuccess" class="alert alert-success"></div>
+                <div id="registerInfo" class="alert alert-info"></div>
+            </form>
+
+            <div class="login-link">
+                Sudah punya akun? <a href="login.html">Login sekarang</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <script>
+        // ========== CONFIGURATION ==========
+        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec';
+
+        // ========== DOM ELEMENTS ==========
+        const registerForm = document.getElementById('registerForm');
+        const registerBtn = document.getElementById('registerBtn');
+        const registerError = document.getElementById('registerError');
+        const registerSuccess = document.getElementById('registerSuccess');
+        const registerInfo = document.getElementById('registerInfo');
+
+        const usernameInput = document.getElementById('registerUsername');
+        const emailInput = document.getElementById('registerEmail');
+        const namaInput = document.getElementById('registerNama');
+        const passwordInput = document.getElementById('registerPassword');
+        const confirmInput = document.getElementById('registerConfirm');
+
+        const usernameHelp = document.getElementById('usernameHelp');
+        const emailHelp = document.getElementById('emailHelp');
+        const passwordHelp = document.getElementById('passwordHelp');
+        const confirmHelp = document.getElementById('confirmHelp');
+
+        // ========== VALIDATION ==========
+        function validateUsername(username) {
+            if (username.length < 3) {
+                usernameHelp.textContent = '❌ Minimal 3 karakter';
+                usernameHelp.className = 'helper-text error';
+                return false;
+            }
+            if (username.includes(' ')) {
+                usernameHelp.textContent = '❌ Tidak boleh ada spasi';
+                usernameHelp.className = 'helper-text error';
+                return false;
+            }
+            usernameHelp.textContent = '✅ Username valid';
+            usernameHelp.className = 'helper-text';
+            return true;
+        }
+
+        function validateEmail(email) {
+            if (!email.includes('@') || !email.includes('.')) {
+                emailHelp.textContent = '❌ Email tidak valid';
+                emailHelp.className = 'helper-text error';
+                return false;
+            }
+            emailHelp.textContent = '✅ Email valid';
+            emailHelp.className = 'helper-text';
+            return true;
+        }
+
+        function validatePassword(password) {
+            if (password.length < 8) {
+                passwordHelp.textContent = '❌ Minimal 8 karakter';
+                passwordHelp.className = 'helper-text error';
+                return false;
+            }
+            passwordHelp.textContent = '✅ Password kuat';
+            passwordHelp.className = 'helper-text';
+            return true;
+        }
+
+        function validateConfirm(password, confirm) {
+            if (password !== confirm) {
+                confirmHelp.textContent = '❌ Password tidak cocok';
+                confirmHelp.className = 'helper-text error';
+                return false;
+            }
+            if (confirm.length === 0) {
+                confirmHelp.textContent = 'Ketik ulang password';
+                confirmHelp.className = 'helper-text';
+                return false;
+            }
+            confirmHelp.textContent = '✅ Password cocok';
+            confirmHelp.className = 'helper-text';
+            return true;
+        }
+
+        // ========== REAL-TIME VALIDATION ==========
+        usernameInput.addEventListener('input', () => validateUsername(usernameInput.value));
+        emailInput.addEventListener('input', () => validateEmail(emailInput.value));
+        passwordInput.addEventListener('input', () => {
+            validatePassword(passwordInput.value);
+            if (confirmInput.value) validateConfirm(passwordInput.value, confirmInput.value);
+        });
+        confirmInput.addEventListener('input', () => validateConfirm(passwordInput.value, confirmInput.value));
+
+        // ========== SHOW/HIDE ALERTS ==========
+        function showError(message) {
+            registerError.textContent = message;
+            registerError.style.display = 'block';
+            registerSuccess.style.display = 'none';
+            registerInfo.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            registerSuccess.textContent = message;
+            registerSuccess.style.display = 'block';
+            registerError.style.display = 'none';
+            registerInfo.style.display = 'none';
+        }
+
+        function showInfo(message) {
+            registerInfo.textContent = message;
+            registerInfo.style.display = 'block';
+            registerError.style.display = 'none';
+            registerSuccess.style.display = 'none';
+        }
+
+        function hideAlerts() {
+            registerError.style.display = 'none';
+            registerSuccess.style.display = 'none';
+            registerInfo.style.display = 'none';
+        }
+
+        // ========== REGISTER HANDLER ==========
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlerts();
+
+            const username = usernameInput.value.trim();
+            const email = emailInput.value.trim();
+            const nama = namaInput.value.trim();
+            const password = passwordInput.value;
+            const confirm = confirmInput.value;
+
+            // Validasi semua field
+            if (!username || !email || !nama || !password || !confirm) {
+                showError('Semua field harus diisi');
+                return;
+            }
+
+            if (!validateUsername(username) || !validateEmail(email) || 
+                !validatePassword(password) || !validateConfirm(password, confirm)) {
+                showError('Periksa kembali input Anda');
+                return;
+            }
+
+            // Disable button
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<span class="loading-spinner"></span> Memproses...';
+            showInfo('⏳ Sedang memproses...');
+
+            try {
+                console.log('📝 Register attempt for:', username);
+                console.log('📍 API URL:', API_BASE_URL);
+
+                // 🔥 BUILD FORM DATA
+                const formData = new URLSearchParams();
+                formData.append('action', 'publicRegister');
+                formData.append('username', username);
+                formData.append('email', email);
+                formData.append('namaLengkap', nama);
+                formData.append('password', password);
+
+                console.log('📤 Sending:', formData.toString());
+
+                // 🔥 SEND REQUEST
+                const response = await fetch(API_BASE_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData.toString()
+                });
+
+                console.log('📥 Response status:', response.status);
+
+                const text = await response.text();
+                console.log('📥 Raw response:', text);
+
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (e) {
+                    console.error('❌ Invalid JSON:', text);
+                    showError('Respons dari server tidak valid: ' + text.substring(0, 100));
+                    return;
+                }
+
+                console.log('📥 Parsed response:', result);
+
+                if (result.status === 'success') {
+                    showSuccess('✅ Registrasi berhasil!');
+                    
+                    // Clear form
+                    usernameInput.value = '';
+                    emailInput.value = '';
+                    namaInput.value = '';
+                    passwordInput.value = '';
+                    confirmInput.value = '';
+
+                    // Redirect ke login setelah 2 detik
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    showError(result.message || 'Registrasi gagal');
+                }
+
+            } catch (error) {
+                console.error('❌ Register error:', error);
+                showError('Koneksi gagal: ' + error.message + '. Periksa koneksi internet.');
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Daftar';
+            }
+        });
+
+        // ========== TEST CONNECTION ON LOAD ==========
+        async function testConnection() {
+            try {
+                console.log('🔗 Testing connection...');
+                const response = await fetch(API_BASE_URL + '?action=ping');
+                const result = await response.json();
+                console.log('✅ Connection test:', result);
+                if (result.status === 'success') {
+                    console.log('📦 Backend version:', result.data?.version);
+                    showInfo('✅ Terhubung ke server! Silakan daftar.');
+                }
+            } catch (error) {
+                console.warn('⚠️ Connection test failed:', error.message);
+                showError('⚠️ Gagal terhubung ke server. Periksa koneksi internet.');
+            }
+        }
+
+        // Run connection test after 1 second
+        setTimeout(testConnection, 500);
+
+        console.log('📄 Register page loaded');
+        console.log('📍 API URL:', API_BASE_URL);
+    </script>
+</body>
+</html>
