@@ -1,0 +1,148 @@
+{
+  "name": "Arsip Surat Digital Enterprise",
+  "short_name": "Arsip Surat",
+  "description": "Sistem Manajemen Arsip Surat Digital untuk Instansi Pemerintah dan Perusahaan",
+  "version": "3.2.2",
+  "manifest_version": 3,
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#FDFBFF",
+  "theme_color": "#1976D2",
+  "categories": ["business", "productivity", "utilities"],
+  "lang": "id-ID",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  
+  "icons": [
+    {
+      "src": "/src/assets/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/src/assets/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/src/assets/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/src/assets/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/src/assets/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/src/assets/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/src/assets/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/src/assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  
+  "screenshots": [
+    {
+      "src": "/src/assets/images/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard Desktop"
+    },
+    {
+      "src": "/src/assets/images/screenshot-mobile.png",
+      "sizes": "375x812",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Dashboard Mobile"
+    }
+  ],
+  
+  "shortcuts": [
+    {
+      "name": "Surat Masuk Baru",
+      "short_name": "Surat Masuk",
+      "description": "Catat surat masuk baru",
+      "url": "/#/surat-masuk/create",
+      "icons": [
+        {
+          "src": "/src/assets/icons/shortcut-sm.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Lihat dashboard",
+      "url": "/#/dashboard",
+      "icons": [
+        {
+          "src": "/src/assets/icons/shortcut-dashboard.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  
+  "share_target": {
+    "action": "/#/surat-masuk/create",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "name",
+      "text": "description",
+      "url": "link",
+      "files": [
+        {
+          "name": "attachments",
+          "accept": ["application/pdf", "image/*"]
+        }
+      ]
+    }
+  },
+  
+  "related_applications": [],
+  
+  "protocol_handlers": [
+    {
+      "protocol": "web+arsip",
+      "url": "/#/search?q=%s"
+    }
+  ],
+  
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  }
+}
