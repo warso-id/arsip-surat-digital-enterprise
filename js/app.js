@@ -2,7 +2,7 @@
  * ============================================
  * APP.JS - Main Application Controller - FINAL FIX
  * ARSIP SURAT DIGITAL v3.2.2
- * FIXED: Connection, Error Handling, Session
+ * FIXED: Login, Register, Connection, Error Handling
  * ============================================
  */
 
@@ -21,6 +21,7 @@ const App = {
     init() {
         console.log('🚀 App Initializing...');
         
+        // Check authentication
         this.token = localStorage.getItem('token');
         this.csrf = localStorage.getItem('csrf');
         const savedUser = localStorage.getItem('user');
@@ -54,6 +55,7 @@ const App = {
         this.theme = localStorage.getItem('theme') || 'light';
         this.applyTheme();
         
+        // Test connection after 1 second
         setTimeout(() => {
             this.testConnection();
         }, 1000);
@@ -74,6 +76,7 @@ const App = {
                 this.connectionFailed = false;
                 showToast('success', 'Koneksi Berhasil', 'Terhubung ke server!');
                 
+                // Cek apakah sistem sudah di-setup
                 try {
                     const setupCheck = await API.get('checkSetup', { token: null });
                     console.log('📋 Setup status:', setupCheck);
@@ -182,10 +185,12 @@ const App = {
         const container = document.getElementById('pageContent');
         if (!container) return;
         
+        // Update active menu
         document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
         const menuItem = document.querySelector(`.menu-item[data-page="${page}"]`);
         if (menuItem) menuItem.classList.add('active');
         
+        // Update title
         const titles = {
             dashboard: 'Dashboard',
             'surat-masuk': 'Surat Masuk',
@@ -291,29 +296,55 @@ const App = {
         }
     },
     
-    // ========== AUTH HANDLERS ==========
+    // ========== LOGIN HANDLER ==========
     async handleLogin() {
         const username = document.getElementById('loginUsername').value.trim();
         const password = document.getElementById('loginPassword').value.trim();
         const errorEl = document.getElementById('loginError');
         
+        // Validasi input
         if (!username || !password) {
             errorEl.textContent = 'Username dan password harus diisi';
             errorEl.style.display = 'block';
             return;
         }
         
+        // Disable button
+        const submitBtn = document.querySelector('#loginForm button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+        }
+        
         try {
             errorEl.style.display = 'none';
             console.log('🔐 Attempting login for:', username);
             
-            const response = await API.post('login', { username, password }, null);
-            console.log('📥 Login response:', response);
+            // 🔥 FIX: Kirim data sebagai form-urlencoded
+            const formData = new URLSearchParams();
+            formData.append('action', 'login');
+            formData.append('username', username);
+            formData.append('password', password);
             
-            if (response.status === 'success') {
-                this.token = response.data.token;
-                this.csrf = response.data.csrf;
-                this.user = response.data.user;
+            console.log('📤 Sending login data:', { username, hasPassword: !!password });
+            
+            // 🔥 FIX: Gunakan fetch langsung dengan form-urlencoded
+            const response = await fetch(API.baseUrl, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            });
+            
+            const result = await response.json();
+            console.log('📥 Login response:', result);
+            
+            if (result.status === 'success') {
+                this.token = result.data.token;
+                this.csrf = result.data.csrf;
+                this.user = result.data.user;
                 
                 localStorage.setItem('token', this.token);
                 localStorage.setItem('csrf', this.csrf);
@@ -327,17 +358,24 @@ const App = {
                 
                 showToast('success', 'Login Berhasil', `Selamat datang, ${this.user.namaLengkap || this.user.username}!`);
             } else {
-                console.warn('⚠️ Login failed:', response.message);
-                errorEl.textContent = response.message || 'Login gagal';
+                console.warn('⚠️ Login failed:', result.message);
+                errorEl.textContent = result.message || 'Login gagal';
                 errorEl.style.display = 'block';
             }
         } catch (error) {
             console.error('❌ Login error:', error);
             errorEl.textContent = error.message || 'Terjadi kesalahan saat login';
             errorEl.style.display = 'block';
+        } finally {
+            // Re-enable button
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+            }
         }
     },
     
+    // ========== REGISTER HANDLER ==========
     async handleRegister() {
         const username = document.getElementById('registerUsername').value.trim();
         const email = document.getElementById('registerEmail').value.trim();
@@ -346,6 +384,7 @@ const App = {
         const confirm = document.getElementById('registerConfirm').value;
         const errorEl = document.getElementById('registerError');
         
+        // Validasi
         if (!username || !email || !nama || !password || !confirm) {
             errorEl.textContent = 'Semua field harus diisi';
             errorEl.style.display = 'block';
@@ -364,23 +403,50 @@ const App = {
             return;
         }
         
+        if (!email.includes('@')) {
+            errorEl.textContent = 'Email tidak valid';
+            errorEl.style.display = 'block';
+            return;
+        }
+        
+        // Disable button
+        const submitBtn = document.querySelector('#registerForm button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+        }
+        
         try {
             errorEl.style.display = 'none';
             console.log('📝 Registering user:', username);
             
-            const response = await API.post('users.create', {
-                username,
-                email,
-                namaLengkap: nama,
-                password,
-                role: 'staff'
+            // 🔥 FIX: Kirim data sebagai form-urlencoded
+            const formData = new URLSearchParams();
+            formData.append('action', 'publicRegister');
+            formData.append('username', username);
+            formData.append('email', email);
+            formData.append('namaLengkap', nama);
+            formData.append('password', password);
+            
+            console.log('📤 Sending register data:', { username, email, nama });
+            
+            // 🔥 FIX: Gunakan fetch langsung dengan form-urlencoded
+            const response = await fetch(API.baseUrl, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
             });
             
-            console.log('📥 Register response:', response);
+            const result = await response.json();
+            console.log('📥 Register response:', result);
             
-            if (response.status === 'success') {
+            if (result.status === 'success') {
                 showToast('success', 'Registrasi Berhasil', 'Akun berhasil dibuat. Silakan login.');
                 
+                // Switch to login tab
                 document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
                 const loginTab = document.querySelector('.auth-tab[data-tab="login"]');
                 if (loginTab) loginTab.classList.add('active');
@@ -388,30 +454,41 @@ const App = {
                 const loginForm = document.getElementById('loginForm');
                 if (loginForm) loginForm.classList.add('active');
                 
+                // Clear register form
                 document.getElementById('registerUsername').value = '';
                 document.getElementById('registerEmail').value = '';
                 document.getElementById('registerNama').value = '';
                 document.getElementById('registerPassword').value = '';
                 document.getElementById('registerConfirm').value = '';
                 
+                // Fill login form
                 document.getElementById('loginUsername').value = username;
             } else {
-                errorEl.textContent = response.message || 'Registrasi gagal';
+                errorEl.textContent = result.message || 'Registrasi gagal';
                 errorEl.style.display = 'block';
             }
         } catch (error) {
             console.error('❌ Register error:', error);
             errorEl.textContent = error.message || 'Terjadi kesalahan saat registrasi';
             errorEl.style.display = 'block';
+        } finally {
+            // Re-enable button
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register';
+            }
         }
     },
     
+    // ========== LOGOUT HANDLER ==========
     async handleLogout() {
         try {
             if (this.token) {
                 await API.get('logout', { token: this.token });
             }
-        } catch (error) {}
+        } catch (error) {
+            // Ignore
+        }
         
         this.clearSession();
         this.showAuth();
@@ -485,6 +562,7 @@ const App = {
     
     // ========== EVENT LISTENERS ==========
     setupEventListeners() {
+        // Auth tabs
         document.querySelectorAll('.auth-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -496,6 +574,7 @@ const App = {
             });
         });
         
+        // Login form
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
             loginForm.addEventListener('submit', (e) => {
@@ -504,6 +583,7 @@ const App = {
             });
         }
         
+        // Register form
         const registerForm = document.getElementById('registerForm');
         if (registerForm) {
             registerForm.addEventListener('submit', (e) => {
@@ -512,6 +592,7 @@ const App = {
             });
         }
         
+        // Logout
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', () => {
@@ -519,6 +600,7 @@ const App = {
             });
         }
         
+        // Sidebar toggle
         const sidebarToggle = document.getElementById('sidebarToggle');
         if (sidebarToggle) {
             sidebarToggle.addEventListener('click', () => {
@@ -526,6 +608,7 @@ const App = {
             });
         }
         
+        // Menu items
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', () => {
                 const page = item.dataset.page;
@@ -536,6 +619,7 @@ const App = {
             });
         });
         
+        // Theme toggle
         const themeToggle = document.getElementById('themeToggle');
         if (themeToggle) {
             themeToggle.addEventListener('click', () => {
@@ -543,6 +627,7 @@ const App = {
             });
         }
         
+        // Notification panel
         const notifBtn = document.getElementById('notifBtn');
         if (notifBtn) {
             notifBtn.addEventListener('click', () => {
@@ -564,6 +649,7 @@ const App = {
             });
         }
         
+        // Modal
         const modalClose = document.getElementById('modalClose');
         if (modalClose) {
             modalClose.addEventListener('click', closeModal);
@@ -573,6 +659,7 @@ const App = {
             modalOverlay.addEventListener('click', closeModal);
         }
         
+        // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
