@@ -1,0 +1,64 @@
+{
+  "name": "arsip-surat-digital-enterprise",
+  "version": "3.2.2",
+  "description": "Sistem Manajemen Arsip Surat Digital Enterprise",
+  "main": "src/index.html",
+  "scripts": {
+    "dev": "node tools/watch.js",
+    "build": "node tools/build.js",
+    "deploy": "node tools/deploy.js",
+    "minify": "node tools/minify.js",
+    "optimize-images": "node tools/optimize-images.js",
+    "generate-icons": "node tools/generate-icons.js",
+    "validate": "node tools/validate.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/js/**/*.js",
+    "lint:fix": "eslint src/js/**/*.js --fix",
+    "format": "prettier --write \"src/**/*.{js,css,html,json}\"",
+    "clean": "rimraf build",
+    "serve": "http-server build -p 8080 -c-1",
+    "analyze": "source-map-explorer build/js/app.bundle.js"
+  },
+  "keywords": [
+    "arsip",
+    "surat",
+    "digital",
+    "enterprise",
+    "document-management"
+  ],
+  "author": "Arsip Surat Digital Enterprise Team",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "clean-css": "^5.3.0",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "html-minifier": "^4.0.0",
+    "http-server": "^14.1.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.0.0",
+    "rimraf": "^5.0.0",
+    "source-map-explorer": "^2.5.0",
+    "terser": "^5.20.0"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.0",
+    "qrcode": "^1.5.3",
+    "jszip": "^3.10.0",
+    "file-saver": "^2.0.5",
+    "xlsx": "^0.18.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "browserslist": [
+    "Chrome >= 90",
+    "Firefox >= 88",
+    "Safari >= 14",
+    "Edge >= 90",
+    "iOS >= 14",
+    "Android >= 10"
+  ]
+}
