@@ -1,0 +1,467 @@
+/**
+ * DISPOSISI PAGE STYLES - ARSIP SURAT DIGITAL ENTERPRISE v3.2.2
+ */
+
+/* ============================================
+ * DISPOSISI LIST
+ * ============================================ */
+.disposisi-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-4);
+}
+
+/* Disposisi Cards */
+.disposisi-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--md-sys-spacing-4);
+}
+
+.disposisi-card {
+  background-color: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+  overflow: hidden;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  cursor: pointer;
+}
+
+.disposisi-card:hover {
+  box-shadow: var(--md-sys-elevation-level2);
+  border-color: var(--md-sys-color-primary);
+}
+
+.disposisi-card--urgent {
+  border-left: 4px solid var(--md-sys-color-error);
+}
+
+.disposisi-card--pending {
+  border-left: 4px solid var(--md-sys-color-warning);
+}
+
+.disposisi-card--completed {
+  border-left: 4px solid var(--md-sys-color-success);
+}
+
+.disposisi-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--md-sys-spacing-3) var(--md-sys-spacing-4);
+  background-color: var(--md-sys-color-surface-container);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.disposisi-card__number {
+  font-family: var(--md-sys-font-family-mono);
+  font-size: var(--md-sys-typescale-label-medium-size);
+  font-weight: var(--md-sys-font-weight-medium);
+  color: var(--md-sys-color-primary);
+}
+
+.disposisi-card__date {
+  font-size: var(--md-sys-typescale-label-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.disposisi-card__body {
+  padding: var(--md-sys-spacing-4);
+}
+
+.disposisi-card__subject {
+  font-size: var(--md-sys-typescale-body-medium-size);
+  font-weight: var(--md-sys-font-weight-medium);
+  margin-bottom: var(--md-sys-spacing-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.disposisi-card__instruction {
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: var(--md-sys-spacing-3);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.disposisi-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-4);
+  flex-wrap: wrap;
+}
+
+.disposisi-card__meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-1);
+  font-size: var(--md-sys-typescale-label-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.disposisi-card__meta-item .material-icons {
+  font-size: 16px;
+}
+
+.disposisi-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--md-sys-spacing-3) var(--md-sys-spacing-4);
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.disposisi-card__deadline {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-1);
+  font-size: var(--md-sys-typescale-label-small-size);
+}
+
+.disposisi-card__deadline--overdue {
+  color: var(--md-sys-color-error);
+}
+
+.disposisi-card__deadline--soon {
+  color: var(--md-sys-color-warning);
+}
+
+/* ============================================
+ * DISPOSISI CREATE
+ * ============================================ */
+.disposisi-create {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-6);
+  max-width: 800px;
+}
+
+/* Surat Reference */
+.surat-reference {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-4);
+  padding: var(--md-sys-spacing-4);
+  background-color: var(--md-sys-color-surface-container);
+  border-radius: var(--md-sys-shape-corner-medium);
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.surat-reference__icon {
+  font-size: 40px;
+  color: var(--md-sys-color-primary);
+}
+
+.surat-reference__info {
+  flex: 1;
+}
+
+.surat-reference__number {
+  font-family: var(--md-sys-font-family-mono);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  font-weight: var(--md-sys-font-weight-medium);
+}
+
+.surat-reference__subject {
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Recipient List */
+.recipient-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-2);
+}
+
+.recipient-item {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-3);
+  padding: var(--md-sys-spacing-3);
+  background-color: var(--md-sys-color-surface-container);
+  border-radius: var(--md-sys-shape-corner-small);
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.recipient-item__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--md-sys-font-weight-medium);
+  flex-shrink: 0;
+}
+
+.recipient-item__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.recipient-item__name {
+  font-size: var(--md-sys-typescale-body-medium-size);
+  font-weight: var(--md-sys-font-weight-medium);
+}
+
+.recipient-item__role {
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.recipient-item__remove {
+  flex-shrink: 0;
+}
+
+/* Add Recipient Button */
+.add-recipient-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--md-sys-spacing-2);
+  padding: var(--md-sys-spacing-3);
+  border: 2px dashed var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-small);
+  color: var(--md-sys-color-primary);
+  cursor: pointer;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  font-size: var(--md-sys-typescale-body-medium-size);
+}
+
+.add-recipient-btn:hover {
+  border-color: var(--md-sys-color-primary);
+  background-color: var(--md-sys-color-primary-container);
+}
+
+/* ============================================
+ * DISPOSISI DETAIL
+ * ============================================ */
+.disposisi-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-6);
+}
+
+/* Progress Tracker */
+.disposisi-progress {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: var(--md-sys-spacing-4);
+  background-color: var(--md-sys-color-surface-container);
+  border-radius: var(--md-sys-shape-corner-medium);
+  overflow-x: auto;
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-2);
+  flex: 1;
+  min-width: 120px;
+}
+
+.progress-step__indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: var(--md-sys-font-weight-medium);
+  flex-shrink: 0;
+  border: 2px solid var(--md-sys-color-outline);
+  color: var(--md-sys-color-on-surface-variant);
+  background-color: var(--md-sys-color-surface);
+}
+
+.progress-step--active .progress-step__indicator {
+  border-color: var(--md-sys-color-primary);
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.progress-step--completed .progress-step__indicator {
+  border-color: var(--md-sys-color-success);
+  background-color: var(--md-sys-color-success);
+  color: var(--md-sys-color-on-success);
+}
+
+.progress-step__label {
+  font-size: var(--md-sys-typescale-label-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+  white-space: nowrap;
+}
+
+.progress-step--active .progress-step__label {
+  color: var(--md-sys-color-primary);
+  font-weight: var(--md-sys-font-weight-medium);
+}
+
+.progress-step__connector {
+  flex: 1;
+  height: 2px;
+  background-color: var(--md-sys-color-outline-variant);
+  margin: 0 var(--md-sys-spacing-2);
+  min-width: 20px;
+}
+
+.progress-step--completed + .progress-step__connector {
+  background-color: var(--md-sys-color-success);
+}
+
+/* Tindak Lanjut Form */
+.tindak-lanjut-form {
+  background-color: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+  padding: var(--md-sys-spacing-4);
+}
+
+.tindak-lanjut-form__header {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-2);
+  margin-bottom: var(--md-sys-spacing-4);
+}
+
+.tindak-lanjut-form__header h4 {
+  font-size: var(--md-sys-typescale-title-small-size);
+  font-weight: var(--md-sys-font-weight-medium);
+}
+
+/* ============================================
+ * KALENDER DISPOSISI
+ * ============================================ */
+.kalender-disposisi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-4);
+}
+
+.kalender-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--md-sys-spacing-4);
+}
+
+.kalender-header__title {
+  font-size: var(--md-sys-typescale-headline-small-size);
+  font-weight: var(--md-sys-font-weight-regular);
+}
+
+.kalender-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-2);
+}
+
+.kalender-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background-color: var(--md-sys-color-outline-variant);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+  overflow: hidden;
+}
+
+.kalender-day-header {
+  padding: var(--md-sys-spacing-2);
+  text-align: center;
+  font-size: var(--md-sys-typescale-label-medium-size);
+  font-weight: var(--md-sys-font-weight-medium);
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.kalender-day {
+  min-height: 100px;
+  padding: var(--md-sys-spacing-1);
+  background-color: var(--md-sys-color-surface);
+  cursor: pointer;
+  transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.kalender-day:hover {
+  background-color: var(--md-sys-color-surface-container);
+}
+
+.kalender-day--today {
+  background-color: var(--md-sys-color-primary-container);
+}
+
+.kalender-day--other-month {
+  opacity: 0.4;
+}
+
+.kalender-day__number {
+  font-size: var(--md-sys-typescale-label-small-size);
+  font-weight: var(--md-sys-font-weight-medium);
+  padding: var(--md-sys-spacing-1);
+  margin-bottom: var(--md-sys-spacing-1);
+}
+
+.kalender-day--today .kalender-day__number {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kalender-event {
+  font-size: 11px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.kalender-event--disposisi {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.kalender-event--deadline {
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+}
+
+.kalender-event--reminder {
+  background-color: var(--md-sys-color-warning-container);
+  color: var(--md-sys-color-on-warning-container);
+}
+
+/* ============================================
+ * RESPONSIVE
+ * ============================================ */
+@media (max-width: 905px) {
+  .disposisi-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .kalender-day {
+    min-height: 60px;
+  }
+  
+  .kalender-event {
+    font-size: 10px;
+  }
+}
