@@ -1,0 +1,11 @@
+.file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.file-card { border: 1px solid var(--md-sys-color-outline-variant); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
+.file-card:hover { box-shadow: var(--md-sys-elevation-level2); border-color: var(--md-sys-color-primary); }
+.file-card__preview { height: 140px; display: flex; align-items: center; justify-content: center; background: var(--md-sys-color-surface-container); }
+.file-card__preview img { max-width: 100%; max-height: 100%; object-fit: cover; }
+.file-card__icon { font-size: 48px; color: var(--md-sys-color-primary); }
+.file-card__info { padding: 12px; }
+.file-card__name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+.file-card__meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--md-sys-color-on-surface-variant); }
+.file-card__actions { display: flex; justify-content: flex-end; gap: 4px; padding: 0 8px 8px; }
+.file-list-view .file-name-cell { display: flex; align-items: center; gap: 8px; }
