@@ -10,112 +10,238 @@ const Dashboard = {
     chartInstances: {},
     refreshInterval: null,
     statsCache: null,
-    lastUpdate: null,
+    isLoading: false,
     
     // ========== RENDER ==========
     async render() {
         return `
             <div class="dashboard-page">
+                <!-- Welcome Section -->
+                <div class="card" style="margin-bottom: 20px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <h2 style="font-size: 20px; font-weight: 700; color: white; margin-bottom: 4px;">
+                                👋 Selamat Datang, <span id="dashboardUserName">${App.user?.namaLengkap || App.user?.username || 'User'}</span>
+                            </h2>
+                            <p style="color: rgba(255,255,255,0.8); font-size: 14px;">
+                                <i class="fas fa-calendar-alt"></i> 
+                                ${new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: none;" onclick="Dashboard.refreshAll()">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                            <button class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: none;" onclick="Dashboard.exportDashboard()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Stats Grid -->
                 <div class="stats-grid" id="statsGrid">
-                    <div class="stat-card">
+                    <div class="stat-card" onclick="App.loadPage('surat-masuk')" style="cursor: pointer;">
                         <div class="stat-icon blue"><i class="fas fa-inbox"></i></div>
                         <div class="stat-number" id="statSMTotal">0</div>
                         <div class="stat-label">Total Surat Masuk</div>
                         <div class="stat-change up" id="smChange"><i class="fas fa-arrow-up"></i> 0%</div>
+                        <div style="margin-top: 8px; font-size: 12px; color: var(--text-light);">
+                            <span id="smPending">0</span> pending
+                        </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card" onclick="App.loadPage('surat-keluar')" style="cursor: pointer;">
                         <div class="stat-icon green"><i class="fas fa-paper-plane"></i></div>
                         <div class="stat-number" id="statSKTotal">0</div>
                         <div class="stat-label">Total Surat Keluar</div>
                         <div class="stat-change up" id="skChange"><i class="fas fa-arrow-up"></i> 0%</div>
+                        <div style="margin-top: 8px; font-size: 12px; color: var(--text-light);">
+                            <span id="skPending">0</span> pending approval
+                        </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card" onclick="App.loadPage('disposisi')" style="cursor: pointer;">
                         <div class="stat-icon orange"><i class="fas fa-clipboard-list"></i></div>
                         <div class="stat-number" id="statDispTotal">0</div>
                         <div class="stat-label">Total Disposisi</div>
                         <div class="stat-change up" id="dispChange"><i class="fas fa-arrow-up"></i> 0%</div>
+                        <div style="margin-top: 8px; font-size: 12px; color: var(--text-light);">
+                            <span id="dispPending">0</span> belum ditindaklanjuti
+                        </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card" onclick="App.loadPage('approval')" style="cursor: pointer;">
                         <div class="stat-icon purple"><i class="fas fa-check-double"></i></div>
                         <div class="stat-number" id="statApprovalPending">0</div>
                         <div class="stat-label">Approval Pending</div>
                         <div class="stat-change down" id="apprChange"><i class="fas fa-arrow-down"></i> 0%</div>
+                        <div style="margin-top: 8px; font-size: 12px; color: var(--text-light);">
+                            Menunggu persetujuan
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Quick Actions -->
-                <div class="card" style="margin-bottom: 20px;">
-                    <div class="card-header">
-                        <h3><i class="fas fa-bolt"></i> Aksi Cepat</h3>
-                    </div>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <button class="btn btn-primary" onclick="App.loadPage('surat-masuk')">
-                            <i class="fas fa-inbox"></i> Surat Masuk
-                        </button>
-                        <button class="btn btn-success" onclick="App.loadPage('surat-keluar')">
-                            <i class="fas fa-paper-plane"></i> Surat Keluar
-                        </button>
-                        <button class="btn btn-warning" onclick="App.loadPage('disposisi')">
-                            <i class="fas fa-clipboard-list"></i> Disposisi
-                        </button>
-                        <button class="btn btn-info" onclick="App.loadPage('approval')">
-                            <i class="fas fa-check-double"></i> Approval
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Charts Section -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+
+                <!-- Charts Row -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <!-- Main Chart -->
                     <div class="card">
                         <div class="card-header">
                             <h3><i class="fas fa-chart-bar"></i> Statistik Surat</h3>
-                            <div style="display: flex; gap: 8px; align-items: center;">
-                                <select id="chartYear" class="form-control" style="width: auto; padding: 4px 8px; font-size: 12px;">
+                            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                <select id="chartYear" class="form-control" style="width: auto; display: inline-block; padding: 4px 8px; font-size: 12px;">
                                     ${this.getYearOptions()}
                                 </select>
-                                <button class="btn btn-sm btn-outline" id="refreshChartBtn" title="Refresh Chart">
+                                <select id="chartType" class="form-control" style="width: auto; display: inline-block; padding: 4px 8px; font-size: 12px;">
+                                    <option value="bar">Bar Chart</option>
+                                    <option value="line">Line Chart</option>
+                                </select>
+                                <button class="btn btn-sm btn-outline" id="refreshChartBtn">
                                     <i class="fas fa-sync"></i>
                                 </button>
                             </div>
                         </div>
-                        <div style="position: relative; height: 250px;">
+                        <div style="position: relative; height: 280px;">
                             <canvas id="chartMain"></canvas>
                         </div>
                     </div>
+
+                    <!-- Quick Stats / AI Insights -->
                     <div class="card">
                         <div class="card-header">
-                            <h3><i class="fas fa-chart-pie"></i> Distribusi Status</h3>
-                            <button class="btn btn-sm btn-outline" id="refreshPieBtn" title="Refresh Pie">
-                                <i class="fas fa-sync"></i>
-                            </button>
+                            <h3><i class="fas fa-robot"></i> AI Insights</h3>
                         </div>
-                        <div style="position: relative; height: 250px;">
-                            <canvas id="chartPie"></canvas>
+                        <div id="aiInsights" style="display: flex; flex-direction: column; gap: 12px;">
+                            <div class="shimmer" style="height: 60px; border-radius: 8px;"></div>
+                            <div class="shimmer" style="height: 60px; border-radius: 8px;"></div>
+                            <div class="shimmer" style="height: 60px; border-radius: 8px;"></div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Recent Activity -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-history"></i> Aktivitas Terbaru</h3>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <span style="font-size: 12px; color: var(--text-light);" id="lastUpdateTime"></span>
-                            <button class="btn btn-sm btn-outline" id="refreshActivityBtn" title="Refresh Activity">
+
+                <!-- Recent Activity & Quick Actions -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                    <!-- Recent Activity -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-history"></i> Aktivitas Terbaru</h3>
+                            <button class="btn btn-sm btn-outline" id="refreshActivityBtn">
                                 <i class="fas fa-sync"></i>
                             </button>
                         </div>
+                        <div id="recentActivity">
+                            <div class="shimmer" style="height: 40px; border-radius: 8px; margin-bottom: 8px;"></div>
+                            <div class="shimmer" style="height: 40px; border-radius: 8px; margin-bottom: 8px;"></div>
+                            <div class="shimmer" style="height: 40px; border-radius: 8px; margin-bottom: 8px;"></div>
+                        </div>
                     </div>
-                    <div id="recentActivity">
-                        <div class="text-center text-muted" style="padding: 20px;">
-                            <i class="fas fa-spinner fa-spin" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
-                            <p>Memuat aktivitas...</p>
+
+                    <!-- Quick Actions -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-bolt"></i> Aksi Cepat</h3>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button class="btn btn-primary btn-block" onclick="App.loadPage('surat-masuk')">
+                                <i class="fas fa-plus"></i> Surat Masuk Baru
+                            </button>
+                            <button class="btn btn-success btn-block" onclick="App.loadPage('surat-keluar')">
+                                <i class="fas fa-plus"></i> Surat Keluar Baru
+                            </button>
+                            <button class="btn btn-warning btn-block" onclick="App.loadPage('disposisi')">
+                                <i class="fas fa-plus"></i> Buat Disposisi
+                            </button>
+                            <button class="btn btn-info btn-block" onclick="App.loadPage('approval')">
+                                <i class="fas fa-check"></i> Proses Approval
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Status (mobile friendly) -->
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-server"></i> Status Sistem</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
+                        <div>
+                            <span style="font-size: 12px; color: var(--text-light);">Server</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="status-badge approved" id="serverStatus">Online</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span style="font-size: 12px; color: var(--text-light);">Database</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="status-badge approved" id="dbStatus">Connected</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span style="font-size: 12px; color: var(--text-light);">Cache</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="status-badge approved" id="cacheStatus">Active</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span style="font-size: 12px; color: var(--text-light);">Last Update</span>
+                            <div style="font-size: 12px; color: var(--text-secondary);" id="lastUpdateTime">-</div>
                         </div>
                     </div>
                 </div>
             </div>
         `;
+    },
+    
+    // ========== INIT ==========
+    init() {
+        console.log('📊 Dashboard initializing...');
+        
+        // Set user name
+        const userNameEl = document.getElementById('dashboardUserName');
+        if (userNameEl && App.user) {
+            userNameEl.textContent = App.user.namaLengkap || App.user.username || 'User';
+        }
+        
+        // Load all data
+        this.loadAllData();
+        
+        // Setup auto refresh (every 30 seconds)
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+        }
+        this.refreshInterval = setInterval(() => {
+            console.log('🔄 Auto refreshing dashboard...');
+            this.loadStats();
+            this.loadChart();
+        }, 30000);
+        
+        // Setup event listeners
+        this.setupEventListeners();
+        
+        // Update last update time
+        this.updateLastUpdateTime();
+    },
+    
+    // ========== LOAD ALL DATA ==========
+    async loadAllData() {
+        this.isLoading = true;
+        try {
+            await Promise.all([
+                this.loadStats(),
+                this.loadChart(),
+                this.loadAIInsights(),
+                this.loadRecentActivity(),
+                this.loadSystemStatus()
+            ]);
+        } catch (error) {
+            console.error('❌ Error loading dashboard data:', error);
+        } finally {
+            this.isLoading = false;
+        }
+    },
+    
+    // ========== REFRESH ALL ==========
+    refreshAll() {
+        console.log('🔄 Manual refresh...');
+        this.loadAllData();
+        showToast('info', 'Refresh', 'Dashboard diperbarui');
     },
     
     // ========== GET YEAR OPTIONS ==========
@@ -128,87 +254,35 @@ const Dashboard = {
         return options;
     },
     
-    // ========== INIT ==========
-    init() {
-        console.log('📊 Dashboard initializing...');
-        
-        // Load all data
-        this.loadStats();
-        this.loadChart();
-        this.loadPieChart();
-        this.loadRecentActivity();
-        
-        // Setup auto refresh (every 30 seconds)
-        this.startAutoRefresh();
-        
-        // Setup event listeners
-        this.setupEventListeners();
-        
-        // Update last update time
-        this.updateLastUpdateTime();
-    },
-    
-    // ========== DESTROY ==========
-    destroy() {
-        if (this.refreshInterval) {
-            clearInterval(this.refreshInterval);
-            this.refreshInterval = null;
-        }
-        this.destroyCharts();
-    },
-    
-    // ========== DESTROY CHARTS ==========
-    destroyCharts() {
-        Object.keys(this.chartInstances).forEach(key => {
-            if (this.chartInstances[key]) {
-                this.chartInstances[key].destroy();
-                this.chartInstances[key] = null;
-            }
-        });
-        this.chartInstances = {};
-    },
-    
-    // ========== START AUTO REFRESH ==========
-    startAutoRefresh() {
-        if (this.refreshInterval) {
-            clearInterval(this.refreshInterval);
-        }
-        this.refreshInterval = setInterval(() => {
-            console.log('🔄 Auto refreshing dashboard...');
-            this.loadStats();
-            this.loadChart();
-            this.loadPieChart();
-            this.updateLastUpdateTime();
-        }, 30000);
-    },
-    
-    // ========== UPDATE LAST UPDATE TIME ==========
-    updateLastUpdateTime() {
-        const el = document.getElementById('lastUpdateTime');
-        if (el) {
-            const now = new Date();
-            el.textContent = 'Last update: ' + now.toLocaleTimeString('id-ID');
-        }
-    },
-    
     // ========== SETUP EVENT LISTENERS ==========
     setupEventListeners() {
         // Refresh chart button
-        const refreshChartBtn = document.getElementById('refreshChartBtn');
-        if (refreshChartBtn) {
-            refreshChartBtn.addEventListener('click', () => {
+        const refreshBtn = document.getElementById('refreshChartBtn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
                 const yearSelect = document.getElementById('chartYear');
+                const typeSelect = document.getElementById('chartType');
                 if (yearSelect) {
-                    this.loadChartData(yearSelect.value);
+                    this.loadChartData(yearSelect.value, typeSelect?.value || 'bar');
                 }
             });
         }
         
-        // Refresh pie button
-        const refreshPieBtn = document.getElementById('refreshPieBtn');
-        if (refreshPieBtn) {
-            refreshPieBtn.addEventListener('click', () => {
-                this.loadPieChart();
+        // Year select change
+        const yearSelect = document.getElementById('chartYear');
+        if (yearSelect) {
+            yearSelect.addEventListener('change', () => {
+                const typeSelect = document.getElementById('chartType');
+                this.loadChartData(yearSelect.value, typeSelect?.value || 'bar');
+            });
+        }
+        
+        // Chart type change
+        const typeSelect = document.getElementById('chartType');
+        if (typeSelect) {
+            typeSelect.addEventListener('change', () => {
+                const yearSelect = document.getElementById('chartYear');
+                this.loadChartData(yearSelect?.value || new Date().getFullYear(), typeSelect.value);
             });
         }
         
@@ -217,15 +291,6 @@ const Dashboard = {
         if (refreshActivityBtn) {
             refreshActivityBtn.addEventListener('click', () => {
                 this.loadRecentActivity();
-                this.updateLastUpdateTime();
-            });
-        }
-        
-        // Year select change
-        const yearSelect = document.getElementById('chartYear');
-        if (yearSelect) {
-            yearSelect.addEventListener('change', () => {
-                this.loadChartData(yearSelect.value);
             });
         }
     },
@@ -245,11 +310,20 @@ const Dashboard = {
                 const skTotal = stats.suratKeluar?.total || 0;
                 const dispTotal = stats.disposisi?.total || 0;
                 const apprPending = stats.suratKeluar?.pending || 0;
+                const smPending = stats.suratMasuk?.pending || 0;
+                const skPending = stats.suratKeluar?.pending || 0;
+                const dispPending = stats.disposisi?.pending || 0;
                 
-                this.updateStatNumber('statSMTotal', smTotal);
-                this.updateStatNumber('statSKTotal', skTotal);
-                this.updateStatNumber('statDispTotal', dispTotal);
-                this.updateStatNumber('statApprovalPending', apprPending);
+                // Update numbers
+                document.getElementById('statSMTotal').textContent = smTotal;
+                document.getElementById('statSKTotal').textContent = skTotal;
+                document.getElementById('statDispTotal').textContent = dispTotal;
+                document.getElementById('statApprovalPending').textContent = apprPending;
+                
+                // Update pending counts
+                document.getElementById('smPending').textContent = smPending;
+                document.getElementById('skPending').textContent = skPending;
+                document.getElementById('dispPending').textContent = dispPending;
                 
                 // Update change indicators
                 this.updateChangeIndicator('smChange', smTotal);
@@ -257,10 +331,10 @@ const Dashboard = {
                 this.updateChangeIndicator('dispChange', dispTotal);
                 this.updateChangeIndicator('apprChange', apprPending, true);
                 
-                // Update badges
+                // Update badges di sidebar
                 this.updateBadges(stats);
                 
-                // Cache stats
+                // Save to cache
                 this.statsCache = stats;
                 try {
                     localStorage.setItem('dashboard_stats', JSON.stringify(stats));
@@ -281,33 +355,13 @@ const Dashboard = {
             const cached = localStorage.getItem('dashboard_stats');
             if (cached) {
                 const stats = JSON.parse(cached);
-                this.updateStatNumber('statSMTotal', stats.suratMasuk?.total || 0);
-                this.updateStatNumber('statSKTotal', stats.suratKeluar?.total || 0);
-                this.updateStatNumber('statDispTotal', stats.disposisi?.total || 0);
-                this.updateStatNumber('statApprovalPending', stats.suratKeluar?.pending || 0);
+                document.getElementById('statSMTotal').textContent = stats.suratMasuk?.total || 0;
+                document.getElementById('statSKTotal').textContent = stats.suratKeluar?.total || 0;
+                document.getElementById('statDispTotal').textContent = stats.disposisi?.total || 0;
+                document.getElementById('statApprovalPending').textContent = stats.suratKeluar?.pending || 0;
                 this.updateBadges(stats);
-                showToast('info', 'Info', 'Menggunakan data cache');
             }
         } catch(e) {}
-    },
-    
-    // ========== UPDATE STAT NUMBER ==========
-    updateStatNumber(elementId, value) {
-        const el = document.getElementById(elementId);
-        if (el) {
-            // Animate number change
-            const current = parseInt(el.textContent) || 0;
-            if (current !== value) {
-                el.textContent = value;
-                el.style.transition = 'all 0.3s ease';
-                el.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    el.style.transform = 'scale(1)';
-                }, 300);
-            } else {
-                el.textContent = value;
-            }
-        }
     },
     
     // ========== UPDATE CHANGE INDICATOR ==========
@@ -315,39 +369,39 @@ const Dashboard = {
         const el = document.getElementById(elementId);
         if (!el) return;
         
-        // Get previous value from data attribute
         const previous = parseInt(el.dataset.previous) || currentValue;
         const diff = currentValue - previous;
         
         if (diff > 0) {
             el.className = `stat-change ${isReverse ? 'down' : 'up'}`;
-            el.innerHTML = `<i class="fas fa-arrow-${isReverse ? 'down' : 'up'}"></i> ${Math.abs(diff)}%`;
+            el.innerHTML = `<i class="fas fa-arrow-${isReverse ? 'down' : 'up'}"></i> +${diff}`;
         } else if (diff < 0) {
             el.className = `stat-change ${isReverse ? 'up' : 'down'}`;
-            el.innerHTML = `<i class="fas fa-arrow-${isReverse ? 'up' : 'down'}"></i> ${Math.abs(diff)}%`;
+            el.innerHTML = `<i class="fas fa-arrow-${isReverse ? 'up' : 'down'}"></i> ${diff}`;
         } else {
             el.className = 'stat-change';
-            el.innerHTML = `<i class="fas fa-minus"></i> 0%`;
+            el.innerHTML = `<i class="fas fa-minus"></i> 0`;
         }
         
-        // Store current value for next comparison
         el.dataset.previous = currentValue;
     },
     
     // ========== UPDATE BADGES ==========
     updateBadges(stats) {
-        const badges = [
-            { id: 'smBadge', value: stats.suratMasuk?.pending || 0 },
-            { id: 'skBadge', value: stats.suratKeluar?.pending || 0 },
-            { id: 'dispBadge', value: stats.disposisi?.pending || 0 },
-            { id: 'apprBadge', value: stats.suratKeluar?.pending || 0 }
+        const badgeIds = ['smBadge', 'skBadge', 'dispBadge', 'apprBadge'];
+        const values = [
+            stats.suratMasuk?.pending || 0,
+            stats.suratKeluar?.pending || 0,
+            stats.disposisi?.pending || 0,
+            stats.suratKeluar?.pending || 0
         ];
         
-        badges.forEach(({ id, value }) => {
+        badgeIds.forEach((id, index) => {
             const el = document.getElementById(id);
             if (el) {
-                el.textContent = value;
-                el.style.display = value > 0 ? 'inline' : 'none';
+                const val = values[index];
+                el.textContent = val;
+                el.style.display = val > 0 ? 'inline' : 'none';
             }
         });
     },
@@ -355,15 +409,16 @@ const Dashboard = {
     // ========== LOAD CHART ==========
     async loadChart() {
         const yearSelect = document.getElementById('chartYear');
+        const typeSelect = document.getElementById('chartType');
         if (yearSelect) {
-            this.loadChartData(yearSelect.value);
+            this.loadChartData(yearSelect.value, typeSelect?.value || 'bar');
         }
     },
     
     // ========== LOAD CHART DATA ==========
-    async loadChartData(year) {
+    async loadChartData(year, type) {
         try {
-            console.log('📊 Loading chart for year:', year);
+            console.log('📊 Loading chart for year:', year, 'type:', type);
             
             const response = await API.get('dashboard.chart', { 
                 token: App.token,
@@ -373,14 +428,14 @@ const Dashboard = {
             if (response.status === 'success' && response.data) {
                 const chartData = response.data;
                 if (chartData.labels && chartData.datasets) {
-                    this.renderChart(chartData);
+                    this.renderChart(chartData, type);
                 } else {
-                    console.warn('⚠️ Invalid chart data format');
-                    this.renderDefaultChart();
+                    console.warn('⚠️ Invalid chart data format:', chartData);
+                    this.renderDefaultChart(type);
                 }
             } else {
                 console.warn('⚠️ Chart load failed:', response.message);
-                this.renderDefaultChart();
+                this.renderDefaultChart(type);
             }
         } catch (error) {
             console.error('❌ Error loading chart:', error);
@@ -389,9 +444,12 @@ const Dashboard = {
     },
     
     // ========== RENDER CHART ==========
-    renderChart(data) {
+    renderChart(data, type) {
         const canvas = document.getElementById('chartMain');
-        if (!canvas) return;
+        if (!canvas) {
+            console.warn('⚠️ Canvas not found');
+            return;
+        }
         
         // Destroy existing chart
         if (this.chartInstances.main) {
@@ -402,32 +460,24 @@ const Dashboard = {
         // Prepare data with defaults
         const labels = data.labels || ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
         const datasets = data.datasets || [
-            { 
-                label: 'Surat Masuk', 
-                data: new Array(12).fill(0), 
-                backgroundColor: 'rgba(25, 118, 210, 0.7)',
-                borderColor: '#1976D2',
-                borderWidth: 2,
-                borderRadius: 4
-            },
-            { 
-                label: 'Surat Keluar', 
-                data: new Array(12).fill(0), 
-                backgroundColor: 'rgba(76, 175, 80, 0.7)',
-                borderColor: '#4CAF50',
-                borderWidth: 2,
-                borderRadius: 4
-            }
+            { label: 'Surat Masuk', data: new Array(12).fill(0), backgroundColor: 'rgba(25, 118, 210, 0.7)', borderColor: '#1976D2' },
+            { label: 'Surat Keluar', data: new Array(12).fill(0), backgroundColor: 'rgba(76, 175, 80, 0.7)', borderColor: '#4CAF50' }
         ];
         
         const ctx = canvas.getContext('2d');
+        const chartType = type || 'bar';
         
         try {
             this.chartInstances.main = new Chart(ctx, {
-                type: 'bar',
+                type: chartType,
                 data: {
                     labels: labels,
-                    datasets: datasets
+                    datasets: datasets.map(ds => ({
+                        ...ds,
+                        borderWidth: 2,
+                        borderRadius: 4,
+                        tension: 0.3
+                    }))
                 },
                 options: {
                     responsive: true,
@@ -437,7 +487,8 @@ const Dashboard = {
                             position: 'top',
                             labels: {
                                 usePointStyle: true,
-                                padding: 15,
+                                padding: 20,
+                                boxWidth: 12,
                                 font: { size: 12 }
                             }
                         },
@@ -463,8 +514,12 @@ const Dashboard = {
                             }
                         },
                         x: {
-                            grid: { display: false },
-                            ticks: { font: { size: 11 } }
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: { size: 11 }
+                            }
                         }
                     },
                     animation: {
@@ -480,145 +535,49 @@ const Dashboard = {
     },
     
     // ========== RENDER DEFAULT CHART ==========
-    renderDefaultChart() {
+    renderDefaultChart(type) {
         const defaultData = {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
             datasets: [
-                { 
-                    label: 'Surat Masuk', 
-                    data: new Array(12).fill(0), 
-                    backgroundColor: 'rgba(25, 118, 210, 0.7)',
-                    borderColor: '#1976D2',
-                    borderWidth: 2,
-                    borderRadius: 4
-                },
-                { 
-                    label: 'Surat Keluar', 
-                    data: new Array(12).fill(0), 
-                    backgroundColor: 'rgba(76, 175, 80, 0.7)',
-                    borderColor: '#4CAF50',
-                    borderWidth: 2,
-                    borderRadius: 4
-                }
+                { label: 'Surat Masuk', data: new Array(12).fill(0), backgroundColor: 'rgba(25, 118, 210, 0.7)', borderColor: '#1976D2' },
+                { label: 'Surat Keluar', data: new Array(12).fill(0), backgroundColor: 'rgba(76, 175, 80, 0.7)', borderColor: '#4CAF50' }
             ]
         };
-        this.renderChart(defaultData);
+        this.renderChart(defaultData, type);
     },
     
-    // ========== LOAD PIE CHART ==========
-    async loadPieChart() {
+    // ========== LOAD AI INSIGHTS ==========
+    async loadAIInsights() {
         try {
-            console.log('📊 Loading pie chart...');
-            const response = await API.get('dashboard.stats', { token: App.token });
+            const container = document.getElementById('aiInsights');
+            if (!container) return;
+            
+            const response = await API.get('dashboard.aiInsights', { token: App.token });
             
             if (response.status === 'success') {
-                const stats = response.data;
-                const pieData = this.preparePieData(stats);
-                this.renderPieChart(pieData);
+                const insights = response.data?.insights || [];
+                if (insights.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center text-muted" style="padding: 20px;">
+                            <i class="fas fa-robot" style="font-size: 32px; display: block; margin-bottom: 8px;"></i>
+                            <p>AI Insights akan aktif setelah data mencukupi</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = insights.map(insight => `
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px; background: var(--bg-hover); border-radius: 8px; border-left: 3px solid var(--primary);">
+                        <span style="font-size: 20px;">${insight.icon || '💡'}</span>
+                        <div>
+                            <div style="font-weight: 600; font-size: 14px; color: var(--text-primary);">${insight.title || 'Info'}</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">${insight.description || '-'}</div>
+                        </div>
+                    </div>
+                `).join('');
             }
         } catch (error) {
-            console.error('❌ Error loading pie chart:', error);
-        }
-    },
-    
-    // ========== PREPARE PIE DATA ==========
-    preparePieData(stats) {
-        const data = [];
-        const colors = ['#1976D2', '#FF9800', '#7B1FA2', '#4CAF50', '#F44336', '#009688'];
-        let colorIndex = 0;
-        
-        // Surat Masuk status
-        if (stats.suratMasuk) {
-            Object.keys(stats.suratMasuk).forEach(key => {
-                if (key !== 'total' && key !== 'pending' && key !== 'hariIni' && key !== 'bulanIni') {
-                    data.push({
-                        label: key,
-                        value: stats.suratMasuk[key] || 0,
-                        color: colors[colorIndex % colors.length]
-                    });
-                    colorIndex++;
-                }
-            });
-        }
-        
-        // If no data, show default
-        if (data.length === 0) {
-            data.push({ label: 'Belum ada data', value: 1, color: '#9E9E9E' });
-        }
-        
-        return data;
-    },
-    
-    // ========== RENDER PIE CHART ==========
-    renderPieChart(data) {
-        const canvas = document.getElementById('chartPie');
-        if (!canvas) return;
-        
-        // Destroy existing chart
-        if (this.chartInstances.pie) {
-            this.chartInstances.pie.destroy();
-            this.chartInstances.pie = null;
-        }
-        
-        const labels = data.map(d => d.label);
-        const values = data.map(d => d.value);
-        const colors = data.map(d => d.color);
-        
-        const ctx = canvas.getContext('2d');
-        
-        try {
-            this.chartInstances.pie = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: values,
-                        backgroundColor: colors,
-                        borderWidth: 2,
-                        borderColor: 'var(--bg-card)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                usePointStyle: true,
-                                padding: 12,
-                                font: { size: 11 },
-                                generateLabels: function(chart) {
-                                    const data = chart.data;
-                                    return data.labels.map((label, i) => ({
-                                        text: label + ' (' + data.datasets[0].data[i] + ')',
-                                        fillStyle: data.datasets[0].backgroundColor[i],
-                                        strokeStyle: data.datasets[0].backgroundColor[i],
-                                        pointStyle: 'circle'
-                                    }));
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = total > 0 ? Math.round((context.parsed / total) * 100) : 0;
-                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
-                                }
-                            }
-                        }
-                    },
-                    cutout: '60%',
-                    animation: {
-                        animateRotate: true,
-                        duration: 800
-                    }
-                }
-            });
-            console.log('✅ Pie chart rendered successfully');
-        } catch (error) {
-            console.error('❌ Pie chart render error:', error);
+            console.error('❌ Error loading AI insights:', error);
         }
     },
     
@@ -628,7 +587,7 @@ const Dashboard = {
             console.log('📊 Loading recent activity...');
             const response = await API.get('auditLog.list', { 
                 token: App.token,
-                limit: 15
+                limit: 10
             });
             
             const container = document.getElementById('recentActivity');
@@ -638,63 +597,36 @@ const Dashboard = {
                 const items = response.data.items || [];
                 if (items.length === 0) {
                     container.innerHTML = `
-                        <div class="text-center text-muted" style="padding: 30px;">
-                            <i class="fas fa-inbox" style="font-size: 32px; display: block; margin-bottom: 12px;"></i>
+                        <div class="text-center text-muted" style="padding: 20px;">
+                            <i class="fas fa-inbox" style="font-size: 32px; display: block; margin-bottom: 8px;"></i>
                             <p>Belum ada aktivitas</p>
                         </div>
                     `;
                     return;
                 }
                 
-                container.innerHTML = `
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th style="min-width: 160px;">Waktu</th>
-                                    <th style="min-width: 100px;">Aksi</th>
-                                    <th>Deskripsi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${items.slice(0, 15).map(item => `
-                                    <tr>
-                                        <td style="white-space: nowrap; font-size: 12px; color: var(--text-secondary);">
-                                            ${Utils.formatDate(item.createdAt)}
-                                        </td>
-                                        <td>
-                                            <span class="status-badge" style="
-                                                background: #E3F2FD; 
-                                                color: #1976D2;
-                                                font-size: 10px;
-                                            ">
-                                                ${item.aksi || '-'}
-                                            </span>
-                                        </td>
-                                        <td style="max-width: 300px; word-break: break-word;">
-                                            ${item.deskripsi || '-'}
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                    ${items.length > 15 ? `
-                        <div style="text-align: center; margin-top: 12px;">
-                            <button class="btn btn-sm btn-link" onclick="App.loadPage('audit')">
-                                Lihat semua aktivitas <i class="fas fa-arrow-right"></i>
-                            </button>
+                container.innerHTML = items.slice(0, 10).map(item => `
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-bottom: 1px solid var(--border-color);">
+                        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--bg-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-circle" style="font-size: 8px; color: var(--primary);"></i>
                         </div>
-                    ` : ''}
-                `;
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-size: 13px; color: var(--text-primary);">
+                                <strong>${item.aksi || 'Unknown'}</strong>
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-secondary); word-break: break-word;">
+                                ${item.deskripsi || '-'}
+                            </div>
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-light); white-space: nowrap;">
+                            ${Utils.timeAgo(item.createdAt)}
+                        </div>
+                    </div>
+                `).join('');
             } else {
                 container.innerHTML = `
-                    <div class="text-center text-muted" style="padding: 30px;">
-                        <i class="fas fa-exclamation-circle" style="font-size: 32px; display: block; margin-bottom: 12px; color: #FF9800;"></i>
+                    <div class="text-center text-danger" style="padding: 20px;">
                         <p>${response.message || 'Gagal memuat aktivitas'}</p>
-                        <button class="btn btn-sm btn-outline mt-2" onclick="Dashboard.loadRecentActivity()">
-                            <i class="fas fa-sync"></i> Coba Lagi
-                        </button>
                     </div>
                 `;
             }
@@ -703,15 +635,109 @@ const Dashboard = {
             const container = document.getElementById('recentActivity');
             if (container) {
                 container.innerHTML = `
-                    <div class="text-center text-danger" style="padding: 30px;">
-                        <i class="fas fa-exclamation-circle" style="font-size: 32px; display: block; margin-bottom: 12px;"></i>
+                    <div class="text-center text-danger" style="padding: 20px;">
                         <p>Gagal memuat aktivitas: ${error.message}</p>
-                        <button class="btn btn-sm btn-outline mt-2" onclick="Dashboard.loadRecentActivity()">
-                            <i class="fas fa-sync"></i> Coba Lagi
-                        </button>
                     </div>
                 `;
             }
+        }
+    },
+    
+    // ========== LOAD SYSTEM STATUS ==========
+    async loadSystemStatus() {
+        try {
+            const response = await API.get('system.status', { token: App.token });
+            
+            if (response.status === 'success') {
+                const status = response.data;
+                
+                const serverStatus = document.getElementById('serverStatus');
+                const dbStatus = document.getElementById('dbStatus');
+                const cacheStatus = document.getElementById('cacheStatus');
+                
+                if (serverStatus) {
+                    serverStatus.textContent = status.status === 'running' ? 'Online' : 'Offline';
+                    serverStatus.className = `status-badge ${status.status === 'running' ? 'approved' : 'rejected'}`;
+                }
+                
+                if (dbStatus) {
+                    dbStatus.textContent = 'Connected';
+                    dbStatus.className = 'status-badge approved';
+                }
+                
+                if (cacheStatus) {
+                    cacheStatus.textContent = 'Active';
+                    cacheStatus.className = 'status-badge approved';
+                }
+            }
+        } catch (error) {
+            console.error('❌ Error loading system status:', error);
+        }
+    },
+    
+    // ========== UPDATE LAST UPDATE TIME ==========
+    updateLastUpdateTime() {
+        const el = document.getElementById('lastUpdateTime');
+        if (el) {
+            el.textContent = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+    },
+    
+    // ========== EXPORT DASHBOARD ==========
+    async exportDashboard() {
+        try {
+            showToast('info', 'Export', 'Mempersiapkan data...');
+            
+            // Get stats for export
+            const response = await API.get('dashboard.stats', { token: App.token });
+            
+            if (response.status === 'success') {
+                const stats = response.data;
+                const timestamp = new Date().toISOString().slice(0, 10);
+                
+                // Create CSV data
+                const csvData = [
+                    ['Metric', 'Value'],
+                    ['Total Surat Masuk', stats.suratMasuk?.total || 0],
+                    ['Surat Masuk Pending', stats.suratMasuk?.pending || 0],
+                    ['Total Surat Keluar', stats.suratKeluar?.total || 0],
+                    ['Surat Keluar Pending', stats.suratKeluar?.pending || 0],
+                    ['Total Disposisi', stats.disposisi?.total || 0],
+                    ['Disposisi Pending', stats.disposisi?.pending || 0]
+                ];
+                
+                const csv = csvData.map(row => row.join(',')).join('\n');
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                
+                // Download
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `dashboard_export_${timestamp}.csv`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showToast('success', 'Export Berhasil', 'Data dashboard berhasil diexport');
+            } else {
+                showToast('error', 'Export Gagal', response.message || 'Gagal export data');
+            }
+        } catch (error) {
+            console.error('❌ Export error:', error);
+            showToast('error', 'Export Gagal', error.message);
+        }
+    },
+    
+    // ========== DESTROY ==========
+    destroy() {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+            this.refreshInterval = null;
+        }
+        if (this.chartInstances.main) {
+            this.chartInstances.main.destroy();
+            this.chartInstances.main = null;
         }
     }
 };
@@ -721,21 +747,6 @@ document.addEventListener('beforeunload', function() {
     if (Dashboard.destroy) {
         Dashboard.destroy();
     }
-});
-
-// ========== HANDLE WINDOW RESIZE ==========
-let resizeTimeout;
-window.addEventListener('resize', function() {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        // Re-render charts with new size
-        if (Dashboard.chartInstances.main) {
-            Dashboard.chartInstances.main.resize();
-        }
-        if (Dashboard.chartInstances.pie) {
-            Dashboard.chartInstances.pie.resize();
-        }
-    }, 250);
 });
 
 console.log('📊 Dashboard Module Loaded');
