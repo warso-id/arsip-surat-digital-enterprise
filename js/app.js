@@ -1,8 +1,8 @@
 /**
  * ============================================
- * APP.JS - Main Application Controller - FINAL FIX
+ * APP.JS - Main Application Controller
  * ARSIP SURAT DIGITAL v3.2.2
- * FIXED: Login, Register, Connection, Error Handling
+ * FIXED: Session Management, Navigation, Notifications
  * ============================================
  */
 
@@ -21,7 +21,7 @@ const App = {
     init() {
         console.log('🚀 App Initializing...');
         
-        // Check authentication
+        // Check authentication from localStorage
         this.token = localStorage.getItem('token');
         this.csrf = localStorage.getItem('csrf');
         const savedUser = localStorage.getItem('user');
@@ -42,12 +42,10 @@ const App = {
             } catch (e) {
                 console.error('Error parsing user:', e);
                 this.clearSession();
-                this.showAuth();
+                this.redirectToLogin();
             }
-        } else if (this.token && this.csrf) {
-            this.verifySession();
         } else {
-            this.showAuth();
+            this.redirectToLogin();
         }
         
         this.setupEventListeners();
@@ -59,6 +57,12 @@ const App = {
         setTimeout(() => {
             this.testConnection();
         }, 1000);
+    },
+    
+    // ========== REDIRECT TO LOGIN ==========
+    redirectToLogin() {
+        console.log('🔀 Redirecting to login page...');
+        window.location.href = 'login.html';
     },
     
     // ========== TEST CONNECTION ==========
@@ -75,23 +79,10 @@ const App = {
                 console.log('📊 Public actions:', result.data?.publicActions);
                 this.connectionFailed = false;
                 showToast('success', 'Koneksi Berhasil', 'Terhubung ke server!');
-                
-                // Cek apakah sistem sudah di-setup
-                try {
-                    const setupCheck = await API.get('checkSetup', { token: null });
-                    console.log('📋 Setup status:', setupCheck);
-                    
-                    if (setupCheck.status === 'success' && setupCheck.data?.isSetup === false) {
-                        console.warn('⚠️ System not setup yet');
-                        showToast('warning', 'Setup Required', 'Sistem belum di-setup. Jalankan setup.');
-                    }
-                } catch (e) {
-                    console.warn('Setup check failed:', e);
-                }
             } else {
                 console.warn('⚠️ Connection failed:', result);
                 this.connectionFailed = true;
-                showToast('error', 'Koneksi Gagal', result.message || 'Gagal terhubung ke server. Periksa URL backend.');
+                showToast('error', 'Koneksi Gagal', result.message || 'Gagal terhubung ke server.');
             }
         } catch (error) {
             console.warn('⚠️ Connection test failed:', error.message);
@@ -116,26 +107,19 @@ const App = {
             } else {
                 console.warn('⚠️ Session invalid:', response.message);
                 this.clearSession();
-                this.showAuth();
+                this.redirectToLogin();
             }
         } catch (error) {
             console.error('❌ Session verification failed:', error);
             this.clearSession();
-            this.showAuth();
+            this.redirectToLogin();
         }
     },
     
     // ========== SHOW/HIDE PAGES ==========
     showAuth() {
-        const authPage = document.getElementById('authPage');
-        const mainApp = document.getElementById('mainApp');
-        const loading = document.getElementById('loadingScreen');
-        
-        if (authPage) authPage.style.display = 'flex';
-        if (mainApp) mainApp.style.display = 'none';
-        if (loading) loading.style.display = 'none';
-        
-        console.log('📄 Showing Auth Page');
+        // Tidak digunakan lagi - redirect ke login.html
+        this.redirectToLogin();
     },
     
     showApp() {
@@ -178,6 +162,7 @@ const App = {
     async loadPage(page, params = {}) {
         if (!this.user) {
             console.warn('⚠️ Cannot load page: No user');
+            this.redirectToLogin();
             return;
         }
         
@@ -296,190 +281,6 @@ const App = {
         }
     },
     
-    // ========== LOGIN HANDLER ==========
-    async handleLogin() {
-        const username = document.getElementById('loginUsername').value.trim();
-        const password = document.getElementById('loginPassword').value.trim();
-        const errorEl = document.getElementById('loginError');
-        
-        // Validasi input
-        if (!username || !password) {
-            errorEl.textContent = 'Username dan password harus diisi';
-            errorEl.style.display = 'block';
-            return;
-        }
-        
-        // Disable button
-        const submitBtn = document.querySelector('#loginForm button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-        }
-        
-        try {
-            errorEl.style.display = 'none';
-            console.log('🔐 Attempting login for:', username);
-            
-            // 🔥 FIX: Kirim data sebagai form-urlencoded
-            const formData = new URLSearchParams();
-            formData.append('action', 'login');
-            formData.append('username', username);
-            formData.append('password', password);
-            
-            console.log('📤 Sending login data:', { username, hasPassword: !!password });
-            
-            // 🔥 FIX: Gunakan fetch langsung dengan form-urlencoded
-            const response = await fetch(API.baseUrl, {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: formData.toString()
-            });
-            
-            const result = await response.json();
-            console.log('📥 Login response:', result);
-            
-            if (result.status === 'success') {
-                this.token = result.data.token;
-                this.csrf = result.data.csrf;
-                this.user = result.data.user;
-                
-                localStorage.setItem('token', this.token);
-                localStorage.setItem('csrf', this.csrf);
-                localStorage.setItem('user', JSON.stringify(this.user));
-                
-                console.log('✅ Login successful:', this.user.username);
-                
-                this.showApp();
-                this.loadPage('dashboard');
-                this.startNotificationPolling();
-                
-                showToast('success', 'Login Berhasil', `Selamat datang, ${this.user.namaLengkap || this.user.username}!`);
-            } else {
-                console.warn('⚠️ Login failed:', result.message);
-                errorEl.textContent = result.message || 'Login gagal';
-                errorEl.style.display = 'block';
-            }
-        } catch (error) {
-            console.error('❌ Login error:', error);
-            errorEl.textContent = error.message || 'Terjadi kesalahan saat login';
-            errorEl.style.display = 'block';
-        } finally {
-            // Re-enable button
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
-            }
-        }
-    },
-    
-    // ========== REGISTER HANDLER ==========
-    async handleRegister() {
-        const username = document.getElementById('registerUsername').value.trim();
-        const email = document.getElementById('registerEmail').value.trim();
-        const nama = document.getElementById('registerNama').value.trim();
-        const password = document.getElementById('registerPassword').value;
-        const confirm = document.getElementById('registerConfirm').value;
-        const errorEl = document.getElementById('registerError');
-        
-        // Validasi
-        if (!username || !email || !nama || !password || !confirm) {
-            errorEl.textContent = 'Semua field harus diisi';
-            errorEl.style.display = 'block';
-            return;
-        }
-        
-        if (password !== confirm) {
-            errorEl.textContent = 'Password dan konfirmasi password tidak cocok';
-            errorEl.style.display = 'block';
-            return;
-        }
-        
-        if (password.length < 8) {
-            errorEl.textContent = 'Password minimal 8 karakter';
-            errorEl.style.display = 'block';
-            return;
-        }
-        
-        if (!email.includes('@')) {
-            errorEl.textContent = 'Email tidak valid';
-            errorEl.style.display = 'block';
-            return;
-        }
-        
-        // Disable button
-        const submitBtn = document.querySelector('#registerForm button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-        }
-        
-        try {
-            errorEl.style.display = 'none';
-            console.log('📝 Registering user:', username);
-            
-            // 🔥 FIX: Kirim data sebagai form-urlencoded
-            const formData = new URLSearchParams();
-            formData.append('action', 'publicRegister');
-            formData.append('username', username);
-            formData.append('email', email);
-            formData.append('namaLengkap', nama);
-            formData.append('password', password);
-            
-            console.log('📤 Sending register data:', { username, email, nama });
-            
-            // 🔥 FIX: Gunakan fetch langsung dengan form-urlencoded
-            const response = await fetch(API.baseUrl, {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: formData.toString()
-            });
-            
-            const result = await response.json();
-            console.log('📥 Register response:', result);
-            
-            if (result.status === 'success') {
-                showToast('success', 'Registrasi Berhasil', 'Akun berhasil dibuat. Silakan login.');
-                
-                // Switch to login tab
-                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-                const loginTab = document.querySelector('.auth-tab[data-tab="login"]');
-                if (loginTab) loginTab.classList.add('active');
-                document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-                const loginForm = document.getElementById('loginForm');
-                if (loginForm) loginForm.classList.add('active');
-                
-                // Clear register form
-                document.getElementById('registerUsername').value = '';
-                document.getElementById('registerEmail').value = '';
-                document.getElementById('registerNama').value = '';
-                document.getElementById('registerPassword').value = '';
-                document.getElementById('registerConfirm').value = '';
-                
-                // Fill login form
-                document.getElementById('loginUsername').value = username;
-            } else {
-                errorEl.textContent = result.message || 'Registrasi gagal';
-                errorEl.style.display = 'block';
-            }
-        } catch (error) {
-            console.error('❌ Register error:', error);
-            errorEl.textContent = error.message || 'Terjadi kesalahan saat registrasi';
-            errorEl.style.display = 'block';
-        } finally {
-            // Re-enable button
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register';
-            }
-        }
-    },
-    
     // ========== LOGOUT HANDLER ==========
     async handleLogout() {
         try {
@@ -491,7 +292,7 @@ const App = {
         }
         
         this.clearSession();
-        this.showAuth();
+        this.redirectToLogin();
         showToast('info', 'Logout', 'Anda telah logout');
     },
     
@@ -562,36 +363,6 @@ const App = {
     
     // ========== EVENT LISTENERS ==========
     setupEventListeners() {
-        // Auth tabs
-        document.querySelectorAll('.auth-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-                const formId = tab.dataset.tab + 'Form';
-                const form = document.getElementById(formId);
-                if (form) form.classList.add('active');
-            });
-        });
-        
-        // Login form
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleLogin();
-            });
-        }
-        
-        // Register form
-        const registerForm = document.getElementById('registerForm');
-        if (registerForm) {
-            registerForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleRegister();
-            });
-        }
-        
         // Logout
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
