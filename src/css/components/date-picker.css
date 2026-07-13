@@ -1,0 +1,16 @@
+.date-picker { position: relative; }
+.date-picker__dropdown { position: absolute; top: 100%; left: 0; z-index: 1000; margin-top: 4px; background: var(--md-sys-color-surface); border: 1px solid var(--md-sys-color-outline); border-radius: 12px; box-shadow: var(--md-sys-elevation-level3); padding: 12px; width: 300px; }
+.date-picker__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.date-picker__month-year { display: flex; gap: 4px; }
+.date-picker__month-year select { padding: 4px 8px; border: 1px solid var(--md-sys-color-outline); border-radius: 4px; font-size: 13px; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); }
+.date-picker__days-header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 4px; }
+.date-picker__day-header { font-size: 11px; font-weight: 600; color: var(--md-sys-color-on-surface-variant); padding: 4px 0; }
+.date-picker__days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.date-picker__day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 50%; cursor: pointer; transition: all 0.15s; }
+.date-picker__day:hover:not(.date-picker__day--disabled):not(.date-picker__day--other) { background: var(--md-sys-color-surface-container-highest); }
+.date-picker__day--other { color: var(--md-sys-color-outline); cursor: default; }
+.date-picker__day--today { font-weight: 700; color: var(--md-sys-color-primary); }
+.date-picker__day--selected { background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important; font-weight: 600; }
+.date-picker__day--disabled { color: var(--md-sys-color-outline); cursor: not-allowed; opacity: 0.4; }
+.date-picker__day--weekend { color: var(--md-sys-color-error); }
+.date-picker__footer { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--md-sys-color-outline-variant); }
