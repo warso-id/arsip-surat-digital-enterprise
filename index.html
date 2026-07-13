@@ -47,14 +47,15 @@
                 </div>
                 
                 <!-- Login Form -->
-                <form id="loginForm" class="auth-form active">
+                <form id="loginForm" class="auth-form active" autocomplete="on">
                     <div class="form-group">
                         <label><i class="fas fa-user"></i> Username</label>
-                        <input type="text" id="loginUsername" placeholder="Masukkan username" required />
+                        <input type="text" id="loginUsername" placeholder="Masukkan username" required autocomplete="username" />
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-lock"></i> Password</label>
-                        <input type="password" id="loginPassword" placeholder="Masukkan password" required />
+                        <!-- 🔥 FIX: Tambahkan autocomplete="current-password" -->
+                        <input type="password" id="loginPassword" placeholder="Masukkan password" required autocomplete="current-password" />
                     </div>
                     <div class="form-options">
                         <label class="checkbox">
@@ -69,26 +70,28 @@
                 </form>
                 
                 <!-- Register Form -->
-                <form id="registerForm" class="auth-form">
+                <form id="registerForm" class="auth-form" autocomplete="on">
                     <div class="form-group">
                         <label><i class="fas fa-user"></i> Username</label>
-                        <input type="text" id="registerUsername" placeholder="Pilih username" required />
+                        <input type="text" id="registerUsername" placeholder="Pilih username" required autocomplete="username" />
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-envelope"></i> Email</label>
-                        <input type="email" id="registerEmail" placeholder="Email aktif" required />
+                        <input type="email" id="registerEmail" placeholder="Email aktif" required autocomplete="email" />
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-user-tag"></i> Nama Lengkap</label>
-                        <input type="text" id="registerNama" placeholder="Nama lengkap" required />
+                        <input type="text" id="registerNama" placeholder="Nama lengkap" required autocomplete="name" />
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-lock"></i> Password</label>
-                        <input type="password" id="registerPassword" placeholder="Minimal 8 karakter" required />
+                        <!-- 🔥 FIX: Tambahkan autocomplete="new-password" -->
+                        <input type="password" id="registerPassword" placeholder="Minimal 8 karakter" required minlength="8" autocomplete="new-password" />
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-lock"></i> Konfirmasi Password</label>
-                        <input type="password" id="registerConfirm" placeholder="Konfirmasi password" required />
+                        <!-- 🔥 FIX: Tambahkan autocomplete="new-password" -->
+                        <input type="password" id="registerConfirm" placeholder="Konfirmasi password" required autocomplete="new-password" />
                     </div>
                     <button type="submit" class="btn btn-success btn-block">
                         <i class="fas fa-user-plus"></i> Register
