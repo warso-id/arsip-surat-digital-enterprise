@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Arsip Surat Digital</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #1a2332 0%, #2c3e50 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+        .login-box {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-logo {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .login-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a2332;
+        }
+        .login-header .subtitle {
+            color: #5a6a7a;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #5a6a7a;
+            margin-bottom: 5px;
+        }
+        .form-group label i {
+            margin-right: 8px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #1976D2;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        }
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #5a6a7a;
+            cursor: pointer;
+        }
+        .checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #1976D2;
+        }
+        .form-options a {
+            color: #1976D2;
+            text-decoration: none;
+        }
+        .form-options a:hover {
+            text-decoration: underline;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: #1976D2;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1565C0;
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #388E3C;
+        }
+        .btn-link {
+            background: transparent;
+            color: #1976D2;
+            padding: 8px;
+        }
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+            display: none;
+        }
+        .alert-danger {
+            background: #FFEBEE;
+            color: #C62828;
+            border: 1px solid #FFCDD2;
+        }
+        .alert-success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border: 1px solid #C8E6C9;
+        }
+        .alert-info {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border: 1px solid #BBDEFB;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+            color: #5a6a7a;
+        }
+        .register-link a {
+            color: #1976D2;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 12px; }
+        .mb-2 { margin-bottom: 12px; }
+        .flex { display: flex; }
+        .gap-2 { gap: 8px; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <span class="login-logo">📁</span>
+                <h1>Arsip Surat Digital</h1>
+                <p class="subtitle">Enterprise System v3.2.2</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="loginUsername" placeholder="Masukkan username" required autocomplete="username" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="loginPassword" placeholder="Masukkan password" required autocomplete="current-password" />
+                </div>
+                <div class="form-options">
+                    <label class="checkbox">
+                        <input type="checkbox" id="rememberMe" /> Ingat saya
+                    </label>
+                    <a href="reset-password.html">Lupa password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <div id="loginError" class="alert alert-danger"></div>
+                <div id="loginSuccess" class="alert alert-success"></div>
+            </form>
+
+            <div class="register-link">
+                Belum punya akun? <a href="register.html">Daftar sekarang</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <script>
+        // ========== CONFIGURATION ==========
+        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec';
+
+        // ========== DOM ELEMENTS ==========
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginUsername = document.getElementById('loginUsername');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginError = document.getElementById('loginError');
+        const loginSuccess = document.getElementById('loginSuccess');
+
+        // ========== SHOW/HIDE ALERTS ==========
+        function showError(message) {
+            loginError.textContent = message;
+            loginError.style.display = 'block';
+            loginSuccess.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            loginSuccess.textContent = message;
+            loginSuccess.style.display = 'block';
+            loginError.style.display = 'none';
+        }
+
+        function hideAlerts() {
+            loginError.style.display = 'none';
+            loginSuccess.style.display = 'none';
+        }
+
+        // ========== LOGIN HANDLER ==========
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlerts();
+
+            const username = loginUsername.value.trim();
+            const password = loginPassword.value.trim();
+
+            // Validasi
+            if (!username || !password) {
+                showError('Username dan password harus diisi');
+                return;
+            }
+
+            // Disable button
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="loading-spinner"></span> Memproses...';
+
+            try {
+                console.log('🔐 Login attempt for:', username);
+                console.log('📍 API URL:', API_BASE_URL);
+
+                // 🔥 BUILD FORM DATA
+                const formData = new URLSearchParams();
+                formData.append('action', 'login');
+                formData.append('username', username);
+                formData.append('password', password);
+
+                console.log('📤 Sending:', formData.toString());
+
+                // 🔥 SEND REQUEST
+                const response = await fetch(API_BASE_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData.toString()
+                });
+
+                console.log('📥 Response status:', response.status);
+
+                const text = await response.text();
+                console.log('📥 Raw response:', text);
+
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (e) {
+                    console.error('❌ Invalid JSON:', text);
+                    showError('Respons dari server tidak valid: ' + text.substring(0, 100));
+                    return;
+                }
+
+                console.log('📥 Parsed response:', result);
+
+                if (result.status === 'success') {
+                    showSuccess('✅ Login berhasil! Mengalihkan...');
+                    
+                    // Save token & user
+                    localStorage.setItem('token', result.data.token);
+                    localStorage.setItem('csrf', result.data.csrf);
+                    localStorage.setItem('user', JSON.stringify(result.data.user));
+
+                    // Redirect ke dashboard
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    showError(result.message || 'Login gagal');
+                }
+
+            } catch (error) {
+                console.error('❌ Login error:', error);
+                showError('Koneksi gagal: ' + error.message + '. Periksa koneksi internet.');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+            }
+        });
+
+        // ========== TEST CONNECTION ON LOAD ==========
+        async function testConnection() {
+            try {
+                console.log('🔗 Testing connection...');
+                const response = await fetch(API_BASE_URL + '?action=ping');
+                const result = await response.json();
+                console.log('✅ Connection test:', result);
+                if (result.status === 'success') {
+                    console.log('📦 Backend version:', result.data?.version);
+                }
+            } catch (error) {
+                console.warn('⚠️ Connection test failed:', error.message);
+                showError('⚠️ Gagal terhubung ke server. Periksa koneksi internet.');
+            }
+        }
+
+        // Run connection test
+        testConnection();
+
+        console.log('📄 Login page loaded');
+        console.log('📍 API URL:', API_BASE_URL);
+    </script>
+</body>
+</html>
