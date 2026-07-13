@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1976D2">
+    <title>Offline - Arsip Surat Digital Enterprise</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Material+Icons&display=swap');
+        
+        :root {
+            --primary: #1976D2;
+            --surface: #FDFBFF;
+            --on-surface: #1A1C1E;
+            --on-surface-variant: #44474E;
+        }
+        
+        [data-theme="dark"] {
+            --surface: #1A1C1E;
+            --on-surface: #E2E2E6;
+            --on-surface-variant: #C4C6D0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--surface);
+            color: var(--on-surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: 24px;
+        }
+        
+        .offline-container {
+            text-align: center;
+            max-width: 480px;
+        }
+        
+        .offline-icon {
+            font-size: 120px;
+            color: var(--primary);
+            margin-bottom: 24px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .offline-title {
+            font-size: 28px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        
+        .offline-description {
+            font-size: 16px;
+            color: var(--on-surface-variant);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        
+        .offline-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(25, 118, 210, 0.08);
+        }
+        
+        .cached-pages {
+            margin-top: 40px;
+            padding: 20px;
+            border: 1px solid var(--on-surface-variant);
+            border-radius: 12px;
+            opacity: 0.7;
+        }
+        
+        .cached-pages h3 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        
+        .cached-pages ul {
+            list-style: none;
+            text-align: left;
+        }
+        
+        .cached-pages li {
+            padding: 4px 0;
+            font-size: 13px;
+        }
+        
+        .cached-pages a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .cached-pages a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">
+            <span class="material-icons" style="font-size: inherit;">wifi_off</span>
+        </div>
+        <h1 class="offline-title">Anda Sedang Offline</h1>
+        <p class="offline-description">
+            Tidak dapat terhubung ke server. Periksa koneksi internet Anda dan coba lagi.
+            Beberapa halaman yang sudah di-cache mungkin masih dapat diakses.
+        </p>
+        <div class="offline-actions">
+            <button class="btn btn-primary" onclick="window.location.reload()">
+                <span class="material-icons">refresh</span>
+                Coba Lagi
+            </button>
+            <a href="/" class="btn btn-outline">
+                <span class="material-icons">home</span>
+                Ke Beranda
+            </a>
+        </div>
+        <div class="cached-pages">
+            <h3>Halaman Tersedia Offline:</h3>
+            <ul id="cached-pages-list">
+                <li>Memuat...</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Check if actually online
+        if (navigator.onLine) {
+            window.location.reload();
+        }
+        
+        // Listen for online event
+        window.addEventListener('online', () => {
+            window.location.reload();
+        });
+        
+        // Show cached pages
+        async function showCachedPages() {
+            try {
+                const cacheNames = await caches.keys();
+                const appCache = cacheNames.find(name => name.includes('asd-'));
+                
+                if (appCache) {
+                    const cache = await caches.open(appCache);
+                    const requests = await cache.keys();
+                    
+                    const pages = requests
+                        .filter(req => req.url.endsWith('/') || req.url.endsWith('.html'))
+                        .map(req => {
+                            const url = new URL(req.url);
+                            return `<li><a href="${req.url}">${url.pathname || 'Beranda'}</a></li>`;
+                        });
+                    
+                    document.getElementById('cached-pages-list').innerHTML = 
+                        pages.length > 0 ? pages.join('') : '<li>Tidak ada halaman tersedia</li>';
+                }
+            } catch (error) {
+                document.getElementById('cached-pages-list').innerHTML = 
+                    '<li>Tidak dapat memuat daftar halaman</li>';
+            }
+        }
+        
+        showCachedPages();
+        
+        // Auto-retry every 10 seconds
+        setInterval(() => {
+            if (navigator.onLine) {
+                window.location.reload();
+            }
+        }, 10000);
+    </script>
+</body>
+</html>
