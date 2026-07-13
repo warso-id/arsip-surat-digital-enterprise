@@ -1,0 +1,107 @@
+{
+  "name": "Arsip Surat Digital Enterprise",
+  "version": "3.2.2",
+  "build": "2026-07-12",
+  "codename": "Enterprise",
+  "description": "Sistem Manajemen Arsip Surat Digital untuk Instansi Pemerintah dan Perusahaan",
+  "api_version": "3.2.2",
+  "compatibility": {
+    "browser": "Chrome 90+, Firefox 88+, Safari 14+, Edge 90+",
+    "os": "Windows 10+, macOS 11+, iOS 14+, Android 10+",
+    "screen": "320px - 5120px"
+  },
+  "features": [
+    "Manajemen Surat Masuk & Keluar",
+    "Sistem Disposisi & Approval",
+    "Tanda Tangan Digital (TTD)",
+    "QR Code Tracking",
+    "Blockchain Verification",
+    "AI Auto-Tagging & Classification",
+    "OCR Document Scanning",
+    "PDF Generation & Watermark",
+    "Multi-level Approval",
+    "Real-time Dashboard",
+    "Push Notifications",
+    "Biometric Authentication",
+    "Two-Factor Authentication",
+    "LDAP/SSO Integration",
+    "API Key Management",
+    "Webhook Integration",
+    "Email & Telegram Notifications",
+    "Data Encryption",
+    "Backup & Restore",
+    "Audit Log",
+    "Retention Policy",
+    "Multi-language Support",
+    "Dark/Light Theme",
+    "PWA Offline Support",
+    "Voice Commands",
+    "Keyboard Shortcuts",
+    "Responsive Design",
+    "Accessibility (WCAG 2.1)"
+  ],
+  "tech_stack": {
+    "frontend": {
+      "framework": "Vanilla JS (No Framework)",
+      "styling": "CSS3, CSS Variables, Material Design 3",
+      "build": "Custom Node.js build script",
+      "pwa": "Service Worker, Web App Manifest"
+    },
+    "backend": {
+      "runtime": "Google Apps Script",
+      "database": "Google Sheets",
+      "storage": "Google Drive",
+      "cache": "Script Cache Service"
+    },
+    "security": {
+      "auth": "JWT Token",
+      "csrf": "Token-based CSRF",
+      "encryption": "AES-256-GCM",
+      "hashing": "SHA-256 with Salt"
+    }
+  },
+  "changelog": {
+    "3.2.2": [
+      "✅ Fixed login parsing for JSON and form-urlencoded",
+      "✅ Added public register endpoint",
+      "✅ Added checkUser endpoint for password reset",
+      "✅ Enhanced error handling and logging",
+      "✅ Added biometric authentication support",
+      "✅ Added AI features (auto-tag, classify, summarize)",
+      "✅ Added blockchain verification",
+      "✅ Added OCR document scanning",
+      "✅ Improved responsive design",
+      "✅ Added PWA offline support",
+      "✅ Added voice commands",
+      "✅ Added keyboard shortcuts",
+      "✅ Enhanced accessibility (WCAG 2.1)"
+    ],
+    "3.2.1": [
+      "✅ Added multi-level approval",
+      "✅ Added webhook integration",
+      "✅ Added retention policy",
+      "✅ Enhanced search functionality"
+    ],
+    "3.2.0": [
+      "✅ Initial Enterprise release",
+      "✅ Complete CRUD operations",
+      "✅ Dashboard with charts",
+      "✅ User management",
+      "✅ Role-based access control"
+    ]
+  },
+  "contributors": [
+    {
+      "name": "Development Team",
+      "role": "Full Stack Developer",
+      "email": "dev@instansi.id"
+    }
+  ],
+  "license": "Proprietary",
+  "repository": "https://github.com/instansi/arsip-surat-digital-enterprise",
+  "support": {
+    "email": "support@instansi.id",
+    "phone": "+62-XXX-XXXX-XXXX",
+    "hours": "Senin-Jumat, 08:00-16:00 WIB"
+  }
+}
