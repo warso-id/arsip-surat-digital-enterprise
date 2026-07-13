@@ -1,0 +1,68 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true,
+    "jest": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-console": ["warn", { "allow": ["warn", "error", "log"] }],
+    "no-debugger": "error",
+    "no-duplicate-imports": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "eqeqeq": ["error", "always"],
+    "curly": ["error", "multi-line"],
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-new-func": "error"
+  },
+  "globals": {
+    "APP_CONFIG": "readonly",
+    "AuthService": "readonly",
+    "CacheService": "readonly",
+    "NotificationService": "readonly",
+    "FileService": "readonly",
+    "SearchService": "readonly",
+    "ExportService": "readonly",
+    "SyncService": "readonly",
+    "BiometricService": "readonly",
+    "VoiceService": "readonly",
+    "AIService": "readonly",
+    "OCRService": "readonly",
+    "BlockchainService": "readonly",
+    "SignatureService": "readonly",
+    "QRService": "readonly",
+    "PushService": "readonly",
+    "EncryptionService": "readonly",
+    "BackupService": "readonly",
+    "OfflineService": "readonly",
+    "WebSocketService": "readonly",
+    "AnalyticsService": "readonly",
+    "AccessibilityService": "readonly",
+    "PerformanceMonitor": "readonly",
+    "Formatters": "readonly",
+    "Validators": "readonly",
+    "store": "readonly",
+    "router": "readonly",
+    "api": "readonly",
+    "app": "readonly",
+    "i18n": "readonly",
+    "Chart": "readonly",
+    "QRCode": "readonly",
+    "XLSX": "readonly",
+    "JSZip": "readonly",
+    "Tesseract": "readonly",
+    "debounce": "readonly",
+    "throttle": "readonly"
+  }
+}
