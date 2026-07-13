@@ -1,0 +1,32 @@
+/**
+ * BACKUP PAGE STYLES - ARSIP SURAT DIGITAL ENTERPRISE v3.2.2
+ */
+
+.backup-list { display: flex; flex-direction: column; gap: var(--md-sys-spacing-3); }
+.backup-item { display: flex; align-items: center; gap: var(--md-sys-spacing-4); padding: var(--md-sys-spacing-4); background-color: var(--md-sys-color-surface-container); border-radius: var(--md-sys-shape-corner-medium); border: 1px solid var(--md-sys-color-outline-variant); transition: all var(--md-sys-motion-duration-short4); }
+.backup-item:hover { border-color: var(--md-sys-color-primary); box-shadow: var(--md-sys-elevation-level1); }
+.backup-item__icon { font-size: 36px; color: var(--md-sys-color-primary); flex-shrink: 0; }
+.backup-item__info { flex: 1; min-width: 0; }
+.backup-item__name { font-weight: var(--md-sys-font-weight-medium); font-size: 14px; margin-bottom: 4px; }
+.backup-item__meta { display: flex; gap: var(--md-sys-spacing-3); font-size: 12px; color: var(--md-sys-color-on-surface-variant); flex-wrap: wrap; }
+.backup-item__size { font-size: 13px; color: var(--md-sys-color-on-surface-variant); white-space: nowrap; flex-shrink: 0; }
+.backup-item__actions { display: flex; gap: var(--md-sys-spacing-1); flex-shrink: 0; }
+
+/* Upload zone */
+.backup-upload-zone { border: 2px dashed var(--md-sys-color-outline); border-radius: var(--md-sys-shape-corner-medium); padding: var(--md-sys-spacing-6); text-align: center; cursor: pointer; transition: all var(--md-sys-motion-duration-short4); background-color: var(--md-sys-color-surface-container); margin-top: var(--md-sys-spacing-4); }
+.backup-upload-zone:hover { border-color: var(--md-sys-color-primary); background-color: var(--md-sys-color-primary-container); }
+.backup-upload-zone--dragover { border-color: var(--md-sys-color-primary); background-color: var(--md-sys-color-primary-container); border-style: solid; }
+.backup-upload-zone__icon { font-size: 48px; color: var(--md-sys-color-on-surface-variant); margin-bottom: var(--md-sys-spacing-2); }
+.backup-upload-zone__text { font-size: 14px; color: var(--md-sys-color-on-surface-variant); }
+.backup-upload-zone__hint { font-size: 12px; color: var(--md-sys-color-outline); margin-top: 4px; }
+
+/* Backup progress */
+.backup-progress { padding: var(--md-sys-spacing-4); background-color: var(--md-sys-color-surface-container); border-radius: var(--md-sys-shape-corner-medium); margin-top: var(--md-sys-spacing-4); }
+.backup-progress__bar { margin-bottom: var(--md-sys-spacing-2); }
+.backup-progress__text { font-size: 13px; color: var(--md-sys-color-on-surface-variant); }
+
+/* Restore warning */
+.restore-warning { display: flex; align-items: flex-start; gap: var(--md-sys-spacing-3); padding: var(--md-sys-spacing-4); background-color: var(--md-sys-color-error-container); border-radius: var(--md-sys-shape-corner-medium); margin-bottom: var(--md-sys-spacing-4); }
+.restore-warning .material-icons { color: var(--md-sys-color-error); }
+.restore-warning__text { font-size: 13px; color: var(--md-sys-color-on-error-container); }
+.restore-warning__text strong { display: block; margin-bottom: 2px; }
