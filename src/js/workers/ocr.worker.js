@@ -365,4 +365,28 @@ function sharpen(imageData) {
     for (let x = 1; x < width - 1; x++) {
       let sum = 0;
       let ki = 0;
-      for (let dy =
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const idx = ((y + dy) * width + (x + dx)) * 4;
+          sum += data[idx] * kernel[ki++];
+        }
+      }
+      const idx = (y * width + x) * 4;
+      result[idx] = Math.min(255, Math.max(0, sum));
+      result[idx + 1] = result[idx];
+      result[idx + 2] = result[idx];
+    }
+  }
+  
+  return new ImageData(result, width, height);
+}
+
+/**
+ * Extract pattern from text
+ */
+function extractPattern(text, pattern) {
+  const match = text.match(pattern);
+  return match ? match[1].trim() : '';
+}
+
+console.log('✅ OCR Worker initialized');
