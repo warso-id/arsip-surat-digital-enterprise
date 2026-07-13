@@ -1,0 +1,233 @@
+/**
+ * SETTINGS PAGE STYLES - ARSIP SURAT DIGITAL ENTERPRISE v3.2.2
+ */
+
+/* ============================================
+ * SETTINGS LAYOUT
+ * ============================================ */
+.settings-page {
+  display: flex;
+  gap: var(--md-sys-spacing-6);
+  max-width: 1200px;
+}
+
+/* Settings Sidebar */
+.settings-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-1);
+  position: sticky;
+  top: calc(var(--layout-navbar-height) + var(--md-sys-spacing-4));
+}
+
+.settings-nav__item {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-3);
+  padding: var(--md-sys-spacing-3) var(--md-sys-spacing-4);
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant);
+  text-decoration: none;
+  font-size: var(--md-sys-typescale-body-medium-size);
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.settings-nav__item:hover {
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface);
+}
+
+.settings-nav__item--active {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  font-weight: var(--md-sys-font-weight-medium);
+}
+
+.settings-nav__item .material-icons {
+  font-size: 20px;
+}
+
+/* Settings Content */
+.settings-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-section {
+  margin-bottom: var(--md-sys-spacing-8);
+}
+
+.settings-section__title {
+  font-size: var(--md-sys-typescale-title-medium-size);
+  font-weight: var(--md-sys-font-weight-medium);
+  margin-bottom: var(--md-sys-spacing-1);
+}
+
+.settings-section__description {
+  font-size: var(--md-sys-typescale-body-medium-size);
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: var(--md-sys-spacing-4);
+}
+
+/* Settings Card */
+.settings-card {
+  background-color: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+  overflow: hidden;
+  margin-bottom: var(--md-sys-spacing-4);
+}
+
+.settings-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--md-sys-spacing-4) var(--md-sys-spacing-6);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  gap: var(--md-sys-spacing-4);
+}
+
+.settings-card__row:last-child {
+  border-bottom: none;
+}
+
+.settings-card__row--vertical {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.settings-card__label {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-card__label-title {
+  font-size: var(--md-sys-typescale-body-medium-size);
+  font-weight: var(--md-sys-font-weight-medium);
+  margin-bottom: 2px;
+}
+
+.settings-card__label-description {
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.settings-card__action {
+  flex-shrink: 0;
+}
+
+/* Theme Selector */
+.theme-selector {
+  display: flex;
+  gap: var(--md-sys-spacing-4);
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--md-sys-spacing-2);
+  cursor: pointer;
+  padding: var(--md-sys-spacing-3);
+  border-radius: var(--md-sys-shape-corner-medium);
+  border: 2px solid transparent;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.theme-option:hover {
+  background-color: var(--md-sys-color-surface-container);
+}
+
+.theme-option--active {
+  border-color: var(--md-sys-color-primary);
+  background-color: var(--md-sys-color-primary-container);
+}
+
+.theme-option__preview {
+  width: 120px;
+  height: 80px;
+  border-radius: var(--md-sys-shape-corner-small);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  overflow: hidden;
+}
+
+.theme-option__preview--light {
+  background: linear-gradient(135deg, #FDFBFF 0%, #E0E2EC 100%);
+}
+
+.theme-option__preview--dark {
+  background: linear-gradient(135deg, #1A1C1E 0%, #44474E 100%);
+}
+
+.theme-option__preview--auto {
+  background: linear-gradient(135deg, #FDFBFF 0%, #1A1C1E 100%);
+}
+
+.theme-option__label {
+  font-size: var(--md-sys-typescale-label-medium-size);
+  font-weight: var(--md-sys-font-weight-medium);
+}
+
+/* Color Picker */
+.color-picker-group {
+  display: flex;
+  gap: var(--md-sys-spacing-2);
+  flex-wrap: wrap;
+}
+
+.color-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  position: relative;
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+}
+
+.color-swatch--active {
+  border-color: var(--md-sys-color-on-surface);
+  box-shadow: 0 0 0 2px var(--md-sys-color-surface), 0 0 0 4px var(--md-sys-color-primary);
+}
+
+.color-swatch--active::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Language Selector */
+.language-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-1);
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-3);
+  padding: var(--md-sys-spacing-3) var(--md-sys-spacing-4);
+  border-radius: var(--md-sys-shape-corner-small);
+  cursor: pointer;
+  transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.language-option:hover {
+  background-color
