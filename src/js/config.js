@@ -11,7 +11,7 @@ const APP_CONFIG = {
   
   // API Configuration
   API: {
-    BASE_URL: 'https://script.google.com/macros/s/AKfycbw.../exec',
+    BASE_URL: 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec',
     TIMEOUT: 30000, // 30 detik
     RETRY_COUNT: 3,
     RETRY_DELAY: 1000,
