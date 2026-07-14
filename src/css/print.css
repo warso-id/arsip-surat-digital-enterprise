@@ -1,183 +1,521 @@
 /**
+ * ============================================
  * PRINT STYLES - ARSIP SURAT DIGITAL ENTERPRISE v3.2.2
+ * FULL PRINT STYLESHEET - SIAP PRODUKSI
+ * Mendukung: Surat, Laporan, Kartu, Tabel,
+ * QR Code, Tanda Tangan, Watermark
+ * ============================================
  */
 
+/* ============================================
+ * PRINT MEDIA QUERY
+ * ============================================ */
 @media print {
-  /* Hide non-essential elements */
+  /* ==========================================
+   * HIDE NON-ESSENTIAL UI ELEMENTS
+   * ========================================== */
   .sidebar,
+  .sidebar--collapsed,
+  .sidebar--mobile-open,
   .navbar,
   .navbar__toggle,
   .navbar__actions,
   .navbar__user-menu,
+  .navbar__breadcrumb,
+  .navbar__action-btn,
+  .navbar__search,
   .footer,
   .btn,
+  .btn-icon,
+  .btn-fab,
+  .btn-group,
   .toast-container,
+  .toast,
   .offline-indicator,
   .update-banner,
   .modal-overlay,
+  .modal-content,
   .notification-panel,
+  .notification-item,
   .sidebar-overlay,
+  .sidebar-overlay--visible,
   .filters-bar,
   .bulk-actions,
   .pagination,
   .table-actions,
+  .dropdown,
   .dropdown__menu,
-  .no-print {
+  .dropdown__trigger,
+  .tooltip,
+  .popover,
+  .drawer,
+  .bottom-sheet,
+  .no-print,
+  .print-hide,
+  .skip-to-content,
+  .navbar__action-badge,
+  .notification-badge,
+  .badge-dot,
+  .badge-pulse,
+  .form-actions--sticky,
+  .upload-zone,
+  .qr-scanner,
+  .search-input__clear,
+  .form-switch__input,
+  .form-range,
+  .form-color__input,
+  input[type="file"],
+  input[type="color"],
+  input[type="range"],
+  video,
+  audio,
+  iframe:not(.print-keep) {
     display: none !important;
   }
-  
-  /* Reset layout */
-  .app-shell {
-    display: block !important;
+
+  /* ==========================================
+   * RESET LAYOUT FOR PRINT
+   * ========================================== */
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
   }
-  
+
+  html {
+    font-size: 12pt;
+  }
+
+  body {
+    font-family: 'Roboto', 'Arial', 'Helvetica', sans-serif;
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000000 !important;
+    background: #ffffff !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  #app {
+    display: block !important;
+    min-height: auto !important;
+  }
+
+  .app-shell,
+  .app-shell--auth {
+    display: block !important;
+    min-height: auto !important;
+  }
+
   .main-content {
     margin-left: 0 !important;
     width: 100% !important;
+    min-height: auto !important;
+    display: block !important;
   }
-  
+
   .content-area {
     padding: 0 !important;
     max-width: 100% !important;
     margin: 0 !important;
+    width: 100% !important;
   }
-  
-  /* Typography for print */
-  body {
-    font-size: 12pt;
-    line-height: 1.5;
-    color: #000;
-    background: #fff;
+
+  /* ==========================================
+   * TYPOGRAPHY FOR PRINT
+   * ========================================== */
+  h1 { font-size: 24pt; font-weight: 700; margin-bottom: 12pt; page-break-after: avoid; }
+  h2 { font-size: 18pt; font-weight: 600; margin-bottom: 10pt; page-break-after: avoid; }
+  h3 { font-size: 14pt; font-weight: 600; margin-bottom: 8pt; page-break-after: avoid; }
+  h4 { font-size: 12pt; font-weight: 600; margin-bottom: 6pt; page-break-after: avoid; }
+  h5, h6 { font-size: 11pt; font-weight: 600; margin-bottom: 4pt; }
+
+  p {
+    font-size: 11pt;
+    line-height: 1.6;
+    margin-bottom: 8pt;
+    orphans: 3;
+    widows: 3;
   }
-  
-  h1 { font-size: 24pt; }
-  h2 { font-size: 18pt; }
-  h3 { font-size: 14pt; }
-  
-  /* Tables */
-  .data-table {
-    border: 1px solid #000;
-  }
-  
-  .data-table th,
-  .data-table td {
-    border: 1px solid #000;
-    padding: 6px 8px;
-    color: #000;
-    background: #fff;
-  }
-  
-  .data-table thead {
-    background: #f0f0f0;
-  }
-  
-  /* Cards */
-  .card {
-    border: 1px solid #ccc;
-    box-shadow: none;
-    page-break-inside: avoid;
-  }
-  
-  .stat-card {
-    border: 1px solid #ccc;
-    box-shadow: none;
-  }
-  
-  /* Badges */
-  .badge {
-    border: 1px solid #000;
-    background: #f0f0f0;
-    color: #000;
-  }
-  
-  /* Links */
+
+  /* ==========================================
+   * LINKS
+   * ========================================== */
   a {
-    color: #000;
+    color: #000000 !important;
     text-decoration: underline;
+    word-wrap: break-word;
   }
-  
-  a[href]:after {
+
+  a[href^="http"]:not([href*="#"])::after {
     content: " (" attr(href) ")";
     font-size: 0.8em;
     font-weight: normal;
+    color: #666666;
   }
-  
-  /* Images */
-  img {
-    max-width: 100% !important;
+
+  a[href^="#"]::after {
+    content: "";
+  }
+
+  a[href^="javascript"]::after {
+    content: "";
+  }
+
+  /* ==========================================
+   * TABLES
+   * ========================================== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16pt;
+    page-break-inside: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  th, td {
+    border: 1px solid #000000;
+    padding: 6pt 8pt;
+    text-align: left;
+    vertical-align: top;
+    font-size: 10pt;
+  }
+
+  th {
+    background-color: #e0e0e0 !important;
+    color: #000000 !important;
+    font-weight: 700;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .data-table {
+    border: 2px solid #000000;
+  }
+
+  .data-table th,
+  .data-table td {
+    border: 1px solid #000000;
+  }
+
+  .data-table thead {
+    background-color: #e0e0e0 !important;
+  }
+
+  .data-table--striped tr:nth-child(even) td {
+    background-color: #f5f5f5 !important;
+  }
+
+  /* ==========================================
+   * CARDS
+   * ========================================== */
+  .card {
+    border: 1px solid #cccccc;
+    box-shadow: none !important;
+    border-radius: 0;
+    page-break-inside: avoid;
+    margin-bottom: 16pt;
+    background: #ffffff !important;
+  }
+
+  .card__header {
+    border-bottom: 1px solid #cccccc;
+    background-color: #f5f5f5 !important;
+  }
+
+  .card__footer {
+    border-top: 1px solid #cccccc;
+    background-color: #f5f5f5 !important;
+  }
+
+  .stat-card {
+    border: 1px solid #cccccc;
+    box-shadow: none !important;
     page-break-inside: avoid;
   }
-  
-  /* QR Code */
-  .qr-code {
-    border: 1px solid #000;
+
+  .stat-card__icon {
+    background-color: #e0e0e0 !important;
+    color: #000000 !important;
   }
-  
-  /* Charts */
+
+  .card--elevated,
+  .card--high-elevation,
+  .card--clickable:hover {
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  /* ==========================================
+   * BADGES & LABELS
+   * ========================================== */
+  .badge {
+    border: 1px solid #000000;
+    background-color: #f0f0f0 !important;
+    color: #000000 !important;
+    font-weight: 600;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .badge::before {
+    content: "[";
+  }
+
+  .badge::after {
+    content: "]";
+  }
+
+  .badge-primary {
+    border-color: #1976D2;
+    background-color: #E3F2FD !important;
+  }
+
+  .badge-success {
+    border-color: #2E7D32;
+    background-color: #E8F5E9 !important;
+  }
+
+  .badge-warning {
+    border-color: #E65100;
+    background-color: #FFF3E0 !important;
+  }
+
+  .badge-error {
+    border-color: #C62828;
+    background-color: #FFEBEE !important;
+  }
+
+  /* ==========================================
+   * IMAGES & MEDIA
+   * ========================================== */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid;
+  }
+
+  .card__image,
+  .card__media img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* ==========================================
+   * QR CODE
+   * ========================================== */
+  .qr-code,
+  .qr-code-image {
+    border: 2px solid #000000;
+    padding: 8pt;
+    background: #ffffff;
+    max-width: 150pt;
+    page-break-inside: avoid;
+  }
+
+  /* ==========================================
+   * CHARTS & CANVAS
+   * ========================================== */
   canvas {
     max-width: 100% !important;
     height: auto !important;
+    page-break-inside: avoid;
   }
-  
-  /* Page breaks */
+
+  /* ==========================================
+   * FORMS
+   * ========================================== */
+  .form-input,
+  .form-select,
+  .form-textarea {
+    border: 1px solid #000000 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+  }
+
+  .form-input:disabled,
+  .form-input:read-only {
+    background-color: #f5f5f5 !important;
+  }
+
+  .form-label {
+    color: #000000 !important;
+    font-weight: 700;
+  }
+
+  .form-checkbox__input,
+  .form-radio__input {
+    -webkit-appearance: auto;
+    appearance: auto;
+  }
+
+  /* ==========================================
+   * PROGRESS BARS
+   * ========================================== */
+  .progress {
+    border: 1px solid #000000;
+    background-color: #f0f0f0 !important;
+  }
+
+  .progress__bar {
+    background-color: #666666 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ==========================================
+   * PAGE BREAKS
+   * ========================================== */
   .page-break-before {
     page-break-before: always;
   }
-  
+
   .page-break-after {
     page-break-after: always;
   }
-  
+
+  .page-break-inside-avoid,
   .avoid-break {
     page-break-inside: avoid;
   }
-  
-  /* Headers and footers */
+
+  .no-break {
+    break-inside: avoid;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+
+  /* ==========================================
+   * PAGE SETUP
+   * ========================================== */
   @page {
-    margin: 2cm;
+    margin: 2cm 2.5cm;
     size: A4;
   }
-  
+
   @page :first {
     margin-top: 3cm;
   }
-  
-  /* Show print-only elements */
+
+  @page :left {
+    margin-left: 2.5cm;
+    margin-right: 2cm;
+  }
+
+  @page :right {
+    margin-left: 2cm;
+    margin-right: 2.5cm;
+  }
+
+  @page landscape {
+    size: A4 landscape;
+    margin: 2cm;
+  }
+
+  /* ==========================================
+   * SHOW PRINT-ONLY ELEMENTS
+   * ========================================== */
   .print-only {
     display: block !important;
   }
-  
-  /* Watermark */
+
+  .print-inline {
+    display: inline !important;
+  }
+
+  .print-flex {
+    display: flex !important;
+  }
+
+  .print-hidden {
+    display: none !important;
+  }
+
+  /* ==========================================
+   * WATERMARK
+   * ========================================== */
   .watermark {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) rotate(-45deg);
     font-size: 60pt;
-    color: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.04);
     pointer-events: none;
     z-index: 9999;
+    white-space: nowrap;
+    font-weight: 700;
+    letter-spacing: 20pt;
   }
-  
-  /* Report header */
+
+  /* ==========================================
+   * REPORT HEADER
+   * ========================================== */
   .report-header {
     text-align: center;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #000;
+    margin-bottom: 30pt;
+    padding-bottom: 15pt;
+    border-bottom: 3px solid #000000;
   }
-  
+
   .report-header h1 {
-    font-size: 20pt;
-    margin-bottom: 5px;
+    font-size: 22pt;
+    font-weight: 700;
+    margin-bottom: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 2pt;
   }
-  
+
+  .report-header h2 {
+    font-size: 14pt;
+    font-weight: 400;
+    margin-bottom: 4pt;
+  }
+
   .report-header p {
     font-size: 10pt;
-    color: #666;
+    color: #666666;
+    margin-bottom: 2pt;
   }
-  
-  /* Report footer */
+
+  .report-header .report-date {
+    font-size: 10pt;
+    font-style: italic;
+  }
+
+  .report-header .report-number {
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+    font-size: 11pt;
+    margin-top: 8pt;
+  }
+
+  /* ==========================================
+   * REPORT FOOTER
+   * ========================================== */
   .report-footer {
     position: fixed;
     bottom: 0;
@@ -185,32 +523,341 @@
     right: 0;
     text-align: center;
     font-size: 8pt;
-    color: #999;
-    padding: 10px 0;
-    border-top: 1px solid #ccc;
+    color: #999999;
+    padding: 10pt 0;
+    border-top: 1px solid #cccccc;
   }
-  
-  /* Signature area */
+
+  .report-footer .page-number::after {
+    content: counter(page);
+  }
+
+  /* ==========================================
+   * SIGNATURE AREA
+   * ========================================== */
   .signature-area {
-    margin-top: 50px;
+    margin-top: 60pt;
     display: flex;
     justify-content: space-between;
+    gap: 40pt;
   }
-  
+
+  .signature-area--center {
+    justify-content: center;
+  }
+
+  .signature-area--right {
+    justify-content: flex-end;
+  }
+
   .signature-block {
     text-align: center;
-    width: 200px;
+    width: 200pt;
   }
-  
+
+  .signature-block__image {
+    max-height: 80pt;
+    margin-bottom: 8pt;
+  }
+
+  .signature-block__name {
+    font-weight: 700;
+    font-size: 11pt;
+    margin-bottom: 2pt;
+  }
+
+  .signature-block__title {
+    font-size: 10pt;
+    color: #666666;
+    margin-bottom: 2pt;
+  }
+
+  .signature-block__nip {
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+    font-size: 10pt;
+  }
+
   .signature-line {
-    margin-top: 60px;
-    border-top: 1px solid #000;
-    padding-top: 5px;
+    margin-top: 60pt;
+    border-top: 1px solid #000000;
+    padding-top: 6pt;
+    font-size: 10pt;
+    text-align: center;
   }
-  
-  /* Ensure background colors print */
+
+  .signature-date {
+    margin-top: 8pt;
+    font-size: 10pt;
+    text-align: center;
+  }
+
+  /* ==========================================
+   * STAMP / CAP
+   * ========================================== */
+  .stamp {
+    display: inline-block;
+    border: 3px solid #C62828;
+    border-radius: 50%;
+    padding: 20pt;
+    text-align: center;
+    color: #C62828;
+    font-weight: 700;
+    font-size: 12pt;
+    text-transform: uppercase;
+    transform: rotate(-15deg);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ==========================================
+   * LETTERHEAD
+   * ========================================== */
+  .letterhead {
+    border-bottom: 3px double #000000;
+    padding-bottom: 16pt;
+    margin-bottom: 24pt;
+  }
+
+  .letterhead__logo {
+    max-width: 80pt;
+    max-height: 80pt;
+    float: left;
+    margin-right: 16pt;
+  }
+
+  .letterhead__title {
+    font-size: 16pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4pt;
+  }
+
+  .letterhead__subtitle {
+    font-size: 12pt;
+    margin-bottom: 2pt;
+  }
+
+  .letterhead__address {
+    font-size: 10pt;
+    color: #333333;
+    line-height: 1.4;
+  }
+
+  /* ==========================================
+   * KOP SURAT (INDONESIAN OFFICIAL LETTER)
+   * ========================================== */
+  .kop-surat {
+    text-align: center;
+    border-bottom: 3px solid #000000;
+    padding-bottom: 16pt;
+    margin-bottom: 24pt;
+  }
+
+  .kop-surat__logo {
+    max-width: 60pt;
+    margin: 0 auto 8pt;
+  }
+
+  .kop-surat__instansi {
+    font-size: 14pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4pt;
+  }
+
+  .kop-surat__alamat {
+    font-size: 10pt;
+    line-height: 1.4;
+    margin-bottom: 8pt;
+  }
+
+  .kop-surat__contact {
+    font-size: 9pt;
+    color: #333333;
+  }
+
+  /* ==========================================
+   * NOMOR SURAT
+   * ========================================== */
+  .nomor-surat {
+    margin-bottom: 16pt;
+    font-size: 11pt;
+  }
+
+  .nomor-surat__label {
+    font-weight: 700;
+  }
+
+  .nomor-surat__value {
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+  }
+
+  /* ==========================================
+   * LAMPIRAN & PERIHAL
+   * ========================================== */
+  .surat-meta {
+    margin-bottom: 16pt;
+  }
+
+  .surat-meta__item {
+    margin-bottom: 4pt;
+    font-size: 11pt;
+  }
+
+  .surat-meta__label {
+    font-weight: 700;
+    display: inline-block;
+    width: 80pt;
+  }
+
+  /* ==========================================
+   * SURAT BODY
+   * ========================================== */
+  .surat-body {
+    margin-bottom: 24pt;
+    text-align: justify;
+    line-height: 1.8;
+  }
+
+  .surat-body p {
+    text-indent: 30pt;
+    margin-bottom: 8pt;
+  }
+
+  /* ==========================================
+   * TABLE OF CONTENTS
+   * ========================================== */
+  .toc {
+    page-break-after: always;
+  }
+
+  .toc__title {
+    font-size: 18pt;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 24pt;
+  }
+
+  .toc__list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .toc__item {
+    display: flex;
+    justify-content: space-between;
+    padding: 4pt 0;
+    border-bottom: 1px dotted #cccccc;
+    font-size: 11pt;
+  }
+
+  .toc__item a {
+    text-decoration: none;
+    color: #000000;
+  }
+
+  .toc__item a::after {
+    content: "";
+  }
+
+  .toc__page {
+    font-weight: 700;
+  }
+
+  /* ==========================================
+   * APPENDIX
+   * ========================================== */
+  .appendix {
+    page-break-before: always;
+  }
+
+  .appendix__title {
+    font-size: 16pt;
+    font-weight: 700;
+    margin-bottom: 16pt;
+    text-align: center;
+  }
+
+  /* ==========================================
+   * COLOR PRINT ADJUSTMENTS
+   * ========================================== */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
+
+  /* Force background colors */
+  .bg-primary { background-color: #1976D2 !important; color: #FFFFFF !important; }
+  .bg-success { background-color: #2E7D32 !important; color: #FFFFFF !important; }
+  .bg-warning { background-color: #ED6C02 !important; color: #FFFFFF !important; }
+  .bg-error { background-color: #BA1A1A !important; color: #FFFFFF !important; }
+  .bg-info { background-color: #0288D1 !important; color: #FFFFFF !important; }
+  .bg-surface { background-color: #FDFBFF !important; }
+  .bg-container { background-color: #F3F0F4 !important; }
+
+  /* ==========================================
+   * ORPHANS & WIDOWS CONTROL
+   * ========================================== */
+  p, li, blockquote {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* ==========================================
+   * DARK MODE OVERRIDE
+   * ========================================== */
+  [data-theme="dark"] {
+    --surface: #ffffff;
+    --on-surface: #000000;
+    --on-surface-variant: #333333;
+    --outline: #666666;
+    --outline-variant: #cccccc;
+    --surface-container: #f5f5f5;
+    --surface-container-high: #e0e0e0;
+  }
+
+  [data-theme="dark"] body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  [data-theme="dark"] .card,
+  [data-theme="dark"] .stat-card,
+  [data-theme="dark"] .surat-card,
+  [data-theme="dark"] .disposisi-card,
+  [data-theme="dark"] .approval-card,
+  [data-theme="dark"] .file-card,
+  [data-theme="dark"] .user-card,
+  [data-theme="dark"] .notification-card {
+    background: #ffffff !important;
+    border-color: #cccccc !important;
+  }
+
+  /* ==========================================
+   * UTILITY CLASSES FOR PRINT
+   * ========================================== */
+  .print-reset-margin { margin: 0 !important; }
+  .print-reset-padding { padding: 0 !important; }
+  .print-full-width { width: 100% !important; max-width: 100% !important; }
+  .print-text-left { text-align: left !important; }
+  .print-text-center { text-align: center !important; }
+  .print-text-right { text-align: right !important; }
+  .print-text-justify { text-align: justify !important; }
+  .print-text-sm { font-size: 9pt !important; }
+  .print-text-md { font-size: 11pt !important; }
+  .print-text-lg { font-size: 14pt !important; }
+  .print-font-mono { font-family: 'Roboto Mono', 'Courier New', monospace !important; }
+  .print-border { border: 1px solid #000000 !important; }
+  .print-border-bottom { border-bottom: 1px solid #000000 !important; }
+  .print-border-top { border-top: 1px solid #000000 !important; }
+  .print-no-border { border: none !important; }
+
+  /* ==========================================
+   * PRINT DEBUG (Show element outlines)
+   * Uncomment untuk debugging layout cetak
+   * ========================================== */
+  /*
+  * { outline: 1px solid red !important; }
+  */
 }
