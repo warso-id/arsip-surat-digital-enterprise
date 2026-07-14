@@ -1,0 +1,220 @@
+/**
+ * TABLES - ARSIP SURAT DIGITAL ENTERPRISE v3.2.2
+ */
+
+/* ============================================
+ * DATA TABLE
+ * ============================================ */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--md-sys-typescale-body-medium-size);
+  line-height: 1.4;
+}
+
+.data-table thead {
+  background-color: var(--md-sys-color-surface-container);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.data-table th {
+  padding: var(--md-sys-spacing-3) var(--md-sys-spacing-4);
+  text-align: left;
+  font-size: var(--md-sys-typescale-label-medium-size);
+  font-weight: var(--md-sys-font-weight-medium);
+  color: var(--md-sys-color-on-surface-variant);
+  white-space: nowrap;
+  border-bottom: 2px solid var(--md-sys-color-outline-variant);
+  user-select: none;
+}
+
+.data-table th.sortable {
+  cursor: pointer;
+  transition: color var(--md-sys-motion-duration-short4);
+}
+
+.data-table th.sortable:hover {
+  color: var(--md-sys-color-primary);
+}
+
+.data-table th.sortable .sort-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 4px;
+  font-size: 16px;
+  opacity: 0.5;
+  transition: opacity var(--md-sys-motion-duration-short4);
+}
+
+.data-table th.sortable:hover .sort-icon {
+  opacity: 1;
+}
+
+.data-table th.sort-asc .sort-icon::after {
+  content: '▲';
+}
+
+.data-table th.sort-desc .sort-icon::after {
+  content: '▼';
+}
+
+.data-table td {
+  padding: var(--md-sys-spacing-3) var(--md-sys-spacing-4);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  color: var(--md-sys-color-on-surface);
+  vertical-align: middle;
+}
+
+.data-table tbody tr {
+  transition: background-color var(--md-sys-motion-duration-short4);
+}
+
+.data-table tbody tr:hover {
+  background-color: var(--md-sys-color-surface-container);
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr.selected {
+  background-color: var(--md-sys-color-primary-container);
+}
+
+.data-table tbody tr.clickable {
+  cursor: pointer;
+}
+
+/* ============================================
+ * TABLE VARIANTS
+ * ============================================ */
+
+/* Striped */
+.data-table--striped tbody tr:nth-child(even) {
+  background-color: var(--md-sys-color-surface-container-low);
+}
+
+/* Compact */
+.data-table--compact th,
+.data-table--compact td {
+  padding: var(--md-sys-spacing-2) var(--md-sys-spacing-3);
+  font-size: var(--md-sys-typescale-body-small-size);
+}
+
+/* Bordered */
+.data-table--bordered th,
+.data-table--bordered td {
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+/* Hoverable */
+.data-table--hover tbody tr:hover {
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+/* ============================================
+ * TABLE ACTIONS
+ * ============================================ */
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-1);
+  justify-content: flex-end;
+}
+
+/* ============================================
+ * TABLE EMPTY STATE
+ * ============================================ */
+.table-empty {
+  text-align: center;
+  padding: var(--md-sys-spacing-8) !important;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.table-empty .material-icons {
+  font-size: 48px;
+  margin-bottom: var(--md-sys-spacing-2);
+  color: var(--md-sys-color-outline);
+}
+
+/* ============================================
+ * TABLE LOADING
+ * ============================================ */
+.table-loading {
+  padding: var(--md-sys-spacing-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-3);
+}
+
+/* ============================================
+ * TABLE RESPONSIVE
+ * ============================================ */
+@media (max-width: 768px) {
+  .data-table--responsive thead {
+    display: none;
+  }
+  
+  .data-table--responsive tbody,
+  .data-table--responsive tr,
+  .data-table--responsive td {
+    display: block;
+  }
+  
+  .data-table--responsive tr {
+    margin-bottom: var(--md-sys-spacing-3);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--md-sys-shape-corner-small);
+  }
+  
+  .data-table--responsive td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--md-sys-spacing-2) var(--md-sys-spacing-3);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+  
+  .data-table--responsive td:last-child {
+    border-bottom: none;
+  }
+  
+  .data-table--responsive td::before {
+    content: attr(data-label);
+    font-weight: var(--md-sys-font-weight-medium);
+    color: var(--md-sys-color-on-surface-variant);
+    margin-right: var(--md-sys-spacing-3);
+    font-size: var(--md-sys-typescale-label-small-size);
+  }
+}
+
+/* ============================================
+ * SIMPLE TABLE (for content)
+ * ============================================ */
+.table-simple {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-simple th,
+.table-simple td {
+  padding: var(--md-sys-spacing-2) var(--md-sys-spacing-3);
+  text-align: left;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.table-simple th {
+  font-weight: var(--md-sys-font-weight-medium);
+  color: var(--md-sys-color-on-surface-variant);
+}
