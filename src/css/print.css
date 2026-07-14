@@ -1,0 +1,216 @@
+/**
+ * PRINT STYLES - ARSIP SURAT DIGITAL ENTERPRISE v3.2.2
+ */
+
+@media print {
+  /* Hide non-essential elements */
+  .sidebar,
+  .navbar,
+  .navbar__toggle,
+  .navbar__actions,
+  .navbar__user-menu,
+  .footer,
+  .btn,
+  .toast-container,
+  .offline-indicator,
+  .update-banner,
+  .modal-overlay,
+  .notification-panel,
+  .sidebar-overlay,
+  .filters-bar,
+  .bulk-actions,
+  .pagination,
+  .table-actions,
+  .dropdown__menu,
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Reset layout */
+  .app-shell {
+    display: block !important;
+  }
+  
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  
+  .content-area {
+    padding: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  /* Typography for print */
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+    background: #fff;
+  }
+  
+  h1 { font-size: 24pt; }
+  h2 { font-size: 18pt; }
+  h3 { font-size: 14pt; }
+  
+  /* Tables */
+  .data-table {
+    border: 1px solid #000;
+  }
+  
+  .data-table th,
+  .data-table td {
+    border: 1px solid #000;
+    padding: 6px 8px;
+    color: #000;
+    background: #fff;
+  }
+  
+  .data-table thead {
+    background: #f0f0f0;
+  }
+  
+  /* Cards */
+  .card {
+    border: 1px solid #ccc;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+  
+  .stat-card {
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+  
+  /* Badges */
+  .badge {
+    border: 1px solid #000;
+    background: #f0f0f0;
+    color: #000;
+  }
+  
+  /* Links */
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+  
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    font-weight: normal;
+  }
+  
+  /* Images */
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+  
+  /* QR Code */
+  .qr-code {
+    border: 1px solid #000;
+  }
+  
+  /* Charts */
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  
+  /* Page breaks */
+  .page-break-before {
+    page-break-before: always;
+  }
+  
+  .page-break-after {
+    page-break-after: always;
+  }
+  
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+  
+  /* Headers and footers */
+  @page {
+    margin: 2cm;
+    size: A4;
+  }
+  
+  @page :first {
+    margin-top: 3cm;
+  }
+  
+  /* Show print-only elements */
+  .print-only {
+    display: block !important;
+  }
+  
+  /* Watermark */
+  .watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 60pt;
+    color: rgba(0, 0, 0, 0.05);
+    pointer-events: none;
+    z-index: 9999;
+  }
+  
+  /* Report header */
+  .report-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #000;
+  }
+  
+  .report-header h1 {
+    font-size: 20pt;
+    margin-bottom: 5px;
+  }
+  
+  .report-header p {
+    font-size: 10pt;
+    color: #666;
+  }
+  
+  /* Report footer */
+  .report-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 8pt;
+    color: #999;
+    padding: 10px 0;
+    border-top: 1px solid #ccc;
+  }
+  
+  /* Signature area */
+  .signature-area {
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .signature-block {
+    text-align: center;
+    width: 200px;
+  }
+  
+  .signature-line {
+    margin-top: 60px;
+    border-top: 1px solid #000;
+    padding-top: 5px;
+  }
+  
+  /* Ensure background colors print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
