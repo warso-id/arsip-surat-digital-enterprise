@@ -8,130 +8,87 @@
     <meta name="application-name" content="Arsip Surat Digital Enterprise">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     
-    <!-- PWA Manifest - Gunakan path relatif -->
+    <!-- Favicon Base64 -->
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIwIiBmaWxsPSIjMTk3NkQyIi8+PHRleHQgeD0iNTAiIHk9IjY1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXNpemU9IjUwIiBmaWxsPSJ3aGl0ZSI+QVM8L3RleHQ+PC9zdmc+">
+    
+    <!-- PWA Manifest Base64 -->
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkFyc2lwIFN1cmF0IERpZ2l0YWwgRW50ZXJwcmlzZSIsCiAgInNob3J0X25hbWUiOiAiQXJzaXAgU3VyYXQiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgInRoZW1lX2NvbG9yIjogIiMxOTc2RDIiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNGREZCRkYiLAogICJpY29ucyI6IFtdCn0=">
-    
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231976D2'/><text x='50' y='65' text-anchor='middle' font-family='Arial' font-weight='bold' font-size='50' fill='white'>AS</text></svg>">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&family=Material+Icons&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono&family=Material+Icons&display=swap" rel="stylesheet">
     
     <title>Arsip Surat Digital Enterprise v3.2.2</title>
     
     <style>
-        /* ============================================
-         * CRITICAL CSS - Loading & Auth
-         * ============================================ */
+        /* ============ CSS RESET & VARIABLES ============ */
         :root {
-            --primary: #1976D2;
-            --primary-dark: #1565C0;
-            --surface: #FDFBFF;
-            --on-surface: #1A1C1E;
-            --on-surface-variant: #44474E;
-            --outline: #74777F;
-            --outline-variant: #C4C6D0;
-            --error: #BA1A1A;
-            --success: #2E7D32;
-            --surface-container: #F3F0F4;
-            --surface-container-high: #ECEAF0;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
-            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-full: 9999px;
+            --primary: #1976D2; --primary-dark: #0D47A1; --surface: #FDFBFF;
+            --on-surface: #1A1C1E; --on-surface-variant: #44474E; --outline: #74777F;
+            --outline-variant: #C4C6D0; --error: #BA1A1A; --success: #2E7D32;
+            --warning: #E65100; --info: #1565C0; --surface-container: #F3F0F4;
+            --surface-container-high: #ECEAF0; --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1); --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+            --radius-sm: 8px; --radius-md: 16px; --radius-lg: 24px; --radius-full: 9999px;
             --transition: all 0.2s ease;
         }
-        
         [data-theme="dark"] {
-            --surface: #1A1C1E;
-            --on-surface: #E2E2E6;
-            --on-surface-variant: #C4C6D0;
-            --outline: #8E9099;
-            --outline-variant: #44474E;
-            --surface-container: #1E2024;
+            --surface: #1A1C1E; --on-surface: #E2E2E6; --on-surface-variant: #C4C6D0;
+            --outline: #8E9099; --outline-variant: #44474E; --surface-container: #1E2024;
             --surface-container-high: #282A2E;
         }
-        
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
-            font-family: 'Roboto', -apple-system, sans-serif;
-            background: var(--surface);
-            color: var(--on-surface);
-            min-height: 100vh;
-            min-height: 100dvh;
-            -webkit-font-smoothing: antialiased;
+            font-family: 'Roboto', sans-serif; background: var(--surface); color: var(--on-surface);
+            min-height: 100vh; -webkit-font-smoothing: antialiased;
         }
+        .hidden { display: none !important; }
         
-        /* Loading Screen */
+        /* ============ LOADING SCREEN ============ */
         #app-loading {
-            position: fixed; inset: 0; z-index: 9999;
-            display: flex; align-items: center; justify-content: center;
-            background: linear-gradient(135deg, #1976D2 0%, #0D47A1 100%);
-            transition: opacity 0.5s ease;
+            position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center;
+            justify-content: center; background: linear-gradient(135deg, #1976D2 0%, #0D47A1 100%);
+            transition: opacity 0.5s;
         }
         #app-loading.fade-out { opacity: 0; pointer-events: none; }
         .loading-content { text-align: center; color: white; }
         .loading-logo {
             width: 80px; height: 80px; background: white; border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px; font-size: 36px; font-weight: 700;
-            color: #1976D2; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
+            font-size: 36px; font-weight: 700; color: #1976D2; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         }
         .loading-title { font-size: 24px; font-weight: 500; margin-bottom: 8px; }
         .loading-text { font-size: 14px; opacity: 0.8; margin-bottom: 24px; }
         .loading-spinner {
-            width: 40px; height: 40px; margin: 0 auto;
-            border: 3px solid rgba(255,255,255,0.3); border-top-color: white;
-            border-radius: 50%; animation: spin 0.8s linear infinite;
+            width: 40px; height: 40px; margin: 0 auto; border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite;
         }
         .loading-version { display: block; margin-top: 16px; font-size: 12px; opacity: 0.6; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* CORS WARNING */
-        .cors-warning {
-            position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
-            z-index: 10000; background: #FFF3E0; color: #E65100;
-            padding: 16px 24px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-            font-size: 13px; max-width: 500px; text-align: center; display: none;
-            border: 1px solid #FFE0B2;
-        }
-        .cors-warning code {
-            background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px;
-            font-family: 'Roboto Mono', monospace; font-size: 11px;
-            word-break: break-all;
-        }
-        
-        /* Auth Styles */
+        /* ============ AUTH WRAPPER ============ */
         .auth-wrapper {
-            display: flex; align-items: center; justify-content: center;
-            min-height: 100vh; min-height: 100dvh; padding: 24px;
-            background: linear-gradient(135deg, #1976D2 0%, #0D47A1 50%, #01579B 100%);
+            display: flex; align-items: center; justify-content: center; min-height: 100vh;
+            padding: 24px; background: linear-gradient(135deg, #1976D2 0%, #0D47A1 50%, #01579B 100%);
             position: relative; overflow: hidden;
         }
         .auth-wrapper::before {
-            content: ''; position: absolute; top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%);
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
             animation: rotate 30s linear infinite;
         }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         
         .auth-card {
-            background: var(--surface); border-radius: 28px;
-            box-shadow: 0 24px 80px rgba(0,0,0,0.3);
-            width: 100%; max-width: 420px; position: relative; z-index: 1;
-            overflow: hidden; animation: slideUp 0.5s ease;
+            background: var(--surface); border-radius: 28px; box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+            width: 100%; max-width: 440px; position: relative; z-index: 1; overflow: hidden;
+            animation: slideUp 0.5s ease;
         }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         
-        .auth-header { text-align: center; padding: 40px 32px 24px; }
+        .auth-header { text-align: center; padding: 40px 32px 20px; }
         .auth-logo {
             width: 64px; height: 64px; background: linear-gradient(135deg, #1976D2, #0D47A1);
             border-radius: 16px; display: flex; align-items: center; justify-content: center;
@@ -142,61 +99,55 @@
         .auth-header p { font-size: 14px; color: var(--on-surface-variant); line-height: 1.5; }
         .auth-body { padding: 0 32px 24px; }
         .auth-footer {
-            display: flex; justify-content: center; gap: 16px;
-            padding: 16px 32px; border-top: 1px solid var(--outline-variant);
-            background: var(--surface-container); font-size: 13px;
+            display: flex; justify-content: center; gap: 16px; padding: 16px 32px;
+            border-top: 1px solid var(--outline-variant); background: var(--surface-container); font-size: 13px;
         }
         .auth-footer a { color: var(--primary); text-decoration: none; font-weight: 500; }
-        .auth-footer a:hover { text-decoration: underline; }
         
-        /* Form Elements */
+        /* ============ FORM ELEMENTS ============ */
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--on-surface); margin-bottom: 6px; }
         .form-label.required::after { content: ' *'; color: var(--error); }
         .form-input {
-            width: 100%; height: 48px; padding: 0 16px;
-            border: 1px solid var(--outline); border-radius: var(--radius-sm);
-            font-family: 'Roboto', sans-serif; font-size: 14px;
-            color: var(--on-surface); background: var(--surface);
-            transition: var(--transition); outline: none;
+            width: 100%; height: 48px; padding: 0 16px; border: 1px solid var(--outline);
+            border-radius: var(--radius-sm); font-family: 'Roboto', sans-serif; font-size: 14px;
+            color: var(--on-surface); background: var(--surface); transition: var(--transition); outline: none;
         }
-        .form-input:hover { border-color: var(--on-surface-variant); }
-        .form-input:focus { border-color: var(--primary); border-width: 2px; padding: 0 15px; box-shadow: 0 0 0 3px rgba(25,118,210,0.12); }
+        .form-input:focus { border-color: var(--primary); border-width: 2px; padding: 0 15px; box-shadow: 0 0 0 3px rgba(25,118,210,0.15); }
         .form-input.error { border-color: var(--error); }
-        .form-error { font-size: 12px; color: var(--error); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+        .form-error { font-size: 12px; color: var(--error); margin-top: 4px; }
         
         .input-icon { position: relative; }
         .input-icon .form-input { padding-left: 44px; }
         .input-icon .form-input:focus { padding-left: 43px; }
-        .input-icon .icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--on-surface-variant); font-size: 20px; pointer-events: none; }
-        .input-icon .icon-right { left: auto; right: 14px; cursor: pointer; pointer-events: auto; }
+        .input-icon .icon-pre { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; }
+        .input-icon .icon-suf { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; }
         
-        /* Buttons */
+        /* ============ BUTTONS ============ */
         .btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             height: 44px; padding: 0 24px; border: none; border-radius: var(--radius-full);
             font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 500;
             cursor: pointer; transition: var(--transition); text-decoration: none;
-            position: relative; overflow: hidden;
         }
-        .btn::after { content: ''; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity 0.2s; }
-        .btn:hover::after { opacity: 0.08; }
-        .btn:active::after { opacity: 0.12; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
         .btn-primary { background: var(--primary); color: white; box-shadow: var(--shadow-sm); }
-        .btn-primary:hover { box-shadow: var(--shadow-md); }
+        .btn-primary:hover { background: var(--primary-dark); box-shadow: var(--shadow-md); }
         .btn-secondary { background: var(--surface-container-high); color: var(--on-surface); }
+        .btn-secondary:hover { background: var(--outline-variant); }
         .btn-ghost { background: transparent; color: var(--primary); }
         .btn-ghost:hover { background: rgba(25,118,210,0.08); }
-        .btn-block { width: 100%; }
-        .btn-loading { color: transparent !important; pointer-events: none; }
-        .btn-loading::before {
+        .btn-error { background: var(--error); color: white; }
+        .btn-block { width: 100%; justify-content: center; }
+        .btn-sm { height: 36px; padding: 0 16px; font-size: 13px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-loading { position: relative; color: transparent !important; pointer-events: none; }
+        .btn-loading::after {
             content: ''; position: absolute; width: 20px; height: 20px;
-            border: 2px solid currentColor; border-top-color: transparent;
+            border: 2px solid rgba(255,255,255,0.5); border-top-color: white;
             border-radius: 50%; animation: spin 0.6s linear infinite;
         }
         
-        /* Alert */
+        /* ============ ALERTS ============ */
         .alert { padding: 12px 16px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
         .alert-error { background: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; }
         .alert-success { background: #E8F5E9; color: #2E7D32; border: 1px solid #C8E6C9; }
@@ -206,895 +157,599 @@
         [data-theme="dark"] .alert-error { background: #3E1010; color: #FFB4AB; border-color: #5C1A1A; }
         [data-theme="dark"] .alert-success { background: #0D2B0D; color: #81C784; border-color: #1A4D1A; }
         [data-theme="dark"] .alert-info { background: #0A1F3D; color: #90CAF9; border-color: #1A3A5C; }
-        [data-theme="dark"] .alert-warning { background: #3D2000; color: #FFB74D; border-color: #5C3500; }
         
-        /* Toast */
-        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; max-width: 380px; }
-        
-        .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--on-surface-variant); cursor: pointer; user-select: none; }
-        .checkbox-label input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
-        
-        .hidden { display: none !important; }
-        
-        /* API Status Indicator */
-        .api-status {
-            padding: 8px 16px; border-radius: var(--radius-full);
-            font-size: 12px; display: inline-flex; align-items: center; gap: 6px;
-            margin-bottom: 16px;
+        /* ============ STATUS INDICATOR ============ */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
+            border-radius: var(--radius-full); font-size: 12px; font-weight: 500;
         }
-        .api-status.online { background: #E8F5E9; color: #2E7D32; }
-        .api-status.offline { background: #FFEBEE; color: #C62828; }
-        .api-status .dot { width: 8px; height: 8px; border-radius: 50%; }
-        .api-status.online .dot { background: #4CAF50; }
-        .api-status.offline .dot { background: #F44336; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .status-badge.online { background: #E8F5E9; color: #2E7D32; }
+        .status-badge.offline { background: #FFEBEE; color: #C62828; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .status-badge.online .status-dot { background: #4CAF50; }
+        .status-badge.offline .status-dot { background: #F44336; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
         
-        /* Setup Guide */
-        .setup-guide {
+        /* ============ TOAST ============ */
+        #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; max-width: 380px; }
+        .toast {
+            display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+            border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); font-size: 14px;
+            font-weight: 500; animation: toastIn 0.3s ease;
+        }
+        .toast-success { background: #E8F5E9; color: #2E7D32; }
+        .toast-error { background: #FFEBEE; color: #C62828; }
+        .toast-warning { background: #FFF3E0; color: #E65100; }
+        .toast-info { background: #E3F2FD; color: #1565C0; }
+        .toast-close { background: none; border: none; color: inherit; cursor: pointer; font-size: 18px; opacity: 0.5; line-height: 1; margin-left: auto; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
+        
+        /* ============ SETUP GUIDE ============ */
+        .setup-card {
             background: var(--surface-container); border-radius: var(--radius-md);
-            padding: 20px; margin-bottom: 20px; font-size: 13px; line-height: 1.6;
+            padding: 20px; margin-top: 20px; font-size: 13px; line-height: 1.6;
+            border: 1px solid var(--outline-variant);
         }
-        .setup-guide h4 { font-size: 15px; margin-bottom: 12px; color: var(--primary); }
-        .setup-guide ol { padding-left: 20px; margin-bottom: 12px; }
-        .setup-guide li { margin-bottom: 6px; }
-        .setup-guide code {
+        .setup-card h4 { font-size: 15px; margin-bottom: 12px; color: var(--primary); }
+        .setup-card ol { padding-left: 20px; }
+        .setup-card li { margin-bottom: 8px; }
+        .setup-card code {
             background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px;
             font-family: 'Roboto Mono', monospace; font-size: 11px; word-break: break-all;
         }
+        .setup-card .btn { margin-top: 12px; }
         
+        /* ============ CHECKBOX ============ */
+        .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--on-surface-variant); cursor: pointer; }
+        .checkbox-label input { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+        
+        /* ============ RESPONSIVE ============ */
         @media (max-width: 480px) {
             .auth-wrapper { padding: 16px; align-items: flex-start; padding-top: 40px; }
             .auth-card { border-radius: 24px; }
             .auth-header { padding: 32px 20px 20px; }
             .auth-body { padding: 0 20px 20px; }
             .auth-footer { padding: 12px 20px; }
-            .toast-container { left: 16px; right: 16px; max-width: none; }
+            #toast-container { left: 16px; right: 16px; max-width: none; }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
+    <!-- LOADING SCREEN -->
     <div id="app-loading">
         <div class="loading-content">
             <div class="loading-logo">AS</div>
             <h1 class="loading-title">Arsip Surat Digital Enterprise</h1>
-            <p class="loading-text">Memuat aplikasi...</p>
+            <p class="loading-text">Menghubungkan ke server...</p>
             <div class="loading-spinner"></div>
             <small class="loading-version">v3.2.2</small>
         </div>
     </div>
     
-    <!-- CORS Warning -->
-    <div class="cors-warning" id="cors-warning">
-        <strong>⚠️ Masalah Koneksi</strong><br>
-        <span id="cors-message">Gagal terhubung ke server. Pastikan Google Apps Script sudah di-deploy dengan akses "Anyone".</span>
-    </div>
-    
-    <!-- Main App -->
+    <!-- APP CONTAINER -->
     <div id="app" class="hidden"></div>
     
-    <!-- Toast Container -->
-    <div class="toast-container" id="toast-container"></div>
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container"></div>
 
     <script>
-        /**
-         * ============================================
-         * ARSIP SURAT DIGITAL ENTERPRISE v3.2.2
-         * SINGLE FILE APPLICATION
-         * ============================================
-         */
+    /**
+     * ============================================
+     * ARSIP SURAT DIGITAL ENTERPRISE v3.2.2
+     * SINGLE FILE APPLICATION - PRODUCTION READY
+     * ============================================
+     */
+    (function() {
+        'use strict';
         
         // ============================================
-        // CONFIGURATION - GANTI URL INI!
+        // CONFIGURATION
         // ============================================
-        const APP_CONFIG = {
+        const CONFIG = {
             APP_NAME: 'Arsip Surat Digital Enterprise',
             APP_VERSION: '3.2.2',
             
-            // 🔴 GANTI DENGAN URL GOOGLE APPS SCRIPT ANDA!
-            // Dapatkan dari: Deploy → New Deployment → Web App → Copy URL
-            API_BASE_URL: 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec',
+            // 🔴 GANTI DENGAN URL GOOGLE APPS SCRIPT ANDA
+            API_URL: 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec',
             
-            // 🔴 Untuk testing tanpa backend, set ke true
-            USE_MOCK: false,
+            // Set true untuk testing tanpa backend
+            MOCK_MODE: false,
             
-            AUTH: {
-                TOKEN_KEY: 'asd_auth_token',
-                USER_KEY: 'asd_auth_user',
-                CSRF_KEY: 'asd_csrf_token'
-            }
+            // Auth keys
+            TOKEN_KEY: 'asd_token',
+            USER_KEY: 'asd_user',
+            CSRF_KEY: 'asd_csrf',
+            
+            // Default admin (untuk mock mode)
+            DEFAULT_USER: 'admin',
+            DEFAULT_PASS: 'Admin123!'
         };
         
         // ============================================
-        // MOCK DATA (Untuk testing tanpa backend)
+        // STORAGE
         // ============================================
-        const MOCK_DATA = {
-            'ping': {
-                status: 'success',
-                message: '✅ API RUNNING (Mock Mode)',
-                data: { version: '3.2.2', timestamp: new Date().toISOString() }
-            },
-            'checkSetup': {
-                status: 'success',
-                data: { isSetup: true }
-            },
+        const Store = {
+            get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+            set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+            del(k) { try { localStorage.removeItem(k); } catch {} },
+            getJSON(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+            setJSON(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+        };
+        
+        // ============================================
+        // MOCK DATA
+        // ============================================
+        const MOCK = {
+            'ping': { status: 'success', message: 'API Ready (Mock)', data: { version: '3.2.2' } },
+            'checkSetup': { status: 'success', data: { isSetup: true } },
+            'setup': { status: 'success', message: 'Setup berhasil!', data: { adminUsername: 'admin', adminPassword: 'Admin123!' } },
             'login': {
                 status: 'success',
                 data: {
-                    token: 'mock-token-' + Date.now(),
+                    token: 'mock-jwt-' + Date.now(),
                     csrf: 'mock-csrf-' + Date.now(),
-                    user: {
-                        id: 'admin-001',
-                        username: 'admin',
-                        namaLengkap: 'Administrator',
-                        email: 'admin@instansi.id',
-                        role: 'admin',
-                        jabatan: 'Administrator',
-                        unitKerja: 'TI'
-                    },
+                    user: { id: 'admin-001', username: 'admin', namaLengkap: 'Administrator', email: 'admin@instansi.id', role: 'admin', jabatan: 'Administrator', unitKerja: 'TI' },
                     permissions: { all: ['*'] }
                 }
             },
-            'publicRegister': {
-                status: 'success',
-                message: 'Registrasi berhasil! Silakan login.'
-            },
-            'dashboard.stats': {
-                status: 'success',
-                data: {
-                    suratMasuk: { total: 25, pending: 5 },
-                    suratKeluar: { total: 18, pending: 3 },
-                    disposisi: { total: 12, pending: 4 },
-                    approval: { total: 8, pending: 2 }
-                }
-            },
-            'checkUser': {
-                status: 'success',
-                data: { username: 'admin', email: 'admin@instansi.id', namaLengkap: 'Administrator' }
-            }
+            'publicRegister': { status: 'success', message: 'Registrasi berhasil! Silakan login.' },
+            'checkUser': { status: 'success', data: { username: 'admin', email: 'admin@instansi.id', namaLengkap: 'Administrator' } },
+            'dashboard.stats': { status: 'success', data: { suratMasuk: { total: 25, pending: 5 }, suratKeluar: { total: 18, pending: 3 }, disposisi: { total: 12, pending: 4 }, approval: { total: 8, pending: 2 } } },
+            'me': { status: 'success', data: { user: { id: 'admin-001', username: 'admin', namaLengkap: 'Administrator', role: 'admin' }, permissions: { all: ['*'] } } }
         };
         
         // ============================================
-        // STORAGE HELPERS
+        // TOAST
         // ============================================
-        const Storage = {
-            get(key) { try { return localStorage.getItem(key); } catch { return null; } },
-            set(key, value) { try { localStorage.setItem(key, value); } catch {} },
-            remove(key) { try { localStorage.removeItem(key); } catch {} },
-            getJSON(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } },
-            setJSON(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }
+        const Toast = {
+            show(msg, type, dur) {
+                const c = document.getElementById('toast-container');
+                if (!c) return;
+                const t = document.createElement('div');
+                t.className = 'toast toast-' + (type || 'info');
+                t.innerHTML = '<span>' + msg + '</span><button class="toast-close" onclick="this.parentElement.remove()">×</button>';
+                c.appendChild(t);
+                if (dur !== 0) { setTimeout(() => { t.style.animation = 'toastOut 0.3s ease forwards'; setTimeout(() => t.remove(), 300); }, dur || 4000); }
+                return t;
+            },
+            ok(msg) { return this.show(msg, 'success', 3000); },
+            err(msg) { return this.show(msg, 'error', 6000); },
+            warn(msg) { return this.show(msg, 'warning', 4000); },
+            info(msg) { return this.show(msg, 'info', 3000); }
         };
         
         // ============================================
         // API SERVICE
         // ============================================
         const API = {
-            async request(action, data = {}, method = 'POST') {
+            async call(action, data, method) {
                 // Mock mode
-                if (APP_CONFIG.USE_MOCK) {
-                    console.log('🔸 MOCK API:', action, data);
-                    await this.delay(500);
-                    
-                    const mockResponse = MOCK_DATA[action];
-                    if (mockResponse) return mockResponse;
-                    
-                    // Generic success for unknown actions
-                    return { status: 'success', message: `Mock: ${action}`, data: {} };
+                if (CONFIG.MOCK_MODE) {
+                    await new Promise(r => setTimeout(r, 400));
+                    const m = MOCK[action];
+                    if (m) return JSON.parse(JSON.stringify(m));
+                    return { status: 'success', message: 'Mock OK', data: {} };
                 }
                 
-                // Real API call
-                const url = new URL(APP_CONFIG.API_BASE_URL);
-                url.searchParams.set('action', action);
-                
-                const options = {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
+                // Real API
+                const url = CONFIG.API_URL + '?action=' + action;
+                const opts = {
+                    method: method || 'POST',
+                    headers: { 'Accept': 'application/json' }
                 };
                 
-                if (method === 'POST' && data) {
-                    options.body = JSON.stringify(data);
+                if (method !== 'GET' && data) {
+                    opts.headers['Content-Type'] = 'application/json';
+                    opts.body = JSON.stringify(data);
                 }
                 
-                const token = Storage.get(APP_CONFIG.AUTH.TOKEN_KEY);
-                if (token) {
-                    options.headers['Authorization'] = 'Bearer ' + token;
-                }
+                const token = Store.get(CONFIG.TOKEN_KEY);
+                if (token) opts.headers['Authorization'] = 'Bearer ' + token;
                 
-                const csrf = Storage.get(APP_CONFIG.AUTH.CSRF_KEY);
-                if (csrf && method === 'POST') {
-                    options.headers['X-CSRF-Token'] = csrf;
-                }
+                const csrf = Store.get(CONFIG.CSRF_KEY);
+                if (csrf && method !== 'GET') opts.headers['X-CSRF-Token'] = csrf;
                 
-                console.log('🔷 API Call:', action);
+                console.log('📡 API:', action, method || 'POST');
                 
                 try {
-                    const response = await fetch(url.toString(), options);
-                    
-                    // Coba parse JSON
-                    const text = await response.text();
-                    let result;
-                    
-                    try {
-                        result = JSON.parse(text);
-                    } catch {
-                        console.error('Invalid JSON response:', text.substring(0, 200));
-                        throw new Error('Server returned invalid response. Check if Google Apps Script is deployed correctly.');
-                    }
-                    
-                    if (!response.ok) {
-                        throw new Error(result.message || `HTTP Error ${response.status}`);
-                    }
-                    
-                    return result;
-                    
-                } catch (error) {
-                    console.error('API Error:', error);
-                    
-                    // Tampilkan CORS warning
-                    if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                        document.getElementById('cors-warning').style.display = 'block';
-                        document.getElementById('cors-message').textContent = 
-                            'Gagal terhubung ke server. Kemungkinan masalah CORS. ' +
-                            'Deploy ulang Google Apps Script dengan akses "Anyone" atau gunakan mode mock.';
-                    }
-                    
-                    throw error;
+                    const res = await fetch(url, opts);
+                    const txt = await res.text();
+                    let json;
+                    try { json = JSON.parse(txt); } catch { throw new Error('Invalid server response'); }
+                    if (!res.ok) throw new Error(json.message || 'HTTP ' + res.status);
+                    return json;
+                } catch (e) {
+                    console.error('API Error:', e.message);
+                    throw e;
                 }
             },
-            
-            get(action, params = {}) {
-                if (APP_CONFIG.USE_MOCK) {
-                    const mockResponse = MOCK_DATA[action];
-                    if (mockResponse) return Promise.resolve(mockResponse);
-                    return Promise.resolve({ status: 'success', data: {} });
-                }
-                
-                const url = new URL(APP_CONFIG.API_BASE_URL);
-                url.searchParams.set('action', action);
-                Object.entries(params).forEach(([k, v]) => {
-                    if (v !== undefined && v !== null) url.searchParams.set(k, v);
-                });
-                
-                const token = Storage.get(APP_CONFIG.AUTH.TOKEN_KEY);
-                const headers = { 'Accept': 'application/json' };
-                if (token) headers['Authorization'] = 'Bearer ' + token;
-                
-                return fetch(url.toString(), { headers })
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.status === 'error') throw new Error(data.message);
-                        return data;
-                    })
-                    .catch(error => {
-                        console.error('API GET Error:', error);
-                        throw error;
-                    });
+            get(action, params) {
+                const qs = params ? '&' + Object.entries(params).map(([k,v]) => k + '=' + encodeURIComponent(v||'')).join('&') : '';
+                return this.call(action + qs, null, 'GET');
             },
-            
-            post(action, data) {
-                return this.request(action, data, 'POST');
-            },
-            
-            delay(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            }
+            post(action, data) { return this.call(action, data, 'POST'); },
+            ping() { return this.get('ping').then(r => r.status === 'success').catch(() => false); }
         };
         
         // ============================================
-        // TOAST NOTIFICATION
-        // ============================================
-        const Toast = {
-            show(message, type = 'info', duration = 4000) {
-                const container = document.getElementById('toast-container');
-                if (!container) return;
-                
-                const colors = {
-                    success: { bg: '#E8F5E9', color: '#2E7D32', emoji: '✅' },
-                    error: { bg: '#FFEBEE', color: '#C62828', emoji: '❌' },
-                    warning: { bg: '#FFF3E0', color: '#E65100', emoji: '⚠️' },
-                    info: { bg: '#E3F2FD', color: '#1565C0', emoji: 'ℹ️' }
-                };
-                
-                const c = colors[type] || colors.info;
-                
-                const toast = document.createElement('div');
-                toast.style.cssText = `
-                    display: flex; align-items: center; gap: 12px;
-                    padding: 14px 18px; background: ${c.bg}; color: ${c.color};
-                    border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-                    font-size: 14px; font-weight: 500;
-                    animation: toastIn 0.3s ease;
-                `;
-                
-                toast.innerHTML = `
-                    <span style="font-size:16px">${c.emoji}</span>
-                    <span style="flex:1">${message}</span>
-                    <button style="background:none;border:none;color:inherit;cursor:pointer;font-size:18px;opacity:0.5;line-height:1" 
-                            onclick="this.parentElement.remove()">×</button>
-                `;
-                
-                container.appendChild(toast);
-                
-                if (duration > 0) {
-                    setTimeout(() => {
-                        toast.style.animation = 'toastOut 0.3s ease forwards';
-                        setTimeout(() => toast.remove(), 300);
-                    }, duration);
-                }
-            },
-            success(msg) { this.show(msg, 'success'); },
-            error(msg) { this.show(msg, 'error', 6000); },
-            warning(msg) { this.show(msg, 'warning'); },
-            info(msg) { this.show(msg, 'info'); }
-        };
-        
-        // Toast animations
-        const toastStyle = document.createElement('style');
-        toastStyle.textContent = `
-            @keyframes toastIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
-            @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
-        `;
-        document.head.appendChild(toastStyle);
-        
-        // ============================================
-        // AUTH SERVICE
+        // AUTH
         // ============================================
         const Auth = {
-            isLoggedIn() {
-                return !!Storage.get(APP_CONFIG.AUTH.TOKEN_KEY) && 
-                       !!Storage.getJSON(APP_CONFIG.AUTH.USER_KEY);
+            logged() { return !!Store.get(CONFIG.TOKEN_KEY) && !!Store.getJSON(CONFIG.USER_KEY); },
+            user() { return Store.getJSON(CONFIG.USER_KEY); },
+            save(token, csrf, user) {
+                Store.set(CONFIG.TOKEN_KEY, token);
+                Store.set(CONFIG.CSRF_KEY, csrf);
+                Store.setJSON(CONFIG.USER_KEY, user);
             },
-            
-            getUser() {
-                return Storage.getJSON(APP_CONFIG.AUTH.USER_KEY);
+            clear() {
+                Store.del(CONFIG.TOKEN_KEY);
+                Store.del(CONFIG.CSRF_KEY);
+                Store.del(CONFIG.USER_KEY);
             },
-            
-            saveSession(token, csrf, user) {
-                Storage.set(APP_CONFIG.AUTH.TOKEN_KEY, token);
-                Storage.set(APP_CONFIG.AUTH.CSRF_KEY, csrf);
-                Storage.setJSON(APP_CONFIG.AUTH.USER_KEY, user);
-            },
-            
-            clearSession() {
-                Storage.remove(APP_CONFIG.AUTH.TOKEN_KEY);
-                Storage.remove(APP_CONFIG.AUTH.CSRF_KEY);
-                Storage.remove(APP_CONFIG.AUTH.USER_KEY);
-            },
-            
-            async login(username, password) {
+            async login(u, p) {
                 try {
-                    const response = await API.post('login', { username, password });
-                    
-                    if (response.status === 'success' && response.data) {
-                        const { token, csrf, user } = response.data;
-                        this.saveSession(token, csrf, user);
-                        return { success: true, user };
+                    const r = await API.post('login', { username: u, password: p });
+                    if (r.status === 'success' && r.data) {
+                        this.save(r.data.token, r.data.csrf, r.data.user);
+                        return { ok: true, user: r.data.user };
                     }
-                    
-                    throw new Error(response.message || 'Login gagal');
-                } catch (error) {
-                    return { success: false, error: error.message };
+                    return { ok: false, error: r.message || 'Login gagal' };
+                } catch (e) {
+                    return { ok: false, error: e.message };
                 }
             },
-            
-            async register(data) {
+            async register(d) {
                 try {
-                    const response = await API.post('publicRegister', data);
-                    if (response.status === 'success') {
-                        return { success: true, message: response.message };
-                    }
-                    throw new Error(response.message || 'Registrasi gagal');
-                } catch (error) {
-                    return { success: false, error: error.message };
+                    const r = await API.post('publicRegister', d);
+                    if (r.status === 'success') return { ok: true, msg: r.message };
+                    return { ok: false, error: r.message || 'Registrasi gagal' };
+                } catch (e) {
+                    return { ok: false, error: e.message };
                 }
             },
-            
-            async checkSetup() {
+            async setup() {
                 try {
-                    const response = await API.get('checkSetup');
-                    return response.data?.isSetup || false;
-                } catch { return false; }
-            },
-            
-            async ping() {
-                try {
-                    const response = await API.get('ping');
-                    return response.status === 'success';
-                } catch { return false; }
-            },
-            
-            async checkUser(identifier) {
-                try {
-                    const response = await API.post('checkUser', { identifier });
-                    return { success: response.status === 'success', data: response.data };
-                } catch (error) {
-                    return { success: false, error: error.message };
+                    const r = await API.post('setup', {
+                        admin: { username: 'admin', password: 'Admin123!', namaLengkap: 'Administrator', email: 'admin@instansi.id' }
+                    });
+                    return { ok: r.status === 'success', data: r.data, msg: r.message };
+                } catch (e) {
+                    return { ok: false, error: e.message };
                 }
             },
-            
-            logout() {
-                this.clearSession();
-                App.showLogin();
-            }
+            logout() { this.clear(); App.showLogin(true); }
         };
         
         // ============================================
-        // APP CONTROLLER
+        // APP
         // ============================================
         const App = {
-            container: null,
-            loadingScreen: null,
+            el: null,
+            loading: null,
             
             async init() {
-                this.container = document.getElementById('app');
-                this.loadingScreen = document.getElementById('app-loading');
+                this.el = document.getElementById('app');
+                this.loading = document.getElementById('app-loading');
                 
-                // Check API connection
-                const isOnline = await Auth.ping();
-                console.log('API Status:', isOnline ? 'Online ✅' : 'Offline ❌');
+                // Check connection
+                const online = await API.ping();
+                console.log('Server:', online ? 'ONLINE ✅' : 'OFFLINE ❌');
                 
-                // Check auth
-                if (Auth.isLoggedIn()) {
+                // Show login or dashboard
+                if (Auth.logged()) {
                     this.showDashboard();
                 } else {
-                    this.showLogin(isOnline);
+                    this.showLogin(online);
                 }
                 
                 // Hide loading
                 setTimeout(() => {
-                    this.loadingScreen.classList.add('fade-out');
-                    this.container.classList.remove('hidden');
+                    this.loading.classList.add('fade-out');
+                    this.el.classList.remove('hidden');
                 }, 600);
             },
             
-            showLogin(isOnline = true) {
-                this.container.innerHTML = this.getLoginTemplate(isOnline);
-                this.bindLoginEvents();
-                document.title = 'Login - ' + APP_CONFIG.APP_NAME;
-            },
-            
-            showRegister() {
-                this.container.innerHTML = this.getRegisterTemplate();
-                this.bindRegisterEvents();
-                document.title = 'Register - ' + APP_CONFIG.APP_NAME;
-            },
-            
-            showDashboard() {
-                this.container.innerHTML = this.getDashboardTemplate();
-                this.bindDashboardEvents();
-                document.title = 'Dashboard - ' + APP_CONFIG.APP_NAME;
-                this.loadDashboardStats();
-            },
-            
-            // ============================================
-            // LOGIN TEMPLATE
-            // ============================================
-            getLoginTemplate(isOnline) {
-                const defaultUsername = APP_CONFIG.USE_MOCK ? 'admin' : '';
-                const defaultPassword = APP_CONFIG.USE_MOCK ? 'password' : '';
-                
-                return `
-                    <div class="auth-wrapper">
-                        <div class="auth-card">
-                            <div class="auth-header">
-                                <div class="auth-logo">AS</div>
-                                <h1>Arsip Surat Digital</h1>
-                                <p>Silakan masuk untuk melanjutkan</p>
-                                <div style="margin-top:12px">
-                                    <span class="api-status ${isOnline ? 'online' : 'offline'}">
-                                        <span class="dot"></span>
-                                        ${isOnline ? 'Server Terhubung' : 'Server Offline'}
-                                    </span>
-                                </div>
-                                ${APP_CONFIG.USE_MOCK ? '<div class="alert alert-info">🔸 Mode Mock Aktif - Gunakan admin/password untuk login</div>' : ''}
-                            </div>
-                            <div class="auth-body">
-                                <div id="login-alert"></div>
-                                <form id="login-form" autocomplete="off">
-                                    <div class="form-group">
-                                        <label class="form-label required" for="username">Username</label>
-                                        <div class="input-icon">
-                                            <span class="icon">👤</span>
-                                            <input type="text" class="form-input" id="username" 
-                                                   placeholder="Masukkan username" value="${defaultUsername}"
-                                                   autocomplete="username">
-                                        </div>
-                                        <div class="form-error hidden" id="username-error"></div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label required" for="password">Password</label>
-                                        <div class="input-icon">
-                                            <span class="icon">🔒</span>
-                                            <input type="password" class="form-input" id="password" 
-                                                   placeholder="Masukkan password" value="${defaultPassword}"
-                                                   autocomplete="current-password">
-                                            <span class="icon icon-right" id="toggle-password" style="cursor:pointer">👁</span>
-                                        </div>
-                                        <div class="form-error hidden" id="password-error"></div>
-                                    </div>
-                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" id="remember-me">
-                                            Ingat saya
-                                        </label>
-                                        <a href="javascript:void(0)" id="forgot-password-link" 
-                                           style="font-size:13px;color:var(--primary);text-decoration:none;font-weight:500">
-                                            Lupa password?
-                                        </a>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary btn-block" id="btn-login">
-                                        🔑 Masuk
-                                    </button>
-                                </form>
-                                
-                                <div style="text-align:center;margin-top:20px">
-                                    <p style="font-size:13px;color:var(--on-surface-variant)">
-                                        Belum punya akun? 
-                                        <a href="javascript:void(0)" id="go-to-register" 
-                                           style="color:var(--primary);font-weight:500;text-decoration:none">
-                                            Daftar sekarang
-                                        </a>
-                                    </p>
-                                </div>
-                                
-                                ${!isOnline && !APP_CONFIG.USE_MOCK ? this.getSetupGuide() : ''}
-                            </div>
-                            <div class="auth-footer">
-                                <span style="font-size:12px;color:var(--on-surface-variant)">
-                                    © 2026 Arsip Surat Digital Enterprise v${APP_CONFIG.APP_VERSION}
+            // ============ LOGIN PAGE ============
+            showLogin(online) {
+                document.title = 'Login - ' + CONFIG.APP_NAME;
+                this.el.innerHTML = `
+                <div class="auth-wrapper">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <div class="auth-logo">AS</div>
+                            <h1>Arsip Surat Digital</h1>
+                            <p>Silakan masuk untuk melanjutkan</p>
+                            <div style="margin-top:12px">
+                                <span class="status-badge ${online ? 'online' : 'offline'}">
+                                    <span class="status-dot"></span>
+                                    ${online ? 'Server Terhubung' : 'Server Offline'}
                                 </span>
                             </div>
+                            ${CONFIG.MOCK_MODE ? '<div class="alert alert-info" style="margin-top:12px">🔸 Mode Mock - Login dengan admin/Admin123!</div>' : ''}
+                        </div>
+                        <div class="auth-body">
+                            <div id="login-alert"></div>
+                            <form id="login-form" autocomplete="off">
+                                <div class="form-group">
+                                    <label class="form-label required" for="u">Username</label>
+                                    <div class="input-icon">
+                                        <span class="icon-pre">👤</span>
+                                        <input type="text" class="form-input" id="u" placeholder="Username" value="${CONFIG.MOCK_MODE ? CONFIG.DEFAULT_USER : ''}" autocomplete="username">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label required" for="p">Password</label>
+                                    <div class="input-icon">
+                                        <span class="icon-pre">🔒</span>
+                                        <input type="password" class="form-input" id="p" placeholder="Password" value="${CONFIG.MOCK_MODE ? CONFIG.DEFAULT_PASS : ''}" autocomplete="current-password">
+                                        <span class="icon-suf" id="toggle-pass" style="user-select:none">👁</span>
+                                    </div>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                                    <label class="checkbox-label"><input type="checkbox" id="remember"> Ingat saya</label>
+                                    <a href="javascript:void(0)" id="forgot-link" style="font-size:13px;color:var(--primary);text-decoration:none;font-weight:500">Lupa password?</a>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block" id="btn-login">🔑 Masuk</button>
+                            </form>
+                            <div style="text-align:center;margin-top:20px">
+                                <p style="font-size:13px;color:var(--on-surface-variant)">
+                                    Belum punya akun? 
+                                    <a href="javascript:void(0)" id="go-register" style="color:var(--primary);font-weight:500;text-decoration:none">Daftar</a>
+                                </p>
+                            </div>
+                            ${!online && !CONFIG.MOCK_MODE ? this.getSetupHTML() : ''}
+                        </div>
+                        <div class="auth-footer">
+                            <span style="font-size:12px;color:var(--on-surface-variant)">© 2026 v${CONFIG.APP_VERSION}</span>
                         </div>
                     </div>
-                `;
+                </div>`;
+                this.bindLogin();
             },
             
-            getSetupGuide() {
+            getSetupHTML() {
                 return `
-                    <div class="setup-guide" style="margin-top:20px">
-                        <h4>🔧 Panduan Setup Backend</h4>
-                        <p>Untuk menghubungkan ke Google Apps Script:</p>
-                        <ol>
-                            <li>Buka <a href="https://script.google.com" target="_blank">Google Apps Script</a></li>
-                            <li>Copy <code>code.gs</code> ke editor</li>
-                            <li>Klik <strong>Deploy → New Deployment → Web App</strong></li>
-                            <li>Set <strong>Execute as: Me</strong></li>
-                            <li>Set <strong>Who has access: Anyone</strong></li>
-                            <li>Copy URL dan update <code>API_BASE_URL</code> di file ini</li>
-                            <li>Panggil <code>?action=setup</code> untuk inisialisasi</li>
-                        </ol>
-                        <p style="margin-top:8px">Atau set <code>USE_MOCK: true</code> untuk testing tanpa backend.</p>
-                    </div>
-                `;
+                <div class="setup-card">
+                    <h4>🔧 Setup Backend</h4>
+                    <ol>
+                        <li>Buka <a href="https://script.google.com" target="_blank">Google Apps Script</a></li>
+                        <li>Copy <code>code.gs</code> ke editor</li>
+                        <li>Deploy → Web App → <b>Anyone</b></li>
+                        <li>Copy URL & update <code>API_URL</code></li>
+                    </ol>
+                    <button class="btn btn-primary btn-block btn-sm" onclick="App.runSetup()">⚡ Setup Otomatis</button>
+                </div>`;
             },
             
-            // ============================================
-            // REGISTER TEMPLATE
-            // ============================================
-            getRegisterTemplate() {
-                return `
-                    <div class="auth-wrapper">
-                        <div class="auth-card">
-                            <div class="auth-header">
-                                <div class="auth-logo">AS</div>
-                                <h1>Daftar Akun</h1>
-                                <p>Buat akun baru untuk mengakses sistem</p>
-                            </div>
-                            <div class="auth-body">
-                                <div id="register-alert"></div>
-                                <form id="register-form" autocomplete="off">
-                                    <div class="form-group">
-                                        <label class="form-label required" for="reg-username">Username</label>
-                                        <div class="input-icon">
-                                            <span class="icon">👤</span>
-                                            <input type="text" class="form-input" id="reg-username" placeholder="Pilih username">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label required" for="reg-nama">Nama Lengkap</label>
-                                        <div class="input-icon">
-                                            <span class="icon">📝</span>
-                                            <input type="text" class="form-input" id="reg-nama" placeholder="Masukkan nama lengkap">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label required" for="reg-email">Email</label>
-                                        <div class="input-icon">
-                                            <span class="icon">📧</span>
-                                            <input type="email" class="form-input" id="reg-email" placeholder="email@example.com">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label required" for="reg-password">Password</label>
-                                        <div class="input-icon">
-                                            <span class="icon">🔒</span>
-                                            <input type="password" class="form-input" id="reg-password" placeholder="Minimal 8 karakter">
-                                            <span class="icon icon-right toggle-reg-password" style="cursor:pointer">👁</span>
-                                        </div>
-                                        <small style="font-size:11px;color:var(--on-surface-variant)">Minimal 8 karakter</small>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary btn-block" id="btn-register">
-                                        📝 Daftar
-                                    </button>
-                                </form>
-                                <div style="text-align:center;margin-top:20px">
-                                    <p style="font-size:13px;color:var(--on-surface-variant)">
-                                        Sudah punya akun? 
-                                        <a href="javascript:void(0)" id="go-to-login" 
-                                           style="color:var(--primary);font-weight:500;text-decoration:none">
-                                            Masuk sekarang
-                                        </a>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="auth-footer">
-                                <span style="font-size:12px;color:var(--on-surface-variant)">
-                                    © 2026 Arsip Surat Digital Enterprise v${APP_CONFIG.APP_VERSION}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            },
-            
-            // ============================================
-            // DASHBOARD TEMPLATE
-            // ============================================
-            getDashboardTemplate() {
-                const user = Auth.getUser() || { username: 'admin', namaLengkap: 'Administrator', role: 'admin' };
-                return `
-                    <div style="display:flex;min-height:100vh">
-                        <aside style="width:260px;background:var(--surface-container);border-right:1px solid var(--outline-variant);padding:20px;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100">
-                            <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px">
-                                <div style="width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px">AS</div>
-                                <div>
-                                    <div style="font-weight:600;font-size:14px">Arsip Surat</div>
-                                    <div style="font-size:11px;color:var(--on-surface-variant)">v${APP_CONFIG.APP_VERSION}</div>
-                                </div>
-                            </div>
-                            <nav style="flex:1">
-                                <a href="javascript:void(0)" onclick="App.showDashboard()" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:24px;background:var(--primary);color:white;text-decoration:none;font-size:14px;font-weight:500;margin-bottom:4px">📊 Dashboard</a>
-                                <a href="javascript:void(0)" onclick="Toast.info('Fitur sedang dikembangkan')" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:24px;color:var(--on-surface-variant);text-decoration:none;font-size:14px;margin-bottom:4px;transition:all 0.2s" onmouseover="this.style.background='var(--surface-container-high)'" onmouseout="this.style.background='transparent'">📥 Surat Masuk</a>
-                                <a href="javascript:void(0)" onclick="Toast.info('Fitur sedang dikembangkan')" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:24px;color:var(--on-surface-variant);text-decoration:none;font-size:14px;margin-bottom:4px;transition:all 0.2s" onmouseover="this.style.background='var(--surface-container-high)'" onmouseout="this.style.background='transparent'">📤 Surat Keluar</a>
-                                <a href="javascript:void(0)" onclick="Toast.info('Fitur sedang dikembangkan')" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:24px;color:var(--on-surface-variant);text-decoration:none;font-size:14px;margin-bottom:4px;transition:all 0.2s" onmouseover="this.style.background='var(--surface-container-high)'" onmouseout="this.style.background='transparent'">➡️ Disposisi</a>
-                            </nav>
-                            <div style="border-top:1px solid var(--outline-variant);padding-top:16px">
-                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-                                    <div style="width:32px;height:32px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px">${(user.namaLengkap || user.username).charAt(0).toUpperCase()}</div>
-                                    <div style="flex:1;min-width:0">
-                                        <div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${user.namaLengkap || user.username}</div>
-                                        <div style="font-size:11px;color:var(--on-surface-variant)">${user.role}</div>
-                                    </div>
-                                </div>
-                                <button onclick="Auth.logout()" style="width:100%;padding:10px;border:1px solid var(--outline);border-radius:24px;background:transparent;color:var(--error);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='#FFEBEE'" onmouseout="this.style.background='transparent'">🚪 Keluar</button>
-                            </div>
-                        </aside>
-                        <main style="flex:1;padding:32px;overflow-y:auto;margin-left:260px">
-                            <div style="margin-bottom:32px">
-                                <h1 style="font-size:28px;font-weight:500;margin-bottom:8px">Selamat Datang, ${user.namaLengkap || user.username}</h1>
-                                <p style="font-size:14px;color:var(--on-surface-variant)">Berikut ringkasan aktivitas sistem</p>
-                            </div>
-                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:32px" id="dashboard-stats">
-                                <div style="padding:24px;background:var(--surface);border:1px solid var(--outline-variant);border-radius:16px;text-align:center;transition:all 0.2s;cursor:pointer" onmouseover="this.style.boxShadow='var(--shadow-md)';this.style.borderColor='var(--primary)'" onmouseout="this.style.boxShadow='none';this.style.borderColor='var(--outline-variant)'">
-                                    <div style="font-size:36px;margin-bottom:8px">📥</div>
-                                    <div style="font-size:32px;font-weight:700;color:var(--primary)" id="stat-sm">-</div>
-                                    <div style="font-size:13px;color:var(--on-surface-variant)">Surat Masuk</div>
-                                </div>
-                                <div style="padding:24px;background:var(--surface);border:1px solid var(--outline-variant);border-radius:16px;text-align:center;transition:all 0.2s;cursor:pointer" onmouseover="this.style.boxShadow='var(--shadow-md)';this.style.borderColor='var(--primary)'" onmouseout="this.style.boxShadow='none';this.style.borderColor='var(--outline-variant)'">
-                                    <div style="font-size:36px;margin-bottom:8px">📤</div>
-                                    <div style="font-size:32px;font-weight:700;color:var(--primary)" id="stat-sk">-</div>
-                                    <div style="font-size:13px;color:var(--on-surface-variant)">Surat Keluar</div>
-                                </div>
-                                <div style="padding:24px;background:var(--surface);border:1px solid var(--outline-variant);border-radius:16px;text-align:center;transition:all 0.2s;cursor:pointer" onmouseover="this.style.boxShadow='var(--shadow-md)';this.style.borderColor='var(--primary)'" onmouseout="this.style.boxShadow='none';this.style.borderColor='var(--outline-variant)'">
-                                    <div style="font-size:36px;margin-bottom:8px">➡️</div>
-                                    <div style="font-size:32px;font-weight:700;color:var(--primary)" id="stat-disp">-</div>
-                                    <div style="font-size:13px;color:var(--on-surface-variant)">Disposisi</div>
-                                </div>
-                                <div style="padding:24px;background:var(--surface);border:1px solid var(--outline-variant);border-radius:16px;text-align:center;transition:all 0.2s;cursor:pointer" onmouseover="this.style.boxShadow='var(--shadow-md)';this.style.borderColor='var(--primary)'" onmouseout="this.style.boxShadow='none';this.style.borderColor='var(--outline-variant)'">
-                                    <div style="font-size:36px;margin-bottom:8px">✅</div>
-                                    <div style="font-size:32px;font-weight:700;color:var(--primary)" id="stat-appr">-</div>
-                                    <div style="font-size:13px;color:var(--on-surface-variant)">Approval</div>
-                                </div>
-                            </div>
-                            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px">
-                                <button class="btn btn-primary" onclick="Toast.info('Fitur sedang dikembangkan')">➕ Surat Masuk Baru</button>
-                                <button class="btn btn-secondary" onclick="Toast.info('Fitur sedang dikembangkan')">➕ Surat Keluar Baru</button>
-                            </div>
-                            <div style="padding:16px;background:var(--surface-container);border-radius:12px;font-size:12px;color:var(--on-surface-variant)">
-                                <strong>${APP_CONFIG.APP_NAME}</strong> v${APP_CONFIG.APP_VERSION} | 
-                                <strong>Mode:</strong> ${APP_CONFIG.USE_MOCK ? 'Mock (Testing)' : 'Production'} |
-                                <strong>Login:</strong> ${new Date().toLocaleString('id-ID')}
-                            </div>
-                        </main>
-                    </div>
-                `;
-            },
-            
-            // ============================================
-            // EVENT BINDINGS
-            // ============================================
-            bindLoginEvents() {
-                const form = document.getElementById('login-form');
-                const btnLogin = document.getElementById('btn-login');
-                const togglePassword = document.getElementById('toggle-password');
-                
-                if (togglePassword) {
-                    togglePassword.addEventListener('click', function() {
-                        const input = document.getElementById('password');
-                        input.type = input.type === 'password' ? 'text' : 'password';
-                        this.textContent = input.type === 'password' ? '👁' : '🙈';
-                    });
+            async runSetup() {
+                const btn = event.target;
+                btn.disabled = true;
+                btn.textContent = 'Memproses...';
+                const r = await Auth.setup();
+                if (r.ok) {
+                    Toast.ok('Setup berhasil! Username: admin, Password: Admin123!');
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    Toast.err('Setup gagal: ' + (r.error || r.msg));
+                    btn.disabled = false;
+                    btn.textContent = '⚡ Setup Otomatis';
                 }
-                
-                document.getElementById('go-to-register')?.addEventListener('click', (e) => {
+            },
+            
+            bindLogin() {
+                document.getElementById('toggle-pass').onclick = function() {
+                    const p = document.getElementById('p');
+                    p.type = p.type === 'password' ? 'text' : 'password';
+                    this.textContent = p.type === 'password' ? '👁' : '🙈';
+                };
+                document.getElementById('go-register').onclick = () => App.showRegister();
+                document.getElementById('forgot-link').onclick = () => {
+                    const u = document.getElementById('u').value.trim();
+                    if (u) {
+                        API.post('checkUser', { identifier: u }).then(r => {
+                            if (r.status === 'success') Toast.info('User ditemukan. Hubungi administrator untuk reset password.');
+                            else Toast.err('User tidak ditemukan');
+                        }).catch(() => Toast.err('Gagal memeriksa user'));
+                    } else Toast.warn('Masukkan username terlebih dahulu');
+                };
+                document.getElementById('login-form').onsubmit = async function(e) {
                     e.preventDefault();
-                    App.showRegister();
-                });
-                
-                document.getElementById('forgot-password-link')?.addEventListener('click', async () => {
-                    const username = document.getElementById('username')?.value?.trim();
-                    if (username) {
-                        const result = await Auth.checkUser(username);
-                        if (result.success) {
-                            Toast.info(`User "${username}" ditemukan. Hubungi administrator untuk reset password.`);
-                        } else {
-                            Toast.error('Username tidak ditemukan');
-                        }
+                    const u = document.getElementById('u').value.trim();
+                    const p = document.getElementById('p').value;
+                    const alert = document.getElementById('login-alert');
+                    const btn = document.getElementById('btn-login');
+                    
+                    if (!u || !p) { alert.innerHTML = '<div class="alert alert-error">Username dan password wajib diisi</div>'; return; }
+                    
+                    alert.innerHTML = '';
+                    btn.classList.add('btn-loading');
+                    btn.disabled = true;
+                    
+                    const r = await Auth.login(u, p);
+                    if (r.ok) {
+                        Toast.ok('Login berhasil!');
+                        setTimeout(() => App.showDashboard(), 400);
                     } else {
-                        Toast.warning('Masukkan username terlebih dahulu');
+                        alert.innerHTML = '<div class="alert alert-error">❌ ' + (r.error || 'Login gagal') + '</div>';
+                        btn.classList.remove('btn-loading');
+                        btn.disabled = false;
                     }
-                });
-                
-                if (form) {
-                    form.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        
-                        const username = document.getElementById('username')?.value?.trim();
-                        const password = document.getElementById('password')?.value;
-                        const alertEl = document.getElementById('login-alert');
-                        
-                        // Clear errors
-                        document.querySelectorAll('.form-error').forEach(el => el.classList.add('hidden'));
-                        document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
-                        
-                        let hasError = false;
-                        if (!username) {
-                            document.getElementById('username').classList.add('error');
-                            document.getElementById('username-error').textContent = 'Username wajib diisi';
-                            document.getElementById('username-error').classList.remove('hidden');
-                            hasError = true;
-                        }
-                        if (!password) {
-                            document.getElementById('password').classList.add('error');
-                            document.getElementById('password-error').textContent = 'Password wajib diisi';
-                            document.getElementById('password-error').classList.remove('hidden');
-                            hasError = true;
-                        }
-                        if (hasError) return;
-                        
-                        btnLogin.classList.add('btn-loading');
-                        btnLogin.disabled = true;
-                        alertEl.innerHTML = '';
-                        
-                        try {
-                            const result = await Auth.login(username, password);
-                            
-                            if (result.success) {
-                                Toast.success('Login berhasil!');
-                                setTimeout(() => App.showDashboard(), 500);
-                            } else {
-                                alertEl.innerHTML = `<div class="alert alert-error">❌ ${result.error}</div>`;
-                            }
-                        } catch (error) {
-                            alertEl.innerHTML = `<div class="alert alert-error">❌ ${error.message}</div>`;
-                        } finally {
-                            btnLogin.classList.remove('btn-loading');
-                            btnLogin.disabled = false;
-                        }
-                    });
-                }
+                };
             },
             
-            bindRegisterEvents() {
-                const form = document.getElementById('register-form');
-                const btnRegister = document.getElementById('btn-register');
-                const togglePassword = document.querySelector('.toggle-reg-password');
+            // ============ REGISTER PAGE ============
+            showRegister() {
+                document.title = 'Register - ' + CONFIG.APP_NAME;
+                this.el.innerHTML = `
+                <div class="auth-wrapper">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <div class="auth-logo">AS</div>
+                            <h1>Daftar Akun</h1>
+                            <p>Buat akun baru</p>
+                        </div>
+                        <div class="auth-body">
+                            <div id="reg-alert"></div>
+                            <form id="reg-form" autocomplete="off">
+                                <div class="form-group">
+                                    <label class="form-label required">Username</label>
+                                    <div class="input-icon"><span class="icon-pre">👤</span><input type="text" class="form-input" id="ru" placeholder="Username"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label required">Nama Lengkap</label>
+                                    <div class="input-icon"><span class="icon-pre">📝</span><input type="text" class="form-input" id="rn" placeholder="Nama lengkap"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label required">Email</label>
+                                    <div class="input-icon"><span class="icon-pre">📧</span><input type="email" class="form-input" id="re" placeholder="email@example.com"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label required">Password</label>
+                                    <div class="input-icon"><span class="icon-pre">🔒</span><input type="password" class="form-input" id="rp" placeholder="Min 8 karakter"></div>
+                                    <small style="font-size:11px;color:var(--on-surface-variant)">Minimal 8 karakter</small>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">📝 Daftar</button>
+                            </form>
+                            <div style="text-align:center;margin-top:20px">
+                                <p style="font-size:13px;color:var(--on-surface-variant)">
+                                    Sudah punya akun? <a href="javascript:void(0)" onclick="App.showLogin(true)" style="color:var(--primary);font-weight:500;text-decoration:none">Masuk</a>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="auth-footer"><span style="font-size:12px;color:var(--on-surface-variant)">© 2026 v${CONFIG.APP_VERSION}</span></div>
+                    </div>
+                </div>`;
                 
-                if (togglePassword) {
-                    togglePassword.addEventListener('click', function() {
-                        const input = document.getElementById('reg-password');
-                        input.type = input.type === 'password' ? 'text' : 'password';
-                        this.textContent = input.type === 'password' ? '👁' : '🙈';
-                    });
-                }
-                
-                document.getElementById('go-to-login')?.addEventListener('click', (e) => {
+                document.getElementById('reg-form').onsubmit = async function(e) {
                     e.preventDefault();
-                    App.showLogin();
-                });
-                
-                if (form) {
-                    form.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        
-                        const username = document.getElementById('reg-username')?.value?.trim();
-                        const nama = document.getElementById('reg-nama')?.value?.trim();
-                        const email = document.getElementById('reg-email')?.value?.trim();
-                        const password = document.getElementById('reg-password')?.value;
-                        const alertEl = document.getElementById('register-alert');
-                        
-                        if (!username || !nama || !email || !password) {
-                            alertEl.innerHTML = '<div class="alert alert-error">Semua field wajib diisi</div>';
-                            return;
-                        }
-                        if (password.length < 8) {
-                            alertEl.innerHTML = '<div class="alert alert-error">Password minimal 8 karakter</div>';
-                            return;
-                        }
-                        if (!email.includes('@')) {
-                            alertEl.innerHTML = '<div class="alert alert-error">Email tidak valid</div>';
-                            return;
-                        }
-                        
-                        btnRegister.classList.add('btn-loading');
-                        btnRegister.disabled = true;
-                        
-                        try {
-                            const result = await Auth.register({ username, password, email, namaLengkap: nama });
-                            if (result.success) {
-                                alertEl.innerHTML = '<div class="alert alert-success">✅ Registrasi berhasil! Silakan login.</div>';
-                                setTimeout(() => App.showLogin(), 1500);
-                            } else {
-                                alertEl.innerHTML = `<div class="alert alert-error">❌ ${result.error}</div>`;
-                            }
-                        } catch (error) {
-                            alertEl.innerHTML = `<div class="alert alert-error">❌ ${error.message}</div>`;
-                        } finally {
-                            btnRegister.classList.remove('btn-loading');
-                            btnRegister.disabled = false;
-                        }
-                    });
-                }
+                    const u = document.getElementById('ru').value.trim();
+                    const n = document.getElementById('rn').value.trim();
+                    const em = document.getElementById('re').value.trim();
+                    const p = document.getElementById('rp').value;
+                    const alert = document.getElementById('reg-alert');
+                    const btn = this.querySelector('button');
+                    
+                    if (!u || !n || !em || !p) { alert.innerHTML = '<div class="alert alert-error">Semua field wajib diisi</div>'; return; }
+                    if (p.length < 8) { alert.innerHTML = '<div class="alert alert-error">Password minimal 8 karakter</div>'; return; }
+                    if (!em.includes('@')) { alert.innerHTML = '<div class="alert alert-error">Email tidak valid</div>'; return; }
+                    
+                    btn.classList.add('btn-loading'); btn.disabled = true;
+                    const r = await Auth.register({ username: u, password: p, email: em, namaLengkap: n });
+                    if (r.ok) {
+                        alert.innerHTML = '<div class="alert alert-success">✅ Registrasi berhasil! Silakan login.</div>';
+                        setTimeout(() => App.showLogin(true), 1500);
+                    } else {
+                        alert.innerHTML = '<div class="alert alert-error">❌ ' + (r.error || 'Gagal') + '</div>';
+                        btn.classList.remove('btn-loading'); btn.disabled = false;
+                    }
+                };
             },
             
-            bindDashboardEvents() {},
+            // ============ DASHBOARD ============
+            showDashboard() {
+                const u = Auth.user() || { username: 'admin', namaLengkap: 'Administrator', role: 'admin' };
+                document.title = 'Dashboard - ' + CONFIG.APP_NAME;
+                this.el.innerHTML = `
+                <div style="display:flex;min-height:100vh">
+                    <aside style="width:260px;background:var(--surface-container);border-right:1px solid var(--outline-variant);padding:20px;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto">
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px">
+                            <div style="width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;flex-shrink:0">AS</div>
+                            <div style="min-width:0"><div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Arsip Surat</div><div style="font-size:11px;color:var(--on-surface-variant)">v${CONFIG.APP_VERSION}</div></div>
+                        </div>
+                        <nav style="flex:1">
+                            ${this.navItem('📊 Dashboard', true, 'App.showDashboard()')}
+                            ${this.navItem('📥 Surat Masuk', false, 'Toast.info(\'Segera hadir\')')}
+                            ${this.navItem('📤 Surat Keluar', false, 'Toast.info(\'Segera hadir\')')}
+                            ${this.navItem('➡️ Disposisi', false, 'Toast.info(\'Segera hadir\')')}
+                            ${this.navItem('✅ Approval', false, 'Toast.info(\'Segera hadir\')')}
+                            ${this.navItem('👥 Pengguna', false, 'Toast.info(\'Segera hadir\')')}
+                            ${this.navItem('📊 Laporan', false, 'Toast.info(\'Segera hadir\')')}
+                        </nav>
+                        <div style="border-top:1px solid var(--outline-variant);padding-top:16px">
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+                                <div style="width:32px;height:32px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex-shrink:0">${(u.namaLengkap||u.username).charAt(0).toUpperCase()}</div>
+                                <div style="min-width:0"><div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.namaLengkap||u.username}</div><div style="font-size:11px;color:var(--on-surface-variant)">${u.role||'admin'}</div></div>
+                            </div>
+                            <button onclick="Auth.logout()" style="width:100%;padding:10px;border:1px solid var(--outline);border-radius:24px;background:transparent;color:var(--error);font-size:13px;font-weight:500;cursor:pointer">🚪 Keluar</button>
+                        </div>
+                    </aside>
+                    <main style="flex:1;padding:32px;margin-left:260px">
+                        <div style="margin-bottom:32px">
+                            <h1 style="font-size:28px;font-weight:400;margin-bottom:8px">Selamat Datang, ${u.namaLengkap||u.username} 👋</h1>
+                            <p style="font-size:14px;color:var(--on-surface-variant)">Ringkasan aktivitas sistem</p>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:32px" id="stats-grid">
+                            ${this.statCard('📥', 'Surat Masuk', 'stat-sm', 'var(--primary)')}
+                            ${this.statCard('📤', 'Surat Keluar', 'stat-sk', '#E65100')}
+                            ${this.statCard('➡️', 'Disposisi', 'stat-disp', '#2E7D32')}
+                            ${this.statCard('✅', 'Approval', 'stat-appr', '#6A1B9A')}
+                        </div>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px">
+                            <button class="btn btn-primary" onclick="Toast.info('Segera hadir')">➕ Surat Masuk Baru</button>
+                            <button class="btn btn-secondary" onclick="Toast.info('Segera hadir')">➕ Surat Keluar Baru</button>
+                            <button class="btn btn-ghost" onclick="Toast.info('Segera hadir')">🔍 Pencarian</button>
+                        </div>
+                        <div style="padding:16px;background:var(--surface-container);border-radius:12px;font-size:12px;color:var(--on-surface-variant)">
+                            <strong>${CONFIG.APP_NAME}</strong> v${CONFIG.APP_VERSION} | 
+                            <strong>Mode:</strong> ${CONFIG.MOCK_MODE ? 'Mock' : 'Production'} |
+                            <strong>Server:</strong> <span style="color:#2E7D32">● Terhubung</span>
+                        </div>
+                    </main>
+                </div>`;
+                
+                this.loadStats();
+            },
             
-            async loadDashboardStats() {
+            navItem(label, active, onclick) {
+                return `<a href="javascript:void(0)" onclick="${onclick}" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:24px;${active?'background:var(--primary);color:white;':'color:var(--on-surface-variant);'}text-decoration:none;font-size:14px;${active?'font-weight:500;':''}margin-bottom:4px;transition:all 0.2s" onmouseover="${active?'':'this.style.background=\'var(--surface-container-high)\''}" onmouseout="${active?'':'this.style.background=\'transparent\''}">${label}</a>`;
+            },
+            
+            statCard(icon, label, id, color) {
+                return `<div style="padding:24px;background:var(--surface);border:1px solid var(--outline-variant);border-radius:16px;text-align:center;transition:all 0.2s;cursor:pointer" onmouseover="this.style.boxShadow='var(--shadow-md)';this.style.borderColor='${color}'" onmouseout="this.style.boxShadow='none';this.style.borderColor='var(--outline-variant)'"><div style="font-size:36px;margin-bottom:8px">${icon}</div><div style="font-size:32px;font-weight:700;color:${color}" id="${id}">-</div><div style="font-size:13px;color:var(--on-surface-variant);margin-top:4px">${label}</div></div>`;
+            },
+            
+            async loadStats() {
                 try {
-                    const response = await API.get('dashboard.stats');
-                    if (response.status === 'success' && response.data) {
-                        const d = response.data;
-                        document.getElementById('stat-sm').textContent = d.suratMasuk?.total || 0;
-                        document.getElementById('stat-sk').textContent = d.suratKeluar?.total || 0;
-                        document.getElementById('stat-disp').textContent = d.disposisi?.total || 0;
-                        document.getElementById('stat-appr').textContent = d.approval?.total || 0;
+                    const r = await API.get('dashboard.stats');
+                    if (r.status === 'success' && r.data) {
+                        const d = r.data;
+                        this.setStat('stat-sm', d.suratMasuk?.total);
+                        this.setStat('stat-sk', d.suratKeluar?.total);
+                        this.setStat('stat-disp', d.disposisi?.total);
+                        this.setStat('stat-appr', d.approval?.total);
                     }
-                } catch {
-                    ['stat-sm', 'stat-sk', 'stat-disp', 'stat-appr'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) el.textContent = '?';
-                    });
-                }
+                } catch { ['stat-sm','stat-sk','stat-disp','stat-appr'].forEach(id => this.setStat(id, '?')); }
+            },
+            
+            setStat(id, val) {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val ?? 0;
             }
         };
         
         // ============================================
-        // INITIALIZE
+        // INIT
         // ============================================
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 Starting ' + APP_CONFIG.APP_NAME + ' v' + APP_CONFIG.APP_VERSION);
-            console.log('📡 API URL:', APP_CONFIG.API_BASE_URL);
-            console.log('🔸 Mock Mode:', APP_CONFIG.USE_MOCK ? 'ON' : 'OFF');
+            console.log('🚀 ' + CONFIG.APP_NAME + ' v' + CONFIG.APP_VERSION);
+            console.log('📡 API:', CONFIG.API_URL);
+            console.log('🔸 Mock:', CONFIG.MOCK_MODE ? 'ON' : 'OFF');
             App.init();
         });
         
-        window.addEventListener('online', () => Toast.success('Koneksi tersedia'));
-        window.addEventListener('offline', () => Toast.warning('Anda sedang offline'));
+        window.addEventListener('online', () => Toast.ok('Koneksi tersedia'));
+        window.addEventListener('offline', () => Toast.warn('Anda offline'));
+        
+        // Global functions
+        window.App = App;
+        window.Auth = Auth;
+        window.Toast = Toast;
+        window.API = API;
         
         console.log('✅ Application ready');
+    })();
     </script>
 </body>
 </html>
