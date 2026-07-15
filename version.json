@@ -4,154 +4,18 @@
   "codename": "Enterprise Edition",
   "release_date": "2024-01-15",
   "release_type": "stable",
-  
   "build": {
     "number": "20240115.1",
-    "commit": "abc123def456",
-    "branch": "main",
     "timestamp": "2024-01-15T08:00:00Z"
   },
-  
-  "environment": {
-    "node": ">=16.0.0",
-    "npm": ">=8.0.0",
-    "database": "sqlite >= 3.0.0 || postgresql >= 14.0"
-  },
-  
   "features": {
-    "surat_masuk": {
-      "version": "2.0.0",
-      "status": "stable",
-      "description": "Manajemen surat masuk dengan tracking dan disposisi"
-    },
-    "surat_keluar": {
-      "version": "2.0.0",
-      "status": "stable",
-      "description": "Pembuatan dan pengelolaan surat keluar"
-    },
-    "disposisi": {
-      "version": "1.5.0",
-      "status": "stable",
-      "description": "Sistem disposisi elektronik multi-level"
-    },
-    "pencarian": {
-      "version": "1.8.0",
-      "status": "stable",
-      "description": "Full-text search dengan filter advanced"
-    },
-    "laporan": {
-      "version": "1.3.0",
-      "status": "stable",
-      "description": "Generate laporan dalam format PDF, Excel, CSV"
-    },
-    "notifikasi": {
-      "version": "1.2.0",
-      "status": "beta",
-      "description": "Notifikasi email dan push notification"
-    },
-    "digital_signature": {
-      "version": "0.9.0",
-      "status": "beta",
-      "description": "Tanda tangan digital untuk surat resmi"
-    },
-    "qr_code": {
-      "version": "1.0.0",
-      "status": "stable",
-      "description": "QR Code untuk verifikasi keaslian surat"
-    },
-    "backup": {
-      "version": "1.0.0",
-      "status": "stable",
-      "description": "Backup otomatis database dan file surat"
-    },
-    "pwa": {
-      "version": "1.0.0",
-      "status": "stable",
-      "description": "Progressive Web App dengan offline support"
-    },
-    "api": {
-      "version": "2.0.0",
-      "status": "stable",
-      "description": "RESTful API untuk integrasi sistem"
-    },
-    "multi_instansi": {
-      "version": "1.0.0",
-      "status": "stable",
-      "description": "Dukungan multiple instansi dalam satu sistem"
-    }
+    "surat_masuk": { "version": "2.0.0", "status": "stable" },
+    "surat_keluar": { "version": "2.0.0", "status": "stable" },
+    "disposisi": { "version": "1.5.0", "status": "stable" },
+    "pencarian": { "version": "1.8.0", "status": "stable" },
+    "laporan": { "version": "1.3.0", "status": "stable" },
+    "pwa": { "version": "1.0.0", "status": "stable" }
   },
-  
-  "changelog": {
-    "2.0.0": {
-      "date": "2024-01-15",
-      "changes": [
-        "🎨 Redesign UI/UX dengan tema modern",
-        "📱 Full PWA support dengan offline mode",
-        "🔒 Peningkatan keamanan dengan JWT & RBAC",
-        "📊 Dashboard interaktif dengan chart",
-        "🔍 Advanced search dengan filter",
-        "📧 Notifikasi email & push notification",
-        "💾 Auto backup system",
-        "🐳 Docker support untuk development & production",
-        "📚 Dokumentasi lengkap dan API docs",
-        "✅ Unit testing & integration testing"
-      ]
-    },
-    "1.0.0": {
-      "date": "2023-06-01",
-      "changes": [
-        "🚀 Initial release",
-        "📨 CRUD surat masuk & keluar",
-        "📋 Disposisi basic",
-        "👥 User management",
-        "📄 Basic reporting"
-      ]
-    }
-  },
-  
-  "upcoming_features": [
-    {
-      "name": "AI Document Classification",
-      "version": "2.5.0",
-      "eta": "2024-Q2",
-      "description": "Klasifikasi surat otomatis menggunakan AI/ML"
-    },
-    {
-      "name": "OCR Integration",
-      "version": "2.5.0",
-      "eta": "2024-Q2",
-      "description": "Optical Character Recognition untuk scan surat"
-    },
-    {
-      "name": "Blockchain Verification",
-      "version": "3.0.0",
-      "eta": "2024-Q3",
-      "description": "Verifikasi keaslian surat menggunakan blockchain"
-    }
-  ],
-  
-  "contributors": [
-    {
-      "name": "Development Team",
-      "email": "developer@arsipsurat.id",
-      "role": "Core Developer"
-    }
-  ],
-  
-  "license": {
-    "type": "MIT",
-    "url": "https://github.com/warso-id/arsip-surat-digital-enterprise/blob/main/LICENSE"
-  },
-  
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/warso-id/arsip-surat-digital-enterprise.git"
-  },
-  
-  "support": {
-    "email": "support@arsipsurat.id",
-    "documentation": "https://arsipsurat.id/docs",
-    "issues": "https://github.com/warso-id/arsip-surat-digital-enterprise/issues",
-    "wiki": "https://github.com/warso-id/arsip-surat-digital-enterprise/wiki"
-  }
+  "license": "MIT",
+  "repository": "https://github.com/warso-id/arsip-surat-digital-enterprise"
 }
