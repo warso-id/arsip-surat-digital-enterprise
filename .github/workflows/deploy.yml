@@ -25,17 +25,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       
-      - name: List files for debugging
-        run: |
-          echo "=== Root Files ==="
-          ls -la
-          echo ""
-          echo "=== src/public ==="
-          ls -la src/public/ 2>/dev/null || echo "Folder not found"
-          echo ""
-          echo "=== All files ==="
-          find . -type f -not -path './.git/*' | head -50
-      
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
