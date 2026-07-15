@@ -15,17 +15,55 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  build-and-deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
       
-      - name: Setup Pages
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          if [ -f "package.json" ]; then
+            npm ci || npm install
+          fi
+      
+      - name: Create required directories
+        run: |
+          mkdir -p src/public/css
+          mkdir -p src/public/js
+          mkdir -p src/public/images
+          mkdir -p src/public/fonts
+          mkdir -p src/config
+          mkdir -p src/database
+          mkdir -p storage/app/surat/masuk
+          mkdir -p storage/app/surat/keluar
+          mkdir -p storage/logs
+          mkdir -p storage/backup
+      
+      - name: Create .gitkeep files
+        run: |
+          touch storage/app/surat/masuk/.gitkeep
+          touch storage/app/surat/keluar/.gitkeep
+          touch storage/logs/.gitkeep
+          touch storage/backup/.gitkeep
+      
+      - name: Build application (if applicable)
+        run: |
+          if [ -f "package.json" ] && grep -q '"build"' package.json; then
+            npm run build
+          fi
+      
+      - name: Setup GitHub Pages
         uses: actions/configure-pages@v4
       
       - name: Upload artifact
@@ -36,3 +74,20 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  notify:
+    name: Notify Deployment
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    if: always()
+    
+    steps:
+      - name: Deployment Status
+        run: |
+          if [ "${{ needs.build-and-deploy.result }}" == "success" ]; then
+            echo "✅ Deployment successful!"
+            echo "🌐 URL: https://warso-id.github.io/arsip-surat-digital-enterprise/"
+          else
+            echo "❌ Deployment failed!"
+            echo "Check logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          fi
