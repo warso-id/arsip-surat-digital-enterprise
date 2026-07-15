@@ -1,11 +1,75 @@
-User-agent: *
-Allow: /
-Disallow: /src/
-Disallow: /tools/
-Disallow: /tests/
-Disallow: /docs/
-Disallow: /node_modules/
-Disallow: /*.env
-Disallow: /*.log
+# Arsip Surat Digital Enterprise - Robots Configuration
+# https://arsipsurat.id/robots.txt
+# Last updated: 2024-01-01
 
-Sitemap: https://warso-id.github.io/arsip-surat-digital-enterprise/sitemap.xml
+User-agent: *
+# Allow main pages
+Allow: /
+Allow: /dashboard
+Allow: /docs
+Allow: /api/public
+
+# Disallow sensitive paths
+Disallow: /api/
+Disallow: /auth/
+Disallow: /admin/
+Disallow: /config/
+Disallow: /storage/
+Disallow: /database/
+Disallow: /src/
+Disallow: /tests/
+Disallow: /tools/
+Disallow: /docker/
+Disallow: /node_modules/
+
+# Disallow common patterns
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /*.log$
+Disallow: /*.sql$
+Disallow: /*.env$
+Disallow: /*.md$
+
+# Disallow specific files
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /composer.json
+Disallow: /composer.lock
+Disallow: /yarn.lock
+Disallow: /.gitignore
+Disallow: /.editorconfig
+Disallow: /.eslintrc.json
+Disallow: /.prettierrc
+
+# Disallow search and filter pages (to avoid duplicate content)
+Disallow: /*?*
+Disallow: /*search
+Disallow: /*filter
+
+# Disallow print pages
+Disallow: /*/print
+
+# Allow only specific bots for API documentation
+User-agent: Googlebot
+Allow: /docs/api
+Allow: /sitemap.xml
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Crawl-delay for polite crawling
+User-agent: *
+Crawl-delay: 10
+
+# Sitemap location
+Sitemap: https://arsipsurat.id/sitemap.xml
