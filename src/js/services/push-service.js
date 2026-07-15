@@ -1,6 +1,11 @@
 /**
+ * ============================================
  * PUSH SERVICE - ARSIP SURAT DIGITAL ENTERPRISE v3.2.2
- * Web push notifications management
+ * FULL PUSH NOTIFICATIONS - SIAP PRODUKSI
+ * Mendukung: Subscribe/Unsubscribe, VAPID, 
+ * Permission Management, Test, Categories
+ * Terintegrasi dengan Spreadsheet & code.gs
+ * ============================================
  */
 
 class PushService {
@@ -9,172 +14,365 @@ class PushService {
     this.isSupported = false;
     this.isSubscribed = false;
     this.vapidPublicKey = null;
+    this.permissionState = 'default';
+    this.swRegistration = null;
+    this.retryAttempts = 0;
+    this.maxRetries = 3;
+    this.subscriptionChangeCallbacks = [];
   }
-  
+
   /**
    * Initialize push service
    */
   async init() {
-    this.isSupported = 'serviceWorker' in navigator && 'PushManager' in window;
-    
-    if (this.isSupported) {
-      // Get VAPID key from config
-      this.vapidPublicKey = APP_CONFIG.PUSH_VAPID_KEY;
-      
-      // Check existing subscription
-      await this.checkSubscription();
+    // Check browser support
+    this.isSupported = 'serviceWorker' in navigator && 
+                       'PushManager' in window && 
+                       'Notification' in window;
+
+    if (!this.isSupported) {
+      console.warn('Push notifications not supported in this browser');
+      return;
     }
-    
-    console.log(`✅ Push Service initialized (Supported: ${this.isSupported}, Subscribed: ${this.isSubscribed})`);
+
+    // Get VAPID public key from config
+    this.vapidPublicKey = this.getVapidKey();
+
+    // Get current permission state
+    this.permissionState = Notification.permission;
+
+    // Get service worker registration
+    try {
+      this.swRegistration = await navigator.serviceWorker.ready;
+    } catch (error) {
+      console.warn('Service worker not ready:', error);
+    }
+
+    // Check existing subscription
+    await this.checkSubscription();
+
+    // Listen for permission changes
+    if (navigator.permissions) {
+      try {
+        const permissionStatus = await navigator.permissions.query({ name: 'notifications' });
+        permissionStatus.addEventListener('change', () => {
+          this.permissionState = permissionStatus.state;
+          this.notifySubscriptionChange();
+        });
+      } catch (e) {}
+    }
+
+    console.log(`✅ Push Service initialized (Supported: ${this.isSupported}, Subscribed: ${this.isSubscribed}, Permission: ${this.permissionState})`);
   }
-  
+
   /**
-   * Check existing subscription
+   * Get VAPID key from various sources
+   */
+  getVapidKey() {
+    if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.PUSH_VAPID_KEY) {
+      return APP_CONFIG.PUSH_VAPID_KEY;
+    }
+    if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.VAPID_PUBLIC_KEY) {
+      return APP_CONFIG.VAPID_PUBLIC_KEY;
+    }
+    // Try to get from meta tag
+    const meta = document.querySelector('meta[name="vapid-key"]');
+    if (meta?.content) return meta.content;
+    // Try localStorage
+    try {
+      const stored = localStorage.getItem('asd_vapid_key');
+      if (stored) return stored;
+    } catch (e) {}
+    return null;
+  }
+
+  /**
+   * Check existing push subscription
    */
   async checkSubscription() {
+    if (!this.swRegistration) return;
+
     try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
-      
+      const subscription = await this.swRegistration.pushManager.getSubscription();
+
       if (subscription) {
         this.subscription = subscription;
         this.isSubscribed = true;
-        console.log('Push subscription found');
+        console.log('Existing push subscription found');
+        
+        // Verify with server that subscription is still valid
+        await this.verifySubscriptionWithServer();
       }
     } catch (error) {
       console.warn('Failed to check subscription:', error);
     }
   }
-  
+
+  /**
+   * Verify subscription with server
+   */
+  async verifySubscriptionWithServer() {
+    try {
+      if (typeof api !== 'undefined') {
+        const response = await api.post('push.register', {
+          subscription: this.subscription.toJSON(),
+          verify: true
+        });
+        if (response?.status !== 'success') {
+          // Server doesn't have this subscription, re-register
+          await this.registerWithServer(this.subscription);
+        }
+      }
+    } catch (error) {
+      console.warn('Subscription verification failed:', error);
+    }
+  }
+
   /**
    * Request permission and subscribe
    */
-  async subscribe() {
+  async subscribe(options = {}) {
     if (!this.isSupported) {
       throw new Error('Push notifications tidak didukung di browser ini');
     }
-    
+
+    const { silent = false } = options;
+
     try {
       // Request permission
       const permission = await Notification.requestPermission();
-      
+      this.permissionState = permission;
+
       if (permission !== 'granted') {
-        throw new Error('Izin notifikasi ditolak');
+        const messages = {
+          denied: 'Izin notifikasi ditolak. Buka pengaturan browser untuk mengizinkan.',
+          default: 'Izin notifikasi diperlukan untuk fitur ini.'
+        };
+        throw new Error(messages[permission] || 'Izin notifikasi tidak diberikan');
       }
-      
+
       // Get service worker registration
-      const registration = await navigator.serviceWorker.ready;
-      
-      // Subscribe
-      const subscription = await registration.pushManager.subscribe({
+      if (!this.swRegistration) {
+        this.swRegistration = await navigator.serviceWorker.ready;
+      }
+
+      // Check if VAPID key is available
+      if (!this.vapidPublicKey) {
+        throw new Error('VAPID public key tidak dikonfigurasi. Hubungi administrator.');
+      }
+
+      // Subscribe to push
+      const subscription = await this.swRegistration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey)
       });
-      
+
       this.subscription = subscription;
       this.isSubscribed = true;
-      
+      this.retryAttempts = 0;
+
       // Register with server
-      await this.registerWithServer(subscription);
+      const registered = await this.registerWithServer(subscription);
       
-      console.log('Push subscription successful');
+      if (!registered && !silent) {
+        console.warn('Push subscription created locally but server registration failed');
+      }
+
+      // Save preference
+      this.savePreference(true);
+
+      // Notify listeners
+      this.notifySubscriptionChange();
+
+      console.log('✅ Push subscription successful');
       return subscription;
-      
+
     } catch (error) {
       console.error('Push subscription failed:', error);
+      this.retryAttempts++;
+
+      if (this.retryAttempts < this.maxRetries && error.name !== 'NotAllowedError') {
+        console.log(`Retrying subscription (${this.retryAttempts}/${this.maxRetries})...`);
+        await this.delay(1000 * this.retryAttempts);
+        return this.subscribe({ ...options, silent: true });
+      }
+
       throw error;
     }
   }
-  
+
   /**
-   * Unsubscribe from push
+   * Unsubscribe from push notifications
    */
   async unsubscribe() {
-    if (!this.subscription) return;
-    
+    if (!this.subscription) return true;
+
     try {
-      await this.subscription.unsubscribe();
-      this.subscription = null;
-      this.isSubscribed = false;
-      
-      // Notify server
-      await api.post('push.register', { unsubscribe: true });
-      
-      console.log('Push unsubscription successful');
-      return true;
+      const unsubscribed = await this.subscription.unsubscribe();
+
+      if (unsubscribed) {
+        // Notify server
+        try {
+          if (typeof api !== 'undefined') {
+            await api.post('push.register', { unsubscribe: true, endpoint: this.subscription.endpoint });
+          }
+        } catch (e) {}
+
+        this.subscription = null;
+        this.isSubscribed = false;
+        this.savePreference(false);
+        this.notifySubscriptionChange();
+        console.log('✅ Push unsubscription successful');
+      }
+
+      return unsubscribed;
     } catch (error) {
       console.error('Push unsubscription failed:', error);
+
+      // Force clear if unsubscribe fails
+      this.subscription = null;
+      this.isSubscribed = false;
       return false;
     }
   }
-  
+
   /**
-   * Register subscription with server
+   * Register subscription with server (code.gs)
    */
   async registerWithServer(subscription) {
     try {
       const subscriptionJSON = subscription.toJSON();
-      
-      const response = await api.post('push.register', {
+
+      const payload = {
         endpoint: subscriptionJSON.endpoint,
+        expirationTime: subscription.expirationTime,
         keys: {
           p256dh: subscriptionJSON.keys.p256dh,
           auth: subscriptionJSON.keys.auth
-        }
-      });
-      
-      return response.status === 'success';
+        },
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        timestamp: new Date().toISOString()
+      };
+
+      let response;
+      if (typeof api !== 'undefined') {
+        response = await api.post('push.register', payload);
+      } else if (typeof API !== 'undefined') {
+        response = await API.post('push.register', payload);
+      } else {
+        // Direct fetch fallback
+        const url = (typeof APP_CONFIG !== 'undefined' ? (APP_CONFIG.API_URL || APP_CONFIG.API_BASE_URL || '') : '') + '?action=push.register';
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        response = await res.json();
+      }
+
+      return response?.status === 'success';
     } catch (error) {
       console.error('Failed to register push with server:', error);
       return false;
     }
   }
-  
+
   /**
-   * Send test notification
+   * Send a local test notification
    */
-  async sendTest() {
-    if (!this.subscription) return;
-    
+  async sendTest(title = 'Test Notification', options = {}) {
+    if (!this.swRegistration) {
+      throw new Error('Service worker tidak tersedia');
+    }
+
+    const defaultOptions = {
+      body: 'Push notifications berfungsi dengan baik! ✅',
+      icon: '/src/assets/icons/icon-192x192.png',
+      badge: '/src/assets/icons/icon-72x72.png',
+      vibrate: [200, 100, 200],
+      tag: 'test-notification',
+      renotify: true,
+      requireInteraction: false,
+      data: {
+        url: '/',
+        timestamp: Date.now(),
+        test: true
+      },
+      actions: [
+        { action: 'open', title: '🔍 Buka Aplikasi' },
+        { action: 'close', title: '✕ Tutup' }
+      ]
+    };
+
     try {
-      const registration = await navigator.serviceWorker.ready;
-      
-      await registration.showNotification('Test Notification', {
-        body: 'Push notifications berfungsi dengan baik!',
-        icon: '/src/assets/icons/icon-192x192.png',
-        badge: '/src/assets/icons/icon-72x72.png',
-        vibrate: [200, 100, 200],
-        data: { url: '/' },
-        actions: [
-          { action: 'open', title: 'Buka' },
-          { action: 'close', title: 'Tutup' }
-        ]
-      });
-      
+      await this.swRegistration.showNotification(title, { ...defaultOptions, ...options });
       return true;
     } catch (error) {
       console.error('Test notification failed:', error);
       return false;
     }
   }
-  
+
   /**
-   * Get subscription info
+   * Send a notification via service worker
+   */
+  async sendNotification(title, body, options = {}) {
+    if (!this.swRegistration && 'serviceWorker' in navigator) {
+      this.swRegistration = await navigator.serviceWorker.ready;
+    }
+
+    if (!this.swRegistration) {
+      // Fallback: post message to service worker
+      if (navigator.serviceWorker?.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: 'SHOW_NOTIFICATION',
+          title,
+          body,
+          ...options
+        });
+        return true;
+      }
+      return false;
+    }
+
+    try {
+      await this.swRegistration.showNotification(title, {
+        body,
+        icon: options.icon || '/src/assets/icons/icon-192x192.png',
+        badge: options.badge || '/src/assets/icons/icon-72x72.png',
+        vibrate: options.vibrate || [200, 100, 200],
+        tag: options.tag || 'default',
+        data: options.data || {},
+        actions: options.actions || [],
+        requireInteraction: options.requireInteraction || false,
+        silent: options.silent || false,
+        timestamp: Date.now()
+      });
+      return true;
+    } catch (error) {
+      console.error('Failed to send notification:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Get subscription info (masked for security)
    */
   getSubscriptionInfo() {
     if (!this.subscription) return null;
-    
+
     const json = this.subscription.toJSON();
     return {
-      endpoint: json.endpoint?.substring(0, 50) + '...',
+      endpoint: this.truncate(json.endpoint, 50),
       expirationTime: this.subscription.expirationTime,
       keys: {
-        p256dh: json.keys?.p256dh?.substring(0, 20) + '...',
-        auth: json.keys?.auth?.substring(0, 10) + '...'
+        p256dh: this.truncate(json.keys?.p256dh, 20),
+        auth: this.truncate(json.keys?.auth, 10)
       }
     };
   }
-  
+
   /**
    * Get permission state
    */
@@ -182,16 +380,23 @@ class PushService {
     if (!('Notification' in window)) return 'unsupported';
     return Notification.permission;
   }
-  
+
   /**
    * Check if notifications are blocked
    */
   isBlocked() {
     return Notification.permission === 'denied';
   }
-  
+
   /**
-   * Get status
+   * Check if can request permission
+   */
+  canRequestPermission() {
+    return Notification.permission === 'default';
+  }
+
+  /**
+   * Get comprehensive status
    */
   getStatus() {
     return {
@@ -199,34 +404,122 @@ class PushService {
       subscribed: this.isSubscribed,
       permission: this.getPermissionState(),
       blocked: this.isBlocked(),
-      info: this.getSubscriptionInfo()
+      canRequest: this.canRequestPermission(),
+      vapidConfigured: !!this.vapidPublicKey,
+      swReady: !!this.swRegistration,
+      info: this.isSubscribed ? this.getSubscriptionInfo() : null
     };
   }
-  
+
   /**
-   * URL base64 to Uint8Array
+   * Add subscription change callback
+   */
+  onSubscriptionChange(callback) {
+    this.subscriptionChangeCallbacks.push(callback);
+    return () => {
+      this.subscriptionChangeCallbacks = this.subscriptionChangeCallbacks.filter(cb => cb !== callback);
+    };
+  }
+
+  /**
+   * Notify subscription change listeners
+   */
+  notifySubscriptionChange() {
+    const status = this.getStatus();
+    this.subscriptionChangeCallbacks.forEach(cb => {
+      try { cb(status); } catch (e) {}
+    });
+
+    // Update store if available
+    if (typeof store !== 'undefined') {
+      store.dispatch('push.status', status);
+    }
+  }
+
+  /**
+   * Save user preference
+   */
+  savePreference(enabled) {
+    try {
+      localStorage.setItem('asd_push_enabled', enabled ? '1' : '0');
+    } catch (e) {}
+  }
+
+  /**
+   * Get user preference
+   */
+  getPreference() {
+    try {
+      return localStorage.getItem('asd_push_enabled') === '1';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /**
+   * URL-safe base64 to Uint8Array
    */
   urlBase64ToUint8Array(base64String) {
     if (!base64String) return new Uint8Array(0);
-    
+
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding)
       .replace(/-/g, '+')
       .replace(/_/g, '/');
-    
+
     const rawData = window.atob(base64);
     const outputArray = new Uint8Array(rawData.length);
-    
+
     for (let i = 0; i < rawData.length; ++i) {
       outputArray[i] = rawData.charCodeAt(i);
     }
-    
+
     return outputArray;
+  }
+
+  /**
+   * Convert Uint8Array to base64
+   */
+  uint8ArrayToBase64(uint8Array) {
+    let binary = '';
+    for (let i = 0; i < uint8Array.length; i++) {
+      binary += String.fromCharCode(uint8Array[i]);
+    }
+    return btoa(binary);
+  }
+
+  /**
+   * Truncate string
+   */
+  truncate(str, maxLength) {
+    if (!str) return '';
+    return str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
+  }
+
+  /**
+   * Delay helper
+   */
+  delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Cleanup
+   */
+  destroy() {
+    this.subscriptionChangeCallbacks = [];
   }
 }
 
 // Singleton instance
 const PushService = new PushService();
+
+// Auto-initialize
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => PushService.init());
+} else {
+  setTimeout(() => PushService.init(), 500);
+}
 
 // Export
 if (typeof module !== 'undefined' && module.exports) {
