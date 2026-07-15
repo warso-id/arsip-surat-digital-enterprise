@@ -1,26 +1,11 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#1976D2">
+    <meta name="theme-color" content="#1a56db">
     <title>Offline - Arsip Surat Digital Enterprise</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Material+Icons&display=swap');
-        
-        :root {
-            --primary: #1976D2;
-            --surface: #FDFBFF;
-            --on-surface: #1A1C1E;
-            --on-surface-variant: #44474E;
-        }
-        
-        [data-theme="dark"] {
-            --surface: #1A1C1E;
-            --on-surface: #E2E2E6;
-            --on-surface-variant: #C4C6D0;
-        }
-        
         * {
             margin: 0;
             padding: 0;
@@ -28,195 +13,287 @@
         }
         
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--surface);
-            color: var(--on-surface);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, 
+                         Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            min-height: 100dvh;
-            padding: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
         }
         
         .offline-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
             text-align: center;
-            max-width: 480px;
+            max-width: 500px;
+            margin: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .offline-icon {
-            font-size: 120px;
-            color: var(--primary);
-            margin-bottom: 24px;
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        .offline-title {
-            font-size: 28px;
-            font-weight: 500;
-            margin-bottom: 12px;
-        }
-        
-        .offline-description {
-            font-size: 16px;
-            color: var(--on-surface-variant);
-            margin-bottom: 32px;
-            line-height: 1.6;
-        }
-        
-        .offline-actions {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            background: #f3f4f6;
+            border-radius: 50%;
             display: flex;
-            gap: 12px;
+            align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+        
+        .offline-icon svg {
+            width: 64px;
+            height: 64px;
+            fill: #667eea;
+        }
+        
+        h1 {
+            font-size: 28px;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .features-list {
+            text-align: left;
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .features-list h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #374151;
+        }
+        
+        .features-list ul {
+            list-style: none;
+        }
+        
+        .features-list li {
+            padding: 5px 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .features-list li::before {
+            content: "✅ ";
         }
         
         .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            border-radius: 24px;
-            font-family: 'Roboto', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s;
             border: none;
             cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s;
+            font-size: 16px;
         }
         
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        .btn:hover {
+            background: #5a67d8;
         }
         
         .btn-outline {
             background: transparent;
-            color: var(--primary);
-            border: 1px solid var(--primary);
+            border: 2px solid #667eea;
+            color: #667eea;
+            margin-left: 10px;
         }
         
         .btn-outline:hover {
-            background-color: rgba(25, 118, 210, 0.08);
+            background: #667eea;
+            color: white;
         }
         
-        .cached-pages {
-            margin-top: 40px;
-            padding: 20px;
-            border: 1px solid var(--on-surface-variant);
-            border-radius: 12px;
-            opacity: 0.7;
+        .last-sync {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #9ca3af;
         }
         
-        .cached-pages h3 {
+        .connection-status {
+            margin-top: 10px;
             font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 12px;
+            color: #6b7280;
         }
         
-        .cached-pages ul {
-            list-style: none;
-            text-align: left;
+        .retry-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: blink 1s infinite;
         }
         
-        .cached-pages li {
-            padding: 4px 0;
-            font-size: 13px;
-        }
-        
-        .cached-pages a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-        
-        .cached-pages a:hover {
-            text-decoration: underline;
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
     </style>
 </head>
 <body>
     <div class="offline-container">
+        <!-- Offline Icon -->
         <div class="offline-icon">
-            <span class="material-icons" style="font-size: inherit;">wifi_off</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.4-1.4 3.6 3.6 7.6-7.6L19 8l-9 9z"/>
+            </svg>
         </div>
-        <h1 class="offline-title">Anda Sedang Offline</h1>
-        <p class="offline-description">
-            Tidak dapat terhubung ke server. Periksa koneksi internet Anda dan coba lagi.
-            Beberapa halaman yang sudah di-cache mungkin masih dapat diakses.
+        
+        <!-- Title -->
+        <h1>Anda Sedang Offline</h1>
+        <div class="status-badge">
+            <span class="retry-indicator"></span> Tidak Terhubung ke Internet
+        </div>
+        
+        <!-- Message -->
+        <p>
+            Maaf, koneksi internet Anda terputus. Arsip Surat Digital memerlukan 
+            koneksi internet untuk mengakses data terbaru.
         </p>
-        <div class="offline-actions">
-            <button class="btn btn-primary" onclick="window.location.reload()">
-                <span class="material-icons">refresh</span>
-                Coba Lagi
-            </button>
-            <a href="/" class="btn btn-outline">
-                <span class="material-icons">home</span>
-                Ke Beranda
-            </a>
-        </div>
-        <div class="cached-pages">
-            <h3>Halaman Tersedia Offline:</h3>
-            <ul id="cached-pages-list">
-                <li>Memuat...</li>
+        
+        <!-- Available Offline Features -->
+        <div class="features-list">
+            <h3>🔥 Fitur yang Tetap Tersedia:</h3>
+            <ul>
+                <li>Melihat surat yang sudah di-cache</li>
+                <li>Membaca surat yang pernah dibuka</li>
+                <li>Melihat data disposisi offline</li>
+                <li>Akses panduan penggunaan</li>
             </ul>
         </div>
+        
+        <!-- Action Buttons -->
+        <div style="margin-top: 25px;">
+            <button onclick="retryConnection()" class="btn">
+                🔄 Coba Lagi
+            </button>
+            <a href="/dashboard" class="btn btn-outline">
+                📂 Buka Dashboard (Offline)
+            </a>
+        </div>
+        
+        <!-- Connection Status -->
+        <div class="connection-status" id="connection-status">
+            Memeriksa koneksi...
+        </div>
+        
+        <!-- Last Sync Info -->
+        <div class="last-sync" id="last-sync">
+            Data terakhir disinkronkan: <span id="sync-time">-</span>
+        </div>
     </div>
-    
+
     <script>
-        // Check if actually online
-        if (navigator.onLine) {
-            window.location.reload();
+        // Display last sync time
+        const lastSync = localStorage.getItem('lastSyncTime');
+        if (lastSync) {
+            document.getElementById('sync-time').textContent = 
+                new Date(lastSync).toLocaleString('id-ID');
         }
+        
+        // Retry connection
+        function retryConnection() {
+            const statusElement = document.getElementById('connection-status');
+            statusElement.innerHTML = '<span class="retry-indicator"></span> Menghubungkan...';
+            
+            fetch('/api/ping')
+                .then(response => {
+                    if (response.ok) {
+                        statusElement.innerHTML = '✅ Terhubung! Mengalihkan...';
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 1000);
+                    } else {
+                        throw new Error('No connection');
+                    }
+                })
+                .catch(() => {
+                    statusElement.innerHTML = '❌ Masih offline. Silakan cek koneksi internet Anda.';
+                });
+        }
+        
+        // Auto-retry every 30 seconds
+        setInterval(() => {
+            fetch('/api/ping')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('connection-status').innerHTML = 
+                            '✅ Koneksi tersedia! <a href="/dashboard">Kembali ke aplikasi</a>';
+                    }
+                })
+                .catch(() => {});
+        }, 30000);
         
         // Listen for online event
         window.addEventListener('online', () => {
-            window.location.reload();
+            document.getElementById('connection-status').innerHTML = 
+                '✅ Koneksi pulih! Mengalihkan...';
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 1500);
         });
         
-        // Show cached pages
-        async function showCachedPages() {
-            try {
-                const cacheNames = await caches.keys();
-                const appCache = cacheNames.find(name => name.includes('asd-'));
-                
-                if (appCache) {
-                    const cache = await caches.open(appCache);
-                    const requests = await cache.keys();
-                    
-                    const pages = requests
-                        .filter(req => req.url.endsWith('/') || req.url.endsWith('.html'))
-                        .map(req => {
-                            const url = new URL(req.url);
-                            return `<li><a href="${req.url}">${url.pathname || 'Beranda'}</a></li>`;
-                        });
-                    
-                    document.getElementById('cached-pages-list').innerHTML = 
-                        pages.length > 0 ? pages.join('') : '<li>Tidak ada halaman tersedia</li>';
-                }
-            } catch (error) {
-                document.getElementById('cached-pages-list').innerHTML = 
-                    '<li>Tidak dapat memuat daftar halaman</li>';
-            }
-        }
+        // Update online status
+        window.addEventListener('offline', () => {
+            document.getElementById('connection-status').innerHTML = 
+                '<span class="retry-indicator"></span> Koneksi terputus';
+        });
         
-        showCachedPages();
-        
-        // Auto-retry every 10 seconds
-        setInterval(() => {
-            if (navigator.onLine) {
-                window.location.reload();
-            }
-        }, 10000);
+        // Save sync time when coming online
+        window.addEventListener('online', () => {
+            localStorage.setItem('lastSyncTime', new Date().toISOString());
+        });
     </script>
 </body>
 </html>
