@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan - Arsip Surat Digital Enterprise</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/laporan.css">
+</head>
+<body class="dashboard-page">
+    <!-- Include sidebar -->
+
+    <main class="main-content">
+        <header class="top-bar">
+            <button class="menu-toggle">☰</button>
+            <h1>📄 Laporan</h1>
+        </header>
+
+        <div class="content">
+            <!-- Report Cards -->
+            <div class="report-grid">
+                <!-- Surat Masuk Report -->
+                <div class="report-card">
+                    <div class="report-icon">📥</div>
+                    <h3>Laporan Surat Masuk</h3>
+                    <p>Rekap surat masuk berdasarkan periode</p>
+                    <div class="report-form">
+                        <div class="form-group">
+                            <label>Periode</label>
+                            <select id="periodeMasuk" class="form-control">
+                                <option value="bulan">Bulan Ini</option>
+                                <option value="tahun">Tahun Ini</option>
+                                <option value="custom">Kustom</option>
+                            </select>
+                        </div>
+                        <div class="form-group custom-date" style="display:none;">
+                            <input type="date" id="tglMulaiMasuk" class="form-control">
+                            <input type="date" id="tglAkhirMasuk" class="form-control">
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="generateReport('surat-masuk', 'pdf')" class="btn btn-primary">
+                                📕 Export PDF
+                            </button>
+                            <button onclick="generateReport('surat-masuk', 'excel')" class="btn btn-success">
+                                📊 Export Excel
+                            </button>
+                            <button onclick="generateReport('surat-masuk', 'view')" class="btn btn-outline">
+                                👁️ Lihat
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Surat Keluar Report -->
+                <div class="report-card">
+                    <div class="report-icon">📤</div>
+                    <h3>Laporan Surat Keluar</h3>
+                    <p>Rekap surat keluar berdasarkan periode</p>
+                    <div class="report-form">
+                        <div class="form-group">
+                            <label>Periode</label>
+                            <select id="periodeKeluar" class="form-control">
+                                <option value="bulan">Bulan Ini</option>
+                                <option value="tahun">Tahun Ini</option>
+                                <option value="custom">Kustom</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="generateReport('surat-keluar', 'pdf')" class="btn btn-primary">
+                                📕 Export PDF
+                            </button>
+                            <button onclick="generateReport('surat-keluar', 'excel')" class="btn btn-success">
+                                📊 Export Excel
+                            </button>
+                            <button onclick="generateReport('surat-keluar', 'view')" class="btn btn-outline">
+                                👁️ Lihat
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Disposisi Report -->
+                <div class="report-card">
+                    <div class="report-icon">📋</div>
+                    <h3>Laporan Disposisi</h3>
+                    <p>Tracking disposisi surat</p>
+                    <div class="report-form">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="statusDisposisi" class="form-control">
+                                <option value="">Semua Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="diterima">Diterima</option>
+                                <option value="diproses">Diproses</option>
+                                <option value="selesai">Selesai</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="generateReport('disposisi', 'pdf')" class="btn btn-primary">
+                                📕 Export PDF
+                            </button>
+                            <button onclick="generateReport('disposisi', 'excel')" class="btn btn-success">
+                                📊 Export Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistik Report -->
+                <div class="report-card">
+                    <div class="report-icon">📊</div>
+                    <h3>Laporan Statistik</h3>
+                    <p>Statistik surat menyeluruh</p>
+                    <div class="report-form">
+                        <div class="form-group">
+                            <label>Tahun</label>
+                            <select id="tahunStatistik" class="form-control">
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="generateReport('statistik', 'view')" class="btn btn-primary">
+                                👁️ Lihat Statistik
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Preview -->
+            <div class="report-preview" id="reportPreview" style="display:none;">
+                <div class="preview-header">
+                    <h3>Hasil Laporan</h3>
+                    <button onclick="closePreview()" class="btn btn-sm">✕ Tutup</button>
+                </div>
+                <div class="table-container">
+                    <table class="table" id="reportTable">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="preview-footer">
+                    <span id="reportTotal">Total: 0 data</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/laporan.js"></script>
+</body>
+</html>
