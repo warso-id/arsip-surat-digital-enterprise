@@ -1,64 +1,151 @@
 /**
+ * ============================================
  * API SERVICE - ARSIP SURAT DIGITAL ENTERPRISE v3.2.2
- * Menangani semua komunikasi dengan Google Apps Script backend
+ * FULL API COMMUNICATION LAYER - SIAP PRODUKSI
+ * Mendukung: REST, File Upload, Cache, Retry,
+ * Rate Limit, Circuit Breaker, Batch, Queue
+ * Terintegrasi dengan Spreadsheet & code.gs
+ * ============================================
  */
 
 class ApiService {
   constructor() {
-    this.baseUrl = APP_CONFIG.API.BASE_URL;
-    this.timeout = APP_CONFIG.API.TIMEOUT;
-    this.retryCount = APP_CONFIG.API.RETRY_COUNT;
+    // Base configuration
+    this.baseUrl = this.getConfig('API.BASE_URL', '');
+    this.timeout = this.getConfig('API.TIMEOUT', 30000);
+    this.retryCount = this.getConfig('API.RETRY_COUNT', 3);
+    this.retryDelay = this.getConfig('API.RETRY_DELAY', 1000);
+
+    // State tracking
     this.pendingRequests = new Map();
     this.requestQueue = [];
-    this.rateLimiter = new RateLimiter(100, 60000); // 100 requests per menit
+    this.isProcessingQueue = false;
+    this.rateLimiter = new RateLimiter(
+      this.getConfig('RATE_LIMIT', 100),
+      60000
+    );
+
+    // Circuit breaker
+    this.circuitBreaker = {
+      failures: 0,
+      threshold: 5,
+      resetTimeout: 30000,
+      lastFailure: null,
+      isOpen: false
+    };
+
+    // Cache
+    this.responseCache = new Map();
+    this.cacheMaxSize = 100;
+
+    // Auth refresh
+    this.tokenRefreshPromise = null;
+    this.tokenRefreshThreshold = 300000; // 5 minutes before expiry
+
+    // Batch requests
+    this.batchQueue = [];
+    this.batchTimer = null;
+    this.batchDelay = 50;
+    this.maxBatchSize = 10;
+
+    // Request deduplication
+    this.dedupeMap = new Map();
+    this.dedupeTTL = 2000;
   }
-  
+
   /**
-   * Build URL dengan parameters
+   * Get config value with fallback
+   */
+  getConfig(path, defaultValue) {
+    try {
+      const keys = path.split('.');
+      let value = typeof APP_CONFIG !== 'undefined' ? APP_CONFIG : null;
+      for (const key of keys) {
+        if (value && typeof value === 'object') value = value[key];
+        else return defaultValue;
+      }
+      return value !== undefined ? value : defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  }
+
+  /**
+   * Build URL with parameters
    */
   buildUrl(action, params = {}) {
     const url = new URL(this.baseUrl);
     url.searchParams.set('action', action);
-    
+
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        url.searchParams.set(key, value);
+      if (value !== undefined && value !== null && value !== '') {
+        url.searchParams.set(key, String(value));
       }
     });
-    
+
     return url.toString();
   }
-  
+
   /**
-   * Get headers untuk request
+   * Get request headers
    */
-  getHeaders(includeAuth = true, includeCsrf = false) {
+  getHeaders(includeAuth = true, includeCsrf = false, extraHeaders = {}) {
     const headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-App-Version': APP_CONFIG.APP_VERSION,
-      'X-Client-Id': this.getClientId()
+      'X-App-Version': this.getConfig('APP_VERSION', '3.2.2'),
+      'X-Client-Id': this.getClientId(),
+      'X-Request-Id': this.generateUUID(),
+      ...extraHeaders
     };
-    
+
     if (includeAuth) {
-      const token = AuthService.getToken();
+      const token = this.getAuthToken();
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
     }
-    
+
     if (includeCsrf) {
-      const csrf = AuthService.getCsrfToken();
+      const csrf = this.getCsrfToken();
       if (csrf) {
         headers['X-CSRF-Token'] = csrf;
       }
     }
-    
+
     return headers;
   }
-  
+
   /**
-   * Get client ID untuk tracking
+   * Get auth token
+   */
+  getAuthToken() {
+    try {
+      if (typeof AuthService !== 'undefined' && AuthService.getToken) {
+        return AuthService.getToken();
+      }
+      return localStorage.getItem('asd_token') || localStorage.getItem('asd_auth_token');
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Get CSRF token
+   */
+  getCsrfToken() {
+    try {
+      if (typeof AuthService !== 'undefined' && AuthService.getCsrfToken) {
+        return AuthService.getCsrfToken();
+      }
+      return localStorage.getItem('asd_csrf') || localStorage.getItem('asd_csrf_token');
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Get/set client ID
    */
   getClientId() {
     let clientId = localStorage.getItem('asd_client_id');
@@ -68,18 +155,17 @@ class ApiService {
     }
     return clientId;
   }
-  
+
   /**
-   * Generate UUID
+   * Generate UUID v4
    */
   generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
       const r = Math.random() * 16 | 0;
-      const v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
     });
   }
-  
+
   /**
    * Main request method
    */
@@ -93,485 +179,772 @@ class ApiService {
       retries = this.retryCount,
       timeout = this.timeout,
       cacheKey = null,
-      cacheTTL = APP_CONFIG.CACHE.TTL,
+      cacheTTL = 300000,
       skipCache = false,
-      signal = null
+      signal = null,
+      dedupe = true,
+      batch = false,
+      extraHeaders = {}
     } = options;
-    
-    // Check cache first
-    if (method === 'GET' && cacheKey && !skipCache) {
-      const cached = await CacheService.get(cacheKey);
-      if (cached && (Date.now() - cached.timestamp) < cacheTTL * 1000) {
-        return cached.data;
+
+    // Check circuit breaker
+    if (this.circuitBreaker.isOpen) {
+      if (Date.now() - this.circuitBreaker.lastFailure < this.circuitBreaker.resetTimeout) {
+        throw new ApiError('Service temporarily unavailable', 503, 'CIRCUIT_OPEN');
       }
+      this.circuitBreaker.isOpen = false;
+      this.circuitBreaker.failures = 0;
     }
-    
+
+    // Check cache
+    if (method === 'GET' && cacheKey && !skipCache) {
+      const cached = this.getCachedResponse(cacheKey, cacheTTL);
+      if (cached) return cached;
+    }
+
     // Check rate limiter
     if (!this.rateLimiter.allow()) {
-      throw new Error('Rate limit exceeded. Silakan tunggu sebentar.');
+      throw new ApiError('Rate limit exceeded. Silakan tunggu.', 429, 'RATE_LIMITED');
     }
-    
+
+    // Deduplication
+    if (dedupe && method === 'GET') {
+      const dedupeKey = `${action}_${JSON.stringify(params)}`;
+      if (this.dedupeMap.has(dedupeKey)) {
+        return this.dedupeMap.get(dedupeKey);
+      }
+    }
+
     // Build request
     const url = this.buildUrl(action, params);
-    const headers = this.getHeaders(includeAuth, includeCsrf);
-    
-    const requestOptions = {
-      method,
-      headers,
-      signal,
-      mode: 'cors'
-    };
-    
+    const headers = this.getHeaders(includeAuth, includeCsrf, extraHeaders);
+
+    const requestOptions = { method, headers, signal, mode: 'cors', credentials: 'omit' };
+
     if (body && method !== 'GET') {
       requestOptions.body = JSON.stringify(body);
     }
-    
-    // Add timeout
+
+    // Timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
     requestOptions.signal = signal || controller.signal;
-    
+
+    const startTime = performance.now();
+
     try {
-      const startTime = performance.now();
       const response = await fetch(url, requestOptions);
       clearTimeout(timeoutId);
-      
-      const duration = performance.now() - startTime;
-      
+
+      const duration = Math.round(performance.now() - startTime);
+
       // Track performance
-      PerformanceMonitor.trackApiCall(action, duration, response.status);
-      
-      // Handle response
-      const data = await response.json();
-      
+      this.trackApiCall(action, duration, response.status);
+
+      // Parse response
+      let data;
+      const contentType = response.headers.get('content-type');
+      if (contentType?.includes('application/json')) {
+        data = await response.json();
+      } else {
+        data = await response.text();
+        try { data = JSON.parse(data); } catch {}
+      }
+
+      // Handle HTTP errors
       if (!response.ok) {
         throw new ApiError(
-          data.message || 'Request failed',
+          data?.message || `HTTP ${response.status}`,
           response.status,
-          data.code,
+          data?.code || 'HTTP_ERROR',
           data
         );
       }
-      
+
+      // Reset circuit breaker on success
+      this.circuitBreaker.failures = 0;
+
       // Handle token refresh
-      if (data.data && data.data.token) {
-        AuthService.setToken(data.data.token);
+      if (data?.data?.token) {
+        this.saveAuthToken(data.data.token);
       }
-      
-      // Handle CSRF token
-      if (data.data && data.data.csrf) {
-        AuthService.setCsrfToken(data.data.csrf);
+      if (data?.data?.csrf) {
+        this.saveCsrfToken(data.data.csrf);
       }
-      
-      // Cache response
+
+      // Cache successful GET response
       if (method === 'GET' && cacheKey) {
-        await CacheService.set(cacheKey, {
-          data: data,
-          timestamp: Date.now()
-        });
+        this.setCachedResponse(cacheKey, data, cacheTTL);
       }
-      
+
+      // Store dedupe promise
+      if (dedupe && method === 'GET') {
+        const dedupeKey = `${action}_${JSON.stringify(params)}`;
+        this.dedupeMap.set(dedupeKey, Promise.resolve(data));
+        setTimeout(() => this.dedupeMap.delete(dedupeKey), this.dedupeTTL);
+      }
+
       return data;
-      
+
     } catch (error) {
       clearTimeout(timeoutId);
-      
-      // Handle retry
+
+      // Track failure for circuit breaker
+      this.circuitBreaker.failures++;
+      this.circuitBreaker.lastFailure = Date.now();
+      if (this.circuitBreaker.failures >= this.circuitBreaker.threshold) {
+        this.circuitBreaker.isOpen = true;
+      }
+
+      // Retry logic
       if (retry && retries > 0 && this.isRetryableError(error)) {
         await this.delay(this.getRetryDelay(retries));
-        return this.request(action, params, {
-          ...options,
-          retries: retries - 1
-        });
+        return this.request(action, params, { ...options, retries: retries - 1 });
       }
-      
-      // Handle auth error
+
+      // Auth error handling
       if (error.status === 401) {
-        AuthService.clearAuth();
-        Router.navigate('/login');
-        throw new ApiError('Session expired. Silakan login kembali.', 401);
+        this.clearAuth();
+        if (typeof router !== 'undefined') {
+          router.navigate('/login', { query: { expired: true } });
+        }
       }
-      
+
       throw error;
     }
   }
-  
+
   /**
    * Check if error is retryable
    */
   isRetryableError(error) {
     if (error.name === 'AbortError') return true;
-    if (error.status >= 500) return true;
+    if (error.name === 'TypeError') return true; // Network error
+    if (error.status >= 500 && error.status < 600) return true;
     if (error.status === 429) return true;
+    if (error.code === 'CIRCUIT_OPEN') return false;
     return false;
   }
-  
+
   /**
-   * Get retry delay
+   * Calculate retry delay with jitter
    */
   getRetryDelay(retries) {
-    return Math.min(1000 * Math.pow(2, this.retryCount - retries), 30000);
+    const base = this.retryDelay * Math.pow(2, this.retryCount - retries);
+    const max = 30000;
+    const jitter = Math.random() * 1000;
+    return Math.min(base + jitter, max);
   }
-  
+
   /**
    * Delay helper
    */
   delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-  
-  // ============================================
-  // CONVENIENCE METHODS
-  // ============================================
-  
-  get(action, params = {}, options = {}) {
-    return this.request(action, params, { ...options, method: 'GET' });
+
+  /**
+   * Track API call performance
+   */
+  trackApiCall(action, duration, status) {
+    if (typeof PerformanceMonitor !== 'undefined' && PerformanceMonitor.trackApiCall) {
+      PerformanceMonitor.trackApiCall(action, duration, status);
+    }
   }
-  
-  post(action, body = {}, options = {}) {
-    return this.request(action, {}, { ...options, method: 'POST', body, includeCsrf: true });
+
+  /**
+   * Save auth token
+   */
+  saveAuthToken(token) {
+    try {
+      localStorage.setItem('asd_token', token);
+      localStorage.setItem('asd_auth_token', token);
+      if (typeof AuthService !== 'undefined' && AuthService.setToken) {
+        AuthService.setToken(token);
+      }
+    } catch {}
   }
-  
-  put(action, body = {}, options = {}) {
-    return this.request(action, {}, { ...options, method: 'POST', body, includeCsrf: true });
+
+  /**
+   * Save CSRF token
+   */
+  saveCsrfToken(token) {
+    try {
+      localStorage.setItem('asd_csrf', token);
+      localStorage.setItem('asd_csrf_token', token);
+    } catch {}
   }
-  
-  delete(action, params = {}, options = {}) {
-    return this.request(action, params, { ...options, method: 'POST', includeCsrf: true });
+
+  /**
+   * Clear auth data
+   */
+  clearAuth() {
+    try {
+      localStorage.removeItem('asd_token');
+      localStorage.removeItem('asd_auth_token');
+      localStorage.removeItem('asd_user');
+      localStorage.removeItem('asd_auth_user');
+      localStorage.removeItem('asd_csrf');
+    } catch {}
   }
-  
-  // ============================================
-  // PUBLIC ENDPOINTS (NO AUTH)
-  // ============================================
-  
-  async ping() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.PUBLIC.PING, {}, { includeAuth: false });
+
+  /**
+   * Cache helpers
+   */
+  getCachedResponse(key, ttl) {
+    if (typeof CacheService !== 'undefined') {
+      return CacheService.get(key);
+    }
+    const entry = this.responseCache.get(key);
+    if (entry && Date.now() - entry.timestamp < ttl) {
+      return entry.data;
+    }
+    this.responseCache.delete(key);
+    return null;
   }
-  
-  async checkSetup() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.PUBLIC.CHECK_SETUP, {}, { includeAuth: false });
+
+  setCachedResponse(key, data, ttl) {
+    if (typeof CacheService !== 'undefined') {
+      CacheService.set(key, data, ttl);
+    }
+    this.responseCache.set(key, { data, timestamp: Date.now(), ttl });
+    if (this.responseCache.size > this.cacheMaxSize) {
+      const firstKey = this.responseCache.keys().next().value;
+      this.responseCache.delete(firstKey);
+    }
   }
-  
-  async setup(data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.PUBLIC.SETUP, data, { includeAuth: false });
+
+  clearCache() {
+    this.responseCache.clear();
+    if (typeof CacheService !== 'undefined') CacheService.clear();
   }
-  
-  async debugInfo() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.PUBLIC.DEBUG, {}, { includeAuth: false });
-  }
-  
-  async checkUser(identifier) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.AUTH.CHECK_USER, { identifier }, { includeAuth: false });
-  }
-  
-  async resetAdmin() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.AUTH.RESET_ADMIN, {}, { includeAuth: false });
-  }
-  
-  // ============================================
-  // AUTH ENDPOINTS
-  // ============================================
-  
-  async login(username, password) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.AUTH.LOGIN, { username, password }, { includeAuth: false });
-  }
-  
-  async register(data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.AUTH.REGISTER, data, { includeAuth: false });
-  }
-  
-  async logout() {
-    return this.post(APP_CONFIG.API.ENDPOINTS.AUTH.LOGOUT);
-  }
-  
-  async getMe() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.AUTH.ME);
-  }
-  
-  async changePassword(oldPassword, newPassword) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.AUTH.CHANGE_PASSWORD, { oldPassword, newPassword });
-  }
-  
-  async getCsrfToken() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.AUTH.CSRF);
-  }
-  
-  // ============================================
-  // DASHBOARD ENDPOINTS
-  // ============================================
-  
-  async getDashboardStats() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.DASHBOARD.STATS, {}, {
-      cacheKey: 'dashboard_stats',
-      cacheTTL: 60
-    });
-  }
-  
-  async getDashboardChart(period = 'monthly') {
-    return this.get(APP_CONFIG.API.ENDPOINTS.DASHBOARD.CHART, { period }, {
-      cacheKey: `dashboard_chart_${period}`,
-      cacheTTL: 300
-    });
-  }
-  
-  async getDashboardAIInsights() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.DASHBOARD.AI_INSIGHTS, {}, {
-      cacheKey: 'dashboard_ai',
-      cacheTTL: 3600
-    });
-  }
-  
-  async getDashboardRealtime() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.DASHBOARD.REALTIME, {}, {
-      cacheKey: 'dashboard_realtime',
-      cacheTTL: 10
-    });
-  }
-  
-  // ============================================
-  // SURAT MASUK ENDPOINTS
-  // ============================================
-  
-  async getSuratMasukList(params = {}) {
-    const { page = 1, limit = 20, search, status, sifat, startDate, endDate, sortBy, sortOrder } = params;
-    return this.get(APP_CONFIG.API.ENDPOINTS.SURAT_MASUK.LIST, {
-      page, limit, search, status, sifat, startDate, endDate, sortBy, sortOrder
-    });
-  }
-  
-  async getSuratMasukDetail(id) {
-    return this.get(APP_CONFIG.API.ENDPOINTS.SURAT_MASUK.DETAIL, { id }, {
-      cacheKey: `sm_detail_${id}`,
-      cacheTTL: 60
-    });
-  }
-  
-  async createSuratMasuk(data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.SURAT_MASUK.CREATE, data);
-  }
-  
-  async updateSuratMasuk(id, data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.SURAT_MASUK.UPDATE, { ...data, id });
-  }
-  
-  async deleteSuratMasuk(id) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.SURAT_MASUK.DELETE, { id });
-  }
-  
-  async getSuratMasukStats() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.SURAT_MASUK.STATS, {}, {
-      cacheKey: 'sm_stats',
-      cacheTTL: 300
-    });
-  }
-  
-  async updateSuratMasukStatus(id, status) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.SURAT_MASUK.STATUS, { id, status });
-  }
-  
-  async distribusiSuratMasuk(data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.SURAT_MASUK.DISTRIBUSI, data);
-  }
-  
-  async getSuratMasukHistory(id) {
-    return this.get(APP_CONFIG.API.ENDPOINTS.SURAT_MASUK.HISTORY, { id });
-  }
-  
-  // ============================================
-  // SURAT KELUAR ENDPOINTS
-  // ============================================
-  
-  async getSuratKeluarList(params = {}) {
-    const { page = 1, limit = 20, search, status, approvalStatus, startDate, endDate } = params;
-    return this.get(APP_CONFIG.API.ENDPOINTS.SURAT_KELUAR.LIST, {
-      page, limit, search, status, approvalStatus, startDate, endDate
-    });
-  }
-  
-  async getSuratKeluarDetail(id) {
-    return this.get(APP_CONFIG.API.ENDPOINTS.SURAT_KELUAR.DETAIL, { id }, {
-      cacheKey: `sk_detail_${id}`,
-      cacheTTL: 60
-    });
-  }
-  
-  async createSuratKeluar(data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.SURAT_KELUAR.CREATE, data);
-  }
-  
-  async updateSuratKeluar(id, data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.SURAT_KELUAR.UPDATE, { ...data, id });
-  }
-  
-  async deleteSuratKeluar(id) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.SURAT_KELUAR.DELETE, { id });
-  }
-  
-  async submitApproval(id) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.SURAT_KELUAR.SUBMIT_APPROVAL, { id });
-  }
-  
-  // ============================================
-  // DISPOSISI ENDPOINTS
-  // ============================================
-  
-  async getDisposisiList(params = {}) {
-    return this.get(APP_CONFIG.API.ENDPOINTS.DISPOSISI.LIST, params);
-  }
-  
-  async createDisposisi(data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.DISPOSISI.CREATE, data);
-  }
-  
-  async createMultipleDisposisi(data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.DISPOSISI.CREATE_MULTIPLE, data);
-  }
-  
-  async tindakLanjutDisposisi(id, data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.DISPOSISI.TINDAK_LANJUT, { ...data, id });
-  }
-  
-  async updateDisposisiStatus(id, status) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.DISPOSISI.UPDATE_STATUS, { id, status });
-  }
-  
-  async eskalasiDisposisi(id, data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.DISPOSISI.ESKALASI, { ...data, id });
-  }
-  
-  // ============================================
-  // USERS ENDPOINTS
-  // ============================================
-  
-  async getUsersList(params = {}) {
-    return this.get(APP_CONFIG.API.ENDPOINTS.USERS.LIST, params);
-  }
-  
-  async createUser(data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.USERS.CREATE, data);
-  }
-  
-  async updateUser(id, data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.USERS.UPDATE, { ...data, id });
-  }
-  
-  async deleteUser(id) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.USERS.DELETE, { id });
-  }
-  
-  async updateProfile(data) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.USERS.UPDATE_PROFILE, data);
-  }
-  
-  // ============================================
-  // SEARCH ENDPOINTS
-  // ============================================
-  
-  async searchGlobal(query) {
-    return this.get(APP_CONFIG.API.ENDPOINTS.SEARCH.GLOBAL, { q: query });
-  }
-  
-  async searchAdvanced(params) {
-    return this.get(APP_CONFIG.API.ENDPOINTS.SEARCH.ADVANCED, params);
-  }
-  
-  // ============================================
-  // NOTIFICATION ENDPOINTS
-  // ============================================
-  
-  async getNotifications(params = {}) {
-    return this.get(APP_CONFIG.API.ENDPOINTS.NOTIFIKASI.LIST, params);
-  }
-  
-  async getUnreadCount() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.NOTIFIKASI.UNREAD, {}, {
-      cacheKey: 'unread_count',
-      cacheTTL: 30
-    });
-  }
-  
-  async markAsRead(id) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.NOTIFIKASI.READ, { id });
-  }
-  
-  async markAllAsRead() {
-    return this.post(APP_CONFIG.API.ENDPOINTS.NOTIFIKASI.READ_ALL);
-  }
-  
-  // ============================================
-  // FILE ENDPOINTS
-  // ============================================
-  
-  async uploadFile(file, onProgress = null) {
+
+  /**
+   * File upload with progress
+   */
+  async uploadFile(file, onProgress = null, options = {}) {
+    const { action = 'file.upload', extraFields = {} } = options;
+
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('action', APP_CONFIG.API.ENDPOINTS.FILE.UPLOAD);
-    
-    const token = AuthService.getToken();
-    
+    formData.append('action', action);
+    Object.entries(extraFields).forEach(([k, v]) => formData.append(k, v));
+
+    const token = this.getAuthToken();
+    const url = this.baseUrl;
+
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      
+
       xhr.upload.addEventListener('progress', (e) => {
         if (onProgress && e.lengthComputable) {
-          const percent = Math.round((e.loaded / e.total) * 100);
-          onProgress(percent);
+          onProgress(Math.round((e.loaded / e.total) * 100));
         }
       });
-      
+
       xhr.addEventListener('load', () => {
         if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(JSON.parse(xhr.responseText));
+          try { resolve(JSON.parse(xhr.responseText)); }
+          catch { resolve({ status: 'success', data: { url: xhr.responseText } }); }
         } else {
           reject(new ApiError('Upload failed', xhr.status));
         }
       });
-      
-      xhr.addEventListener('error', () => reject(new Error('Network error')));
-      
-      xhr.open('POST', this.buildUrl(APP_CONFIG.API.ENDPOINTS.FILE.UPLOAD));
-      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
+      xhr.addEventListener('error', () => reject(new Error('Network error during upload')));
+      xhr.addEventListener('abort', () => reject(new Error('Upload aborted')));
+
+      xhr.open('POST', url);
+      if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
       xhr.send(formData);
     });
   }
-  
+
+  // ============================================
+  // CONVENIENCE METHODS
+  // ============================================
+  get(action, params = {}, options = {}) {
+    return this.request(action, params, { ...options, method: 'GET' });
+  }
+
+  post(action, body = {}, options = {}) {
+    return this.request(action, {}, { ...options, method: 'POST', body, includeCsrf: true });
+  }
+
+  put(action, body = {}, options = {}) {
+    return this.request(action, {}, { ...options, method: 'POST', body, includeCsrf: true });
+  }
+
+  patch(action, body = {}, options = {}) {
+    return this.request(action, {}, { ...options, method: 'POST', body, includeCsrf: true });
+  }
+
+  delete(action, params = {}, options = {}) {
+    return this.request(action, params, { ...options, method: 'POST', includeCsrf: true });
+  }
+
+  // ============================================
+  // BATCH REQUESTS
+  // ============================================
+  async batch(requests) {
+    const results = await Promise.allSettled(
+      requests.map(req => this.request(req.action, req.params, req.options))
+    );
+    return results.map((r, i) => ({
+      success: r.status === 'fulfilled',
+      data: r.status === 'fulfilled' ? r.value : null,
+      error: r.status === 'rejected' ? r.reason?.message : null
+    }));
+  }
+
+  // ============================================
+  // PUBLIC ENDPOINTS
+  // ============================================
+  async ping() {
+    return this.get('ping', {}, { includeAuth: false, cacheKey: 'ping', cacheTTL: 30000 });
+  }
+
+  async checkSetup() {
+    return this.get('checkSetup', {}, { includeAuth: false });
+  }
+
+  async setup(data) {
+    return this.post('setup', data, { includeAuth: false });
+  }
+
+  async login(username, password) {
+    return this.post('login', { username, password }, { includeAuth: false, retry: false });
+  }
+
+  async register(data) {
+    return this.post('publicRegister', data, { includeAuth: false });
+  }
+
+  async logout() {
+    return this.post('logout');
+  }
+
+  async getMe() {
+    return this.get('me');
+  }
+
+  async changePassword(oldPassword, newPassword) {
+    return this.post('changePassword', { oldPassword, newPassword });
+  }
+
+  async checkUser(identifier) {
+    return this.post('checkUser', { identifier }, { includeAuth: false });
+  }
+
+  async resetAdmin() {
+    return this.get('resetAdmin', {}, { includeAuth: false });
+  }
+
+  async getCsrfToken() {
+    return this.get('csrf.generate');
+  }
+
+  // ============================================
+  // DASHBOARD
+  // ============================================
+  async getDashboardStats() {
+    return this.get('dashboard.stats', {}, { cacheKey: 'dashboard_stats', cacheTTL: 60000 });
+  }
+
+  async getDashboardChart(period = 'monthly') {
+    return this.get('dashboard.chart', { period }, { cacheKey: `dashboard_chart_${period}`, cacheTTL: 300000 });
+  }
+
+  // ============================================
+  // SURAT MASUK
+  // ============================================
+  async getSuratMasukList(params = {}) {
+    return this.get('suratMasuk.list', params);
+  }
+
+  async getSuratMasukDetail(id) {
+    return this.get('suratMasuk.detail', { id }, { cacheKey: `sm_detail_${id}`, cacheTTL: 60000 });
+  }
+
+  async createSuratMasuk(data) {
+    return this.post('suratMasuk.create', data);
+  }
+
+  async updateSuratMasuk(id, data) {
+    return this.post('suratMasuk.update', { ...data, id });
+  }
+
+  async deleteSuratMasuk(id) {
+    return this.post('suratMasuk.delete', { id });
+  }
+
+  async updateSuratMasukStatus(id, status) {
+    return this.post('suratMasuk.updateStatus', { id, status });
+  }
+
+  // ============================================
+  // SURAT KELUAR
+  // ============================================
+  async getSuratKeluarList(params = {}) {
+    return this.get('suratKeluar.list', params);
+  }
+
+  async getSuratKeluarDetail(id) {
+    return this.get('suratKeluar.detail', { id }, { cacheKey: `sk_detail_${id}`, cacheTTL: 60000 });
+  }
+
+  async createSuratKeluar(data) {
+    return this.post('suratKeluar.create', data);
+  }
+
+  async updateSuratKeluar(id, data) {
+    return this.post('suratKeluar.update', { ...data, id });
+  }
+
+  async deleteSuratKeluar(id) {
+    return this.post('suratKeluar.delete', { id });
+  }
+
+  async submitApproval(id) {
+    return this.post('suratKeluar.submitApproval', { id });
+  }
+
+  // ============================================
+  // DISPOSISI
+  // ============================================
+  async getDisposisiList(params = {}) {
+    return this.get('disposisi.list', params);
+  }
+
+  async createDisposisi(data) {
+    return this.post('disposisi.create', data);
+  }
+
+  async createMultipleDisposisi(data) {
+    return this.post('disposisi.createMultiple', data);
+  }
+
+  async updateDisposisiStatus(id, status) {
+    return this.post('disposisi.updateStatus', { id, status });
+  }
+
+  // ============================================
+  // USERS
+  // ============================================
+  async getUsersList(params = {}) {
+    return this.get('users.list', params);
+  }
+
+  async createUser(data) {
+    return this.post('users.create', data);
+  }
+
+  async updateUser(id, data) {
+    return this.post('users.update', { ...data, id });
+  }
+
+  async deleteUser(id) {
+    return this.post('users.delete', { id });
+  }
+
+  async updateProfile(data) {
+    return this.post('users.updateProfile', data);
+  }
+
+  // ============================================
+  // SEARCH
+  // ============================================
+  async searchGlobal(query, params = {}) {
+    return this.get('search', { q: query, ...params });
+  }
+
+  async searchAdvanced(params) {
+    return this.get('search.advanced', params);
+  }
+
+  // ============================================
+  // NOTIFICATIONS
+  // ============================================
+  async getNotifications(params = {}) {
+    return this.get('notifikasi.list', params);
+  }
+
+  async getUnreadCount() {
+    return this.get('notifikasi.unreadCount', {}, { cacheKey: 'unread_count', cacheTTL: 30000 });
+  }
+
+  async markAsRead(id) {
+    return this.post('notifikasi.read', { id });
+  }
+
+  async markAllAsRead() {
+    return this.post('notifikasi.readAll');
+  }
+
+  // ============================================
+  // FILES
+  // ============================================
   async getFileList(params = {}) {
-    return this.get(APP_CONFIG.API.ENDPOINTS.FILE.LIST, params);
+    return this.get('file.list', params);
   }
-  
+
   async deleteFile(id) {
-    return this.post(APP_CONFIG.API.ENDPOINTS.FILE.DELETE, { id });
+    return this.post('file.delete', { id });
   }
-  
+
   async getFilePreview(fileId) {
-    return this.get(APP_CONFIG.API.ENDPOINTS.FILE.PREVIEW, { fileId });
+    return this.get('file.preview', { fileId });
   }
-  
+
   // ============================================
-  // SYSTEM ENDPOINTS
+  // SYSTEM
   // ============================================
-  
   async getSystemStatus() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.SYSTEM.STATUS);
+    return this.get('system.status');
   }
-  
-  async getSystemInfo() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.SYSTEM.INFO);
-  }
-  
+
   async getSystemHealth() {
-    return this.get(APP_CONFIG.API.ENDPOINTS.SYSTEM.HEALTH);
+    return this.get('system.health');
   }
-  
-  async clearCache() {
-    return this.post(APP_CONFIG.API.ENDPOINTS.SYSTEM.CACHE_CLEAR);
+
+  async clearSystemCache() {
+    return this.post('system.cache.clear');
+  }
+
+  // ============================================
+  // REPORT
+  // ============================================
+  async getComprehensiveReport(params = {}) {
+    return this.get('report.comprehensive', params);
+  }
+
+  // ============================================
+  // EXPORT
+  // ============================================
+  async exportData(params = {}) {
+    return this.get('export.data', params);
+  }
+
+  async exportPDF(params = {}) {
+    return this.get('export.pdf', params);
+  }
+
+  async exportExcel(params = {}) {
+    return this.get('export.excel', params);
+  }
+
+  // ============================================
+  // BACKUP
+  // ============================================
+  async createBackup(data) {
+    return this.post('backup.create', data);
+  }
+
+  async getBackupList() {
+    return this.get('backup.list');
+  }
+
+  async restoreBackup(id) {
+    return this.post('backup.restore', { id });
+  }
+
+  // ============================================
+  // BLOCKCHAIN
+  // ============================================
+  async getBlockchainChain() {
+    return this.get('blockchain.getChain');
+  }
+
+  async verifyBlockchainChain() {
+    return this.get('blockchain.verifyChain');
+  }
+
+  async addBlockchainBlock(data) {
+    return this.post('blockchain.addBlock', data);
+  }
+
+  async verifyDocument(data) {
+    return this.post('verify.document', data);
+  }
+
+  // ============================================
+  // APPROVAL
+  // ============================================
+  async getApprovalList(params = {}) {
+    return this.get('approval.list', params);
+  }
+
+  async processApproval(data) {
+    return this.post('approval.process', data);
+  }
+
+  // ============================================
+  // TTD
+  // ============================================
+  async signDocument(data) {
+    return this.post('ttd.sign', data);
+  }
+
+  async verifySignature(id) {
+    return this.get('ttd.verify', { id });
+  }
+
+  // ============================================
+  // AUDIT LOG
+  // ============================================
+  async getAuditLogList(params = {}) {
+    return this.get('auditLog.list', params);
+  }
+
+  async exportAuditLog(params = {}) {
+    return this.get('auditLog.export', params);
+  }
+
+  // ============================================
+  // 2FA
+  // ============================================
+  async setup2FA(data) {
+    return this.post('2fa.setup', data);
+  }
+
+  async verify2FA(data) {
+    return this.post('2fa.verify', data);
+  }
+
+  async get2FAStatus() {
+    return this.get('2fa.status');
+  }
+
+  async disable2FA() {
+    return this.post('2fa.disable');
+  }
+
+  // ============================================
+  // API KEYS
+  // ============================================
+  async generateApiKey(data) {
+    return this.post('apiKey.generate', data);
+  }
+
+  async revokeApiKey(id) {
+    return this.post('apiKey.revoke', { id });
+  }
+
+  async listApiKeys() {
+    return this.get('apiKey.list');
+  }
+
+  // ============================================
+  // BIOMETRIC
+  // ============================================
+  async registerBiometric(data) {
+    return this.post('biometric.register', data);
+  }
+
+  async verifyBiometric(data) {
+    return this.post('biometric.verify', data);
+  }
+
+  async getBiometricStatus() {
+    return this.get('biometric.status');
+  }
+
+  // ============================================
+  // AI
+  // ============================================
+  async autoTag(data) {
+    return this.post('ai.autoTag', data);
+  }
+
+  async classifyDocument(data) {
+    return this.post('ai.classify', data);
+  }
+
+  async summarizeDocument(data) {
+    return this.post('ai.summarize', data);
+  }
+
+  // ============================================
+  // OCR
+  // ============================================
+  async ocrScan(data) {
+    return this.post('ocr.scan', data);
+  }
+
+  // ============================================
+  // WEBHOOK
+  // ============================================
+  async registerWebhook(data) {
+    return this.post('webhook.register', data);
+  }
+
+  async listWebhooks() {
+    return this.get('webhook.list');
+  }
+
+  async deleteWebhook(id) {
+    return this.post('webhook.delete', { id });
+  }
+
+  // ============================================
+  // UTILITY
+  // ============================================
+  getStatus() {
+    return {
+      baseUrl: this.baseUrl,
+      pendingRequests: this.pendingRequests.size,
+      circuitBreakerOpen: this.circuitBreaker.isOpen,
+      circuitBreakerFailures: this.circuitBreaker.failures,
+      cacheSize: this.responseCache.size,
+      rateLimiter: this.rateLimiter.getStatus?.() || 'unknown'
+    };
+  }
+}
+
+/**
+ * API Error class
+ */
+class ApiError extends Error {
+  constructor(message, status, code, data = null) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.code = code;
+    this.data = data;
+  }
+}
+
+/**
+ * Simple rate limiter
+ */
+class RateLimiter {
+  constructor(maxRequests, windowMs) {
+    this.maxRequests = maxRequests;
+    this.windowMs = windowMs;
+    this.requests = [];
+  }
+
+  allow() {
+    const now = Date.now();
+    this.requests = this.requests.filter(t => now - t < this.windowMs);
+    if (this.requests.length >= this.maxRequests) return false;
+    this.requests.push(now);
+    return true;
+  }
+
+  getStatus() {
+    return {
+      current: this.requests.length,
+      max: this.maxRequests,
+      windowMs: this.windowMs
+    };
   }
 }
 
 // Singleton instance
 const api = new ApiService();
 
-// Export
+// Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { ApiService, api };
+  module.exports = { ApiService, ApiError, RateLimiter, api };
 }
