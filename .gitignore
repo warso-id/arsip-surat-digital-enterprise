@@ -1,10 +1,93 @@
-# Environment files (REAL SECRETS)
+# Environment
 .env
-.env.local
-.env.development
-.env.staging
-.env.production
-.env.*.local
-
-# Keep example file
+.env.*
 !.env.example
+!.env.testing.example
+
+# Dependencies
+node_modules/
+vendor/
+bower_components/
+.pnp
+.pnp.js
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+*.sql.gz
+*.sql.bz2
+
+# Storage (file upload user)
+storage/app/surat/*
+storage/app/lampiran/*
+storage/app/temp/*
+!storage/app/**/.gitkeep
+
+# Logs
+storage/logs/*.log
+!storage/logs/.gitkeep
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Backup
+storage/backup/*
+!storage/backup/.gitkeep
+*.backup
+*.bak
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+.project
+.classpath
+.settings/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Build
+dist/
+build/
+.next/
+out/
+nuxt/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.eslintcache
+.parcel-cache/
+.turbo/
+
+# Environment Secrets
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+credentials*.json
+secret*.json
+*-secret*.yaml
+*-secret*.yml
+
+# Docker
+docker-compose.override.yml
+
+# Testing
+.test_results/
