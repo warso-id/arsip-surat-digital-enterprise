@@ -1,0 +1,10 @@
+# Environment files (REAL SECRETS)
+.env
+.env.local
+.env.development
+.env.staging
+.env.production
+.env.*.local
+
+# Keep example file
+!.env.example
