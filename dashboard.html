@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO -->
+    <meta name="description" content="Dashboard - Arsip Surat Digital Enterprise">
+    <meta name="theme-color" content="#1a56db">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- PWA -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Arsip Surat">
+    
+    <title>Dashboard - Arsip Surat Digital Enterprise</title>
+    
+    <!-- Favicon (Base64 SVG) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./src/public/css/app.css">
+    <link rel="stylesheet" href="./src/public/css/dashboard.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <style>
+        /* Fallback & Additional Styles */
+        :root {
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-sans);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Dashboard Layout */
+        .dashboard-page {
+            display: flex;
+            min-height: 100vh;
+            background: #f1f5f9;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #1e293b;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar-header {
+            padding: 24px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .sidebar-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .sidebar-header h3 {
+            font-size: 15px;
+            color: white;
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .sidebar-header small {
+            color: #94a3b8;
+            font-size: 11px;
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px 0;
+            overflow-y: auto;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 13px;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border-left-color: #3b82f6;
+        }
+        
+        .nav-icon {
+            font-size: 18px;
+            width: 22px;
+            text-align: center;
+        }
+        
+        .nav-badge {
+            margin-left: auto;
+            background: #ef4444;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        
+        .nav-badge.warning {
+            background: #f59e0b;
+            color: #1e293b;
+        }
+        
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .user-details strong {
+            display: block;
+            font-size: 13px;
+            color: white;
+        }
+        
+        .user-details small {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        
+        .btn-logout {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #94a3b8;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            font-family: var(--font-sans);
+        }
+        
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+        
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #475569;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        
+        .menu-toggle:hover {
+            background: #f1f5f9;
+        }
+        
+        .top-bar h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+        
+        .top-bar-actions {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-family: var(--font-sans);
+            white-space: nowrap;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #e5e7eb;
+            color: #475569;
+        }
+        
+        .btn-outline:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 11px;
+        }
+        
+        /* Content */
+        .content {
+            padding: 24px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .stat-blue .stat-icon { background: #dbeafe; }
+        .stat-green .stat-icon { background: #d1fae5; }
+        .stat-orange .stat-icon { background: #fef3c7; }
+        .stat-purple .stat-icon { background: #ede9fe; }
+        
+        .stat-info h3 {
+            font-size: 24px;
+            margin: 0;
+            line-height: 1;
+            color: #1e293b;
+        }
+        
+        .stat-info p {
+            color: #64748b;
+            font-size: 12px;
+            margin: 4px 0 0;
+        }
+        
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .chart-card h3 {
+            font-size: 15px;
+            margin-bottom: 16px;
+            color: #1e293b;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 280px;
+        }
+        
+        /* Table */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-header h3 {
+            font-size: 15px;
+            color: #1e293b;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table thead {
+            background: #f8fafc;
+        }
+        
+        .table th {
+            padding: 10px 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+            color: #334155;
+        }
+        
+        .table tbody tr:hover {
+            background: #f8fafc;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+        .badge-primary { background: #ede9fe; color: #5b21b6; }
+        
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .content {
+                padding: 16px;
+            }
+            
+            .top-bar {
+                padding: 12px 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .top-bar h1 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-page">
+        <!-- ==================== SIDEBAR ==================== -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <!-- Logo SVG -->
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iNDgiIGhlaWdodD0iNDgiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0ic2lkZWJhci1ncmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojM2I4MmY2Ii8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojOGI1Y2Y2Ii8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHJ4PSI0MCIgZmlsbD0idXJsKCNzaWRlYmFyLWdyYWQpIi8+PHRleHQgeD0iMTAwIiB5PSIxMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BRDwvdGV4dD48L3N2Zz4=" 
+                     alt="Logo" class="sidebar-logo" width="48" height="48">
+                <h3>Arsip Surat Digital</h3>
+                <small>Enterprise v2.0.0</small>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="./dashboard.html" class="nav-item active">
+                    <span class="nav-icon">📊</span> Dashboard
+                </a>
+                <a href="#surat-masuk" class="nav-item">
+                    <span class="nav-icon">📥</span> Surat Masuk
+                    <span class="nav-badge">12</span>
+                </a>
+                <a href="#surat-keluar" class="nav-item">
+                    <span class="nav-icon">📤</span> Surat Keluar
+                    <span class="nav-badge">8</span>
+                </a>
+                <a href="#disposisi" class="nav-item">
+                    <span class="nav-icon">📋</span> Disposisi
+                    <span class="nav-badge warning">5</span>
+                </a>
+                <a href="#laporan" class="nav-item">
+                    <span class="nav-icon">📄</span> Laporan
+                </a>
+                <a href="#pengguna" class="nav-item">
+                    <span class="nav-icon">👥</span> Pengguna
+                </a>
+                <a href="#pengaturan" class="nav-item">
+                    <span class="nav-icon">⚙️</span> Pengaturan
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-details">
+                        <strong id="sidebarUserName">Administrator</strong>
+                        <small id="sidebarUserRole">Super Admin</small>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="logout()">🚪 Keluar</button>
+            </div>
+        </aside>
+
+        <!-- ==================== MAIN CONTENT ==================== -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+                <h1>📊 Dashboard</h1>
+                <div class="top-bar-actions">
+                    <button class="btn btn-outline btn-sm" onclick="window.location.href='./index.html'">🏠 Beranda</button>
+                    <button class="btn btn-primary btn-sm" onclick="alert('Fitur tambah surat akan segera hadir!')">➕ Surat Baru</button>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Welcome -->
+                <p style="color:#64748b;margin-bottom:24px;">Selamat datang, <strong id="greetingName">Administrator</strong>! 👋</p>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card stat-blue">
+                        <div class="stat-icon">📥</div>
+                        <div class="stat-info">
+                            <h3 id="totalSuratMasuk">150</h3>
+                            <p>Surat Masuk</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-green">
+                        <div class="stat-icon">📤</div>
+                        <div class="stat-info">
+                            <h3 id="totalSuratKeluar">100</h3>
+                            <p>Surat Keluar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-orange">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-info">
+                            <h3 id="totalDisposisi">25</h3>
+                            <p>Disposisi Pending</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-purple">
+                        <div class="stat-icon">📁</div>
+                        <div class="stat-info">
+                            <h3 id="totalArsip">500</h3>
+                            <p>Surat Terarsip</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>📈 Statistik Surat Per Bulan</h3>
+                        <div class="chart-container">
+                            <canvas id="chartSuratBulanan"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>🍩 Distribusi Kategori Surat</h3>
+                        <div class="chart-container">
+                            <canvas id="chartKategori"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Surat Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>📋 Surat Terbaru</h3>
+                        <a href="#surat-masuk" class="btn btn-outline btn-sm">Lihat Semua →</a>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No. Surat</th>
+                                <th>Tanggal</th>
+                                <th>Perihal</th>
+                                <th>Pengirim</th>
+                                <th>Jenis</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentSuratTable">
+                            <tr>
+                                <td>SK/001/2024</td>
+                                <td>15 Jan 2024</td>
+                                <td>Undangan Rapat Koordinasi</td>
+                                <td>Kementerian Kominfo</td>
+                                <td><span class="badge badge-info">Masuk</span></td>
+                                <td><span class="badge badge-success">Selesai</span></td>
+                            </tr>
+                            <tr>
+                                <td>ND/002/2024</td>
+                                <td>18 Jan 2024</td>
+                                <td>Nota Dinas Pengadaan</td>
+                                <td>Kabid TI</td>
+                                <td><span class="badge badge-primary">Keluar</span></td>
+                                <td><span class="badge badge-warning">Proses</span></td>
+                            </tr>
+                            <tr>
+                                <td>SE/003/2024</td>
+                                <td>20 Jan 2024</td>
+                                <td>Edaran Ujian Semester</td>
+                                <td>Dinas Pendidikan</td>
+                                <td><span class="badge badge-info">Masuk</span></td>
+                                <td><span class="badge badge-success">Selesai</span></td>
+                            </tr>
+                            <tr>
+                                <td>ST/004/2024</td>
+                                <td>22 Jan 2024</td>
+                                <td>Surat Tugas Monitoring</td>
+                                <td>Kadis Kominfo</td>
+                                <td><span class="badge badge-primary">Keluar</span></td>
+                                <td><span class="badge badge-warning">Proses</span></td>
+                            </tr>
+                            <tr>
+                                <td>LP/005/2024</td>
+                                <td>25 Jan 2024</td>
+                                <td>Laporan Realisasi Anggaran</td>
+                                <td>BKD</td>
+                                <td><span class="badge badge-info">Masuk</span></td>
+                                <td><span class="badge badge-success">Selesai</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./src/public/js/app.js"></script>
+    <script src="./src/public/js/dashboard.js"></script>
+    
+    <script>
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            initDashboard();
+            checkAuth();
+            loadUserData();
+            initCharts();
+            setupSidebar();
+            animateStats();
+        });
+
+        // ==================== AUTH CHECK ====================
+        function checkAuth() {
+            const token = localStorage.getItem('accessToken');
+            const user = localStorage.getItem('user');
+            
+            if (!token || !user) {
+                // Redirect to login
+                window.location.href = './login.html';
+            }
+        }
+
+        // ==================== LOAD USER DATA ====================
+        function loadUserData() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            document.getElementById('greetingName').textContent = user.nama_lengkap || 'User';
+            document.getElementById('sidebarUserName').textContent = user.nama_lengkap || 'User';
+            document.getElementById('sidebarUserRole').textContent = user.role?.nama || 'User';
+            
+            // Avatar
+            const avatar = document.getElementById('userAvatar');
+            if (avatar && user.nama_lengkap) {
+                avatar.textContent = user.nama_lengkap.charAt(0).toUpperCase();
+            }
+        }
+
+        // ==================== SIDEBAR TOGGLE ====================
+        function setupSidebar() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            
+            if (menuToggle && sidebar) {
+                menuToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('open');
+                });
+                
+                // Close sidebar when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                        sidebar.classList.remove('open');
+                    }
+                });
+            }
+        }
+
+        // ==================== CHARTS ====================
+        function initCharts() {
+            // Surat Bulanan Chart
+            const ctxBulanan = document.getElementById('chartSuratBulanan');
+            if (ctxBulanan && typeof Chart !== 'undefined') {
+                new Chart(ctxBulanan, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                        datasets: [
+                            {
+                                label: 'Surat Masuk',
+                                data: [15, 20, 18, 25, 22, 30, 28, 35, 32, 28, 25, 30],
+                                backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                                borderColor: '#3b82f6',
+                                borderWidth: 1,
+                                borderRadius: 4
+                            },
+                            {
+                                label: 'Surat Keluar',
+                                data: [10, 15, 12, 18, 16, 20, 22, 25, 20, 18, 15, 20],
+                                backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                                borderColor: '#10b981',
+                                borderWidth: 1,
+                                borderRadius: 4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 5 }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Kategori Chart
+            const ctxKategori = document.getElementById('chartKategori');
+            if (ctxKategori && typeof Chart !== 'undefined') {
+                new Chart(ctxKategori, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Surat Keputusan', 'Surat Edaran', 'Surat Tugas', 'Nota Dinas', 'Lainnya'],
+                        datasets: [{
+                            data: [35, 25, 20, 15, 5],
+                            backgroundColor: [
+                                'rgba(59, 130, 246, 0.8)',
+                                'rgba(16, 185, 129, 0.8)',
+                                'rgba(245, 158, 11, 0.8)',
+                                'rgba(139, 92, 246, 0.8)',
+                                'rgba(100, 116, 139, 0.8)'
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+        }
+
+        // ==================== ANIMATE STATS ====================
+        function animateStats() {
+            const stats = [
+                { id: 'totalSuratMasuk', target: 150 },
+                { id: 'totalSuratKeluar', target: 100 },
+                { id: 'totalDisposisi', target: 25 },
+                { id: 'totalArsip', target: 500 }
+            ];
+            
+            stats.forEach(stat => {
+                const el = document.getElementById(stat.id);
+                if (!el) return;
+                
+                const target = stat.target;
+                let current = 0;
+                const duration = 1500;
+                const step = target / (duration / 16);
+                
+                function update() {
+                    current += step;
+                    if (current < target) {
+                        el.textContent = Math.floor(current);
+                        requestAnimationFrame(update);
+                    } else {
+                        el.textContent = target;
+                    }
+                }
+                
+                update();
+            });
+        }
+
+        // ==================== LOGOUT ====================
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                localStorage.clear();
+                window.location.href = './login.html';
+            }
+        }
+
+        // ==================== INIT DASHBOARD ====================
+        function initDashboard() {
+            console.log('🚀 Dashboard Arsip Surat Digital Enterprise');
+            console.log('📅 ' + new Date().toLocaleDateString('id-ID', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            }));
+        }
+
+        // ==================== KEYBOARD SHORTCUTS ====================
+        document.addEventListener('keydown', function(e) {
+            // Escape to close sidebar
+            if (e.key === 'Escape') {
+                document.getElementById('sidebar')?.classList.remove('open');
+            }
+            
+            // Ctrl+L to logout
+            if (e.ctrlKey && e.key === 'l') {
+                e.preventDefault();
+                logout();
+            }
+            
+            // Ctrl+H to go home
+            if (e.ctrlKey && e.key === 'h') {
+                e.preventDefault();
+                window.location.href = './index.html';
+            }
+        });
+    </script>
+</body>
+</html>
