@@ -1,0 +1,4 @@
+# Folder untuk file log aplikasi
+# Format: .log
+# Rotasi: harian
+# Retensi: 14 hari
