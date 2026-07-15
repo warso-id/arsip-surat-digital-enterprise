@@ -1,0 +1,249 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday at 6 AM UTC
+  workflow_dispatch:
+
+jobs:
+  # ==================== CODEQL ANALYSIS ====================
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript' ]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended,security-and-quality
+      
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+      
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+
+  # ==================== DEPENDENCY REVIEW ====================
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          deny-licenses: GPL-3.0, AGPL-3.0
+      
+      - name: License check
+        run: |
+          npx license-checker --summary --onlyAllow "MIT;ISC;Apache-2.0;BSD-2-Clause;BSD-3-Clause;CC0-1.0;Unlicense"
+
+  # ==================== NPM AUDIT ====================
+  npm-audit:
+    name: NPM Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run npm audit
+        run: npm audit --json > npm-audit.json || true
+      
+      - name: Check for critical vulnerabilities
+        run: |
+          if grep -q '"critical"' npm-audit.json; then
+            echo "❌ Critical vulnerabilities found!"
+            cat npm-audit.json | jq '.advisories | to_entries[] | select(.value.severity == "critical")'
+            exit 1
+          else
+            echo "✅ No critical vulnerabilities"
+          fi
+      
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: npm-audit.json
+
+  # ==================== SECRET SCANNING ====================
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: GitLeaks Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: TruffleHog Scan
+        uses: trufflesecurity/trufflehog@v3
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+      
+      - name: Check for common secrets
+        run: |
+          echo "Scanning for common secret patterns..."
+          
+          # Check for exposed passwords
+          if grep -r "password\s*=\s*['\"]" --include="*.js" --include="*.json" --include="*.env" . | grep -v ".example"; then
+            echo "⚠️ Potential exposed passwords found!"
+          fi
+          
+          # Check for API keys
+          if grep -rE "(api[_-]?key|apikey|secret)\s*=\s*['\"][A-Za-z0-9]{20,}" --include="*.js" .; then
+            echo "⚠️ Potential exposed API keys found!"
+          fi
+          
+          echo "✅ Secret scan complete"
+
+  # ==================== OWASP ZAP SCAN ====================
+  zap-scan:
+    name: OWASP ZAP Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Start application
+        run: |
+          docker compose up -d
+          sleep 30
+      
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: 'http://localhost:3000'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a -d'
+      
+      - name: Upload ZAP report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-scan-report
+          path: zap_scan_report.html
+      
+      - name: Stop application
+        run: docker compose down
+
+  # ==================== SCA SCAN (Snyk) ====================
+  snyk-scan:
+    name: Snyk Vulnerability Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+      
+      - name: Monitor project in Snyk
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor
+      
+      - name: Upload Snyk report
+        uses: actions/upload-artifact@v4
+        with:
+          name: snyk-report
+          path: snyk-report.json
+
+  # ==================== SUMMARY ====================
+  summary:
+    name: Security Scan Summary
+    runs-on: ubuntu-latest
+    needs: [codeql, npm-audit, secret-scan, snyk-scan]
+    if: always()
+    
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## 🔒 Security Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.codeql.result }}" == "success" ]; then
+            echo "- ✅ CodeQL: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ CodeQL: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.npm-audit.result }}" == "success" ]; then
+            echo "- ✅ NPM Audit: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ NPM Audit: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.secret-scan.result }}" == "success" ]; then
+            echo "- ✅ Secret Scan: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ Secret Scan: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.snyk-scan.result }}" == "success" ]; then
+            echo "- ✅ Snyk: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ Snyk: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
