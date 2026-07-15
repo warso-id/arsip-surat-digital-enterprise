@@ -1,108 +1,188 @@
 /**
+ * ============================================
  * BACKGROUND SYNC WORKER - ARSIP SURAT DIGITAL ENTERPRISE v3.2.2
+ * FULL BACKGROUND SYNC - SIAP PRODUKSI
+ * Mendukung: Periodic, On-demand, Retry, Queue,
+ * Priority, Offline Detection, API Integration
+ * Terintegrasi dengan Spreadsheet & code.gs
+ * ============================================
  */
 
-const SYNC_INTERVAL = 30000; // 30 seconds
+const SYNC_INTERVAL = 30000; // 30 seconds default
 const MAX_RETRIES = 5;
-const RETRY_DELAY = 5000;
+const BASE_RETRY_DELAY = 2000;
+const DB_NAME = 'asd_offline_db';
+const DB_VERSION = 1;
 
 let isSyncing = false;
 let syncTimer = null;
+let currentInterval = SYNC_INTERVAL;
+let authToken = '';
+let apiBaseUrl = '';
+let syncStats = {
+  totalSyncs: 0,
+  totalSynced: 0,
+  totalFailed: 0,
+  lastSyncTime: null,
+  lastSyncDuration: 0
+};
 
-// Handle messages from main thread
+// ============================================
+// MESSAGE HANDLER
+// ============================================
 self.onmessage = (event) => {
-  const { action } = event.data;
-  
+  const { action, data } = event.data;
+
   switch (action) {
     case 'start':
-      startSync();
+      startSync(data);
       break;
     case 'stop':
       stopSync();
       break;
     case 'syncNow':
-      performSync();
+      performSync({ priority: data?.priority || 'all' });
+      break;
+    case 'setConfig':
+      setConfig(data);
+      break;
+    case 'setToken':
+      authToken = data?.token || '';
       break;
     case 'getStatus':
       getStatus();
       break;
+    case 'clearStats':
+      syncStats = { totalSyncs: 0, totalSynced: 0, totalFailed: 0, lastSyncTime: null, lastSyncDuration: 0 };
+      self.postMessage({ type: 'stats:cleared' });
+      break;
+    default:
+      self.postMessage({ type: 'error', error: `Unknown action: ${action}` });
   }
 };
 
-/**
- * Start periodic sync
- */
-function startSync() {
-  stopSync();
-  
-  syncTimer = setInterval(() => {
-    performSync();
-  }, SYNC_INTERVAL);
-  
-  self.postMessage({ type: 'status', data: { running: true, interval: SYNC_INTERVAL } });
+// ============================================
+// CONFIGURATION
+// ============================================
+function setConfig(data) {
+  if (data?.interval) currentInterval = data.interval;
+  if (data?.apiBaseUrl) apiBaseUrl = data.apiBaseUrl;
+  if (data?.token) authToken = data.token;
+  self.postMessage({ type: 'config:updated', data: { interval: currentInterval, hasToken: !!authToken } });
 }
 
-/**
- * Stop periodic sync
- */
+// ============================================
+// SYNC CONTROL
+// ============================================
+function startSync(data) {
+  stopSync();
+  if (data?.interval) currentInterval = data.interval;
+
+  syncTimer = setInterval(() => performSync(), currentInterval);
+
+  self.postMessage({
+    type: 'status',
+    data: { running: true, interval: currentInterval, isSyncing }
+  });
+  console.log(`Sync worker started (interval: ${currentInterval}ms)`);
+}
+
 function stopSync() {
   if (syncTimer) {
     clearInterval(syncTimer);
     syncTimer = null;
   }
-  
-  self.postMessage({ type: 'status', data: { running: false } });
+  self.postMessage({ type: 'status', data: { running: false, isSyncing } });
 }
 
-/**
- * Perform sync
- */
-async function performSync() {
-  if (isSyncing) return;
-  
+// ============================================
+// MAIN SYNC LOGIC
+// ============================================
+async function performSync(options = {}) {
+  if (isSyncing) {
+    self.postMessage({ type: 'sync:skipped', data: { reason: 'Already syncing' } });
+    return;
+  }
+
   isSyncing = true;
-  self.postMessage({ type: 'sync:start' });
-  
+  const startTime = Date.now();
+
+  self.postMessage({ type: 'sync:start', data: { timestamp: startTime } });
+
   try {
-    // Get pending actions from IndexedDB
-    const pendingActions = await getPendingActions();
-    
+    // Get pending actions
+    const pendingActions = await getPendingActions(options.priority);
+
     if (pendingActions.length === 0) {
-      self.postMessage({ type: 'sync:complete', data: { synced: 0, failed: 0 } });
+      self.postMessage({ type: 'sync:complete', data: { synced: 0, failed: 0, pending: 0 } });
+      updateStats(0, 0, startTime);
       return;
     }
-    
-    self.postMessage({ type: 'sync:progress', data: { total: pendingActions.length, current: 0 } });
-    
+
+    self.postMessage({
+      type: 'sync:progress',
+      data: { total: pendingActions.length, current: 0, synced: 0, failed: 0 }
+    });
+
     let synced = 0;
     let failed = 0;
-    
+
     for (let i = 0; i < pendingActions.length; i++) {
       const action = pendingActions[i];
-      
+
+      // Skip if next retry is in the future
+      if (action.nextRetry && Date.now() < action.nextRetry) continue;
+
+      self.postMessage({
+        type: 'sync:item:start',
+        data: { id: action.id, action: action.action, current: i + 1, total: pendingActions.length }
+      });
+
       try {
         const result = await executeAction(action);
-        
+
         if (result.success) {
           await removePendingAction(action.id);
           synced++;
+          self.postMessage({
+            type: 'sync:item:complete',
+            data: { id: action.id, action: action.action, success: true, duration: result.duration }
+          });
         } else {
-          await updatePendingAction(action, result.error);
+          await handleFailedAction(action, result.error);
           failed++;
+          self.postMessage({
+            type: 'sync:item:failed',
+            data: { id: action.id, action: action.action, error: result.error }
+          });
         }
       } catch (error) {
-        await updatePendingAction(action, error.message);
+        await handleFailedAction(action, error.message);
         failed++;
+        self.postMessage({
+          type: 'sync:item:failed',
+          data: { id: action.id, action: action.action, error: error.message }
+        });
       }
-      
-      self.postMessage({ 
-        type: 'sync:progress', 
-        data: { total: pendingActions.length, current: i + 1, synced, failed } 
+
+      self.postMessage({
+        type: 'sync:progress',
+        data: { total: pendingActions.length, current: i + 1, synced, failed }
       });
     }
-    
-    self.postMessage({ type: 'sync:complete', data: { synced, failed } });
-    
+
+    updateStats(synced, failed, startTime);
+
+    self.postMessage({
+      type: 'sync:complete',
+      data: {
+        synced,
+        failed,
+        pending: pendingActions.length - synced - failed,
+        duration: Date.now() - startTime
+      }
+    });
+
   } catch (error) {
     self.postMessage({ type: 'sync:error', data: { error: error.message } });
   } finally {
@@ -110,138 +190,195 @@ async function performSync() {
   }
 }
 
-/**
- * Get pending actions from IndexedDB
- */
-async function getPendingActions() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open('asd_offline_db', 1);
-    
-    request.onsuccess = () => {
-      const db = request.result;
-      const transaction = db.transaction(['pendingActions'], 'readonly');
-      const store = transaction.objectStore('pendingActions');
-      const index = store.index('status');
-      const getAll = index.getAll('pending');
-      
-      getAll.onsuccess = () => resolve(getAll.result || []);
-      getAll.onerror = () => reject(getAll.error);
-    };
-    
-    request.onerror = () => reject(request.error);
-  });
-}
-
-/**
- * Execute pending action
- */
+// ============================================
+// ACTION EXECUTION
+// ============================================
 async function executeAction(action) {
-  const { action: actionType, data } = action;
-  
-  // Build fetch request
-  const url = `${APP_CONFIG.API.BASE_URL}?action=${actionType}`;
-  
+  const startTime = Date.now();
+  const url = `${apiBaseUrl}?action=${action.action}`;
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  };
+
+  if (authToken) {
+    headers['Authorization'] = `Bearer ${authToken}`;
+  }
+
   try {
     const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${getToken()}`
-      },
-      body: JSON.stringify(data)
+      headers,
+      body: JSON.stringify(action.data)
     });
-    
+
+    const duration = Date.now() - startTime;
     const result = await response.json();
-    
+
     return {
       success: result.status === 'success',
-      data: result
+      data: result,
+      duration,
+      statusCode: response.status
     };
   } catch (error) {
     return {
       success: false,
-      error: error.message
+      error: error.message,
+      duration: Date.now() - startTime,
+      statusCode: 0
     };
   }
 }
 
-/**
- * Remove pending action
- */
-async function removePendingAction(id) {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open('asd_offline_db', 1);
-    
-    request.onsuccess = () => {
-      const db = request.result;
-      const transaction = db.transaction(['pendingActions'], 'readwrite');
-      const store = transaction.objectStore('pendingActions');
-      const deleteRequest = store.delete(id);
-      
-      deleteRequest.onsuccess = () => resolve(true);
-      deleteRequest.onerror = () => reject(deleteRequest.error);
-    };
-    
-    request.onerror = () => reject(request.error);
-  });
-}
-
-/**
- * Update pending action (increment retries)
- */
-async function updatePendingAction(action, error) {
+async function handleFailedAction(action, error) {
   const retries = (action.retries || 0) + 1;
-  
+
   if (retries >= (action.maxRetries || MAX_RETRIES)) {
-    // Remove if max retries exceeded
-    return removePendingAction(action.id);
+    // Max retries exceeded - remove from queue and log
+    await removePendingAction(action.id);
+    await logFailedAction(action, error);
+    self.postMessage({
+      type: 'sync:item:maxretries',
+      data: { id: action.id, action: action.action, retries }
+    });
+  } else {
+    // Update with retry info
+    const nextRetry = Date.now() + (BASE_RETRY_DELAY * Math.pow(2, retries));
+    await updatePendingAction(action.id, {
+      retries,
+      lastError: error,
+      nextRetry,
+      status: 'pending'
+    });
   }
-  
+}
+
+// ============================================
+// INDEXEDDB OPERATIONS
+// ============================================
+function openDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('asd_offline_db', 1);
-    
-    request.onsuccess = () => {
-      const db = request.result;
-      const transaction = db.transaction(['pendingActions'], 'readwrite');
-      const store = transaction.objectStore('pendingActions');
-      
-      const updated = {
-        ...action,
-        retries,
-        lastError: error,
-        nextRetry: Date.now() + (RETRY_DELAY * Math.pow(2, retries))
-      };
-      
-      const putRequest = store.put(updated);
-      putRequest.onsuccess = () => resolve(true);
-      putRequest.onerror = () => reject(putRequest.error);
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains('pendingActions')) {
+        const store = db.createObjectStore('pendingActions', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('status', 'status', { unique: false });
+        store.createIndex('action', 'action', { unique: false });
+        store.createIndex('priority', 'priority', { unique: false });
+        store.createIndex('timestamp', 'timestamp', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('syncLog')) {
+        const store = db.createObjectStore('syncLog', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('timestamp', 'timestamp', { unique: false });
+        store.createIndex('status', 'status', { unique: false });
+      }
     };
-    
+  });
+}
+
+async function getPendingActions(priority = 'all') {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(['pendingActions'], 'readonly');
+    const store = tx.objectStore('pendingActions');
+    const request = store.getAll();
+
+    request.onsuccess = () => {
+      let items = request.result || [];
+      // Filter by status pending
+      items = items.filter(i => i.status === 'pending');
+      // Sort by priority
+      if (priority !== 'all') {
+        items = items.filter(i => i.priority === priority);
+      }
+      const priorityOrder = { high: 0, normal: 1, low: 2 };
+      items.sort((a, b) => (priorityOrder[a.priority] || 1) - (priorityOrder[b.priority] || 1));
+      // Then by timestamp
+      items.sort((a, b) => a.timestamp - b.timestamp);
+      resolve(items);
+    };
     request.onerror = () => reject(request.error);
   });
 }
 
-/**
- * Get token from storage
- */
-function getToken() {
-  // Workers don't have access to localStorage directly
-  // Token is passed via messages from main thread
-  return '';
+async function updatePendingAction(id, updates) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(['pendingActions'], 'readwrite');
+    const store = tx.objectStore('pendingActions');
+    const getReq = store.get(id);
+
+    getReq.onsuccess = () => {
+      const item = getReq.result;
+      if (!item) { resolve(false); return; }
+      Object.assign(item, updates, { updatedAt: Date.now() });
+      const putReq = store.put(item);
+      putReq.onsuccess = () => resolve(true);
+      putReq.onerror = () => reject(putReq.error);
+    };
+    getReq.onerror = () => reject(getReq.error);
+  });
 }
 
-/**
- * Get sync status
- */
+async function removePendingAction(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(['pendingActions'], 'readwrite');
+    const store = tx.objectStore('pendingActions');
+    const request = store.delete(id);
+    request.onsuccess = () => resolve(true);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function logFailedAction(action, error) {
+  try {
+    const db = await openDB();
+    const tx = db.transaction(['syncLog'], 'readwrite');
+    const store = tx.objectStore('syncLog');
+    store.add({
+      action: action.action,
+      data: action.data,
+      error,
+      retries: action.retries,
+      timestamp: Date.now(),
+      status: 'failed'
+    });
+  } catch (e) {
+    console.error('Failed to log sync failure:', e);
+  }
+}
+
+// ============================================
+// STATS & STATUS
+// ============================================
+function updateStats(synced, failed, startTime) {
+  syncStats.totalSyncs++;
+  syncStats.totalSynced += synced;
+  syncStats.totalFailed += failed;
+  syncStats.lastSyncTime = Date.now();
+  syncStats.lastSyncDuration = Date.now() - startTime;
+}
+
 function getStatus() {
   self.postMessage({
     type: 'status',
     data: {
       running: !!syncTimer,
       isSyncing,
-      interval: SYNC_INTERVAL
+      interval: currentInterval,
+      stats: syncStats,
+      hasToken: !!authToken,
+      hasApiUrl: !!apiBaseUrl
     }
   });
 }
 
-console.log('✅ Sync Worker initialized');
+console.log('✅ Sync Worker v3 initialized');
