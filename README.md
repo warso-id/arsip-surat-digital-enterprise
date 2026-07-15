@@ -1,68 +1,73 @@
-# Arsip Surat Digital Enterprise v3.2.2
+# 📁 Arsip Surat Digital Enterprise
 
-![Version](https://img.shields.io/badge/version-3.2.2-blue)
-![Build](https://img.shields.io/badge/build-2026--07--12-green)
-![License](https://img.shields.io/badge/license-Proprietary-red)
+<div align="center">
+  <img src="src/public/images/logo.png" alt="Logo" width="200"/>
+  
+  **Sistem Manajemen Arsip Surat Digital untuk Perusahaan & Instansi**
+  
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+  [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](package.json)
+  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+</div>
 
-**Sistem Manajemen Arsip Surat Digital** untuk Instansi Pemerintah dan Perusahaan
+---
 
-## 🚀 Fitur Utama
+## 📋 Fitur Utama
 
-### Manajemen Surat
+### 📨 Manajemen Surat
 - ✅ Surat Masuk & Surat Keluar
-- ✅ Nomor Agenda Otomatis
-- ✅ QR Code Tracking
-- ✅ Klasifikasi Surat
-- ✅ Multi-file Upload
+- ✅ Disposisi & Tracking
+- ✅ Klasifikasi berdasarkan kategori
+- ✅ Upload lampiran multiple files
+- ✅ QR Code untuk verifikasi surat
+- ✅ Digital signature (opsional)
 
-### Alur Kerja
-- ✅ Disposisi Multi-level
-- ✅ Approval Workflow
-- ✅ Tanda Tangan Digital (TTD)
-- ✅ Eskalasi & Delegasi
-- ✅ Kalender Disposisi
+### 🔍 Pencarian & Filter
+- ✅ Full-text search
+- ✅ Filter by tanggal, kategori, instansi
+- ✅ Advanced query builder
+- ✅ Export hasil pencarian
 
-### Keamanan
+### 📊 Dashboard & Laporan
+- ✅ Dashboard interaktif
+- ✅ Statistik surat real-time
+- ✅ Laporan periodik (harian/bulanan/tahunan)
+- ✅ Export PDF, Excel, CSV
+- ✅ Grafik & visualisasi data
+
+### 👥 Manajemen Pengguna
+- ✅ Multi-role (Super Admin, Admin, Staff)
+- ✅ Permission based access
+- ✅ Activity log & audit trail
+- ✅ Profile management
+
+### 🔐 Keamanan
 - ✅ JWT Authentication
-- ✅ 2FA & Biometric
-- ✅ CSRF Protection
-- ✅ IP Blacklisting
-- ✅ Audit Log Lengkap
+- ✅ Role-based access control
+- ✅ File encryption at rest
+- ✅ Rate limiting
+- ✅ SQL injection protection
+- ✅ XSS prevention
+- ✅ CSRF protection
 
-### AI & Otomatisasi
-- ✅ Auto-Tagging
-- ✅ Document Classification
-- ✅ OCR Scanning
-- ✅ Smart Search
-- ✅ Anomaly Detection
+### 📱 PWA Support
+- ✅ Installable app
+- ✅ Offline mode
+- ✅ Push notifications
+- ✅ Responsive design
 
-### Integrasi
-- ✅ Webhook
-- ✅ Email (Gmail)
-- ✅ Telegram Bot
-- ✅ Push Notifications
-- ✅ LDAP
+---
 
-### Lainnya
-- ✅ Blockchain Verification
-- ✅ PDF Generation
-- ✅ Backup & Restore
-- ✅ PWA Offline Support
-- ✅ Multi-language
+## 🚀 Quick Start
 
-## 📋 Prasyarat
+### Prerequisites
+- Node.js >= 16.0.0
+- NPM >= 8.0.0 atau Yarn >= 1.22
+- Git
 
-- Google Account (untuk Apps Script)
-- Node.js 18+ (untuk build tools)
-- Web Browser Modern (Chrome 90+, Firefox 88+, Safari 14+)
+### Installation
 
-## 🔧 Instalasi
-
-### 1. Setup Backend (Google Apps Script)
-
-```javascript
-// Buka Google Apps Script
-// Copy code.gs ke editor
-// Deploy sebagai Web App
-// Execute as: Me
-// Access: Anyone
+1. **Clone repository**
+```bash
+git clone https://github.com/warso-id/arsip-surat-digital-enterprise.git
+cd arsip-surat-digital-enterprise
