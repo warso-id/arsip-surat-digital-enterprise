@@ -1,0 +1,367 @@
+name: Deploy to Production
+
+on:
+  release:
+    types: [ published ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g., v2.0.0)'
+        required: true
+        type: string
+      deploy_confirm:
+        description: 'Type "DEPLOY" to confirm production deployment'
+        required: true
+        type: string
+
+env:
+  NODE_VERSION: '18'
+  APP_ENV: production
+  DOCKER_REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ==================== APPROVAL GATE ====================
+  approval:
+    name: Production Deployment Approval
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Verify confirmation
+        run: |
+          if [ "${{ github.event.inputs.deploy_confirm }}" != "DEPLOY" ]; then
+            echo "❌ Anda harus mengetik 'DEPLOY' untuk konfirmasi"
+            exit 1
+          fi
+      
+      - name: Validate version format
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          if [[ ! $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Format version tidak valid. Gunakan format: v1.2.3"
+            exit 1
+          fi
+      
+      - name: Approval confirmed
+        run: echo "✅ Production deployment approved for version ${{ github.event.inputs.version }}"
+
+  # ==================== BUILD & TEST ====================
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci --production=false
+      
+      - name: Run full test suite
+        run: |
+          npm run lint
+          npm run test:unit
+          npm run test:feature
+          npm run test:coverage
+      
+      - name: Check test coverage threshold
+        run: |
+          COVERAGE=$(cat coverage/lcov-summary.txt | grep "Lines" | awk '{print $2}' | sed 's/%//')
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "❌ Code coverage below 80% (Current: $COVERAGE%)"
+            exit 1
+          fi
+          echo "✅ Code coverage: $COVERAGE%"
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build
+          path: dist/
+          retention-days: 1
+
+  # ==================== DATABASE BACKUP ====================
+  backup:
+    name: Backup Production Database
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - name: Create database backup
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/arsip-surat
+            
+            # Create backup
+            BACKUP_FILE="backup_$(date +%Y%m%d_%H%M%S).sql.gz"
+            docker compose exec -T database pg_dump -U postgres arsip_surat | gzip > /opt/backups/$BACKUP_FILE
+            
+            # Keep only last 30 days of backups
+            find /opt/backups -name "backup_*.sql.gz" -mtime +30 -delete
+            
+            echo "✅ Backup created: $BACKUP_FILE"
+
+  # ==================== DOCKER BUILD & PUSH ====================
+  docker:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    needs: build
+    environment: production
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+            type=sha,prefix=prod-
+      
+      - name: Build and push Docker image
+        uses: docker/buildx-action@v3
+        with:
+          context: .
+          file: ./Dockerfile.production
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production
+            APP_VERSION=${{ github.event.inputs.version || github.ref_name }}
+
+  # ==================== BLUE-GREEN DEPLOYMENT ====================
+  deploy:
+    name: Blue-Green Deployment
+    runs-on: ubuntu-latest
+    needs: [backup, docker]
+    environment:
+      name: production
+      url: https://arsipsurat.id
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      
+      - name: Deploy to production (Blue-Green)
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/arsip-surat
+            
+            # Determine active environment
+            if docker compose ps | grep -q "blue"; then
+              ACTIVE="blue"
+              INACTIVE="green"
+            else
+              ACTIVE="green"
+              INACTIVE="blue"
+            fi
+            
+            echo "Active: $ACTIVE, Deploying to: $INACTIVE"
+            
+            # Deploy to inactive environment
+            docker compose -f docker-compose.production.yml \
+              --env-file .env.production \
+              -p arsip-surat-$INACTIVE \
+              up -d --remove-orphans
+            
+            # Wait for health check
+            for i in {1..30}; do
+              if curl -f http://localhost:$INACTIVE_PORT/api/health; then
+                echo "✅ $INACTIVE environment is healthy"
+                break
+              fi
+              sleep 10
+            done
+            
+            # Run migrations on inactive
+            docker compose -p arsip-surat-$INACTIVE \
+              run --rm app npm run db:migrate
+            
+            # Switch traffic to inactive (now active)
+            # Update nginx to point to new environment
+            sed -i "s/$ACTIVE/$INACTIVE/g" /etc/nginx/sites-available/arsip-surat
+            nginx -t && systemctl reload nginx
+            
+            echo "✅ Switched traffic to $INACTIVE"
+            
+            # Wait and verify
+            sleep 10
+            if curl -f https://arsipsurat.id/api/health; then
+              echo "✅ New deployment verified"
+              
+              # Stop old environment
+              docker compose -p arsip-surat-$ACTIVE down
+              
+              # Clean up
+              docker image prune -f
+            else
+              echo "❌ Deployment verification failed! Rolling back..."
+              
+              # Rollback to previous environment
+              sed -i "s/$INACTIVE/$ACTIVE/g" /etc/nginx/sites-available/arsip-surat
+              nginx -t && systemctl reload nginx
+              
+              exit 1
+            fi
+
+  # ==================== POST-DEPLOYMENT VERIFICATION ====================
+  verify:
+    name: Post-Deployment Verification
+    runs-on: ubuntu-latest
+    needs: deploy
+    
+    steps:
+      - name: Health check
+        run: |
+          curl -f https://arsipsurat.id/api/health
+          echo "✅ Production health check passed"
+      
+      - name: Critical path test
+        run: |
+          # Test login page
+          curl -f https://arsipsurat.id/login
+          
+          # Test API
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://arsipsurat.id/api/health)
+          if [ $STATUS -ne 200 ]; then
+            echo "❌ API not responding"
+            exit 1
+          fi
+          
+          echo "✅ Critical path tests passed"
+      
+      - name: Performance check
+        run: |
+          RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' https://arsipsurat.id)
+          if (( $(echo "$RESPONSE_TIME > 3" | bc -l) )); then
+            echo "⚠️ Response time high: ${RESPONSE_TIME}s"
+          else
+            echo "✅ Response time: ${RESPONSE_TIME}s"
+          fi
+
+  # ==================== CREATE RELEASE NOTES ====================
+  release-notes:
+    name: Generate Release Notes
+    runs-on: ubuntu-latest
+    needs: [deploy, verify]
+    if: github.event_name == 'release'
+    
+    steps:
+      - name: Extract changelog
+        id: changelog
+        run: |
+          VERSION="${{ github.event.inputs.version || github.ref_name }}"
+          VERSION_NUM=$(echo $VERSION | sed 's/v//')
+          
+          # Extract changelog for this version
+          CHANGELOG=$(awk "/## \[$VERSION_NUM\]/{flag=1; next} /## \[/{flag=0} flag" CHANGELOG.md)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+      - name: Update release
+        uses: ncipollo/release-action@v1
+        with:
+          body: ${{ steps.changelog.outputs.changelog }}
+          allowUpdates: true
+
+  # ==================== NOTIFICATION ====================
+  notify:
+    name: Send Notifications
+    runs-on: ubuntu-latest
+    needs: [deploy, verify]
+    if: always()
+    
+    steps:
+      - name: Notify on Success
+        if: success()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "🚀 Deploy to *PRODUCTION* successful!\n• Version: ${{ github.event.inputs.version || github.ref_name }}\n• Commit: ${{ github.sha }}\n• URL: https://arsipsurat.id\n• By: ${{ github.actor }}\n• Time: $(date)"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+      - name: Notify on Failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "🚨 *URGENT:* Production deployment FAILED!\n• Version: ${{ github.event.inputs.version || github.ref_name }}\n• Commit: ${{ github.sha }}\n• By: ${{ github.actor }}\n• Action: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n• Immediate action required!"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+      - name: Send email notification
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "🚨 PRODUCTION DEPLOYMENT FAILED - Arsip Surat Digital"
+          to: devops@arsipsurat.id
+          from: CI/CD Pipeline
+          body: |
+            Production deployment has FAILED!
+            
+            Version: ${{ github.event.inputs.version || github.ref_name }}
+            Commit: ${{ github.sha }}
+            Actor: ${{ github.actor }}
+            
+            Action URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            
+            Please investigate immediately.
