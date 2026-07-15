@@ -3,113 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO -->
     <meta name="description" content="Login - Arsip Surat Digital Enterprise">
     <meta name="theme-color" content="#1a56db">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- PWA -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <title>Login - Arsip Surat Digital Enterprise</title>
     
     <!-- Favicon (Base64 SVG - No 404) -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSI4IiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iMTYiIHk9IjIyIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="./manifest.json">
     
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./src/public/css/app.css">
+    <link rel="stylesheet" href="./src/public/css/auth.css">
+    
     <style>
-        /* ========== CRITICAL CSS ========== */
+        /* Fallback & Additional Styles */
         :root {
-            --primary: #1a56db;
-            --primary-dark: #1e40af;
-            --secondary: #64748b;
-            --dark: #1f2937;
-            --danger: #ef4444;
-            --success: #10b981;
-            --border: #e5e7eb;
             --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            --radius: 10px;
-            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.3);
-            --transition: all 0.3s ease;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: var(--font-sans);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .auth-page {
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
-            -webkit-font-smoothing: antialiased;
+            position: relative;
+            overflow: hidden;
         }
         
-        /* Background decoration */
-        body::before {
+        .auth-page::before {
             content: '';
-            position: fixed;
+            position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background: 
                 radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(255,255,255,0.06) 0%, transparent 50%);
             pointer-events: none;
         }
         
-        /* Auth Container */
         .auth-container {
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             position: relative;
             z-index: 1;
         }
         
         .auth-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 40px;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             animation: slideUp 0.5s ease;
         }
         
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
-        /* Header */
         .auth-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
         
         .auth-logo {
             width: 80px;
             height: 80px;
-            margin: 0 auto 15px;
+            margin: 0 auto 16px;
             border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            display: block;
+            box-shadow: 0 8px 24px rgba(26, 86, 219, 0.3);
         }
         
         .auth-header h1 {
             font-size: 24px;
-            color: var(--dark);
-            margin-bottom: 5px;
+            color: #1f2937;
+            margin-bottom: 6px;
+            font-weight: 800;
         }
         
         .auth-header p {
-            color: var(--secondary);
+            color: #6b7280;
             font-size: 14px;
         }
         
-        /* Form */
-        .form-group {
+        .auth-form .form-group {
             margin-bottom: 20px;
         }
         
-        .form-group label {
+        .auth-form label {
             display: block;
             margin-bottom: 6px;
             color: #374151;
@@ -128,24 +135,30 @@
             left: 14px;
             font-size: 18px;
             z-index: 1;
+            pointer-events: none;
         }
         
         .input-group input {
             width: 100%;
-            padding: 12px 14px 12px 44px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 14px;
+            padding: 14px 14px 14px 44px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
             font-family: var(--font-sans);
-            transition: var(--transition);
+            transition: all 0.3s;
             background: #f9fafb;
+            color: #1f2937;
         }
         
         .input-group input:focus {
             outline: none;
             border-color: #667eea;
             background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .input-group input::placeholder {
+            color: #9ca3af;
         }
         
         .toggle-password {
@@ -155,19 +168,19 @@
             border: none;
             cursor: pointer;
             font-size: 18px;
-            color: var(--secondary);
+            color: #6b7280;
             padding: 4px;
         }
         
         .toggle-password:hover {
-            color: var(--dark);
+            color: #374151;
         }
         
         .form-options {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             font-size: 13px;
         }
         
@@ -175,7 +188,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            color: var(--secondary);
+            color: #6b7280;
             cursor: pointer;
         }
         
@@ -183,6 +196,7 @@
             width: 16px;
             height: 16px;
             accent-color: #667eea;
+            cursor: pointer;
         }
         
         .forgot-password {
@@ -195,24 +209,26 @@
             text-decoration: underline;
         }
         
-        /* Button */
         .btn-submit {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
-            border-radius: var(--radius);
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.3s;
             font-family: var(--font-sans);
+            position: relative;
+            overflow: hidden;
         }
         
         .btn-submit:hover {
+            background: #5a67d8;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
         }
         
         .btn-submit:active {
@@ -223,6 +239,7 @@
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
         
         .btn-loader {
@@ -241,23 +258,22 @@
             to { transform: rotate(360deg); }
         }
         
-        /* Alert */
         .alert {
-            padding: 12px 16px;
-            border-radius: var(--radius);
+            padding: 14px 16px;
+            border-radius: 12px;
             margin-bottom: 20px;
             font-size: 13px;
             display: none;
-        }
-        
-        .alert.show {
-            display: block;
             animation: fadeIn 0.3s ease;
         }
         
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
+        }
+        
+        .alert.show {
+            display: block;
         }
         
         .alert-error {
@@ -272,12 +288,11 @@
             border: 1px solid #a7f3d0;
         }
         
-        /* Footer */
         .auth-footer {
             text-align: center;
             margin-top: 24px;
             font-size: 14px;
-            color: var(--secondary);
+            color: #6b7280;
         }
         
         .auth-footer a {
@@ -290,32 +305,20 @@
             text-decoration: underline;
         }
         
-        /* Demo Credentials */
-        .demo-credentials {
-            margin-top: 20px;
-            padding: 14px;
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            border-radius: var(--radius);
-            font-size: 12px;
-            color: #0369a1;
-        }
-        
-        .demo-credentials strong {
+        .back-home {
             display: block;
-            margin-bottom: 5px;
-            font-size: 13px;
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
         }
         
-        .demo-credentials code {
-            background: #e0f2fe;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 11px;
+        .back-home:hover {
+            color: white;
         }
         
-        /* Responsive */
         @media (max-width: 480px) {
             .auth-card {
                 padding: 24px;
@@ -333,78 +336,80 @@
             
             .form-options {
                 flex-direction: column;
-                gap: 10px;
+                gap: 8px;
                 align-items: flex-start;
             }
         }
     </style>
 </head>
 <body>
-    <div class="auth-container">
-        <div class="auth-card">
-            <!-- Header -->
-            <div class="auth-header">
-                <!-- Logo Base64 SVG -->
-                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iODAiIGhlaWdodD0iODAiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0ibG9nbyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzFhNTZkYiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzdjM2FlZCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiByeD0iNDAiIGZpbGw9InVybCgjbG9nbykiLz48dGV4dCB4PSIxMDAiIHk9IjEyMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==" 
-                     alt="Logo Arsip Surat Digital" class="auth-logo" width="80" height="80">
-                <h1>Arsip Surat Digital</h1>
-                <p>Silakan masuk untuk melanjutkan</p>
-            </div>
-            
-            <!-- Alert -->
-            <div id="alertMessage" class="alert"></div>
-            
-            <!-- Form -->
-            <form id="loginForm" novalidate>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <div class="input-group">
-                        <span class="input-icon">📧</span>
-                        <input type="email" id="email" name="email" 
-                               placeholder="Masukkan email Anda" 
-                               required autocomplete="email" autofocus>
+    <div class="auth-page">
+        <div class="auth-container">
+            <div class="auth-card">
+                <!-- Auth Header -->
+                <div class="auth-header">
+                    <!-- Logo Base64 SVG -->
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iODAiIGhlaWdodD0iODAiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0ibG9nby1ncmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMWE1NmRiIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojN2MzYWVkIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHJ4PSI0MCIgZmlsbD0idXJsKCNsb2dvLWdyYWQpIi8+PHRleHQgeD0iMTAwIiB5PSIxMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BRDwvdGV4dD48L3N2Zz4=" 
+                         alt="Logo" class="auth-logo" width="80" height="80">
+                    <h1>Selamat Datang</h1>
+                    <p>Silakan masuk ke akun Anda</p>
+                </div>
+
+                <!-- Alert Messages -->
+                <div id="alertError" class="alert alert-error"></div>
+                <div id="alertSuccess" class="alert alert-success"></div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form" autocomplete="off">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <div class="input-group">
+                            <span class="input-icon">📧</span>
+                            <input type="email" id="email" name="email" 
+                                   placeholder="Masukkan email Anda" 
+                                   required autocomplete="email"
+                                   value="admin@arsipsurat.id">
+                        </div>
                     </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="input-group">
-                        <span class="input-icon">🔒</span>
-                        <input type="password" id="password" name="password" 
-                               placeholder="Masukkan password" 
-                               required autocomplete="current-password">
-                        <button type="button" class="toggle-password" id="togglePassword" 
-                                aria-label="Tampilkan password" title="Tampilkan password">👁️</button>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-group">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" id="password" name="password" 
+                                   placeholder="Masukkan password" 
+                                   required autocomplete="current-password"
+                                   value="password123">
+                            <button type="button" class="toggle-password" id="togglePassword" tabindex="-1">👁️</button>
+                        </div>
                     </div>
+
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="remember" name="remember">
+                            Ingat saya
+                        </label>
+                        <a href="#forgot-password" class="forgot-password">Lupa password?</a>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="btnSubmit">
+                        <span id="btnText">Masuk</span>
+                    </button>
+                </form>
+
+                <!-- Auth Footer -->
+                <div class="auth-footer">
+                    <p>Belum punya akun? <a href="#register">Daftar sekarang</a></p>
                 </div>
-                
-                <div class="form-options">
-                    <label class="remember-me">
-                        <input type="checkbox" name="remember" id="remember">
-                        Ingat saya
-                    </label>
-                    <a href="./forgot-password.html" class="forgot-password">Lupa password?</a>
-                </div>
-                
-                <button type="submit" class="btn-submit" id="btnSubmit">
-                    <span id="btnText">🔐 Masuk</span>
-                </button>
-            </form>
-            
-            <!-- Demo Credentials -->
-            <div class="demo-credentials">
-                <strong>🔑 Demo Account:</strong>
-                Email: <code>admin@arsipsurat.id</code><br>
-                Password: <code>password123</code>
             </div>
             
-            <!-- Footer -->
-            <div class="auth-footer">
-                <p>Belum punya akun? <a href="./register.html">Daftar sekarang</a></p>
-                <p style="margin-top:10px;"><a href="./">← Kembali ke Beranda</a></p>
-            </div>
+            <!-- Back to Home -->
+            <a href="./index.html" class="back-home">← Kembali ke Beranda</a>
         </div>
     </div>
+
+    <!-- Scripts -->
+    <script src="./src/public/js/app.js"></script>
     
     <script>
         // ==================== TOGGLE PASSWORD ====================
@@ -413,109 +418,136 @@
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
             this.textContent = type === 'password' ? '👁️' : '🙈';
-            this.setAttribute('aria-label', type === 'password' ? 'Tampilkan password' : 'Sembunyikan password');
         });
-        
-        // ==================== FORM SUBMISSION ====================
+
+        // ==================== LOGIN FORM ====================
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const btn = document.getElementById('btnSubmit');
+            const btnSubmit = document.getElementById('btnSubmit');
             const btnText = document.getElementById('btnText');
-            const alertDiv = document.getElementById('alertMessage');
+            const alertError = document.getElementById('alertError');
+            const alertSuccess = document.getElementById('alertSuccess');
             
-            // Get form data
+            // Get form values
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
+            const remember = document.getElementById('remember').checked;
             
-            // Basic validation
-            if (!email || !password) {
-                showAlert('Mohon lengkapi email dan password.', 'error');
+            // Reset alerts
+            alertError.classList.remove('show');
+            alertSuccess.classList.remove('show');
+            
+            // Validation
+            if (!email) {
+                showAlert(alertError, 'Email harus diisi');
                 return;
             }
             
-            if (!isValidEmail(email)) {
-                showAlert('Format email tidak valid.', 'error');
+            if (!password) {
+                showAlert(alertError, 'Password harus diisi');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showAlert(alertError, 'Password minimal 6 karakter');
                 return;
             }
             
             // Show loading
-            btn.disabled = true;
+            btnSubmit.disabled = true;
             btnText.innerHTML = '<span class="btn-loader"></span> Memproses...';
-            alertDiv.classList.remove('show');
             
             try {
-                // Simulate API call (ganti dengan endpoint sebenarnya)
-                const response = await simulateLogin(email, password);
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
                 
-                if (response.success) {
-                    showAlert('✅ Login berhasil! Mengalihkan...', 'success');
+                // Demo credentials check
+                if (email === 'admin@arsipsurat.id' && password === 'password123') {
+                    // Success
+                    const userData = {
+                        id: 1,
+                        nama_lengkap: 'Administrator',
+                        email: 'admin@arsipsurat.id',
+                        role: { id: 1, nama: 'Super Admin', slug: 'super-admin' },
+                        instansi: { id: 1, nama: 'Dinas Komunikasi dan Informatika' },
+                        jabatan: 'Administrator Sistem'
+                    };
                     
-                    // Save auth data
-                    localStorage.setItem('accessToken', response.token);
-                    localStorage.setItem('user', JSON.stringify(response.user));
+                    // Generate mock tokens
+                    const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock_token';
+                    const refreshToken = 'mock_refresh_token_' + Date.now();
+                    
+                    // Save to localStorage
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    localStorage.setItem('user', JSON.stringify(userData));
+                    
+                    if (remember) {
+                        localStorage.setItem('rememberedEmail', email);
+                    }
+                    
+                    // Update last login time
+                    localStorage.setItem('lastLogin', new Date().toISOString());
+                    
+                    showAlert(alertSuccess, 'Login berhasil! Mengalihkan...');
                     
                     // Redirect to dashboard
                     setTimeout(() => {
                         window.location.href = './dashboard.html';
-                    }, 1000);
+                    }, 800);
+                    
                 } else {
-                    showAlert(response.message || 'Email atau password salah.', 'error');
+                    showAlert(alertError, 'Email atau password salah. Gunakan: admin@arsipsurat.id / password123');
+                    btnSubmit.disabled = false;
+                    btnText.textContent = 'Masuk';
                 }
+                
             } catch (error) {
-                showAlert('❌ Gagal terhubung ke server. Silakan coba lagi.', 'error');
-            } finally {
-                btn.disabled = false;
-                btnText.textContent = '🔐 Masuk';
+                console.error('Login error:', error);
+                showAlert(alertError, 'Gagal terhubung ke server. Silakan coba lagi.');
+                btnSubmit.disabled = false;
+                btnText.textContent = 'Masuk';
             }
         });
         
-        // ==================== SIMULATE LOGIN (DEMO) ====================
-        async function simulateLogin(email, password) {
-            // Simulasi network delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            // Demo credentials
-            if (email === 'admin@arsipsurat.id' && password === 'password123') {
-                return {
-                    success: true,
-                    message: 'Login berhasil',
-                    token: 'demo-jwt-token-12345',
-                    user: {
-                        id: 1,
-                        nama_lengkap: 'Administrator',
-                        email: 'admin@arsipsurat.id',
-                        role: { id: 1, nama: 'Super Admin', slug: 'super-admin' }
-                    }
-                };
-            }
-            
-            return {
-                success: false,
-                message: 'Email atau password salah.'
-            };
-        }
-        
-        // ==================== HELPERS ====================
-        function showAlert(message, type) {
-            const alertDiv = document.getElementById('alertMessage');
-            alertDiv.textContent = message;
-            alertDiv.className = `alert alert-${type} show`;
+        // ==================== HELPER FUNCTIONS ====================
+        function showAlert(element, message) {
+            element.textContent = message;
+            element.classList.add('show');
             
             // Auto hide after 5 seconds
             setTimeout(() => {
-                alertDiv.classList.remove('show');
+                element.classList.remove('show');
             }, 5000);
         }
         
-        function isValidEmail(email) {
-            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return regex.test(email);
+        // ==================== LOAD REMEMBERED EMAIL ====================
+        const rememberedEmail = localStorage.getItem('rememberedEmail');
+        if (rememberedEmail) {
+            document.getElementById('email').value = rememberedEmail;
+            document.getElementById('remember').checked = true;
         }
         
-        // ==================== ENTER KEY TO SUBMIT ====================
+        // ==================== CHECK IF ALREADY LOGGED IN ====================
+        const token = localStorage.getItem('accessToken');
+        const user = localStorage.getItem('user');
+        
+        if (token && user) {
+            // Already logged in, redirect to dashboard
+            const lastLogin = localStorage.getItem('lastLogin');
+            if (lastLogin) {
+                const hoursSinceLogin = (Date.now() - new Date(lastLogin).getTime()) / (1000 * 60 * 60);
+                if (hoursSinceLogin < 24) {
+                    window.location.href = './dashboard.html';
+                }
+            }
+        }
+        
+        // ==================== KEYBOARD SHORTCUTS ====================
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && document.activeElement.tagName === 'INPUT') {
+            // Ctrl+Enter to submit
+            if (e.ctrlKey && e.key === 'Enter') {
                 document.getElementById('loginForm').dispatchEvent(new Event('submit'));
             }
         });
