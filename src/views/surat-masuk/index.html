@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surat Masuk - Arsip Surat Digital Enterprise</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/surat.css">
+</head>
+<body class="dashboard-page">
+    <!-- Include sidebar -->
+    <!-- ... same sidebar as dashboard ... -->
+
+    <main class="main-content">
+        <header class="top-bar">
+            <button class="menu-toggle">☰</button>
+            <h1>📥 Surat Masuk</h1>
+            <div class="top-bar-actions">
+                <button class="btn btn-primary" onclick="showCreateModal()">
+                    ➕ Tambah Surat Masuk
+                </button>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- Filters -->
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <input type="date" id="filterTanggalMulai" class="form-control" placeholder="Tanggal Mulai">
+                    <span>s/d</span>
+                    <input type="date" id="filterTanggalAkhir" class="form-control" placeholder="Tanggal Akhir">
+                </div>
+                <select id="filterKategori" class="form-control">
+                    <option value="">Semua Kategori</option>
+                </select>
+                <select id="filterStatus" class="form-control">
+                    <option value="">Semua Status</option>
+                    <option value="draft">Draft</option>
+                    <option value="proses">Proses</option>
+                    <option value="selesai">Selesai</option>
+                    <option value="arsip">Arsip</option>
+                </select>
+                <input type="text" id="filterSearch" class="form-control" placeholder="Cari surat...">
+                <button class="btn btn-secondary" onclick="applyFilters()">🔍 Filter</button>
+                <button class="btn btn-outline" onclick="resetFilters()">🔄 Reset</button>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>No. Agenda</th>
+                            <th>No. Surat</th>
+                            <th>Tanggal Surat</th>
+                            <th>Tanggal Terima</th>
+                            <th>Pengirim</th>
+                            <th>Perihal</th>
+                            <th>Kategori</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="suratMasukTable">
+                        <tr>
+                            <td colspan="9" class="text-center">Memuat data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <button class="btn btn-sm" onclick="prevPage()" id="btnPrev">⬅️ Sebelumnya</button>
+                <span id="pageInfo">Halaman 1 dari 1</span>
+                <button class="btn btn-sm" onclick="nextPage()" id="btnNext">Selanjutnya ➡️</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detail Modal -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3>Detail Surat Masuk</h3>
+                <button class="modal-close" onclick="closeDetailModal()">✕</button>
+            </div>
+            <div class="modal-body" id="detailContent">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Modal -->
+    <div class="modal" id="formModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3 id="formTitle">Tambah Surat Masuk</h3>
+                <button class="modal-close" onclick="closeFormModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="suratForm" enctype="multipart/form-data">
+                    <input type="hidden" id="suratId">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nomorSurat">Nomor Surat *</label>
+                            <input type="text" id="nomorSurat" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggalSurat">Tanggal Surat *</label>
+                            <input type="date" id="tanggalSurat" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tanggalTerima">Tanggal Terima</label>
+                            <input type="date" id="tanggalTerima" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="kategori">Kategori</label>
+                            <select id="kategori" class="form-control">
+                                <option value="">Pilih Kategori</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pengirim">Pengirim *</label>
+                        <input type="text" id="pengirim" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="perihal">Perihal *</label>
+                        <input type="text" id="perihal" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="isiRingkasan">Isi Ringkasan</label>
+                        <textarea id="isiRingkasan" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sifatSurat">Sifat Surat</label>
+                            <select id="sifatSurat" class="form-control">
+                                <option value="biasa">Biasa</option>
+                                <option value="segera">Segera</option>
+                                <option value="penting">Penting</option>
+                                <option value="rahasia">Rahasia</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fileSurat">File Surat (PDF/DOC)</label>
+                            <input type="file" id="fileSurat" class="form-control" 
+                                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeFormModal()">Batal</button>
+                        <button type="submit" class="btn btn-primary">💾 Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/surat-masuk.js"></script>
+</body>
+</html>
