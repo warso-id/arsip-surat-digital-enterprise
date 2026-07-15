@@ -1,107 +1,157 @@
 {
   "name": "Arsip Surat Digital Enterprise",
-  "version": "3.2.2",
-  "build": "2026-07-12",
-  "codename": "Enterprise",
-  "description": "Sistem Manajemen Arsip Surat Digital untuk Instansi Pemerintah dan Perusahaan",
-  "api_version": "3.2.2",
-  "compatibility": {
-    "browser": "Chrome 90+, Firefox 88+, Safari 14+, Edge 90+",
-    "os": "Windows 10+, macOS 11+, iOS 14+, Android 10+",
-    "screen": "320px - 5120px"
+  "version": "2.0.0",
+  "codename": "Enterprise Edition",
+  "release_date": "2024-01-15",
+  "release_type": "stable",
+  
+  "build": {
+    "number": "20240115.1",
+    "commit": "abc123def456",
+    "branch": "main",
+    "timestamp": "2024-01-15T08:00:00Z"
   },
-  "features": [
-    "Manajemen Surat Masuk & Keluar",
-    "Sistem Disposisi & Approval",
-    "Tanda Tangan Digital (TTD)",
-    "QR Code Tracking",
-    "Blockchain Verification",
-    "AI Auto-Tagging & Classification",
-    "OCR Document Scanning",
-    "PDF Generation & Watermark",
-    "Multi-level Approval",
-    "Real-time Dashboard",
-    "Push Notifications",
-    "Biometric Authentication",
-    "Two-Factor Authentication",
-    "LDAP/SSO Integration",
-    "API Key Management",
-    "Webhook Integration",
-    "Email & Telegram Notifications",
-    "Data Encryption",
-    "Backup & Restore",
-    "Audit Log",
-    "Retention Policy",
-    "Multi-language Support",
-    "Dark/Light Theme",
-    "PWA Offline Support",
-    "Voice Commands",
-    "Keyboard Shortcuts",
-    "Responsive Design",
-    "Accessibility (WCAG 2.1)"
-  ],
-  "tech_stack": {
-    "frontend": {
-      "framework": "Vanilla JS (No Framework)",
-      "styling": "CSS3, CSS Variables, Material Design 3",
-      "build": "Custom Node.js build script",
-      "pwa": "Service Worker, Web App Manifest"
+  
+  "environment": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0",
+    "database": "sqlite >= 3.0.0 || postgresql >= 14.0"
+  },
+  
+  "features": {
+    "surat_masuk": {
+      "version": "2.0.0",
+      "status": "stable",
+      "description": "Manajemen surat masuk dengan tracking dan disposisi"
     },
-    "backend": {
-      "runtime": "Google Apps Script",
-      "database": "Google Sheets",
-      "storage": "Google Drive",
-      "cache": "Script Cache Service"
+    "surat_keluar": {
+      "version": "2.0.0",
+      "status": "stable",
+      "description": "Pembuatan dan pengelolaan surat keluar"
     },
-    "security": {
-      "auth": "JWT Token",
-      "csrf": "Token-based CSRF",
-      "encryption": "AES-256-GCM",
-      "hashing": "SHA-256 with Salt"
+    "disposisi": {
+      "version": "1.5.0",
+      "status": "stable",
+      "description": "Sistem disposisi elektronik multi-level"
+    },
+    "pencarian": {
+      "version": "1.8.0",
+      "status": "stable",
+      "description": "Full-text search dengan filter advanced"
+    },
+    "laporan": {
+      "version": "1.3.0",
+      "status": "stable",
+      "description": "Generate laporan dalam format PDF, Excel, CSV"
+    },
+    "notifikasi": {
+      "version": "1.2.0",
+      "status": "beta",
+      "description": "Notifikasi email dan push notification"
+    },
+    "digital_signature": {
+      "version": "0.9.0",
+      "status": "beta",
+      "description": "Tanda tangan digital untuk surat resmi"
+    },
+    "qr_code": {
+      "version": "1.0.0",
+      "status": "stable",
+      "description": "QR Code untuk verifikasi keaslian surat"
+    },
+    "backup": {
+      "version": "1.0.0",
+      "status": "stable",
+      "description": "Backup otomatis database dan file surat"
+    },
+    "pwa": {
+      "version": "1.0.0",
+      "status": "stable",
+      "description": "Progressive Web App dengan offline support"
+    },
+    "api": {
+      "version": "2.0.0",
+      "status": "stable",
+      "description": "RESTful API untuk integrasi sistem"
+    },
+    "multi_instansi": {
+      "version": "1.0.0",
+      "status": "stable",
+      "description": "Dukungan multiple instansi dalam satu sistem"
     }
   },
+  
   "changelog": {
-    "3.2.2": [
-      "✅ Fixed login parsing for JSON and form-urlencoded",
-      "✅ Added public register endpoint",
-      "✅ Added checkUser endpoint for password reset",
-      "✅ Enhanced error handling and logging",
-      "✅ Added biometric authentication support",
-      "✅ Added AI features (auto-tag, classify, summarize)",
-      "✅ Added blockchain verification",
-      "✅ Added OCR document scanning",
-      "✅ Improved responsive design",
-      "✅ Added PWA offline support",
-      "✅ Added voice commands",
-      "✅ Added keyboard shortcuts",
-      "✅ Enhanced accessibility (WCAG 2.1)"
-    ],
-    "3.2.1": [
-      "✅ Added multi-level approval",
-      "✅ Added webhook integration",
-      "✅ Added retention policy",
-      "✅ Enhanced search functionality"
-    ],
-    "3.2.0": [
-      "✅ Initial Enterprise release",
-      "✅ Complete CRUD operations",
-      "✅ Dashboard with charts",
-      "✅ User management",
-      "✅ Role-based access control"
-    ]
+    "2.0.0": {
+      "date": "2024-01-15",
+      "changes": [
+        "🎨 Redesign UI/UX dengan tema modern",
+        "📱 Full PWA support dengan offline mode",
+        "🔒 Peningkatan keamanan dengan JWT & RBAC",
+        "📊 Dashboard interaktif dengan chart",
+        "🔍 Advanced search dengan filter",
+        "📧 Notifikasi email & push notification",
+        "💾 Auto backup system",
+        "🐳 Docker support untuk development & production",
+        "📚 Dokumentasi lengkap dan API docs",
+        "✅ Unit testing & integration testing"
+      ]
+    },
+    "1.0.0": {
+      "date": "2023-06-01",
+      "changes": [
+        "🚀 Initial release",
+        "📨 CRUD surat masuk & keluar",
+        "📋 Disposisi basic",
+        "👥 User management",
+        "📄 Basic reporting"
+      ]
+    }
   },
+  
+  "upcoming_features": [
+    {
+      "name": "AI Document Classification",
+      "version": "2.5.0",
+      "eta": "2024-Q2",
+      "description": "Klasifikasi surat otomatis menggunakan AI/ML"
+    },
+    {
+      "name": "OCR Integration",
+      "version": "2.5.0",
+      "eta": "2024-Q2",
+      "description": "Optical Character Recognition untuk scan surat"
+    },
+    {
+      "name": "Blockchain Verification",
+      "version": "3.0.0",
+      "eta": "2024-Q3",
+      "description": "Verifikasi keaslian surat menggunakan blockchain"
+    }
+  ],
+  
   "contributors": [
     {
       "name": "Development Team",
-      "role": "Full Stack Developer",
-      "email": "dev@instansi.id"
+      "email": "developer@arsipsurat.id",
+      "role": "Core Developer"
     }
   ],
-  "license": "Proprietary",
-  "repository": "https://github.com/instansi/arsip-surat-digital-enterprise",
+  
+  "license": {
+    "type": "MIT",
+    "url": "https://github.com/warso-id/arsip-surat-digital-enterprise/blob/main/LICENSE"
+  },
+  
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/warso-id/arsip-surat-digital-enterprise.git"
+  },
+  
   "support": {
-    "email": "support@instansi.id",
-    "phone": "+62-XXX-XXXX-XXXX",
-    "hours": "Senin-Jumat, 08:00-16:00 WIB"
+    "email": "support@arsipsurat.id",
+    "documentation": "https://arsipsurat.id/docs",
+    "issues": "https://github.com/warso-id/arsip-surat-digital-enterprise/issues",
+    "wiki": "https://github.com/warso-id/arsip-surat-digital-enterprise/wiki"
   }
 }
