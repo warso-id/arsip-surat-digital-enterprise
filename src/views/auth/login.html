@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Arsip Surat Digital Enterprise</title>
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <img src="/images/logo.png" alt="Logo" class="auth-logo">
+                <h1>Arsip Surat Digital</h1>
+                <p>Silakan masuk untuk melanjutkan</p>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <div class="input-group">
+                        <span class="input-icon">📧</span>
+                        <input type="email" id="email" name="email" 
+                               placeholder="Masukkan email Anda" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-group">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="password" name="password" 
+                               placeholder="Masukkan password" required>
+                        <button type="button" class="toggle-password">👁️</button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember"> Ingat saya
+                    </label>
+                    <a href="/lupa-password" class="forgot-password">Lupa password?</a>
+                </div>
+
+                <div id="error-message" class="alert alert-error" style="display: none;"></div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span class="btn-text">Masuk</span>
+                    <span class="btn-loader" style="display: none;">⏳</span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Belum punya akun? <a href="/register">Daftar sekarang</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoader = btn.querySelector('.btn-loader');
+            const errorDiv = document.getElementById('error-message');
+            
+            // Show loading
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'inline';
+            btn.disabled = true;
+            errorDiv.style.display = 'none';
+            
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Save tokens
+                    localStorage.setItem('accessToken', data.data.tokens.accessToken);
+                    localStorage.setItem('refreshToken', data.data.tokens.refreshToken);
+                    localStorage.setItem('user', JSON.stringify(data.data.user));
+                    
+                    // Redirect to dashboard
+                    window.location.href = '/dashboard';
+                } else {
+                    errorDiv.textContent = data.message;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Gagal terhubung ke server. Silakan coba lagi.';
+                errorDiv.style.display = 'block';
+            } finally {
+                btnText.style.display = 'inline';
+                btnLoader.style.display = 'none';
+                btn.disabled = false;
+            }
+        });
+        
+        // Toggle password visibility
+        document.querySelector('.toggle-password').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.textContent = type === 'password' ? '👁️' : '🙈';
+        });
+    </script>
+</body>
+</html>
