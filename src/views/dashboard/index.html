@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Arsip Surat Digital Enterprise</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="/images/logo.png" alt="Logo" class="sidebar-logo">
+            <h3>Arsip Surat</h3>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-item active">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="/surat-masuk" class="nav-item">
+                <span class="nav-icon">📥</span>
+                <span>Surat Masuk</span>
+                <span class="badge" id="suratMasukCount">0</span>
+            </a>
+            <a href="/surat-keluar" class="nav-item">
+                <span class="nav-icon">📤</span>
+                <span>Surat Keluar</span>
+            </a>
+            <a href="/disposisi" class="nav-item">
+                <span class="nav-icon">📋</span>
+                <span>Disposisi</span>
+                <span class="badge badge-warning" id="disposisiPending">0</span>
+            </a>
+            <a href="/laporan" class="nav-item">
+                <span class="nav-icon">📄</span>
+                <span>Laporan</span>
+            </a>
+            <a href="/pengguna" class="nav-item admin-only">
+                <span class="nav-icon">👥</span>
+                <span>Pengguna</span>
+            </a>
+            <a href="/pengaturan" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span>Pengaturan</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <img src="/images/default-avatar.png" alt="Avatar" class="user-avatar">
+                <div>
+                    <strong id="userName">Loading...</strong>
+                    <small id="userRole">-</small>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout">🚪 Keluar</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <div class="search-bar">
+                <input type="text" placeholder="Cari surat..." id="globalSearch">
+                <button>🔍</button>
+            </div>
+            <div class="top-bar-actions">
+                <button class="btn-icon" title="Notifikasi">🔔 <span class="badge" id="notifCount">0</span></button>
+                <button class="btn btn-primary" onclick="window.location.href='/surat-masuk/create'">
+                    ➕ Surat Baru
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="content">
+            <h1>Dashboard</h1>
+            <p class="text-muted">Selamat datang, <strong id="greetingName">User</strong>!</p>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card stat-blue">
+                    <div class="stat-icon">📥</div>
+                    <div class="stat-info">
+                        <h3 id="totalSuratMasuk">0</h3>
+                        <p>Surat Masuk</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-green">
+                    <div class="stat-icon">📤</div>
+                    <div class="stat-info">
+                        <h3 id="totalSuratKeluar">0</h3>
+                        <p>Surat Keluar</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-orange">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-info">
+                        <h3 id="totalDisposisi">0</h3>
+                        <p>Disposisi Pending</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-purple">
+                    <div class="stat-icon">📄</div>
+                    <div class="stat-info">
+                        <h3 id="totalArsip">0</h3>
+                        <p>Surat Terarsip</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Statistik Surat Per Bulan</h3>
+                    <canvas id="chartSuratBulanan"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Distribusi Kategori Surat</h3>
+                    <canvas id="chartKategori"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Surat -->
+            <div class="recent-section">
+                <h3>Surat Terbaru</h3>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No. Surat</th>
+                                <th>Tanggal</th>
+                                <th>Perihal</th>
+                                <th>Jenis</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentSuratTable">
+                            <tr>
+                                <td colspan="6" class="text-center">Memuat data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
