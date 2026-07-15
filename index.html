@@ -13,40 +13,127 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://arsipsurat.id">
+    <meta property="og:url" content="https://warso-id.github.io/arsip-surat-digital-enterprise/">
     <meta property="og:title" content="Arsip Surat Digital Enterprise - Sistem Manajemen Surat Menyurat">
     <meta property="og:description" content="Kelola arsip surat dengan mudah dan aman. Solusi enterprise untuk manajemen surat masuk, surat keluar, dan disposisi digital.">
-    <meta property="og:image" content="https://arsipsurat.id/images/og-image.png">
+    <meta property="og:image" content="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI2MzAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMWE1NmRiIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjN2MzYWVkIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjMwIiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iNjAwIiB5PSIzMTUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI2MCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkFyc2lwIFN1cmF0IERpZ2l0YWw8L3RleHQ+PC9zdmc+">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://arsipsurat.id">
     <meta property="twitter:title" content="Arsip Surat Digital Enterprise">
     <meta property="twitter:description" content="Sistem Manajemen Surat Menyurat Profesional">
-    <meta property="twitter:image" content="https://arsipsurat.id/images/og-image.png">
     
-    <!-- PWA -->
+    <!-- PWA Meta Tags (Updated - No Deprecated) -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Arsip Surat">
-    <link rel="apple-touch-icon" href="src/public/images/logo-192.png">
     
     <title>Arsip Surat Digital Enterprise - Sistem Manajemen Surat Menyurat Profesional</title>
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="src/public/images/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="src/public/images/logo-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="src/public/images/logo-16.png">
+    <!-- Favicon (Base64) -->
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+" type="image/svg+xml">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="src/public/css/app.css">
-    <link rel="stylesheet" href="src/public/css/landing.css">
+    <!-- Stylesheets (Inline Critical CSS) -->
+    <style>
+        /* Critical CSS - Inline untuk menghindari 404 */
+        :root {
+            --primary: #1a56db;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --border: #e5e7eb;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: #fff;
+            overflow-x: hidden;
+        }
+        .loading-screen {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: #fff; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        .loading-screen.hidden { opacity: 0; visibility: hidden; }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { margin-top: 20px; color: var(--secondary); font-size: 14px; }
+        .skip-link {
+            position: absolute; top: -100px; left: 10px;
+            background: var(--primary); color: white;
+            padding: 8px 16px; border-radius: 4px; z-index: 1000;
+        }
+        .skip-link:focus { top: 10px; }
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        .nav-container {
+            max-width: 1200px; margin: 0 auto; padding: 0 20px;
+            display: flex; justify-content: space-between;
+            align-items: center; height: 70px;
+        }
+        .nav-brand a {
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none; color: var(--dark);
+            font-weight: 700; font-size: 18px;
+        }
+        .nav-logo { width: 40px; height: 40px; }
+        .nav-menu { display: flex; list-style: none; gap: 5px; align-items: center; }
+        .nav-link {
+            text-decoration: none; color: var(--secondary);
+            padding: 8px 14px; border-radius: 8px;
+            font-weight: 500; font-size: 14px; transition: all 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary); background: rgba(26,86,219,0.1);
+        }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 20px; border: none; border-radius: 8px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            text-decoration: none; transition: all 0.3s; white-space: nowrap;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        .btn-lg { padding: 14px 28px; font-size: 16px; }
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 10px; }
+        .bar { display: block; width: 25px; height: 3px; background: var(--dark); margin: 5px 0; transition: 0.3s; }
+        
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed; top: 70px; left: -100%;
+                width: 100%; height: calc(100vh - 70px);
+                background: #fff; flex-direction: column;
+                padding: 20px; transition: 0.3s;
+            }
+            .nav-menu.active { left: 0; }
+            .nav-toggle { display: block; }
+        }
+    </style>
     
-    <!-- Preload Critical Assets -->
-    <link rel="preload" href="src/public/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+    <!-- Stylesheet (Load dengan fallback) -->
+    <link rel="stylesheet" href="./src/public/css/landing.css" onerror="this.onerror=null;this.href='data:text/css;base64,'">
     
     <!-- Schema.org Structured Data -->
     <script type="application/ld+json">
@@ -57,7 +144,7 @@
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Web",
         "description": "Sistem Manajemen Arsip Surat Digital untuk Perusahaan dan Instansi",
-        "url": "https://arsipsurat.id",
+        "url": "https://warso-id.github.io/arsip-surat-digital-enterprise/",
         "author": {
             "@type": "Organization",
             "name": "Arsip Surat Digital Enterprise Team"
@@ -73,52 +160,36 @@
 <body>
     <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen" aria-hidden="true">
-        <div class="spinner-container">
-            <div class="spinner" role="status">
-                <span class="sr-only">Memuat...</span>
-            </div>
-            <p class="loading-text">Memuat Arsip Surat Digital Enterprise...</p>
-        </div>
+        <div class="spinner"></div>
+        <p class="loading-text">Memuat Arsip Surat Digital Enterprise...</p>
     </div>
 
-    <!-- Skip to main content (Accessibility) -->
+    <!-- Skip Link -->
     <a href="#main-content" class="skip-link">Lewati ke konten utama</a>
 
-    <!-- Navigation Bar -->
+    <!-- Navigation -->
     <nav class="navbar" id="navbar" role="navigation" aria-label="Navigasi utama">
         <div class="nav-container">
             <div class="nav-brand">
-                <a href="/" aria-label="Beranda Arsip Surat Digital">
-                    <img src="src/public/images/logo.png" alt="Logo Arsip Surat Digital" class="nav-logo" width="40" height="40">
+                <a href="./" aria-label="Beranda">
+                    <!-- Logo Base64 SVG -->
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMxYTU2ZGIiLz48dGV4dCB4PSIyMCIgeT0iMjYiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtd2VpZ2h0PSJib2xkIj5BRDwvdGV4dD48L3N2Zz4=" 
+                         alt="Logo" class="nav-logo" width="40" height="40">
                     <span class="nav-title">Arsip Surat Digital</span>
                 </a>
             </div>
             
-            <button class="nav-toggle" id="nav-toggle" aria-label="Buka menu navigasi" aria-expanded="false">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
             </button>
             
             <ul class="nav-menu" id="nav-menu" role="menubar">
-                <li class="nav-item" role="none">
-                    <a href="#beranda" class="nav-link active" role="menuitem" data-section="beranda">Beranda</a>
-                </li>
-                <li class="nav-item" role="none">
-                    <a href="#fitur" class="nav-link" role="menuitem" data-section="fitur">Fitur</a>
-                </li>
-                <li class="nav-item" role="none">
-                    <a href="#tentang" class="nav-link" role="menuitem" data-section="tentang">Tentang</a>
-                </li>
-                <li class="nav-item" role="none">
-                    <a href="#panduan" class="nav-link" role="menuitem" data-section="panduan">Panduan</a>
-                </li>
-                <li class="nav-item" role="none">
-                    <a href="#kontak" class="nav-link" role="menuitem" data-section="kontak">Kontak</a>
-                </li>
-                <li class="nav-item" role="none">
-                    <a href="/login" class="btn btn-primary btn-login">Masuk</a>
-                </li>
+                <li role="none"><a href="#beranda" class="nav-link active" role="menuitem">Beranda</a></li>
+                <li role="none"><a href="#fitur" class="nav-link" role="menuitem">Fitur</a></li>
+                <li role="none"><a href="#tentang" class="nav-link" role="menuitem">Tentang</a></li>
+                <li role="none"><a href="#panduan" class="nav-link" role="menuitem">Panduan</a></li>
+                <li role="none"><a href="#kontak" class="nav-link" role="menuitem">Kontak</a></li>
+                <li role="none"><a href="#login" class="btn btn-primary">Masuk</a></li>
             </ul>
         </div>
     </nav>
@@ -126,533 +197,243 @@
     <!-- Main Content -->
     <main id="main-content">
         <!-- Hero Section -->
-        <section id="beranda" class="hero-section" aria-labelledby="hero-title">
-            <div class="hero-container">
-                <div class="hero-content">
-                    <div class="hero-badge">
-                        <span class="badge-new">🚀 Versi 2.0.0</span>
-                        <span class="badge-open-source">Open Source</span>
+        <section id="beranda" style="padding:120px 20px 80px;background:linear-gradient(135deg,#eff6ff 0%,#f0f9ff 50%,#ecfdf5 100%);">
+            <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
+                <div>
+                    <div style="display:flex;gap:10px;margin-bottom:20px;">
+                        <span style="background:#1a56db;color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;">🚀 Versi 2.0.0</span>
+                        <span style="background:#10b981;color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;">Open Source</span>
                     </div>
-                    <h1 id="hero-title" class="hero-title">
-                        Kelola Arsip Surat dengan
-                        <span class="text-highlight">Mudah & Aman</span>
+                    <h1 style="font-size:48px;font-weight:800;line-height:1.2;color:#111827;margin-bottom:20px;">
+                        Kelola Arsip Surat dengan <span style="background:linear-gradient(135deg,#1a56db,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Mudah & Aman</span>
                     </h1>
-                    <p class="hero-description">
-                        Sistem manajemen arsip surat digital enterprise yang memudahkan 
-                        pengelolaan surat masuk, surat keluar, dan disposisi secara 
-                        terintegrasi, profesional, dan sesuai standar kearsipan nasional.
+                    <p style="font-size:18px;color:#64748b;margin-bottom:30px;max-width:500px;">
+                        Sistem manajemen arsip surat digital enterprise yang memudahkan pengelolaan surat masuk, surat keluar, dan disposisi secara terintegrasi dan profesional.
                     </p>
-                    <div class="hero-cta">
-                        <a href="/login" class="btn btn-primary btn-lg">
-                            <svg class="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 2a6 6 0 110 12 6 6 0 010-12zm0 2a2 2 0 100 4 2 2 0 000-4z"/>
-                            </svg>
-                            Mulai Sekarang
-                        </a>
-                        <a href="#panduan" class="btn btn-outline btn-lg">
-                            <svg class="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
-                            </svg>
-                            Pelajari Lebih Lanjut
-                        </a>
+                    <div style="display:flex;gap:15px;margin-bottom:40px;">
+                        <a href="#login" class="btn btn-primary btn-lg">🚀 Mulai Sekarang</a>
+                        <a href="#panduan" class="btn btn-outline btn-lg">📖 Pelajari</a>
                     </div>
-                    <div class="hero-stats">
-                        <div class="stat-item">
-                            <span class="stat-number" data-counter="500">0</span>
-                            <span class="stat-label">Instansi Pengguna</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number" data-counter="1000000">0</span>
-                            <span class="stat-label">Surat Terarsip</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">99.9%</span>
-                            <span class="stat-label">Uptime</span>
-                        </div>
+                    <div style="display:flex;gap:40px;">
+                        <div style="text-align:center;"><span style="font-size:32px;font-weight:800;color:#1a56db;">500+</span><br><span style="font-size:14px;color:#64748b;">Instansi</span></div>
+                        <div style="text-align:center;"><span style="font-size:32px;font-weight:800;color:#1a56db;">1M+</span><br><span style="font-size:14px;color:#64748b;">Surat</span></div>
+                        <div style="text-align:center;"><span style="font-size:32px;font-weight:800;color:#1a56db;">99.9%</span><br><span style="font-size:14px;color:#64748b;">Uptime</span></div>
                     </div>
                 </div>
-                <div class="hero-image">
-                    <img src="src/public/images/dashboard-preview.png" 
-                         alt="Preview Dashboard Arsip Surat Digital Enterprise - Tampilan antarmuka sistem manajemen surat" 
-                         loading="lazy"
-                         width="600" 
-                         height="400">
-                </div>
-            </div>
-        </section>
-
-        <!-- Trusted By Section -->
-        <section class="trusted-section" aria-label="Dipercaya oleh">
-            <div class="section-container">
-                <p class="trusted-text">Dipercaya oleh berbagai instansi</p>
-                <div class="trusted-logos">
-                    <div class="trusted-logo">🏛️ Pemerintah</div>
-                    <div class="trusted-logo">🏢 BUMN</div>
-                    <div class="trusted-logo">🏥 Rumah Sakit</div>
-                    <div class="trusted-logo">🏫 Universitas</div>
-                    <div class="trusted-logo">🏭 Perusahaan</div>
+                <div style="text-align:center;">
+                    <!-- Dashboard Preview SVG -->
+                    <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:600px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.15);">
+                        <rect width="600" height="400" rx="12" fill="#fff"/>
+                        <rect x="20" y="60" width="560" height="40" rx="6" fill="#f1f5f9"/>
+                        <rect x="20" y="120" width="180" height="80" rx="8" fill="#dbeafe"/>
+                        <rect x="210" y="120" width="180" height="80" rx="8" fill="#d1fae5"/>
+                        <rect x="400" y="120" width="180" height="80" rx="8" fill="#fef3c7"/>
+                        <rect x="20" y="220" width="560" height="160" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+                        <text x="300" y="140" font-family="Arial" font-size="24" fill="#1e40af" text-anchor="middle">📥 150</text>
+                        <text x="300" y="165" font-family="Arial" font-size="12" fill="#64748b" text-anchor="middle">Surat Masuk</text>
+                        <text x="490" y="140" font-family="Arial" font-size="24" fill="#065f46" text-anchor="middle">📤 100</text>
+                        <text x="490" y="165" font-family="Arial" font-size="12" fill="#64748b" text-anchor="middle">Surat Keluar</text>
+                        <text x="300" y="310" font-family="Arial" font-size="16" fill="#334155" text-anchor="middle">Dashboard Arsip Surat Digital</text>
+                    </svg>
                 </div>
             </div>
         </section>
 
         <!-- Features Section -->
-        <section id="fitur" class="features-section" aria-labelledby="features-title">
-            <div class="section-container">
-                <h2 id="features-title" class="section-title">Fitur Unggulan</h2>
-                <p class="section-description">
-                    Solusi lengkap untuk manajemen arsip surat di instansi Anda
-                </p>
-                
-                <div class="features-grid">
-                    <!-- Feature 1: Surat Masuk & Keluar -->
-                    <article class="feature-card">
-                        <div class="feature-icon">
-                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                                <rect width="48" height="48" rx="12" fill="#DBEAFE"/>
-                                <path d="M14 16h20M14 24h20M14 32h14" stroke="#1a56db" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                        <h3>Surat Masuk & Keluar</h3>
-                        <p>
-                            Kelola surat masuk dan surat keluar dengan sistem tracking 
-                            yang akurat dan real-time. Dukung format PDF, DOC, dan gambar.
-                        </p>
-                        <ul class="feature-list">
+        <section id="fitur" style="padding:80px 20px;">
+            <div style="max-width:1200px;margin:0 auto;">
+                <h2 style="font-size:36px;font-weight:800;text-align:center;color:#111827;margin-bottom:15px;">Fitur Unggulan</h2>
+                <p style="font-size:18px;color:#64748b;text-align:center;max-width:600px;margin:0 auto 50px;">Solusi lengkap untuk manajemen arsip surat di instansi Anda</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px;">
+                    <div style="background:#f9fafb;padding:30px;border-radius:12px;border:1px solid #e5e7eb;">
+                        <div style="font-size:40px;margin-bottom:15px;">📥</div>
+                        <h3 style="margin-bottom:10px;">Surat Masuk & Keluar</h3>
+                        <p style="color:#64748b;font-size:14px;margin-bottom:15px;">Kelola surat masuk dan surat keluar dengan sistem tracking yang akurat dan real-time.</p>
+                        <ul style="list-style:none;font-size:13px;color:#64748b;">
                             <li>✅ Nomor agenda otomatis</li>
                             <li>✅ Upload multiple file</li>
                             <li>✅ QR Code verifikasi</li>
                         </ul>
-                    </article>
-                    
-                    <!-- Feature 2: Disposisi Digital -->
-                    <article class="feature-card">
-                        <div class="feature-icon">
-                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                                <rect width="48" height="48" rx="12" fill="#D1FAE5"/>
-                                <path d="M16 24l4 4 8-8" stroke="#065f46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                        <h3>Disposisi Digital</h3>
-                        <p>
-                            Sistem disposisi elektronik yang memudahkan alur persetujuan 
-                            dan distribusi surat secara hierarkis.
-                        </p>
-                        <ul class="feature-list">
+                    </div>
+                    <div style="background:#f9fafb;padding:30px;border-radius:12px;border:1px solid #e5e7eb;">
+                        <div style="font-size:40px;margin-bottom:15px;">📋</div>
+                        <h3 style="margin-bottom:10px;">Disposisi Digital</h3>
+                        <p style="color:#64748b;font-size:14px;margin-bottom:15px;">Sistem disposisi elektronik yang memudahkan alur persetujuan.</p>
+                        <ul style="list-style:none;font-size:13px;color:#64748b;">
                             <li>✅ Multi-level approval</li>
                             <li>✅ Tracking real-time</li>
                             <li>✅ Notifikasi otomatis</li>
                         </ul>
-                    </article>
-                    
-                    <!-- Feature 3: Pencarian Cepat -->
-                    <article class="feature-card">
-                        <div class="feature-icon">
-                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                                <rect width="48" height="48" rx="12" fill="#FEF3C7"/>
-                                <circle cx="22" cy="22" r="8" stroke="#d97706" stroke-width="2"/>
-                                <path d="M28 28l6 6" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                        <h3>Pencarian Cepat</h3>
-                        <p>
-                            Temukan surat dengan cepat menggunakan fitur pencarian 
-                            full-text dan filter advance.
-                        </p>
-                        <ul class="feature-list">
+                    </div>
+                    <div style="background:#f9fafb;padding:30px;border-radius:12px;border:1px solid #e5e7eb;">
+                        <div style="font-size:40px;margin-bottom:15px;">🔍</div>
+                        <h3 style="margin-bottom:10px;">Pencarian Cepat</h3>
+                        <p style="color:#64748b;font-size:14px;margin-bottom:15px;">Temukan surat dengan cepat menggunakan fitur pencarian full-text.</p>
+                        <ul style="list-style:none;font-size:13px;color:#64748b;">
                             <li>✅ Full-text search</li>
                             <li>✅ Filter multi-kriteria</li>
-                            <li>✅ Export hasil pencarian</li>
+                            <li>✅ Export hasil</li>
                         </ul>
-                    </article>
-                    
-                    <!-- Feature 4: Laporan & Statistik -->
-                    <article class="feature-card">
-                        <div class="feature-icon">
-                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                                <rect width="48" height="48" rx="12" fill="#EDE9FE"/>
-                                <path d="M16 32V20M24 32V14M32 32V24" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                        <h3>Laporan & Statistik</h3>
-                        <p>
-                            Generate laporan otomatis dengan visualisasi data 
-                            dan export ke berbagai format.
-                        </p>
-                        <ul class="feature-list">
+                    </div>
+                    <div style="background:#f9fafb;padding:30px;border-radius:12px;border:1px solid #e5e7eb;">
+                        <div style="font-size:40px;margin-bottom:15px;">📊</div>
+                        <h3 style="margin-bottom:10px;">Laporan & Statistik</h3>
+                        <p style="color:#64748b;font-size:14px;margin-bottom:15px;">Generate laporan otomatis dengan visualisasi data.</p>
+                        <ul style="list-style:none;font-size:13px;color:#64748b;">
                             <li>✅ Chart interaktif</li>
                             <li>✅ Export PDF & Excel</li>
                             <li>✅ Laporan periodik</li>
                         </ul>
-                    </article>
-                    
-                    <!-- Feature 5: Keamanan -->
-                    <article class="feature-card">
-                        <div class="feature-icon">
-                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                                <rect width="48" height="48" rx="12" fill="#FEE2E2"/>
-                                <path d="M24 14l6 4v6c0 5.5-3.8 10.7-6 12-2.2-1.3-6-6.5-6-12v-6l6-4z" stroke="#dc2626" stroke-width="2"/>
-                            </svg>
-                        </div>
-                        <h3>Keamanan Terjamin</h3>
-                        <p>
-                            Enkripsi data, role-based access control, dan audit 
-                            trail untuk keamanan maksimal.
-                        </p>
-                        <ul class="feature-list">
+                    </div>
+                    <div style="background:#f9fafb;padding:30px;border-radius:12px;border:1px solid #e5e7eb;">
+                        <div style="font-size:40px;margin-bottom:15px;">🔒</div>
+                        <h3 style="margin-bottom:10px;">Keamanan Terjamin</h3>
+                        <p style="color:#64748b;font-size:14px;margin-bottom:15px;">Enkripsi data dan role-based access control.</p>
+                        <ul style="list-style:none;font-size:13px;color:#64748b;">
                             <li>✅ JWT Authentication</li>
-                            <li>✅ RBAC (Role-Based Access)</li>
-                            <li>✅ Audit trail lengkap</li>
+                            <li>✅ RBAC Access</li>
+                            <li>✅ Audit trail</li>
                         </ul>
-                    </article>
-                    
-                    <!-- Feature 6: PWA Support -->
-                    <article class="feature-card">
-                        <div class="feature-icon">
-                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                                <rect width="48" height="48" rx="12" fill="#E0E7FF"/>
-                                <rect x="14" y="10" width="20" height="28" rx="3" stroke="#3730a3" stroke-width="2"/>
-                                <circle cx="24" cy="32" r="2" fill="#3730a3"/>
-                            </svg>
-                        </div>
-                        <h3>Akses Mobile (PWA)</h3>
-                        <p>
-                            Akses arsip surat kapan saja dan di mana saja 
-                            melalui perangkat mobile dengan PWA.
-                        </p>
-                        <ul class="feature-list">
+                    </div>
+                    <div style="background:#f9fafb;padding:30px;border-radius:12px;border:1px solid #e5e7eb;">
+                        <div style="font-size:40px;margin-bottom:15px;">📱</div>
+                        <h3 style="margin-bottom:10px;">Akses Mobile (PWA)</h3>
+                        <p style="color:#64748b;font-size:14px;margin-bottom:15px;">Akses kapan saja melalui perangkat mobile.</p>
+                        <ul style="list-style:none;font-size:13px;color:#64748b;">
                             <li>✅ Installable app</li>
                             <li>✅ Offline mode</li>
                             <li>✅ Push notification</li>
                         </ul>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <!-- About Section -->
-        <section id="tentang" class="about-section" aria-labelledby="about-title">
-            <div class="section-container">
-                <h2 id="about-title" class="section-title">Tentang Arsip Surat Digital</h2>
-                <div class="about-content">
-                    <div class="about-text">
-                        <p class="about-lead">
-                            <strong>Arsip Surat Digital Enterprise</strong> adalah sistem 
-                            manajemen arsip surat berbasis web yang dirancang khusus untuk 
-                            memenuhi kebutuhan perusahaan dan instansi pemerintah dalam 
-                            mengelola surat menyurat secara digital.
-                        </p>
-                        <p>
-                            Sistem ini mengadopsi standar kearsipan nasional (ANRI) dan 
-                            internasional (ISO 15489), memastikan setiap surat terarsip 
-                            dengan baik, mudah ditemukan kembali, dan aman dari akses 
-                            tidak sah.
-                        </p>
-                        
-                        <h3>Mengapa Memilih Kami?</h3>
-                        <ul class="about-list">
-                            <li>
-                                <strong>🔓 Open Source</strong>
-                                <span>Bebas digunakan dan dimodifikasi sesuai kebutuhan</span>
-                            </li>
-                            <li>
-                                <strong>📋 Standar ANRI</strong>
-                                <span>Sesuai standar Arsip Nasional Republik Indonesia</span>
-                            </li>
-                            <li>
-                                <strong>🏢 Multi Instansi</strong>
-                                <span>Mendukung banyak instansi dalam satu sistem</span>
-                            </li>
-                            <li>
-                                <strong>🔄 Integrasi Mudah</strong>
-                                <span>RESTful API untuk integrasi dengan sistem lain</span>
-                            </li>
-                            <li>
-                                <strong>🔄 Update Berkala</strong>
-                                <span>Fitur baru dan perbaikan bug secara regular</span>
-                            </li>
-                            <li>
-                                <strong>👥 Komunitas Aktif</strong>
-                                <span>Dukungan dari komunitas pengguna dan developer</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="about-image">
-                        <img src="src/public/images/about-illustration.png" 
-                             alt="Ilustrasi sistem Arsip Surat Digital Enterprise - Dashboard dan fitur utama" 
-                             loading="lazy"
-                             width="500"
-                             height="400">
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Guide Section -->
-        <section id="panduan" class="guide-section" aria-labelledby="guide-title">
-            <div class="section-container">
-                <h2 id="guide-title" class="section-title">Mulai dalam 4 Langkah</h2>
-                <p class="section-description">
-                    Proses sederhana untuk memulai digitalisasi arsip surat Anda
-                </p>
-                
-                <div class="guide-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h3>Login Sistem</h3>
-                            <p>Masuk menggunakan akun yang telah diberikan oleh administrator sistem.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step-connector"></div>
-                    
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h3>Input Surat</h3>
-                            <p>Catat surat masuk atau buat surat keluar baru dengan mudah.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step-connector"></div>
-                    
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h3>Proses Disposisi</h3>
-                            <p>Berikan disposisi dan teruskan ke pihak terkait secara digital.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step-connector"></div>
-                    
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h3>Arsip & Laporan</h3>
-                            <p>Surat otomatis terarsip dan siap dilaporkan kapan saja.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="guide-cta">
-                    <a href="/docs/INSTALLATION.md" class="btn btn-primary">
-                        📖 Baca Panduan Lengkap
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Tech Stack Section -->
-        <section class="tech-section" aria-labelledby="tech-title">
-            <div class="section-container">
-                <h2 id="tech-title" class="section-title">Teknologi Modern</h2>
-                <div class="tech-grid">
-                    <div class="tech-item">
-                        <span class="tech-name">Node.js</span>
-                        <span class="tech-desc">Runtime</span>
-                    </div>
-                    <div class="tech-item">
-                        <span class="tech-name">Express.js</span>
-                        <span class="tech-desc">Framework</span>
-                    </div>
-                    <div class="tech-item">
-                        <span class="tech-name">SQLite/PostgreSQL</span>
-                        <span class="tech-desc">Database</span>
-                    </div>
-                    <div class="tech-item">
-                        <span class="tech-name">JWT</span>
-                        <span class="tech-desc">Authentication</span>
-                    </div>
-                    <div class="tech-item">
-                        <span class="tech-name">Docker</span>
-                        <span class="tech-desc">Containerization</span>
-                    </div>
-                    <div class="tech-item">
-                        <span class="tech-name">PWA</span>
-                        <span class="tech-desc">Progressive Web App</span>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Contact Section -->
-        <section id="kontak" class="contact-section" aria-labelledby="contact-title">
-            <div class="section-container">
-                <h2 id="contact-title" class="section-title">Hubungi Kami</h2>
-                <p class="section-description">
-                    Ada pertanyaan atau butuh bantuan? Jangan ragu untuk menghubungi kami.
-                </p>
-                
-                <div class="contact-grid">
-                    <div class="contact-info">
-                        <div class="contact-item">
-                            <span class="contact-icon">📧</span>
-                            <div>
-                                <h4>Email</h4>
-                                <a href="mailto:developer@arsipsurat.id">developer@arsipsurat.id</a>
-                            </div>
-                        </div>
-                        <div class="contact-item">
-                            <span class="contact-icon">🌐</span>
-                            <div>
-                                <h4>Website</h4>
-                                <a href="https://arsipsurat.id" target="_blank" rel="noopener">https://arsipsurat.id</a>
-                            </div>
-                        </div>
-                        <div class="contact-item">
-                            <span class="contact-icon">💻</span>
-                            <div>
-                                <h4>GitHub</h4>
-                                <a href="https://github.com/warso-id/arsip-surat-digital-enterprise" target="_blank" rel="noopener">
-                                    github.com/warso-id/arsip-surat-digital-enterprise
-                                </a>
-                            </div>
-                        </div>
-                        <div class="contact-item">
-                            <span class="contact-icon">📖</span>
-                            <div>
-                                <h4>Dokumentasi</h4>
-                                <a href="/docs/README.md">Lihat dokumentasi lengkap</a>
-                            </div>
-                        </div>
+        <section id="kontak" style="padding:80px 20px;background:#f9fafb;">
+            <div style="max-width:1200px;margin:0 auto;">
+                <h2 style="font-size:36px;font-weight:800;text-align:center;color:#111827;">Hubungi Kami</h2>
+                <p style="font-size:18px;color:#64748b;text-align:center;margin-bottom:50px;">Ada pertanyaan? Jangan ragu untuk menghubungi kami.</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:30px;">
+                    <div style="text-align:center;padding:30px;background:#fff;border-radius:12px;">
+                        <div style="font-size:40px;">📧</div>
+                        <h3>Email</h3>
+                        <a href="mailto:developer@arsipsurat.id" style="color:#1a56db;">developer@arsipsurat.id</a>
                     </div>
-                    
-                    <form class="contact-form" id="contactForm">
-                        <h3>Kirim Pesan</h3>
-                        <div class="form-group">
-                            <label for="name">Nama Lengkap <span class="required">*</span></label>
-                            <input type="text" id="name" name="name" class="form-control" 
-                                   required placeholder="Masukkan nama lengkap Anda"
-                                   aria-required="true">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email <span class="required">*</span></label>
-                            <input type="email" id="email" name="email" class="form-control" 
-                                   required placeholder="Masukkan alamat email Anda"
-                                   aria-required="true">
-                        </div>
-                        <div class="form-group">
-                            <label for="subject">Subjek</label>
-                            <input type="text" id="subject" name="subject" class="form-control" 
-                                   placeholder="Subjek pesan">
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Pesan <span class="required">*</span></label>
-                            <textarea id="message" name="message" class="form-control" 
-                                      rows="5" required placeholder="Tulis pesan Anda di sini..."
-                                      aria-required="true"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block">
-                            <span class="btn-text">Kirim Pesan</span>
-                            <span class="btn-loader" style="display:none;">⏳ Mengirim...</span>
-                        </button>
-                        <div id="formMessage" class="form-message" style="display:none;"></div>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section class="cta-section">
-            <div class="section-container">
-                <h2>Siap Digitalisasi Arsip Surat Anda?</h2>
-                <p>Mulai sekarang dan rasakan kemudahan mengelola surat menyurat secara digital.</p>
-                <div class="cta-buttons">
-                    <a href="/login" class="btn btn-primary btn-lg">🚀 Mulai Gratis</a>
-                    <a href="https://github.com/warso-id/arsip-surat-digital-enterprise" 
-                       class="btn btn-outline btn-lg" target="_blank" rel="noopener">
-                        ⭐ Star di GitHub
-                    </a>
+                    <div style="text-align:center;padding:30px;background:#fff;border-radius:12px;">
+                        <div style="font-size:40px;">💻</div>
+                        <h3>GitHub</h3>
+                        <a href="https://github.com/warso-id/arsip-surat-digital-enterprise" target="_blank" rel="noopener" style="color:#1a56db;">View on GitHub</a>
+                    </div>
+                    <div style="text-align:center;padding:30px;background:#fff;border-radius:12px;">
+                        <div style="font-size:40px;">📖</div>
+                        <h3>Dokumentasi</h3>
+                        <a href="https://github.com/warso-id/arsip-surat-digital-enterprise/wiki" target="_blank" rel="noopener" style="color:#1a56db;">Baca Dokumentasi</a>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
     <!-- Footer -->
-    <footer class="footer" role="contentinfo">
-        <div class="footer-container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <img src="src/public/images/logo.png" alt="Logo" width="50" height="50">
-                    <h4>Arsip Surat Digital Enterprise</h4>
-                    <p>Sistem Manajemen Arsip Surat Profesional untuk Perusahaan & Instansi</p>
-                    <p class="footer-version">Versi <span id="appVersion">2.0.0</span></p>
-                </div>
-                
-                <div class="footer-links">
-                    <h4>Navigasi</h4>
-                    <ul>
-                        <li><a href="#beranda">Beranda</a></li>
-                        <li><a href="#fitur">Fitur</a></li>
-                        <li><a href="#tentang">Tentang</a></li>
-                        <li><a href="#panduan">Panduan</a></li>
-                        <li><a href="#kontak">Kontak</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-links">
-                    <h4>Resources</h4>
-                    <ul>
-                        <li><a href="/docs/README.md">Dokumentasi</a></li>
-                        <li><a href="/docs/API_DOCUMENTATION.md">API Reference</a></li>
-                        <li><a href="/CHANGELOG.md">Changelog</a></li>
-                        <li><a href="/CONTRIBUTING.md">Kontribusi</a></li>
-                        <li><a href="/SECURITY.md">Keamanan</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-links">
-                    <h4>Komunitas</h4>
-                    <ul>
-                        <li><a href="https://github.com/warso-id/arsip-surat-digital-enterprise" target="_blank" rel="noopener">GitHub</a></li>
-                        <li><a href="https://github.com/warso-id/arsip-surat-digital-enterprise/discussions" target="_blank" rel="noopener">Diskusi</a></li>
-                        <li><a href="https://github.com/warso-id/arsip-surat-digital-enterprise/issues" target="_blank" rel="noopener">Laporkan Bug</a></li>
-                        <li><a href="https://github.com/warso-id/arsip-surat-digital-enterprise/releases" target="_blank" rel="noopener">Release</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <p>&copy; 2024 Arsip Surat Digital Enterprise. Dirilis di bawah <a href="/LICENSE">MIT License</a>.</p>
-                <p>Dibuat dengan ❤️ oleh <a href="https://github.com/warso-id" target="_blank" rel="noopener">warso-id</a></p>
-            </div>
-        </div>
+    <footer style="background:#111827;color:white;padding:40px 20px;text-align:center;">
+        <p>&copy; 2024 Arsip Surat Digital Enterprise. <a href="https://github.com/warso-id/arsip-surat-digital-enterprise/blob/main/LICENSE" style="color:#9ca3af;">MIT License</a></p>
+        <p style="color:#6b7280;font-size:14px;margin-top:10px;">Versi <span id="appVersion">2.0.0</span></p>
     </footer>
 
-    <!-- Back to Top Button -->
-    <button id="backToTop" class="back-to-top" aria-label="Kembali ke atas" title="Kembali ke atas">
-        ↑
-    </button>
+    <!-- Back to Top -->
+    <button id="backToTop" style="position:fixed;bottom:30px;right:30px;width:50px;height:50px;background:#1a56db;color:white;border:none;border-radius:50%;font-size:24px;cursor:pointer;opacity:0;visibility:hidden;transition:0.3s;z-index:50;" aria-label="Kembali ke atas">↑</button>
 
     <!-- Scripts -->
-    <script src="src/public/js/app.js" defer></script>
-    <script src="src/public/js/landing.js" defer></script>
-    
-    <!-- PWA Registration -->
     <script>
+        // ==================== LOADING SCREEN ====================
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading-screen').classList.add('hidden');
+            }, 500);
+        });
+
+        // ==================== NAVIGATION ====================
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+            navToggle.setAttribute('aria-expanded', !expanded);
+        });
+        
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                navToggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        // ==================== SMOOTH SCROLL ====================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // ==================== BACK TO TOP ====================
+        const backToTop = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                backToTop.style.opacity = '1';
+                backToTop.style.visibility = 'visible';
+            } else {
+                backToTop.style.opacity = '0';
+                backToTop.style.visibility = 'hidden';
+            }
+        });
+        
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // ==================== ACTIVE NAV LINK ====================
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (window.scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // ==================== PWA REGISTRATION ====================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registered: ', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('ServiceWorker registration failed: ', error);
-                    });
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => console.log('SW registered:', reg.scope))
+                    .catch(err => console.log('SW registration failed:', err));
             });
         }
-        
-        // Load version from version.json
-        fetch('/version.json')
+
+        // ==================== VERSION LOADER ====================
+        fetch('./version.json')
             .then(response => response.json())
             .then(data => {
                 document.getElementById('appVersion').textContent = data.version;
             })
-            .catch(() => {
-                // Fallback version
-            });
+            .catch(() => {});
     </script>
 </body>
 </html>
