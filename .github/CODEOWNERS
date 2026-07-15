@@ -1,0 +1,40 @@
+
+---
+
+## 📄 **.github/CODEOWNERS**
+
+```txt
+# Code Owners for Arsip Surat Digital Enterprise
+
+# Default owners
+* @warso-id
+
+# Core application
+/src/ @warso-id
+/src/app.js @warso-id
+
+# Database migrations (requires review)
+/src/database/migrations/ @warso-id
+/src/database/seeders/ @warso-id
+
+# Security-related files
+/src/middleware/AuthMiddleware.js @warso-id
+/src/middleware/ValidationMiddleware.js @warso-id
+/.github/workflows/security-scan.yml @warso-id
+/SECURITY.md @warso-id
+
+# Configuration files
+/config/ @warso-id
+/.env.example @warso-id
+/docker-compose.yml @warso-id
+/Dockerfile @warso-id
+
+# Documentation
+/docs/ @warso-id
+/README.md @warso-id
+/CHANGELOG.md @warso-id
+/LICENSE @warso-id
+
+# CI/CD
+/.github/workflows/ @warso-id
+/.github/ @warso-id
