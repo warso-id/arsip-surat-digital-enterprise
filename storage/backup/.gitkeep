@@ -1,0 +1,4 @@
+# Folder untuk file backup database
+# Format: .sql, .sql.gz
+# Schedule: otomatis setiap hari
+# Retensi: 30 hari
