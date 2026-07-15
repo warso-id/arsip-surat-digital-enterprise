@@ -1,670 +1,385 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="theme-color" content="#1976D2">
-    <meta name="description" content="Arsip Surat Digital Enterprise">
-    <meta name="application-name" content="Arsip Surat Digital Enterprise">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Arsip Surat Digital Enterprise - Sistem Manajemen Surat Menyurat Profesional untuk Perusahaan dan Instansi Pemerintah">
+    <meta name="keywords" content="arsip surat, surat digital, manajemen surat, disposisi, surat masuk, surat keluar, document management system">
+    <meta name="author" content="Arsip Surat Digital Enterprise Team">
+    <meta name="theme-color" content="#1a56db">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Arsip Surat">
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231976D2'/><text x='50' y='65' text-anchor='middle' font-family='Arial' font-weight='bold' font-size='50' fill='white'>AS</text></svg>">
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkFyc2lwIFN1cmF0IERpZ2l0YWwgRW50ZXJwcmlzZSIsCiAgInNob3J0X25hbWUiOiAiQXJzaXAgU3VyYXQiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgInRoZW1lX2NvbG9yIjogIiMxOTc2RDIiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNGREZCRkYiLAogICJpY29ucyI6IFtdCn0=">
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="Arsip Surat Digital Enterprise">
+    <meta property="og:description" content="Sistem Manajemen Arsip Surat Digital untuk Perusahaan & Instansi">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://arsipsurat.id">
+    <meta property="og:image" content="https://arsipsurat.id/images/og-image.png">
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono&family=Material+Icons&display=swap" rel="stylesheet">
+    <title>Arsip Surat Digital Enterprise - Sistem Manajemen Surat Menyurat</title>
     
-    <title>Arsip Surat Digital Enterprise v3.2.2</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="src/public/images/favicon.ico">
+    <link rel="apple-touch-icon" href="src/public/images/logo-192.png">
     
-    <style>
-        :root {
-            --primary: #1976D2; --primary-dark: #0D47A1; --surface: #FDFBFF;
-            --on-surface: #1A1C1E; --on-surface-variant: #44474E; --outline: #74777F;
-            --outline-variant: #C4C6D0; --error: #BA1A1A; --success: #2E7D32;
-            --surface-container: #F3F0F4; --surface-container-high: #ECEAF0;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1); --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-            --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
-            --radius-sm: 8px; --radius-md: 16px; --radius-lg: 24px; --radius-full: 9999px;
-            --transition: all 0.2s ease;
-        }
-        [data-theme="dark"] {
-            --surface: #1A1C1E; --on-surface: #E2E2E6; --on-surface-variant: #C4C6D0;
-            --outline: #8E9099; --outline-variant: #44474E; --surface-container: #1E2024;
-            --surface-container-high: #282A2E;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Roboto', sans-serif; background: var(--surface); color: var(--on-surface); min-height: 100vh; -webkit-font-smoothing: antialiased; }
-        .hidden { display: none !important; }
-        
-        #app-loading { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1976D2 0%, #0D47A1 100%); transition: opacity 0.5s; }
-        #app-loading.fade-out { opacity: 0; pointer-events: none; }
-        .loading-content { text-align: center; color: white; }
-        .loading-logo { width: 80px; height: 80px; background: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 36px; font-weight: 700; color: #1976D2; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
-        .loading-title { font-size: 24px; font-weight: 500; margin-bottom: 8px; }
-        .loading-text { font-size: 14px; opacity: 0.8; margin-bottom: 24px; }
-        .loading-spinner { width: 40px; height: 40px; margin: 0 auto; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        .loading-version { display: block; margin-top: 16px; font-size: 12px; opacity: 0.6; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .auth-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; background: linear-gradient(135deg, #1976D2 0%, #0D47A1 50%, #01579B 100%); position: relative; overflow: hidden; }
-        .auth-wrapper::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%); animation: rotate 30s linear infinite; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        
-        .auth-card { background: var(--surface); border-radius: 28px; box-shadow: 0 24px 80px rgba(0,0,0,0.3); width: 100%; max-width: 440px; position: relative; z-index: 1; overflow: hidden; animation: slideUp 0.5s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .auth-header { text-align: center; padding: 40px 32px 20px; }
-        .auth-logo { width: 64px; height: 64px; background: linear-gradient(135deg, #1976D2, #0D47A1); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: white; font-size: 28px; font-weight: 700; box-shadow: 0 4px 16px rgba(25,118,210,0.3); }
-        .auth-header h1 { font-size: 24px; font-weight: 500; margin-bottom: 8px; color: var(--on-surface); }
-        .auth-header p { font-size: 14px; color: var(--on-surface-variant); line-height: 1.5; }
-        .auth-body { padding: 0 32px 24px; }
-        .auth-footer { display: flex; justify-content: center; gap: 16px; padding: 16px 32px; border-top: 1px solid var(--outline-variant); background: var(--surface-container); font-size: 13px; }
-        .auth-footer a { color: var(--primary); text-decoration: none; font-weight: 500; }
-        
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--on-surface); margin-bottom: 6px; }
-        .form-label.required::after { content: ' *'; color: var(--error); }
-        .form-input { width: 100%; height: 48px; padding: 0 16px; border: 1px solid var(--outline); border-radius: var(--radius-sm); font-family: 'Roboto', sans-serif; font-size: 14px; color: var(--on-surface); background: var(--surface); transition: var(--transition); outline: none; }
-        .form-input:focus { border-color: var(--primary); border-width: 2px; padding: 0 15px; box-shadow: 0 0 0 3px rgba(25,118,210,0.15); }
-        .form-input.error { border-color: var(--error); }
-        .form-error { font-size: 12px; color: var(--error); margin-top: 4px; }
-        
-        .input-icon { position: relative; }
-        .input-icon .form-input { padding-left: 44px; }
-        .input-icon .form-input:focus { padding-left: 43px; }
-        .input-icon .icon-pre { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; }
-        .input-icon .icon-suf { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; }
-        
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 24px; border: none; border-radius: var(--radius-full); font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: var(--transition); text-decoration: none; }
-        .btn-primary { background: var(--primary); color: white; box-shadow: var(--shadow-sm); }
-        .btn-primary:hover { background: var(--primary-dark); box-shadow: var(--shadow-md); }
-        .btn-secondary { background: var(--surface-container-high); color: var(--on-surface); }
-        .btn-ghost { background: transparent; color: var(--primary); }
-        .btn-block { width: 100%; justify-content: center; }
-        .btn-sm { height: 36px; padding: 0 16px; font-size: 13px; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-loading { position: relative; color: transparent !important; pointer-events: none; }
-        .btn-loading::after { content: ''; position: absolute; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.5); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
-        
-        .alert { padding: 12px 16px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .alert-error { background: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; }
-        .alert-success { background: #E8F5E9; color: #2E7D32; border: 1px solid #C8E6C9; }
-        .alert-info { background: #E3F2FD; color: #1565C0; border: 1px solid #BBDEFB; }
-        
-        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: var(--radius-full); font-size: 12px; font-weight: 500; }
-        .status-badge.online { background: #E8F5E9; color: #2E7D32; }
-        .status-badge.offline { background: #FFEBEE; color: #C62828; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
-        .status-badge.online .status-dot { background: #4CAF50; }
-        .status-badge.offline .status-dot { background: #F44336; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-        
-        #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; max-width: 380px; }
-        .toast { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); font-size: 14px; font-weight: 500; animation: toastIn 0.3s ease; }
-        .toast-success { background: #E8F5E9; color: #2E7D32; }
-        .toast-error { background: #FFEBEE; color: #C62828; }
-        .toast-warning { background: #FFF3E0; color: #E65100; }
-        .toast-info { background: #E3F2FD; color: #1565C0; }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
-        
-        .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--on-surface-variant); cursor: pointer; }
-        .checkbox-label input { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
-        
-        @media (max-width: 480px) {
-            .auth-wrapper { padding: 16px; align-items: flex-start; padding-top: 40px; }
-            .auth-card { border-radius: 24px; }
-            .auth-header { padding: 32px 20px 20px; }
-            .auth-body { padding: 0 20px 20px; }
-            .auth-footer { padding: 12px 20px; }
-            #toast-container { left: 16px; right: 16px; max-width: none; }
-        }
-    </style>
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="src/public/css/app.css">
+    <link rel="stylesheet" href="src/public/css/landing.css">
+    
+    <!-- Preload Critical Assets -->
+    <link rel="preload" href="src/public/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
 </head>
 <body>
-    <div id="app-loading">
-        <div class="loading-content">
-            <div class="loading-logo">AS</div>
-            <h1 class="loading-title">Arsip Surat Digital Enterprise</h1>
-            <p class="loading-text">Menghubungkan ke server...</p>
-            <div class="loading-spinner"></div>
-            <small class="loading-version">v3.2.2</small>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <p class="loading-text">Memuat Arsip Surat Digital...</p>
         </div>
     </div>
-    
-    <div id="app" class="hidden"></div>
-    <div id="toast-container"></div>
 
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="src/public/images/logo.png" alt="Logo" class="nav-logo" width="40" height="40">
+                <span class="nav-title">Arsip Surat Digital</span>
+            </div>
+            
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item">
+                    <a href="#beranda" class="nav-link active" data-section="beranda">Beranda</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#fitur" class="nav-link" data-section="fitur">Fitur</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#tentang" class="nav-link" data-section="tentang">Tentang</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#panduan" class="nav-link" data-section="panduan">Panduan</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#kontak" class="nav-link" data-section="kontak">Kontak</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/login" class="btn btn-primary btn-login">Masuk</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section id="beranda" class="hero-section">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        Kelola Arsip Surat dengan
+                        <span class="text-highlight">Mudah & Aman</span>
+                    </h1>
+                    <p class="hero-description">
+                        Sistem manajemen arsip surat digital enterprise yang memudahkan 
+                        pengelolaan surat masuk, surat keluar, dan disposisi secara 
+                        terintegrasi dan profesional.
+                    </p>
+                    <div class="hero-cta">
+                        <a href="/login" class="btn btn-primary btn-lg">
+                            <i class="icon-login"></i> Mulai Sekarang
+                        </a>
+                        <a href="#panduan" class="btn btn-outline btn-lg">
+                            <i class="icon-info"></i> Pelajari Lebih Lanjut
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">500+</span>
+                            <span class="stat-label">Instansi Pengguna</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">1M+</span>
+                            <span class="stat-label">Surat Terarsip</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">99.9%</span>
+                            <span class="stat-label">Uptime</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="src/public/images/dashboard-preview.png" 
+                         alt="Preview Dashboard Arsip Surat Digital" 
+                         loading="lazy"
+                         width="600" height="400">
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="fitur" class="features-section">
+            <div class="section-container">
+                <h2 class="section-title">Fitur Unggulan</h2>
+                <p class="section-description">
+                    Solusi lengkap untuk manajemen arsip surat di instansi Anda
+                </p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="icon-inbox"></i>
+                        </div>
+                        <h3>Surat Masuk & Keluar</h3>
+                        <p>
+                            Kelola surat masuk dan surat keluar dengan sistem tracking 
+                            yang akurat dan real-time.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="icon-disposition"></i>
+                        </div>
+                        <h3>Disposisi Digital</h3>
+                        <p>
+                            Sistem disposisi elektronik yang memudahkan alur persetujuan 
+                            dan distribusi surat.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="icon-search"></i>
+                        </div>
+                        <h3>Pencarian Cepat</h3>
+                        <p>
+                            Temukan surat dengan cepat menggunakan fitur pencarian 
+                            full-text dan filter advance.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="icon-report"></i>
+                        </div>
+                        <h3>Laporan & Statistik</h3>
+                        <p>
+                            Generate laporan otomatis dengan visualisasi data 
+                            dan export ke berbagai format.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="icon-security"></i>
+                        </div>
+                        <h3>Keamanan Terjamin</h3>
+                        <p>
+                            Enkripsi data, role-based access control, dan audit 
+                            trail untuk keamanan maksimal.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="icon-mobile"></i>
+                        </div>
+                        <h3>Akses Mobile</h3>
+                        <p>
+                            Akses arsip surat kapan saja dan di mana saja 
+                            melalui perangkat mobile.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="tentang" class="about-section">
+            <div class="section-container">
+                <h2 class="section-title">Tentang Arsip Surat Digital</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>
+                            <strong>Arsip Surat Digital Enterprise</strong> adalah sistem 
+                            manajemen arsip surat berbasis web yang dirancang khusus untuk 
+                            memenuhi kebutuhan perusahaan dan instansi pemerintah dalam 
+                            mengelola surat menyurat secara digital.
+                        </p>
+                        <p>
+                            Sistem ini mengadopsi standar kearsipan nasional dan 
+                            internasional, memastikan setiap surat terarsip dengan baik, 
+                            mudah ditemukan kembali, dan aman dari akses tidak sah.
+                        </p>
+                        <h3>Keunggulan Kami:</h3>
+                        <ul>
+                            <li>✅ Open Source & Free to Use</li>
+                            <li>✅ Sesuai Standar ANRI (Arsip Nasional RI)</li>
+                            <li>✅ Dukungan Multi Instansi</li>
+                            <li>✅ Integrasi dengan Sistem Lain</li>
+                            <li>✅ Update Berkala</li>
+                            <li>✅ Komunitas Aktif</li>
+                        </ul>
+                    </div>
+                    <div class="about-image">
+                        <img src="src/public/images/about-illustration.png" 
+                             alt="Ilustrasi Arsip Surat Digital" 
+                             loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Guide Section -->
+        <section id="panduan" class="guide-section">
+            <div class="section-container">
+                <h2 class="section-title">Panduan Penggunaan</h2>
+                <div class="guide-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Login Sistem</h3>
+                        <p>Masuk menggunakan akun yang telah diberikan oleh administrator</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Input Surat</h3>
+                        <p>Catat surat masuk atau buat surat keluar baru</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Proses Disposisi</h3>
+                        <p>Berikan disposisi dan teruskan ke pihak terkait</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>Arsip & Laporan</h3>
+                        <p>Surat otomatis terarsip dan siap dilaporkan</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="kontak" class="contact-section">
+            <div class="section-container">
+                <h2 class="section-title">Hubungi Kami</h2>
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="icon-email"></i>
+                            <div>
+                                <h4>Email</h4>
+                                <p>developer@arsipsurat.id</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="icon-globe"></i>
+                            <div>
+                                <h4>Website</h4>
+                                <p>https://arsipsurat.id</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="icon-github"></i>
+                            <div>
+                                <h4>GitHub</h4>
+                                <p>github.com/warso-id/arsip-surat-digital-enterprise</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-form">
+                        <form id="contact-form">
+                            <div class="form-group">
+                                <label for="name">Nama Lengkap</label>
+                                <input type="text" id="name" name="name" required 
+                                       placeholder="Masukkan nama Anda">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" required 
+                                       placeholder="Masukkan email Anda">
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Pesan</label>
+                                <textarea id="message" name="message" rows="4" required 
+                                          placeholder="Tulis pesan Anda"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Kirim Pesan</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <img src="src/public/images/logo.png" alt="Logo" width="50">
+                    <h4>Arsip Surat Digital Enterprise</h4>
+                    <p>Sistem Manajemen Arsip Surat Profesional</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Links</h4>
+                    <ul>
+                        <li><a href="/docs/README.md">Dokumentasi</a></li>
+                        <li><a href="/docs/API_DOCUMENTATION.md">API</a></li>
+                        <li><a href="/CHANGELOG.md">Changelog</a></li>
+                        <li><a href="/LICENSE">Lisensi</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h4>Ikuti Kami</h4>
+                    <div class="social-links">
+                        <a href="#" aria-label="GitHub"><i class="icon-github"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="icon-twitter"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="icon-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Arsip Surat Digital Enterprise. All rights reserved.</p>
+                <p>Version <span id="app-version">2.0.0</span> | <a href="/privacy">Privacy</a> | <a href="/terms">Terms</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="src/public/js/app.js" defer></script>
     <script>
-    (function() {
-        'use strict';
-        
-        // ============================================
-        // CONFIGURATION
-        // ============================================
-        const CONFIG = {
-            APP_NAME: 'Arsip Surat Digital Enterprise',
-            APP_VERSION: '3.2.2',
-            
-            // 🔴 GANTI dengan URL Google Apps Script Anda (Web App URL)
-            API_URL: 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec',
-            
-            // Token keys
-            TOKEN_KEY: 'asd_token',
-            USER_KEY: 'asd_user',
-            CSRF_KEY: 'asd_csrf'
-        };
-        
-        // ============================================
-        // STORAGE
-        // ============================================
-        const Store = {
-            get(k) { try { return localStorage.getItem(k); } catch { return null; } },
-            set(k, v) { try { localStorage.setItem(k, v); } catch {} },
-            del(k) { try { localStorage.removeItem(k); } catch {} },
-            getJSON(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
-            setJSON(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
-        };
-        
-        // ============================================
-        // TOAST
-        // ============================================
-        const Toast = {
-            show(msg, type, dur) {
-                const c = document.getElementById('toast-container');
-                if (!c) return;
-                const t = document.createElement('div');
-                t.className = 'toast toast-' + (type || 'info');
-                t.innerHTML = '<span>' + msg + '</span>';
-                c.appendChild(t);
-                if (dur !== 0) setTimeout(() => { t.style.animation = 'toastOut 0.3s ease forwards'; setTimeout(() => t.remove(), 300); }, dur || 4000);
-            },
-            ok(msg) { this.show(msg, 'success', 3000); },
-            err(msg) { this.show(msg, 'error', 6000); },
-            warn(msg) { this.show(msg, 'warning', 4000); },
-            info(msg) { this.show(msg, 'info', 3000); }
-        };
-        
-        // ============================================
-        // API SERVICE - MENGGUNAKAN URLSearchParams (GET-like POST)
-        // Untuk menghindari CORS preflight, kita kirim data sebagai URL parameters
-        // ============================================
-        const API = {
-            /**
-             * Google Apps Script dengan ContentService TIDAK mengirim header CORS
-             * yang cukup untuk POST dengan Content-Type: application/json.
-             * 
-             * SOLUSI: Kirim data sebagai URL query parameters (seperti GET)
-             * atau gunakan mode no-cors + redirect
-             */
-            
-            async call(action, data) {
-                const url = new URL(CONFIG.API_URL);
-                url.searchParams.set('action', action);
-                
-                // Kirim data sebagai query parameters untuk menghindari CORS preflight
-                if (data) {
-                    Object.entries(data).forEach(([k, v]) => {
-                        if (v !== undefined && v !== null && v !== '') {
-                            url.searchParams.set(k, String(v));
-                        }
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
                     });
-                }
-                
-                // Tambahkan token jika ada
-                const token = Store.get(CONFIG.TOKEN_KEY);
-                if (token) {
-                    url.searchParams.set('token', token);
-                }
-                
-                // Tambahkan CSRF jika ada
-                const csrf = Store.get(CONFIG.CSRF_KEY);
-                if (csrf) {
-                    url.searchParams.set('csrf', csrf);
-                }
-                
-                console.log('📡 API Call:', action);
-                
-                try {
-                    // Gunakan GET request untuk menghindari CORS preflight
-                    const response = await fetch(url.toString(), {
-                        method: 'GET',
-                        headers: { 'Accept': 'application/json' }
-                    });
-                    
-                    const text = await response.text();
-                    let result;
-                    try {
-                        result = JSON.parse(text);
-                    } catch {
-                        throw new Error('Invalid server response: ' + text.substring(0, 100));
-                    }
-                    
-                    if (result.status === 'error') {
-                        throw new Error(result.message || 'Server error');
-                    }
-                    
-                    return result;
-                    
-                } catch (error) {
-                    console.error('API Error:', error.message);
-                    throw error;
-                }
-            },
-            
-            async callPost(action, data) {
-                // Fallback: gunakan POST dengan form-urlencoded
-                const url = CONFIG.API_URL + '?action=' + action;
-                
-                const formData = new URLSearchParams();
-                if (data) {
-                    Object.entries(data).forEach(([k, v]) => {
-                        if (v !== undefined && v !== null && v !== '') {
-                            formData.append(k, String(v));
-                        }
-                    });
-                }
-                
-                const token = Store.get(CONFIG.TOKEN_KEY);
-                if (token) formData.append('token', token);
-                
-                const csrf = Store.get(CONFIG.CSRF_KEY);
-                if (csrf) formData.append('csrf', csrf);
-                
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'Accept': 'application/json'
-                        },
-                        body: formData.toString()
-                    });
-                    
-                    const text = await response.text();
-                    let result;
-                    try { result = JSON.parse(text); } catch { throw new Error('Invalid response'); }
-                    
-                    if (result.status === 'error') throw new Error(result.message || 'Server error');
-                    return result;
-                } catch (error) {
-                    console.error('API POST Error:', error.message);
-                    throw error;
-                }
-            },
-            
-            // Public API calls
-            async ping() {
-                try {
-                    const url = CONFIG.API_URL + '?action=ping';
-                    const r = await fetch(url, { method: 'GET' });
-                    const d = await r.json();
-                    return d.status === 'success';
-                } catch { return false; }
-            },
-            
-            async login(username, password) {
-                // Login HARUS menggunakan POST dengan JSON body
-                // Coba POST dulu, jika gagal coba GET
-                try {
-                    return await this.callPost('login', { username, password });
-                } catch (e) {
-                    // Fallback ke GET
-                    return await this.call('login', { username, password });
-                }
-            },
-            
-            async register(data) {
-                try {
-                    return await this.callPost('publicRegister', data);
-                } catch (e) {
-                    return await this.call('publicRegister', data);
-                }
-            },
-            
-            async setup(data) {
-                try {
-                    return await this.callPost('setup', data);
-                } catch (e) {
-                    return await this.call('setup', data);
-                }
-            },
-            
-            async getStats() {
-                return this.call('dashboard.stats');
-            },
-            
-            async checkUser(identifier) {
-                return this.call('checkUser', { identifier });
-            }
-        };
+            });
+        }
         
-        // ============================================
-        // AUTH
-        // ============================================
-        const Auth = {
-            logged() { return !!Store.get(CONFIG.TOKEN_KEY) && !!Store.getJSON(CONFIG.USER_KEY); },
-            user() { return Store.getJSON(CONFIG.USER_KEY); },
-            
-            save(token, csrf, user) {
-                Store.set(CONFIG.TOKEN_KEY, token);
-                if (csrf) Store.set(CONFIG.CSRF_KEY, csrf);
-                Store.setJSON(CONFIG.USER_KEY, user);
-            },
-            
-            clear() {
-                Store.del(CONFIG.TOKEN_KEY);
-                Store.del(CONFIG.CSRF_KEY);
-                Store.del(CONFIG.USER_KEY);
-            },
-            
-            async login(u, p) {
-                try {
-                    const r = await API.login(u, p);
-                    if (r.status === 'success' && r.data) {
-                        this.save(r.data.token, r.data.csrf, r.data.user);
-                        return { ok: true, user: r.data.user };
-                    }
-                    return { ok: false, error: r.message || 'Login gagal' };
-                } catch (e) {
-                    return { ok: false, error: e.message };
-                }
-            },
-            
-            async register(d) {
-                try {
-                    const r = await API.register(d);
-                    if (r.status === 'success') return { ok: true, msg: r.message };
-                    return { ok: false, error: r.message || 'Registrasi gagal' };
-                } catch (e) {
-                    return { ok: false, error: e.message };
-                }
-            },
-            
-            async doSetup() {
-                try {
-                    const r = await API.setup({
-                        'admin.username': 'admin',
-                        'admin.password': 'Admin123!',
-                        'admin.namaLengkap': 'Administrator',
-                        'admin.email': 'admin@instansi.id'
-                    });
-                    return { ok: r.status === 'success', msg: r.message, data: r.data };
-                } catch (e) {
-                    return { ok: false, error: e.message };
-                }
-            },
-            
-            logout() { this.clear(); App.showLogin(true); }
-        };
-        
-        // ============================================
-        // APP
-        // ============================================
-        const App = {
-            el: null,
-            loading: null,
-            
-            async init() {
-                this.el = document.getElementById('app');
-                this.loading = document.getElementById('app-loading');
-                
-                const online = await API.ping();
-                console.log('Server:', online ? 'ONLINE ✅' : 'OFFLINE ❌');
-                
-                if (Auth.logged()) {
-                    this.showDashboard();
-                } else {
-                    this.showLogin(online);
-                }
-                
-                setTimeout(() => {
-                    this.loading.classList.add('fade-out');
-                    this.el.classList.remove('hidden');
-                }, 600);
-            },
-            
-            showLogin(online) {
-                document.title = 'Login - ' + CONFIG.APP_NAME;
-                this.el.innerHTML = `
-                <div class="auth-wrapper">
-                    <div class="auth-card">
-                        <div class="auth-header">
-                            <div class="auth-logo">AS</div>
-                            <h1>Arsip Surat Digital</h1>
-                            <p>Silakan masuk untuk melanjutkan</p>
-                            <div style="margin-top:12px">
-                                <span class="status-badge ${online ? 'online' : 'offline'}">
-                                    <span class="status-dot"></span>
-                                    ${online ? 'Server Terhubung' : 'Server Offline'}
-                                </span>
-                            </div>
-                            ${!online ? '<div class="alert alert-info" style="margin-top:12px">🔧 Klik <b>Setup Otomatis</b> di bawah untuk inisialisasi sistem</div>' : ''}
-                        </div>
-                        <div class="auth-body">
-                            <div id="login-alert"></div>
-                            <form id="login-form" autocomplete="off">
-                                <div class="form-group">
-                                    <label class="form-label required" for="u">Username</label>
-                                    <div class="input-icon">
-                                        <span class="icon-pre">👤</span>
-                                        <input type="text" class="form-input" id="u" placeholder="Username" autocomplete="username">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label required" for="p">Password</label>
-                                    <div class="input-icon">
-                                        <span class="icon-pre">🔒</span>
-                                        <input type="password" class="form-input" id="p" placeholder="Password" autocomplete="current-password">
-                                        <span class="icon-suf" id="toggle-pass" style="user-select:none">👁</span>
-                                    </div>
-                                </div>
-                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-                                    <label class="checkbox-label"><input type="checkbox" id="remember"> Ingat saya</label>
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-block" id="btn-login">🔑 Masuk</button>
-                            </form>
-                            <div style="text-align:center;margin-top:20px">
-                                <p style="font-size:13px;color:var(--on-surface-variant)">
-                                    Belum punya akun? 
-                                    <a href="javascript:void(0)" id="go-register" style="color:var(--primary);font-weight:500;text-decoration:none">Daftar</a>
-                                </p>
-                            </div>
-                            ${!online ? `
-                            <div style="margin-top:20px;padding:16px;background:var(--surface-container);border-radius:12px;border:1px solid var(--outline-variant)">
-                                <h4 style="font-size:14px;margin-bottom:8px;color:var(--primary)">🔧 Setup Sistem</h4>
-                                <p style="font-size:12px;color:var(--on-surface-variant);margin-bottom:12px">Klik tombol di bawah untuk membuat database dan admin user.</p>
-                                <button class="btn btn-primary btn-block btn-sm" onclick="App.runSetup()">⚡ Setup Otomatis</button>
-                            </div>` : ''}
-                        </div>
-                        <div class="auth-footer">
-                            <span style="font-size:12px;color:var(--on-surface-variant)">© 2026 v${CONFIG.APP_VERSION}</span>
-                        </div>
-                    </div>
-                </div>`;
-                this.bindLogin();
-            },
-            
-            async runSetup() {
-                const btn = event.target;
-                btn.disabled = true;
-                btn.textContent = 'Memproses...';
-                const r = await Auth.doSetup();
-                if (r.ok) {
-                    Toast.ok('Setup berhasil! Username: admin, Password: Admin123!');
-                    setTimeout(() => location.reload(), 2000);
-                } else {
-                    Toast.err('Setup gagal: ' + (r.error || r.msg));
-                    btn.disabled = false;
-                    btn.textContent = '⚡ Setup Otomatis';
-                }
-            },
-            
-            bindLogin() {
-                document.getElementById('toggle-pass').onclick = function() {
-                    const p = document.getElementById('p');
-                    p.type = p.type === 'password' ? 'text' : 'password';
-                    this.textContent = p.type === 'password' ? '👁' : '🙈';
-                };
-                document.getElementById('go-register').onclick = () => App.showRegister();
-                
-                document.getElementById('login-form').onsubmit = async function(e) {
-                    e.preventDefault();
-                    const u = document.getElementById('u').value.trim();
-                    const p = document.getElementById('p').value;
-                    const alert = document.getElementById('login-alert');
-                    const btn = document.getElementById('btn-login');
-                    
-                    if (!u || !p) { alert.innerHTML = '<div class="alert alert-error">Username dan password wajib diisi</div>'; return; }
-                    
-                    alert.innerHTML = '';
-                    btn.classList.add('btn-loading');
-                    btn.disabled = true;
-                    
-                    const r = await Auth.login(u, p);
-                    if (r.ok) {
-                        Toast.ok('Login berhasil!');
-                        setTimeout(() => App.showDashboard(), 400);
-                    } else {
-                        alert.innerHTML = '<div class="alert alert-error">❌ ' + (r.error || 'Login gagal') + '</div>';
-                        btn.classList.remove('btn-loading');
-                        btn.disabled = false;
-                    }
-                };
-            },
-            
-            showRegister() {
-                document.title = 'Register - ' + CONFIG.APP_NAME;
-                this.el.innerHTML = `
-                <div class="auth-wrapper">
-                    <div class="auth-card">
-                        <div class="auth-header">
-                            <div class="auth-logo">AS</div>
-                            <h1>Daftar Akun</h1>
-                            <p>Buat akun baru</p>
-                        </div>
-                        <div class="auth-body">
-                            <div id="reg-alert"></div>
-                            <form id="reg-form" autocomplete="off">
-                                <div class="form-group"><label class="form-label required">Username</label><div class="input-icon"><span class="icon-pre">👤</span><input type="text" class="form-input" id="ru" placeholder="Username"></div></div>
-                                <div class="form-group"><label class="form-label required">Nama Lengkap</label><div class="input-icon"><span class="icon-pre">📝</span><input type="text" class="form-input" id="rn" placeholder="Nama lengkap"></div></div>
-                                <div class="form-group"><label class="form-label required">Email</label><div class="input-icon"><span class="icon-pre">📧</span><input type="email" class="form-input" id="re" placeholder="email@example.com"></div></div>
-                                <div class="form-group"><label class="form-label required">Password</label><div class="input-icon"><span class="icon-pre">🔒</span><input type="password" class="form-input" id="rp" placeholder="Min 8 karakter"></div><small style="font-size:11px;color:var(--on-surface-variant)">Minimal 8 karakter</small></div>
-                                <button type="submit" class="btn btn-primary btn-block">📝 Daftar</button>
-                            </form>
-                            <div style="text-align:center;margin-top:20px"><p style="font-size:13px;color:var(--on-surface-variant)">Sudah punya akun? <a href="javascript:void(0)" onclick="App.showLogin(true)" style="color:var(--primary);font-weight:500;text-decoration:none">Masuk</a></p></div>
-                        </div>
-                        <div class="auth-footer"><span style="font-size:12px;color:var(--on-surface-variant)">© 2026 v${CONFIG.APP_VERSION}</span></div>
-                    </div>
-                </div>`;
-                
-                document.getElementById('reg-form').onsubmit = async function(e) {
-                    e.preventDefault();
-                    const u = document.getElementById('ru').value.trim();
-                    const n = document.getElementById('rn').value.trim();
-                    const em = document.getElementById('re').value.trim();
-                    const p = document.getElementById('rp').value;
-                    const alert = document.getElementById('reg-alert');
-                    const btn = this.querySelector('button');
-                    
-                    if (!u || !n || !em || !p) { alert.innerHTML = '<div class="alert alert-error">Semua field wajib diisi</div>'; return; }
-                    if (p.length < 8) { alert.innerHTML = '<div class="alert alert-error">Password minimal 8 karakter</div>'; return; }
-                    if (!em.includes('@')) { alert.innerHTML = '<div class="alert alert-error">Email tidak valid</div>'; return; }
-                    
-                    btn.classList.add('btn-loading'); btn.disabled = true;
-                    const r = await Auth.register({ username: u, password: p, email: em, namaLengkap: n });
-                    if (r.ok) {
-                        alert.innerHTML = '<div class="alert alert-success">✅ Registrasi berhasil! Silakan login.</div>';
-                        setTimeout(() => App.showLogin(true), 1500);
-                    } else {
-                        alert.innerHTML = '<div class="alert alert-error">❌ ' + (r.error || 'Gagal') + '</div>';
-                        btn.classList.remove('btn-loading'); btn.disabled = false;
-                    }
-                };
-            },
-            
-            showDashboard() {
-                const u = Auth.user() || { username: 'admin', namaLengkap: 'Administrator', role: 'admin' };
-                document.title = 'Dashboard - ' + CONFIG.APP_NAME;
-                this.el.innerHTML = `
-                <div style="display:flex;min-height:100vh">
-                    <aside style="width:260px;background:var(--surface-container);border-right:1px solid var(--outline-variant);padding:20px;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto">
-                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px">
-                            <div style="width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;flex-shrink:0">AS</div>
-                            <div style="min-width:0"><div style="font-weight:600;font-size:14px">Arsip Surat</div><div style="font-size:11px;color:var(--on-surface-variant)">v${CONFIG.APP_VERSION}</div></div>
-                        </div>
-                        <nav style="flex:1">
-                            ${this.nav('📊 Dashboard', 'App.showDashboard()', true)}
-                            ${this.nav('📥 Surat Masuk', "Toast.info('Segera hadir')")}
-                            ${this.nav('📤 Surat Keluar', "Toast.info('Segera hadir')")}
-                            ${this.nav('➡️ Disposisi', "Toast.info('Segera hadir')")}
-                        </nav>
-                        <div style="border-top:1px solid var(--outline-variant);padding-top:16px">
-                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-                                <div style="width:32px;height:32px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex-shrink:0">${(u.namaLengkap||u.username).charAt(0).toUpperCase()}</div>
-                                <div style="min-width:0"><div style="font-size:13px;font-weight:500">${u.namaLengkap||u.username}</div><div style="font-size:11px;color:var(--on-surface-variant)">${u.role||'admin'}</div></div>
-                            </div>
-                            <button onclick="Auth.logout()" style="width:100%;padding:10px;border:1px solid var(--outline);border-radius:24px;background:transparent;color:var(--error);font-size:13px;font-weight:500;cursor:pointer">🚪 Keluar</button>
-                        </div>
-                    </aside>
-                    <main style="flex:1;padding:32px;margin-left:260px">
-                        <div style="margin-bottom:32px"><h1 style="font-size:28px;font-weight:400;margin-bottom:8px">Selamat Datang 👋</h1><p style="font-size:14px;color:var(--on-surface-variant)">Ringkasan aktivitas sistem</p></div>
-                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:32px" id="stats-grid">
-                            ${this.stat('📥','Surat Masuk','stat-sm','var(--primary)')}
-                            ${this.stat('📤','Surat Keluar','stat-sk','#E65100')}
-                            ${this.stat('➡️','Disposisi','stat-disp','#2E7D32')}
-                            ${this.stat('✅','Approval','stat-appr','#6A1B9A')}
-                        </div>
-                        <div style="padding:16px;background:var(--surface-container);border-radius:12px;font-size:12px;color:var(--on-surface-variant)">
-                            <strong>${CONFIG.APP_NAME}</strong> v${CONFIG.APP_VERSION} | <strong>Server:</strong> <span style="color:#2E7D32">● Terhubung</span>
-                        </div>
-                    </main>
-                </div>`;
-                this.loadStats();
-            },
-            
-            nav(label, onclick, active) {
-                return `<a href="javascript:void(0)" onclick="${onclick}" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:24px;${active?'background:var(--primary);color:white;font-weight:500;':'color:var(--on-surface-variant);'}text-decoration:none;font-size:14px;margin-bottom:4px;transition:all 0.2s">${label}</a>`;
-            },
-            
-            stat(icon, label, id, color) {
-                return `<div style="padding:24px;background:var(--surface);border:1px solid var(--outline-variant);border-radius:16px;text-align:center"><div style="font-size:36px;margin-bottom:8px">${icon}</div><div style="font-size:32px;font-weight:700;color:${color}" id="${id}">-</div><div style="font-size:13px;color:var(--on-surface-variant);margin-top:4px">${label}</div></div>`;
-            },
-            
-            async loadStats() {
-                try {
-                    const r = await API.getStats();
-                    if (r.status === 'success' && r.data) {
-                        document.getElementById('stat-sm').textContent = r.data.suratMasuk?.total || 0;
-                        document.getElementById('stat-sk').textContent = r.data.suratKeluar?.total || 0;
-                        document.getElementById('stat-disp').textContent = r.data.disposisi?.total || 0;
-                        document.getElementById('stat-appr').textContent = r.data.approval?.total || 0;
-                    }
-                } catch {}
-            }
-        };
-        
-        // ============================================
-        // INIT
-        // ============================================
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 ' + CONFIG.APP_NAME + ' v' + CONFIG.APP_VERSION);
-            console.log('📡 API:', CONFIG.API_URL);
-            App.init();
-        });
-        
-        window.addEventListener('online', () => Toast.ok('Koneksi tersedia'));
-        window.addEventListener('offline', () => Toast.warn('Anda offline'));
-        
-        window.App = App;
-        window.Auth = Auth;
-        window.Toast = Toast;
-        window.API = API;
-        
-        console.log('✅ Ready');
-    })();
+        // Load version info
+        fetch('version.json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('app-version').textContent = data.version;
+            })
+            .catch(err => console.log('Version load failed:', err));
     </script>
 </body>
 </html>
