@@ -1,0 +1,101 @@
+exports.seed = async function(knex) {
+  // Truncate existing data
+  await knex('surat').del();
+
+  // Insert sample surat
+  return knex('surat').insert([
+    {
+      nomor_surat: 'SK/001/DISKOMINFO/I/2024',
+      nomor_agenda: 'SM/0001/2024',
+      jenis_surat: 'masuk',
+      perihal: 'Undangan Rapat Koordinasi Program Kerja 2024',
+      tanggal_surat: '2024-01-05',
+      tanggal_terima: '2024-01-06',
+      pengirim: 'Kementerian Komunikasi dan Informatika RI',
+      penerima: 'Kepala Dinas Kominfo',
+      kategori_id: 4,
+      instansi_id: 1,
+      sifat_surat: 'penting',
+      status: 'selesai',
+      isi_ringkasan: 'Undangan untuk menghadiri rapat koordinasi program kerja tahun 2024 yang akan dilaksanakan pada tanggal 10 Januari 2024.',
+      kode_klasifikasi: 'KU.01.01',
+      created_by: 3,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    },
+    {
+      nomor_surat: 'ND/002/DISKOMINFO/I/2024',
+      nomor_agenda: 'SK/0001/2024',
+      jenis_surat: 'keluar',
+      perihal: 'Nota Dinas Pengadaan Perangkat Komputer',
+      tanggal_surat: '2024-01-08',
+      pengirim: 'Kepala Bidang TI',
+      penerima: 'Kepala Dinas Kominfo',
+      kategori_id: 5,
+      instansi_id: 1,
+      sifat_surat: 'segera',
+      status: 'proses',
+      isi_ringkasan: 'Pengajuan pengadaan perangkat komputer untuk kebutuhan operasional tahun 2024 sebanyak 50 unit.',
+      kode_klasifikasi: 'PL.02.01',
+      created_by: 3,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    },
+    {
+      nomor_surat: 'LP/003/BKD/I/2024',
+      nomor_agenda: 'SM/0002/2024',
+      jenis_surat: 'masuk',
+      perihal: 'Laporan Realisasi Anggaran Tahun 2023',
+      tanggal_surat: '2024-01-10',
+      tanggal_terima: '2024-01-11',
+      pengirim: 'Badan Kepegawaian Daerah',
+      penerima: 'Kepala Dinas Kominfo',
+      kategori_id: 7,
+      instansi_id: 2,
+      sifat_surat: 'biasa',
+      status: 'draft',
+      isi_ringkasan: 'Laporan realisasi anggaran tahun 2023 untuk evaluasi dan perencanaan anggaran tahun 2024.',
+      kode_klasifikasi: 'KU.03.01',
+      created_by: 3,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    },
+    {
+      nomor_surat: 'SE/001/DISDIK/I/2024',
+      nomor_agenda: 'SM/0003/2024',
+      jenis_surat: 'masuk',
+      perihal: 'Edaran Pelaksanaan Ujian Semester Genap',
+      tanggal_surat: '2024-01-15',
+      tanggal_terima: '2024-01-16',
+      pengirim: 'Dinas Pendidikan',
+      penerima: 'Kepala Dinas Kominfo',
+      kategori_id: 2,
+      instansi_id: 3,
+      sifat_surat: 'penting',
+      status: 'selesai',
+      isi_ringkasan: 'Edaran tentang jadwal dan teknis pelaksanaan ujian semester genap tahun ajaran 2023/2024.',
+      kode_klasifikasi: 'KP.01.01',
+      created_by: 3,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    },
+    {
+      nomor_surat: 'ST/004/DISKOMINFO/I/2024',
+      nomor_agenda: 'SK/0002/2024',
+      jenis_surat: 'keluar',
+      perihal: 'Surat Tugas Monitoring Jaringan Internet',
+      tanggal_surat: '2024-01-20',
+      pengirim: 'Kepala Dinas Kominfo',
+      penerima: 'Staff Bidang TI',
+      kategori_id: 3,
+      instansi_id: 1,
+      sifat_surat: 'segera',
+      status: 'proses',
+      isi_ringkasan: 'Penugasan untuk monitoring dan pemeliharaan jaringan internet di seluruh SKPD selama bulan Januari 2024.',
+      kode_klasifikasi: 'OT.02.01',
+      created_by: 3,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+  ]);
+};
