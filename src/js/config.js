@@ -1,18 +1,238 @@
 /**
  * KONFIGURASI GLOBAL - ARSIP SURAT DIGITAL ENTERPRISE v3.2.2
+ * File: src/js/config.js
+ * Support: Google Apps Script (code.gs) + Google Sheets + Frontend
+ * Encoding: Base64 untuk komunikasi data
  */
 
+// ============================================
+// BASE64 UTILITY FUNCTIONS
+// ============================================
+const Base64Util = {
+  /**
+   * Encode string ke Base64
+   */
+  encode(str) {
+    try {
+      return btoa(unescape(encodeURIComponent(str)));
+    } catch (e) {
+      console.error('Base64 encode error:', e);
+      return null;
+    }
+  },
+
+  /**
+   * Decode Base64 ke string
+   */
+  decode(str) {
+    try {
+      return decodeURIComponent(escape(atob(str)));
+    } catch (e) {
+      console.error('Base64 decode error:', e);
+      return null;
+    }
+  },
+
+  /**
+   * Encode object ke Base64
+   */
+  encodeObject(obj) {
+    try {
+      const jsonStr = JSON.stringify(obj);
+      return this.encode(jsonStr);
+    } catch (e) {
+      console.error('Base64 encodeObject error:', e);
+      return null;
+    }
+  },
+
+  /**
+   * Decode Base64 ke object
+   */
+  decodeObject(str) {
+    try {
+      const jsonStr = this.decode(str);
+      return jsonStr ? JSON.parse(jsonStr) : null;
+    } catch (e) {
+      console.error('Base64 decodeObject error:', e);
+      return null;
+    }
+  },
+
+  /**
+   * Encode file ke Base64
+   */
+  encodeFile(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  },
+
+  /**
+   * Decode Base64 ke Blob
+   */
+  decodeToBlob(base64, mimeType) {
+    try {
+      const byteChars = atob(base64);
+      const byteArrays = [];
+      for (let offset = 0; offset < byteChars.length; offset += 512) {
+        const slice = byteChars.slice(offset, offset + 512);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        byteArrays.push(new Uint8Array(byteNumbers));
+      }
+      return new Blob(byteArrays, { type: mimeType });
+    } catch (e) {
+      console.error('Base64 decodeToBlob error:', e);
+      return null;
+    }
+  },
+
+  /**
+   * Decode Base64 ke File
+   */
+  decodeToFile(base64, filename, mimeType) {
+    const blob = this.decodeToBlob(base64, mimeType);
+    return blob ? new File([blob], filename, { type: mimeType }) : null;
+  }
+};
+
+// ============================================
+// GOOGLE SHEETS CONFIG
+// ============================================
+const GOOGLE_SHEETS_CONFIG = {
+  // Spreadsheet ID (Base64 encoded)
+  SPREADSHEET_ID_ENCODED: 'MUJ6dlh3RmJ0dWg5S2FJOVlkZVRWbGZfTlQ4dDdEY2I0V3pnM0hGWjZfSFE',
+  
+  // Sheet Names
+  SHEETS: {
+    SURAT_MASUK: 'SuratMasuk',
+    SURAT_KELUAR: 'SuratKeluar',
+    DISPOSISI: 'Disposisi',
+    USERS: 'Users',
+    MASTER_DATA: 'MasterData',
+    KONFIGURASI: 'Konfigurasi',
+    AUDIT_LOG: 'AuditLog',
+    NOTIFIKASI: 'Notifikasi',
+    TEMPLATE: 'Template',
+    APPROVAL: 'Approval',
+    TTD: 'TTD',
+    KLASIFIKASI: 'Klasifikasi',
+    ARSIP: 'Arsip',
+    RETENSI: 'Retensi',
+    REMINDER: 'Reminder',
+    BACKUP_LOG: 'BackupLog',
+    API_KEYS: 'ApiKeys',
+    SESSIONS: 'Sessions',
+    WEBHOOKS: 'Webhooks'
+  },
+
+  // Column Mappings untuk setiap sheet
+  COLUMNS: {
+    SURAT_MASUK: {
+      ID: 'id',
+      NOMOR_SURAT: 'nomorSurat',
+      TANGGAL_SURAT: 'tanggalSurat',
+      TANGGAL_DITERIMA: 'tanggalDiterima',
+      PENGIRIM: 'pengirim',
+      PERIHAL: 'perihal',
+      SIFAT: 'sifat',
+      STATUS: 'status',
+      FILE_URL: 'fileUrl',
+      FILE_NAME: 'fileName',
+      FILE_BASE64: 'fileBase64',
+      KLASIFIKASI: 'klasifikasi',
+      CATATAN: 'catatan',
+      CREATED_AT: 'createdAt',
+      UPDATED_AT: 'updatedAt',
+      CREATED_BY: 'createdBy'
+    },
+    SURAT_KELUAR: {
+      ID: 'id',
+      NOMOR_SURAT: 'nomorSurat',
+      TANGGAL_SURAT: 'tanggalSurat',
+      TUJUAN: 'tujuan',
+      PERIHAL: 'perihal',
+      SIFAT: 'sifat',
+      STATUS: 'status',
+      FILE_URL: 'fileUrl',
+      FILE_NAME: 'fileName',
+      FILE_BASE64: 'fileBase64',
+      KLASIFIKASI: 'klasifikasi',
+      APPROVAL_STATUS: 'approvalStatus',
+      DISPOSISI_TERKAIT: 'disposisiTerkait',
+      CATATAN: 'catatan',
+      CREATED_AT: 'createdAt',
+      UPDATED_AT: 'updatedAt',
+      CREATED_BY: 'createdBy'
+    },
+    DISPOSISI: {
+      ID: 'id',
+      SURAT_ID: 'suratId',
+      SURAT_TYPE: 'suratType',
+      DARI: 'dari',
+      KEPADA: 'kepada',
+      INSTRUKSI: 'instruksi',
+      STATUS: 'status',
+      TANGGAL_TENGGAT: 'tanggalTenggat',
+      TANGGAL_SELESAI: 'tanggalSelesai',
+      TINDAK_LANJUT: 'tindakLanjut',
+      PRIORITAS: 'prioritas',
+      ESKALASI: 'eskalasi',
+      CATATAN: 'catatan',
+      CREATED_AT: 'createdAt',
+      UPDATED_AT: 'updatedAt'
+    },
+    USERS: {
+      ID: 'id',
+      USERNAME: 'username',
+      PASSWORD_HASH: 'passwordHash',
+      NAMA_LENGKAP: 'namaLengkap',
+      EMAIL: 'email',
+      ROLE: 'role',
+      JABATAN: 'jabatan',
+      BIDANG: 'bidang',
+      AKTIF: 'aktif',
+      AVATAR_BASE64: 'avatarBase64',
+      LAST_LOGIN: 'lastLogin',
+      SESSION_TOKEN: 'sessionToken',
+      CREATED_AT: 'createdAt',
+      UPDATED_AT: 'updatedAt'
+    },
+    MASTER_DATA: {
+      ID: 'id',
+      TYPE: 'type',
+      CODE: 'code',
+      VALUE: 'value',
+      DESCRIPTION: 'description',
+      PARENT_CODE: 'parentCode',
+      AKTIF: 'aktif'
+    }
+  }
+};
+
+// ============================================
+// APP CONFIGURATION
+// ============================================
 const APP_CONFIG = {
   // Informasi Aplikasi
   APP_NAME: 'Arsip Surat Digital Enterprise',
   APP_VERSION: '3.2.2',
   APP_BUILD: '2026-07-12',
-  APP_ENV: 'production', // development | staging | production
-  
+  APP_ENV: 'production',
+
   // API Configuration
   API: {
     BASE_URL: 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec',
-    TIMEOUT: 30000, // 30 detik
+    TIMEOUT: 30000,
     RETRY_COUNT: 3,
     RETRY_DELAY: 1000,
     
@@ -28,7 +248,6 @@ const APP_CONFIG = {
         RESET_ADMIN: 'resetAdmin',
         CHECK_USER: 'checkUser'
       },
-      
       DASHBOARD: {
         STATS: 'dashboard.stats',
         CHART: 'dashboard.chart',
@@ -36,7 +255,6 @@ const APP_CONFIG = {
         REALTIME: 'dashboard.realtime',
         CUSTOM: 'dashboard.custom'
       },
-      
       SURAT_MASUK: {
         LIST: 'suratMasuk.list',
         DETAIL: 'suratMasuk.detail',
@@ -50,7 +268,6 @@ const APP_CONFIG = {
         COMPARE: 'suratMasuk.compare',
         AUTO_SAVE: 'suratMasuk.autoSave'
       },
-      
       SURAT_KELUAR: {
         LIST: 'suratKeluar.list',
         DETAIL: 'suratKeluar.detail',
@@ -65,7 +282,6 @@ const APP_CONFIG = {
         BULK_APPROVE: 'suratKeluar.bulkApprove',
         AUTO_SAVE: 'suratKeluar.autoSave'
       },
-      
       DISPOSISI: {
         LIST: 'disposisi.list',
         CREATE: 'disposisi.create',
@@ -77,7 +293,6 @@ const APP_CONFIG = {
         KALENDER: 'disposisi.kalender',
         BULK_UPDATE: 'disposisi.bulkUpdate'
       },
-      
       APPROVAL: {
         LIST: 'approval.list',
         PROCESS: 'approval.process',
@@ -86,7 +301,6 @@ const APP_CONFIG = {
         PARALLEL: 'approval.parallel',
         DELEGATE: 'approval.delegate'
       },
-      
       TTD: {
         REGISTER: 'ttd.register',
         SIGN: 'ttd.sign',
@@ -95,20 +309,17 @@ const APP_CONFIG = {
         BULK_SIGN: 'ttd.bulkSign',
         CERTIFICATE: 'ttd.certificate'
       },
-      
       PDF: {
         GENERATE: 'pdf.generate',
         BULK_GENERATE: 'pdf.bulkGenerate',
         WATERMARK: 'pdf.watermark'
       },
-      
       TEMPLATE: {
         SAVE: 'template.save',
         LIST: 'template.list',
         USE: 'template.use',
         DELETE: 'template.delete'
       },
-      
       REPORT: {
         SURAT_MASUK: 'report.suratMasuk',
         SURAT_KELUAR: 'report.suratKeluar',
@@ -116,20 +327,17 @@ const APP_CONFIG = {
         COMPREHENSIVE: 'report.comprehensive',
         SCHEDULE: 'report.schedule'
       },
-      
       EXPORT: {
         DATA: 'export.data',
         PDF: 'export.pdf',
         EXCEL: 'export.excel',
         ALL: 'export.all'
       },
-      
       SEARCH: {
         GLOBAL: 'search',
         ADVANCED: 'search.advanced',
         AI_SMART: 'ai.smartSearch'
       },
-      
       USERS: {
         LIST: 'users.list',
         CREATE: 'users.create',
@@ -146,7 +354,6 @@ const APP_CONFIG = {
         REVOKE_SESSION: 'session.revoke',
         FORCE_LOGOUT: 'session.logout'
       },
-      
       MASTER_DATA: {
         LIST: 'masterData.list',
         CREATE: 'masterData.create',
@@ -154,19 +361,16 @@ const APP_CONFIG = {
         DELETE: 'masterData.delete',
         BULK_CREATE: 'masterData.bulkCreate'
       },
-      
       CONFIG: {
         GET: 'config.get',
         UPDATE: 'config.update',
         RESET: 'config.reset'
       },
-      
       AUDIT_LOG: {
         LIST: 'auditLog.list',
         EXPORT: 'auditLog.export',
         ANALYTICS: 'auditLog.analytics'
       },
-      
       NOTIFIKASI: {
         LIST: 'notifikasi.list',
         UNREAD: 'notifikasi.unreadCount',
@@ -177,37 +381,31 @@ const APP_CONFIG = {
         WEBHOOK: 'notifikasi.webhook',
         TELEGRAM: 'notifikasi.telegram'
       },
-      
       PUSH: {
         REGISTER: 'push.register'
       },
-      
       REMINDER: {
         CHECK: 'reminder.check',
         SET: 'reminder.set',
         LIST: 'reminder.list',
         CANCEL: 'reminder.cancel'
       },
-      
       RETENSI: {
         POLICY: 'retensi.policy',
         CHECK: 'retensi.check'
       },
-      
       ARSIP: {
         DESTROY: 'arsip.destroy',
         BULK_DESTROY: 'arsip.bulkDestroy',
         RESTORE: 'arsip.restore',
         AUTO: 'arsip.auto'
       },
-      
       KLASIFIKASI: {
         LIST: 'klasifikasi.list',
         CREATE: 'klasifikasi.create',
         UPDATE: 'klasifikasi.update',
         DELETE: 'klasifikasi.delete'
       },
-      
       SECURITY: {
         ENCRYPT: 'encrypt.document',
         DECRYPT: 'decrypt.document',
@@ -217,7 +415,6 @@ const APP_CONFIG = {
         IP_BLACKLIST: 'ip.blacklist',
         IP_UNBLACKLIST: 'ip.unblacklist'
       },
-      
       FILE: {
         UPLOAD: 'file.upload',
         UPLOAD_MULTIPLE: 'file.uploadMultiple',
@@ -226,14 +423,12 @@ const APP_CONFIG = {
         SHARE: 'file.share',
         PREVIEW: 'file.preview'
       },
-      
       BACKUP: {
         CREATE: 'backup.create',
         LIST: 'backup.list',
         RESTORE: 'backup.restore',
         SCHEDULE: 'backup.schedule'
       },
-      
       BLOCKCHAIN: {
         GET_CHAIN: 'blockchain.getChain',
         VERIFY_CHAIN: 'blockchain.verifyChain',
@@ -241,7 +436,6 @@ const APP_CONFIG = {
         GET_STATS: 'blockchain.getStats',
         ADD_BLOCK: 'blockchain.addBlock'
       },
-      
       BIOMETRIC: {
         REGISTER: 'biometric.register',
         VERIFY: 'biometric.verify',
@@ -249,7 +443,6 @@ const APP_CONFIG = {
         REMOVE: 'biometric.remove',
         MULTI_FACTOR: 'biometric.multiFactor'
       },
-      
       AI: {
         AUTO_TAG: 'ai.autoTag',
         SUGGEST_TAGS: 'ai.suggestTags',
@@ -260,33 +453,27 @@ const APP_CONFIG = {
         SUMMARIZE: 'ai.summarize',
         RECOMMEND: 'ai.recommend'
       },
-      
       OCR: {
         SCAN: 'ocr.scan',
         EXTRACT: 'ocr.extract'
       },
-      
       WEBHOOK: {
         TRIGGER: 'webhook.trigger',
         REGISTER: 'webhook.register',
         LIST: 'webhook.list',
         DELETE: 'webhook.delete'
       },
-      
       BATCH: {
         PROCESS: 'batch.process'
       },
-      
       VERSION: {
         SAVE: 'version.save',
         LIST: 'version.list'
       },
-      
       ANALYTICS: {
         API: 'analytics.api',
         ADVANCED: 'analytics.advanced'
       },
-      
       SYSTEM: {
         STATUS: 'system.status',
         INFO: 'system.info',
@@ -296,24 +483,20 @@ const APP_CONFIG = {
         INTEGRITY: 'system.integrity',
         RECOVERY: 'system.recovery'
       },
-      
       TRANSLATION: {
         GET: 'translate.get'
       },
-      
       TWO_FACTOR: {
         SETUP: '2fa.setup',
         VERIFY: '2fa.verify',
         STATUS: '2fa.status',
         DISABLE: '2fa.disable'
       },
-      
       API_KEY: {
         GENERATE: 'apiKey.generate',
         REVOKE: 'apiKey.revoke',
         LIST: 'apiKey.list'
       },
-      
       PUBLIC: {
         PING: 'ping',
         SETUP: 'setup',
@@ -330,7 +513,7 @@ const APP_CONFIG = {
       }
     }
   },
-  
+
   // UI Configuration
   UI: {
     THEME: {
@@ -360,19 +543,19 @@ const APP_CONFIG = {
     LOCALE: 'id-ID',
     CURRENCY: 'IDR'
   },
-  
+
   // Auth Configuration
   AUTH: {
     TOKEN_KEY: 'auth-token',
     CSRF_KEY: 'csrf-token',
     USER_KEY: 'auth-user',
     REMEMBER_KEY: 'auth-remember',
-    SESSION_TIMEOUT: 3600000, // 1 jam
-    REFRESH_BEFORE: 300000, // Refresh 5 menit sebelum expired
+    SESSION_TIMEOUT: 3600000,
+    REFRESH_BEFORE: 300000,
     MAX_LOGIN_ATTEMPTS: 5,
-    LOCK_DURATION: 15 // menit
+    LOCK_DURATION: 15
   },
-  
+
   // Feature Flags
   FEATURES: {
     BIOMETRIC: true,
@@ -387,16 +570,16 @@ const APP_CONFIG = {
     DIGITAL_SIGNATURE: true,
     WEBHOOKS: true,
     LDAP: true,
-    SSO: false, // Coming soon
-    CHATBOT: false // Coming soon
+    SSO: false,
+    CHATBOT: false
   },
-  
+
   // Cache Configuration
   CACHE: {
     PREFIX: 'asd_',
-    TTL: 300, // 5 menit
-    MAX_SIZE: 100 * 1024 * 1024, // 100MB
-    STORAGE: 'indexeddb', // indexeddb | localstorage
+    TTL: 300,
+    MAX_SIZE: 100 * 1024 * 1024,
+    STORAGE: 'indexeddb',
     TABLES: {
       SURAT_MASUK: 'cache_sm',
       SURAT_KELUAR: 'cache_sk',
@@ -407,7 +590,7 @@ const APP_CONFIG = {
       DASHBOARD: 'cache_dash'
     }
   },
-  
+
   // PWA Configuration
   PWA: {
     ENABLED: true,
@@ -423,7 +606,7 @@ const APP_CONFIG = {
     ],
     OFFLINE_PAGE: '/src/pages/error/offline.html'
   },
-  
+
   // Analytics Configuration
   ANALYTICS: {
     ENABLED: true,
@@ -434,7 +617,7 @@ const APP_CONFIG = {
     BATCH_SIZE: 10,
     FLUSH_INTERVAL: 30000
   },
-  
+
   // Security Configuration
   SECURITY: {
     CSP_ENABLED: true,
@@ -445,7 +628,7 @@ const APP_CONFIG = {
       KEY_LENGTH: 256
     }
   },
-  
+
   // Performance Configuration
   PERFORMANCE: {
     LAZY_LOAD_IMAGES: true,
@@ -456,7 +639,269 @@ const APP_CONFIG = {
   }
 };
 
-// User Roles
+// ============================================
+// API HELPER FUNCTIONS
+// ============================================
+const ApiHelper = {
+  /**
+   * Mendapatkan Spreadsheet ID yang sudah didecode
+   */
+  getSpreadsheetId() {
+    return Base64Util.decode(GOOGLE_SHEETS_CONFIG.SPREADSHEET_ID_ENCODED);
+  },
+
+  /**
+   * Membangun URL endpoint
+   */
+  buildUrl(endpoint) {
+    return `${APP_CONFIG.API.BASE_URL}?action=${endpoint}`;
+  },
+
+  /**
+   * Encode data untuk dikirim ke Google Apps Script
+   */
+  encodePayload(data) {
+    return {
+      payload: Base64Util.encodeObject(data),
+      timestamp: Date.now(),
+      version: APP_CONFIG.APP_VERSION
+    };
+  },
+
+  /**
+   * Decode response dari Google Apps Script
+   */
+  decodeResponse(response) {
+    if (response && response.payload) {
+      return Base64Util.decodeObject(response.payload);
+    }
+    return response;
+  },
+
+  /**
+   * Upload file dengan Base64 encoding
+   */
+  async prepareFileUpload(file) {
+    const base64 = await Base64Util.encodeFile(file);
+    return {
+      fileName: file.name,
+      mimeType: file.type,
+      size: file.size,
+      base64Data: base64,
+      lastModified: file.lastModified
+    };
+  },
+
+  /**
+   * Decode file dari response
+   */
+  decodeFileResponse(response, fileName, mimeType) {
+    if (response && response.fileBase64) {
+      return Base64Util.decodeToFile(response.fileBase64, fileName, mimeType);
+    }
+    return null;
+  }
+};
+
+// ============================================
+// DATA TRANSFORMER
+// ============================================
+const DataTransformer = {
+  /**
+   * Transform data surat masuk untuk spreadsheet
+   */
+  suratMasukToSheet(data) {
+    return {
+      nomorSurat: data.nomor_surat,
+      tanggalSurat: data.tanggal_surat,
+      tanggalDiterima: data.tanggal_diterima,
+      pengirim: data.pengirim,
+      perihal: data.perihal,
+      sifat: data.sifat,
+      status: data.status || 'diterima',
+      fileUrl: data.file_url || '',
+      fileName: data.file_name || '',
+      fileBase64: data.file_base64 || '',
+      klasifikasi: data.klasifikasi || '',
+      catatan: data.catatan || '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      createdBy: data.created_by || ''
+    };
+  },
+
+  /**
+   * Transform data surat keluar untuk spreadsheet
+   */
+  suratKeluarToSheet(data) {
+    return {
+      nomorSurat: data.nomor_surat,
+      tanggalSurat: data.tanggal_surat,
+      tujuan: data.tujuan,
+      perihal: data.perihal,
+      sifat: data.sifat,
+      status: data.status || 'draft',
+      fileUrl: data.file_url || '',
+      fileName: data.file_name || '',
+      fileBase64: data.file_base64 || '',
+      klasifikasi: data.klasifikasi || '',
+      approvalStatus: data.approval_status || 'pending',
+      disposisiTerkait: data.disposisi_terkait || '',
+      catatan: data.catatan || '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      createdBy: data.created_by || ''
+    };
+  },
+
+  /**
+   * Transform data disposisi untuk spreadsheet
+   */
+  disposisiToSheet(data) {
+    return {
+      suratId: data.surat_id,
+      suratType: data.surat_type,
+      dari: data.dari,
+      kepada: data.kepada,
+      instruksi: data.instruksi,
+      status: data.status || 'pending',
+      tanggalTenggat: data.tanggal_tenggat,
+      tanggalSelesai: data.tanggal_selesai || '',
+      tindakLanjut: data.tindak_lanjut || '',
+      prioritas: data.prioritas || 'normal',
+      eskalasi: data.eskalasi || '',
+      catatan: data.catatan || '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  },
+
+  /**
+   * Transform sheet data ke format frontend
+   */
+  sheetToFrontend(sheetData, type) {
+    const transformers = {
+      surat_masuk: (row) => ({
+        id: row[0],
+        nomor_surat: row[1],
+        tanggal_surat: row[2],
+        tanggal_diterima: row[3],
+        pengirim: row[4],
+        perihal: row[5],
+        sifat: row[6],
+        status: row[7],
+        file_url: row[8],
+        file_name: row[9],
+        file_base64: row[10],
+        klasifikasi: row[11],
+        catatan: row[12],
+        created_at: row[13],
+        updated_at: row[14],
+        created_by: row[15]
+      }),
+      surat_keluar: (row) => ({
+        id: row[0],
+        nomor_surat: row[1],
+        tanggal_surat: row[2],
+        tujuan: row[3],
+        perihal: row[4],
+        sifat: row[5],
+        status: row[6],
+        file_url: row[7],
+        file_name: row[8],
+        file_base64: row[9],
+        klasifikasi: row[10],
+        approval_status: row[11],
+        disposisi_terkait: row[12],
+        catatan: row[13],
+        created_at: row[14],
+        updated_at: row[15],
+        created_by: row[16]
+      }),
+      disposisi: (row) => ({
+        id: row[0],
+        surat_id: row[1],
+        surat_type: row[2],
+        dari: row[3],
+        kepada: row[4],
+        instruksi: row[5],
+        status: row[6],
+        tanggal_tenggat: row[7],
+        tanggal_selesai: row[8],
+        tindak_lanjut: row[9],
+        prioritas: row[10],
+        eskalasi: row[11],
+        catatan: row[12],
+        created_at: row[13],
+        updated_at: row[14]
+      })
+    };
+
+    const transformer = transformers[type];
+    if (!transformer) return sheetData;
+
+    if (Array.isArray(sheetData)) {
+      return sheetData.map(transformer);
+    }
+    return transformer(sheetData);
+  }
+};
+
+// ============================================
+// CACHE MANAGER
+// ============================================
+const CacheManager = {
+  async get(key) {
+    try {
+      const cacheKey = APP_CONFIG.CACHE.PREFIX + key;
+      const cached = localStorage.getItem(cacheKey);
+      if (!cached) return null;
+
+      const { data, timestamp, ttl } = JSON.parse(cached);
+      if (Date.now() - timestamp > ttl * 1000) {
+        localStorage.removeItem(cacheKey);
+        return null;
+      }
+
+      return Base64Util.decodeObject(data);
+    } catch (e) {
+      console.error('Cache get error:', e);
+      return null;
+    }
+  },
+
+  async set(key, data, ttl = APP_CONFIG.CACHE.TTL) {
+    try {
+      const cacheKey = APP_CONFIG.CACHE.PREFIX + key;
+      const cacheData = {
+        data: Base64Util.encodeObject(data),
+        timestamp: Date.now(),
+        ttl: ttl
+      };
+      localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+    } catch (e) {
+      console.error('Cache set error:', e);
+    }
+  },
+
+  async remove(key) {
+    const cacheKey = APP_CONFIG.CACHE.PREFIX + key;
+    localStorage.removeItem(cacheKey);
+  },
+
+  async clear() {
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (key.startsWith(APP_CONFIG.CACHE.PREFIX)) {
+        localStorage.removeItem(key);
+      }
+    });
+  }
+};
+
+// ============================================
+// CONSTANTS
+// ============================================
 const USER_ROLES = {
   ADMIN: 'admin',
   KABID: 'kabid',
@@ -465,7 +910,6 @@ const USER_ROLES = {
   SEKRETARIS: 'sekretaris'
 };
 
-// Surat Status
 const SURAT_STATUS = {
   DRAFT: 'draft',
   DITERIMA: 'diterima',
@@ -475,7 +919,6 @@ const SURAT_STATUS = {
   DITOLAK: 'ditolak'
 };
 
-// Surat Sifat
 const SURAT_SIFAT = {
   BIASA: 'biasa',
   PENTING: 'penting',
@@ -484,7 +927,6 @@ const SURAT_SIFAT = {
   SANGAT_RAHASIA: 'sangat_rahasia'
 };
 
-// Approval Status
 const APPROVAL_STATUS = {
   PENDING: 'pending',
   APPROVED: 'approved',
@@ -492,7 +934,6 @@ const APPROVAL_STATUS = {
   REVISI: 'revisi'
 };
 
-// Disposisi Status
 const DISPOSISI_STATUS = {
   PENDING: 'pending',
   DITERIMA: 'diterima',
@@ -502,7 +943,6 @@ const DISPOSISI_STATUS = {
   DIBATALKAN: 'dibatalkan'
 };
 
-// Notification Types
 const NOTIFICATION_TYPES = {
   INFO: 'info',
   SUCCESS: 'success',
@@ -514,10 +954,17 @@ const NOTIFICATION_TYPES = {
   SYSTEM: 'system'
 };
 
-// Export untuk digunakan di modul lain
+// ============================================
+// EXPORT FOR MODULE SYSTEMS
+// ============================================
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
+    Base64Util,
+    GOOGLE_SHEETS_CONFIG,
     APP_CONFIG,
+    ApiHelper,
+    DataTransformer,
+    CacheManager,
     USER_ROLES,
     SURAT_STATUS,
     SURAT_SIFAT,
@@ -525,4 +972,22 @@ if (typeof module !== 'undefined' && module.exports) {
     DISPOSISI_STATUS,
     NOTIFICATION_TYPES
   };
+}
+
+// ============================================
+// GLOBAL EXPOSURE (For non-module scripts)
+// ============================================
+if (typeof window !== 'undefined') {
+  window.Base64Util = Base64Util;
+  window.GOOGLE_SHEETS_CONFIG = GOOGLE_SHEETS_CONFIG;
+  window.APP_CONFIG = APP_CONFIG;
+  window.ApiHelper = ApiHelper;
+  window.DataTransformer = DataTransformer;
+  window.CacheManager = CacheManager;
+  window.USER_ROLES = USER_ROLES;
+  window.SURAT_STATUS = SURAT_STATUS;
+  window.SURAT_SIFAT = SURAT_SIFAT;
+  window.APPROVAL_STATUS = APPROVAL_STATUS;
+  window.DISPOSISI_STATUS = DISPOSISI_STATUS;
+  window.NOTIFICATION_TYPES = NOTIFICATION_TYPES;
 }
