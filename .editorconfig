@@ -1,31 +1,31 @@
-# EditorConfig is awesome: https://EditorConfig.org
+# ==================== EDITOR CONFIG ====================
+# Arsip Surat Digital Enterprise
 
-# Top-most EditorConfig file
 root = true
 
-# Unix-style newlines with a newline ending every file
 [*]
-end_of_line = lf
-insert_final_newline = true
-trim_trailing_whitespace = true
-charset = utf-8
-
-# 2 space indentation for web files
-[*.{js,jsx,ts,tsx,json,yml,yaml,css,scss,html,ejs}]
-indent_style = space
-indent_size = 2
-
-# 4 space indentation for markdown
-[*.md]
 indent_style = space
 indent_size = 4
-trim_trailing_whitespace = false
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
 
-# Tab indentation for Makefiles
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+indent_size = 2
+
 [Makefile]
 indent_style = tab
 
-# Package.json specific
-[package.json]
-indent_style = space
+[*.sh]
+indent_style = tab
+
+[*.{html,ejs,css}]
+indent_size = 4
+
+[*.{svg,xml}]
 indent_size = 2
