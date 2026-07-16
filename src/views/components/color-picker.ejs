@@ -1,0 +1,42 @@
+<!-- Color Picker Component -->
+<div class="color-picker">
+    <label class="form-label"><%= label || 'Pilih Warna' %></label>
+    <div class="color-options">
+        <% const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16']; %>
+        <% colors.forEach(function(color) { %>
+            <div class="color-option <%= selected === color ? 'selected' : '' %>" 
+                 style="background: <%= color %>;" 
+                 onclick="selectColor(this, '<%= color %>', '<%= id || 'colorPicker' %>')"
+                 title="<%= color %>">
+                <% if (selected === color) { %><span>✓</span><% } %>
+            </div>
+        <% }); %>
+    </div>
+    <input type="hidden" id="<%= id || 'colorPicker' %>" value="<%= selected || '#3b82f6' %>">
+</div>
+
+<style>
+    .color-picker { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .color-options { display: flex; gap: 8px; flex-wrap: wrap; }
+    .color-option {
+        width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+        border: 3px solid transparent; transition: all 0.2s;
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 14px; font-weight: 700;
+    }
+    .color-option:hover { transform: scale(1.15); }
+    .color-option.selected { border-color: #1f2937; transform: scale(1.1); }
+</style>
+
+<script>
+    function selectColor(element, color, inputId) {
+        document.querySelectorAll('.color-option').forEach(el => {
+            el.classList.remove('selected');
+            el.querySelector('span')?.remove();
+        });
+        element.classList.add('selected');
+        element.innerHTML = '<span>✓</span>';
+        document.getElementById(inputId).value = color;
+    }
+</script>
