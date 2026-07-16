@@ -1,0 +1,38 @@
+<!-- Wizard Component -->
+<div class="wizard" id="<%= id || 'wizard' %>">
+    <div class="wizard-steps">
+        <% steps.forEach(function(step, index) { %>
+            <div class="wizard-step <%= index < current ? 'completed' : '' %> <%= index === current ? 'active' : '' %>">
+                <div class="wizard-step-num"><%= index < current ? '✓' : index + 1 %></div>
+                <div class="wizard-step-label"><%= step %></div>
+                <% if (index < steps.length - 1) { %><div class="wizard-step-line <%= index < current ? 'completed' : '' %>"></div><% } %>
+            </div>
+        <% }); %>
+    </div>
+    <div class="wizard-content">
+        <%- currentContent %>
+    </div>
+    <div class="wizard-actions">
+        <% if (current > 0) { %><button class="btn" onclick="wizardPrev('<%= id || 'wizard' %>')">← Sebelumnya</button><% } %>
+        <% if (current < steps.length - 1) { %><button class="btn btn-primary" onclick="wizardNext('<%= id || 'wizard' %>')">Selanjutnya →</button><% } else { %><button class="btn btn-primary" onclick="wizardFinish('<%= id || 'wizard' %>')">✅ Selesai</button><% } %>
+    </div>
+</div>
+
+<style>
+    .wizard { background:white;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden }
+    .wizard-steps { display:flex;align-items:center;padding:24px 32px;background:#f9fafb;border-bottom:1px solid #e5e7eb }
+    .wizard-step { display:flex;align-items:center;flex:1;position:relative }
+    .wizard-step-num { width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;background:#e5e7eb;color:#9ca3af;flex-shrink:0 }
+    .wizard-step.active .wizard-step-num { background:#1a56db;color:white;box-shadow:0 0 0 4px rgba(26,86,219,0.2) }
+    .wizard-step.completed .wizard-step-num { background:#10b981;color:white }
+    .wizard-step-label { font-size:13px;font-weight:500;margin-left:8px;color:#9ca3af;white-space:nowrap }
+    .wizard-step.active .wizard-step-label { color:#1a56db;font-weight:600 }
+    .wizard-step.completed .wizard-step-label { color:#10b981 }
+    .wizard-step-line { flex:1;height:2px;background:#e5e7eb;margin:0 16px }
+    .wizard-step-line.completed { background:#10b981 }
+    .wizard-content { padding:24px 32px;min-height:200px }
+    .wizard-actions { display:flex;justify-content:flex-end;gap:10px;padding:16px 32px;border-top:1px solid #e5e7eb }
+    .btn { padding:10px 20px;border:1px solid #e5e7eb;border-radius:8px;background:white;cursor:pointer;font-size:14px;font-family:inherit }
+    .btn-primary { background:#1a56db;color:white;border-color:#1a56db }
+    .btn-primary:hover { background:#1e40af }
+</style>
