@@ -1,328 +1,371 @@
-// ==================== SERVICE WORKER ====================
-// Arsip Surat Digital Enterprise - Service Worker
-// Version: 2.1.0
+/**
+ * ============================================================
+ * ARSIP SURAT DIGITAL ENTERPRISE v3.0.0
+ * Service Worker - PWA Support
+ * ============================================================
+ * Provides offline caching and background sync capabilities
+ * ============================================================
+ */
 
-const CACHE_NAME = 'arsip-surat-v2.1.0';
-const RUNTIME_CACHE = 'arsip-surat-runtime';
+const CACHE_NAME = 'arsip-surat-enterprise-v3.0.0';
+const RUNTIME_CACHE = 'arsip-surat-runtime-v3';
+const API_CACHE = 'arsip-surat-api-v3';
 
 // Resources to pre-cache
-const PRECACHE_URLS = [
-    './',
-    './index.html',
-    './offline.html',
-    './manifest.json',
-    './version.json',
-    './src/public/css/app.css',
-    './src/public/css/dashboard.css',
-    './src/public/js/app.js',
-    './src/views/errors/404.ejs',
-    './src/views/errors/500.ejs',
-    './src/views/errors/403.ejs'
+const PRE_CACHE_URLS = [
+    '/',
+    '/index.html',
+    '/login.html',
+    '/dashboard.html',
+    '/surat-masuk.html',
+    '/surat-keluar.html',
+    '/disposisi.html',
+    '/laporan.html',
+    '/admin.html',
+    '/profile.html',
+    '/404.html',
+    '/offline.html',
+    '/src/public/js/enterprise-core.js',
+    '/src/public/css/enterprise.css',
+    '/src/manifest.json',
 ];
 
-// ==================== INSTALL EVENT ====================
+// Install event - pre-cache critical resources
 self.addEventListener('install', (event) => {
-    console.log('[Service Worker] Installing v2.1.0...');
+    console.log('📱 Service Worker: Installing...');
     
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log('[Service Worker] Pre-caching resources');
-                return cache.addAll(PRECACHE_URLS).catch(err => {
-                    console.warn('[Service Worker] Some resources failed to cache:', err);
-                    // Continue even if some fail
-                    return Promise.resolve();
-                });
+                console.log('📦 Pre-caching resources...');
+                return cache.addAll(PRE_CACHE_URLS);
             })
             .then(() => {
-                console.log('[Service Worker] Skip waiting');
+                console.log('✅ Pre-caching complete');
                 return self.skipWaiting();
             })
-    );
-});
-
-// ==================== ACTIVATE EVENT ====================
-self.addEventListener('activate', (event) => {
-    console.log('[Service Worker] Activating v2.1.0...');
-    
-    const cacheWhitelist = [CACHE_NAME, RUNTIME_CACHE];
-    
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (!cacheWhitelist.includes(cacheName)) {
-                        console.log('[Service Worker] Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        }).then(() => {
-            console.log('[Service Worker] Claiming clients');
-            return self.clients.claim();
-        })
-    );
-});
-
-// ==================== FETCH EVENT ====================
-self.addEventListener('fetch', (event) => {
-    // Skip non-GET requests and chrome-extension requests
-    if (event.request.method !== 'GET' || 
-        event.request.url.startsWith('chrome-extension://')) {
-        return;
-    }
-
-    // Skip API calls and external resources
-    const url = new URL(event.request.url);
-    if (url.pathname.startsWith('/api/') || 
-        url.hostname !== self.location.hostname) {
-        return;
-    }
-
-    event.respondWith(
-        caches.match(event.request)
-            .then((cachedResponse) => {
-                // Return cached response if available
-                if (cachedResponse) {
-                    // Fetch fresh version in background
-                    fetch(event.request)
-                        .then((response) => {
-                            if (response && response.status === 200) {
-                                const responseClone = response.clone();
-                                caches.open(RUNTIME_CACHE)
-                                    .then((cache) => {
-                                        cache.put(event.request, responseClone);
-                                    });
-                            }
-                        })
-                        .catch(() => {
-                            // Ignore fetch errors for background update
-                        });
-                    
-                    return cachedResponse;
-                }
-
-                // Network first, then cache
-                return fetch(event.request)
-                    .then((response) => {
-                        // Check if valid response
-                        if (!response || response.status !== 200 || 
-                            response.type !== 'basic') {
-                            return response;
-                        }
-
-                        // Cache the response
-                        const responseClone = response.clone();
-                        caches.open(RUNTIME_CACHE)
-                            .then((cache) => {
-                                cache.put(event.request, responseClone);
-                            });
-
-                        return response;
-                    })
-                    .catch(() => {
-                        // Network failed, serve offline page for navigation
-                        if (event.request.mode === 'navigate') {
-                            return caches.match('./offline.html');
-                        }
-                        // Return cached version or throw error
-                        return caches.match(event.request);
-                    });
+            .catch((error) => {
+                console.error('❌ Pre-cache error:', error);
             })
     );
 });
 
-// ==================== PUSH NOTIFICATION ====================
-self.addEventListener('push', (event) => {
-    console.log('[Service Worker] Push received:', event);
+// Activate event - clean old caches
+self.addEventListener('activate', (event) => {
+    console.log('📱 Service Worker: Activating...');
     
-    let data = {
-        title: 'Arsip Surat Digital',
-        body: 'Notifikasi baru',
-        icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiIgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2Ij48cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHJ4PSIxNiIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjQ4IiB5PSI2MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjQwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==',
-        badge: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiIgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2Ij48cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHJ4PSIxNiIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjQ4IiB5PSI2MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjQwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==',
-        tag: 'arsip-surat-notification',
-        data: {
-            url: './'
-        }
-    };
-
-    if (event.data) {
-        try {
-            data = { ...data, ...event.data.json() };
-        } catch (e) {
-            data.body = event.data.text();
-        }
-    }
-
-    const options = {
-        body: data.body,
-        icon: data.icon,
-        badge: data.badge,
-        tag: data.tag,
-        data: data.data,
-        vibrate: [200, 100, 200],
-        actions: [
-            {
-                action: 'open',
-                title: 'Buka'
-            },
-            {
-                action: 'close',
-                title: 'Tutup'
-            }
-        ],
-        requireInteraction: false,
-        silent: false
-    };
-
+    const currentCaches = [CACHE_NAME, RUNTIME_CACHE, API_CACHE];
+    
     event.waitUntil(
-        self.registration.showNotification(data.title, options)
+        caches.keys()
+            .then((cacheNames) => {
+                return Promise.all(
+                    cacheNames.map((cacheName) => {
+                        if (!currentCaches.includes(cacheName)) {
+                            console.log('🗑️ Deleting old cache:', cacheName);
+                            return caches.delete(cacheName);
+                        }
+                    })
+                );
+            })
+            .then(() => {
+                console.log('✅ Service Worker activated');
+                return self.clients.claim();
+            })
     );
 });
 
-// ==================== NOTIFICATION CLICK ====================
-self.addEventListener('notificationclick', (event) => {
-    console.log('[Service Worker] Notification click:', event);
+// Fetch event - serve from cache, then network
+self.addEventListener('fetch', (event) => {
+    const { request } = event;
+    const url = new URL(request.url);
     
-    event.notification.close();
-
-    if (event.action === 'close') {
-        return;
+    // Skip non-GET requests
+    if (request.method !== 'GET') return;
+    
+    // Skip Google Apps Script API calls (they're handled by JSONP)
+    if (url.href.includes('script.google.com')) return;
+    
+    // Skip chrome-extension and other non-http requests
+    if (!url.protocol.startsWith('http')) return;
+    
+    // Strategy: Network First for HTML, Cache First for assets
+    if (request.headers.get('Accept')?.includes('text/html')) {
+        // HTML - Network first, fallback to cache, then offline page
+        event.respondWith(networkFirstStrategy(request));
+    } else if (
+        request.url.includes('/src/') ||
+        request.url.includes('.css') ||
+        request.url.includes('.js') ||
+        request.url.includes('.png') ||
+        request.url.includes('.jpg') ||
+        request.url.includes('.svg') ||
+        request.url.includes('.ico')
+    ) {
+        // Assets - Cache first, fallback to network
+        event.respondWith(cacheFirstStrategy(request));
+    } else if (request.url.includes('/api/') || request.headers.get('Accept')?.includes('application/json')) {
+        // API calls - Network first with cache fallback
+        event.respondWith(networkFirstWithCacheStrategy(request));
+    } else {
+        // Default - Network first
+        event.respondWith(networkFirstStrategy(request));
     }
+});
 
-    const urlToOpen = event.notification.data?.url || './';
+/**
+ * Network First Strategy
+ * Try network first, fallback to cache, then offline page
+ */
+async function networkFirstStrategy(request) {
+    try {
+        const networkResponse = await fetch(request);
+        
+        // Cache the response
+        if (networkResponse.ok) {
+            const cache = await caches.open(RUNTIME_CACHE);
+            cache.put(request, networkResponse.clone());
+        }
+        
+        return networkResponse;
+    } catch (error) {
+        console.log('⚠️ Network failed, trying cache:', request.url);
+        
+        const cachedResponse = await caches.match(request);
+        if (cachedResponse) {
+            return cachedResponse;
+        }
+        
+        // If HTML request fails, show offline page
+        if (request.headers.get('Accept')?.includes('text/html')) {
+            return caches.match('/offline.html');
+        }
+        
+        throw error;
+    }
+}
 
-    event.waitUntil(
-        clients.matchAll({
-            type: 'window',
-            includeUncontrolled: true
-        }).then((clientList) => {
-            // Check if there's already a window open
-            for (const client of clientList) {
-                if (client.url.includes(self.location.origin) && 
-                    'focus' in client) {
-                    return client.focus();
+/**
+ * Cache First Strategy
+ * Try cache first, fallback to network
+ */
+async function cacheFirstStrategy(request) {
+    const cachedResponse = await caches.match(request);
+    
+    if (cachedResponse) {
+        // Update cache in background
+        fetch(request)
+            .then((response) => {
+                if (response.ok) {
+                    caches.open(RUNTIME_CACHE)
+                        .then((cache) => cache.put(request, response));
                 }
-            }
-            // Open new window
-            if (clients.openWindow) {
-                return clients.openWindow(urlToOpen);
-            }
-        })
-    );
-});
-
-// ==================== MESSAGE EVENT ====================
-self.addEventListener('message', (event) => {
-    console.log('[Service Worker] Message received:', event.data);
-    
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
+            })
+            .catch(() => {});
+        
+        return cachedResponse;
     }
     
-    if (event.data && event.data.type === 'CLEAR_CACHE') {
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    return caches.delete(cacheName);
-                })
-            );
-        }).then(() => {
-            console.log('[Service Worker] All caches cleared');
-            // Notify client
-            event.ports[0]?.postMessage({ result: 'success' });
-        });
+    try {
+        const networkResponse = await fetch(request);
+        
+        if (networkResponse.ok) {
+            const cache = await caches.open(RUNTIME_CACHE);
+            cache.put(request, networkResponse.clone());
+        }
+        
+        return networkResponse;
+    } catch (error) {
+        console.error('❌ Both cache and network failed:', request.url);
+        throw error;
     }
-});
+}
 
-// ==================== BACKGROUND SYNC ====================
-self.addEventListener('sync', (event) => {
-    console.log('[Service Worker] Background Sync:', event.tag);
-    
-    if (event.tag === 'sync-surat') {
-        event.waitUntil(
-            syncPendingSurat()
+/**
+ * Network First with Cache Fallback Strategy (for API calls)
+ */
+async function networkFirstWithCacheStrategy(request) {
+    try {
+        const networkResponse = await fetch(request);
+        
+        if (networkResponse.ok) {
+            const cache = await caches.open(API_CACHE);
+            cache.put(request, networkResponse.clone());
+        }
+        
+        return networkResponse;
+    } catch (error) {
+        console.log('⚠️ API offline, using cached data');
+        
+        const cachedResponse = await caches.match(request);
+        if (cachedResponse) {
+            return cachedResponse;
+        }
+        
+        // Return offline JSON response
+        return new Response(
+            JSON.stringify({
+                success: false,
+                message: 'Anda sedang offline. Data akan disinkronkan saat koneksi tersedia.',
+                offline: true,
+                timestamp: new Date().toISOString()
+            }),
+            {
+                status: 503,
+                headers: { 'Content-Type': 'application/json' }
+            }
         );
     }
+}
+
+// Background Sync
+self.addEventListener('sync', (event) => {
+    console.log('🔄 Background Sync triggered:', event.tag);
+    
+    if (event.tag === 'sync-surat') {
+        event.waitUntil(syncPendingRequests());
+    }
+    
+    if (event.tag === 'sync-logs') {
+        event.waitUntil(syncPendingLogs());
+    }
 });
 
-async function syncPendingSurat() {
+/**
+ * Sync pending requests stored in IndexedDB
+ */
+async function syncPendingRequests() {
     try {
-        // Get pending surat from IndexedDB
-        const pendingData = await getPendingData();
+        // Open IndexedDB
+        const db = await openDatabase();
+        const transaction = db.transaction(['pending_requests'], 'readonly');
+        const store = transaction.objectStore('pending_requests');
+        const requests = await store.getAll();
         
-        if (pendingData && pendingData.length > 0) {
-            for (const data of pendingData) {
-                try {
-                    const response = await fetch('/api/sync', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    });
-                    
-                    if (response.ok) {
-                        await removePendingData(data.id);
-                    }
-                } catch (err) {
-                    console.error('Sync failed for:', data.id, err);
+        if (requests.length === 0) {
+            console.log('✅ No pending requests to sync');
+            return;
+        }
+        
+        console.log(`🔄 Syncing ${requests.length} pending requests...`);
+        
+        // Send each pending request
+        for (const request of requests) {
+            try {
+                const response = await fetch(request.url, {
+                    method: request.method,
+                    headers: request.headers,
+                    body: request.body
+                });
+                
+                if (response.ok) {
+                    // Remove from pending
+                    const deleteTx = db.transaction(['pending_requests'], 'readwrite');
+                    const deleteStore = deleteTx.objectStore('pending_requests');
+                    await deleteStore.delete(request.id);
+                    console.log('✅ Synced:', request.id);
                 }
+            } catch (error) {
+                console.error('❌ Failed to sync:', request.id, error);
             }
         }
-    } catch (err) {
-        console.error('Background sync failed:', err);
+    } catch (error) {
+        console.error('❌ Background sync failed:', error);
     }
 }
 
-// ==================== INDEXEDDB HELPERS ====================
-function openDB() {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open('ArsipSuratOffline', 1);
-        
-        request.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains('pendingSurat')) {
-                db.createObjectStore('pendingSurat', { 
-                    keyPath: 'id', 
-                    autoIncrement: true 
-                });
-            }
-        };
-        
-        request.onsuccess = (event) => {
-            resolve(event.target.result);
-        };
-        
-        request.onerror = (event) => {
-            reject(event.target.error);
-        };
-    });
+async function syncPendingLogs() {
+    // Similar to syncPendingRequests but for activity logs
+    console.log('🔄 Syncing activity logs...');
 }
 
-async function getPendingData() {
-    const db = await openDB();
+function openDatabase() {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction('pendingSurat', 'readonly');
-        const store = transaction.objectStore('pendingSurat');
-        const request = store.getAll();
-        
+        const request = indexedDB.open('ArsipSuratEnterprise', 3);
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
     });
 }
 
-async function removePendingData(id) {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-        const transaction = db.transaction('pendingSurat', 'readwrite');
-        const store = transaction.objectStore('pendingSurat');
-        const request = store.delete(id);
-        
-        request.onsuccess = () => resolve();
-        request.onerror = () => reject(request.error);
-    });
-}
+// Push Notification
+self.addEventListener('push', (event) => {
+    console.log('📨 Push notification received');
+    
+    let data = {
+        title: 'Arsip Surat Digital',
+        body: 'Ada notifikasi baru untuk Anda',
+        icon: '/src/public/img/icon-192x192.png',
+        badge: '/src/public/img/badge-72x72.png',
+        data: {
+            url: '/dashboard.html'
+        }
+    };
+    
+    if (event.data) {
+        try {
+            data = { ...data, ...event.data.json() };
+        } catch (error) {
+            console.error('Push data parse error:', error);
+        }
+    }
+    
+    event.waitUntil(
+        self.registration.showNotification(data.title, {
+            body: data.body,
+            icon: data.icon,
+            badge: data.badge,
+            vibrate: [200, 100, 200],
+            data: data.data,
+            actions: [
+                { action: 'open', title: 'Buka' },
+                { action: 'close', title: 'Tutup' }
+            ]
+        })
+    );
+});
 
-console.log('[Service Worker] Service Worker v2.1.0 loaded');
+// Notification click handler
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    
+    if (event.action === 'open' || !event.action) {
+        const url = event.notification.data?.url || '/dashboard.html';
+        
+        event.waitUntil(
+            clients.matchAll({ type: 'window' })
+                .then((clientList) => {
+                    // If window is already open, focus it
+                    for (const client of clientList) {
+                        if (client.url.includes(url) && 'focus' in client) {
+                            return client.focus();
+                        }
+                    }
+                    // Otherwise open new window
+                    if (clients.openWindow) {
+                        return clients.openWindow(url);
+                    }
+                })
+        );
+    }
+});
+
+// Message handler from main thread
+self.addEventListener('message', (event) => {
+    console.log('📨 Message from main thread:', event.data);
+    
+    if (event.data.action === 'skipWaiting') {
+        self.skipWaiting();
+    }
+    
+    if (event.data.action === 'clearCache') {
+        event.waitUntil(
+            caches.keys().then((cacheNames) => {
+                return Promise.all(
+                    cacheNames.map((cacheName) => caches.delete(cacheName))
+                );
+            })
+        );
+    }
+});
+
+console.log('📱 Service Worker: Ready!');
