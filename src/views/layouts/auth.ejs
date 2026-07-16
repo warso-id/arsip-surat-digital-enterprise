@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | <%= appName %></title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <link rel="stylesheet" href="/css/app.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #ecfdf5 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+        }
+        .auth-container {
+            width: 100%;
+            max-width: 28rem;
+        }
+        .auth-card {
+            background: #fff;
+            border-radius: 1rem;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-logo {
+            width: 5rem;
+            height: 5rem;
+            border-radius: 1.25rem;
+            background: linear-gradient(135deg, #1a56db, #7c3aed);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(26,86,219,0.3);
+        }
+        .auth-title { font-size: 1.5rem; font-weight: 800; color: #1f2937; }
+        .auth-subtitle { font-size: 0.875rem; color: #64748b; margin-top: 0.25rem; }
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.8125rem;
+            color: #64748b;
+        }
+        .auth-footer a { color: #1a56db; text-decoration: none; font-weight: 500; }
+        .auth-footer a:hover { text-decoration: underline; }
+        
+        @media (max-width: 480px) {
+            .auth-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">AD</div>
+                <h1 class="auth-title"><%= appName %></h1>
+                <p class="auth-subtitle"><%= title %></p>
+            </div>
+            <%- body %>
+        </div>
+        <div class="auth-footer">
+            <p>&copy; <%= currentYear %> <%= appName %> v<%= appVersion %></p>
+            <p style="margin-top: 0.5rem;">
+                <a href="/">Beranda</a> • 
+                <a href="/docs/">Dokumentasi</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
