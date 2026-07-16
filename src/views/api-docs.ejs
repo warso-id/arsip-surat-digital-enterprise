@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - Arsip Surat Digital Enterprise</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <style>
+        :root {
+            --primary: #1a56db; --secondary: #64748b; --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444; --dark: #1f2937;
+            --light: #f9fafb; --lighter: #ffffff; --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--light); color: var(--dark); }
+        
+        .header { background: linear-gradient(135deg, var(--primary), #7c3aed); color: white; padding: 40px 20px; text-align: center; }
+        .header h1 { font-size: 32px; font-weight: 800; margin-bottom: 10px; }
+        .header p { font-size: 16px; opacity: 0.9; }
+        
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        
+        .endpoint-card { background: var(--lighter); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
+        .endpoint-header { display: flex; align-items: center; gap: 15px; padding: 15px 20px; background: var(--light); border-bottom: 1px solid var(--border); }
+        .method-badge { padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; color: white; }
+        .method-GET { background: #10b981; }
+        .method-POST { background: #1a56db; }
+        .method-PUT { background: #f59e0b; }
+        .method-DELETE { background: #ef4444; }
+        .method-PATCH { background: #7c3aed; }
+        .endpoint-url { font-family: var(--font-mono); font-size: 14px; font-weight: 600; }
+        .endpoint-auth { font-size: 12px; padding: 3px 8px; border-radius: 4px; margin-left: 10px; }
+        .auth-required { background: #fef3c7; color: #92400e; }
+        .auth-optional { background: #e0e7ff; color: #3730a3; }
+        .endpoint-body { padding: 20px; }
+        .endpoint-desc { font-size: 14px; color: var(--secondary); margin-bottom: 15px; }
+        
+        pre { background: #1f2937; color: #e5e7eb; padding: 15px 20px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.6; font-family: var(--font-mono); }
+        pre .key { color: #93c5fd; }
+        pre .string { color: #86efac; }
+        pre .number { color: #fbbf24; }
+        pre .comment { color: #6b7280; }
+        
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--primary); text-decoration: none; font-weight: 600; margin-bottom: 30px; }
+        .back-link:hover { text-decoration: underline; }
+        
+        .gas-section { background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .gas-section h3 { color: #92400e; margin-bottom: 10px; }
+        .gas-section code { background: #fef3c7; padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 13px; }
+        
+        @media (max-width: 768px) { .header { padding: 30px 20px; } .header h1 { font-size: 24px; } .endpoint-header { flex-wrap: wrap; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📡 API Documentation</h1>
+        <p>Arsip Surat Digital Enterprise v2.1.0</p>
+    </div>
+    
+    <div class="container">
+        <a href="/" class="back-link">← Kembali ke Beranda</a>
+        
+        <!-- Google Apps Script Section -->
+        <div class="gas-section">
+            <h3>🔗 Google Apps Script Integration (Base64 Encoded)</h3>
+            <p style="font-size: 13px; color: #92400e; margin-bottom: 10px;">
+                URL GAS di-encode menggunakan Base64 untuk keamanan:
+            </p>
+            <pre><span class="comment">// Encoded URL (Aman untuk GitHub)</span>
+<span class="key">const</span> GAS_BASE64 = <span class="string">'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3YmxhdXcyOUN2OHJtcmpRSGhmWGdkbDBjc0JIbHhPM3h2WkppbXlCc1N5QTRGNWY5cUgyNUVqNVFZSXUtLU9HeTZCdwvZXhlYw=='</span>;
+
+<span class="comment">// Decode</span>
+<span class="key">const</span> GAS_URL = Buffer.<span class="key">from</span>(GAS_BASE64, <span class="string">'base64'</span>).toString();
+<span class="comment">// → https://script.google.com/macros/s/AKfycbw.../exec</span></pre>
+        </div>
+        
+        <!-- Authentication -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method-badge method-POST">POST</span>
+                <span class="endpoint-url">/auth/login</span>
+                <span class="endpoint-auth auth-optional">Public</span>
+            </div>
+            <div class="endpoint-body">
+                <p class="endpoint-desc">Login untuk mendapatkan JWT token.</p>
+                <pre>{
+    <span class="key">"username"</span>: <span class="string">"admin"</span>,
+    <span class="key">"password"</span>: <span class="string">"admin123"</span>
+}</pre>
+                <p style="font-size: 13px; color: var(--secondary); margin-top: 10px;">Response: <code>{ success: true, token: "eyJ...", user: {...} }</code></p>
+            </div>
+        </div>
+        
+        <!-- Surat Masuk -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method-badge method-GET">GET</span>
+                <span class="endpoint-url">/api/surat-masuk</span>
+                <span class="endpoint-auth auth-required">Auth Required</span>
+            </div>
+            <div class="endpoint-body">
+                <p class="endpoint-desc">Mendapatkan daftar surat masuk dengan pagination.</p>
+                <pre><span class="comment">// Query Parameters:</span>
+?page=<span class="number">1</span>&limit=<span class="number">15</span>&status=baru&search=rapat&kategori=penting</pre>
+            </div>
+        </div>
+        
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method-badge method-POST">POST</span>
+                <span class="endpoint-url">/api/surat-masuk</span>
+                <span class="endpoint-auth auth-required">Auth Required</span>
+            </div>
+            <div class="endpoint-body">
+                <p class="endpoint-desc">Membuat surat masuk baru.</p>
+                <pre>{
+    <span class="key">"nomor_surat"</span>: <span class="string">"001/UND/2024"</span>,
+    <span class="key">"tanggal_surat"</span>: <span class="string">"2024-01-15"</span>,
+    <span class="key">"tanggal_terima"</span>: <span class="string">"2024-01-16"</span>,
+    <span class="key">"pengirim"</span>: <span class="string">"Kementerian A"</span>,
+    <span class="key">"perihal"</span>: <span class="string">"Undangan Rapat"</span>,
+    <span class="key">"kategori"</span>: <span class="string">"penting"</span>
+}</pre>
+            </div>
+        </div>
+        
+        <!-- Surat Keluar -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method-badge method-GET">GET</span>
+                <span class="endpoint-url">/api/surat-keluar</span>
+                <span class="endpoint-auth auth-required">Auth Required</span>
+            </div>
+            <div class="endpoint-body">
+                <p class="endpoint-desc">Mendapatkan daftar surat keluar.</p>
+            </div>
+        </div>
+        
+        <!-- Disposisi -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method-badge method-POST">POST</span>
+                <span class="endpoint-url">/api/disposisi</span>
+                <span class="endpoint-auth auth-required">Auth Required</span>
+            </div>
+            <div class="endpoint-body">
+                <p class="endpoint-desc">Membuat disposisi baru.</p>
+                <pre>{
+    <span class="key">"surat_masuk_id"</span>: <span class="number">1</span>,
+    <span class="key">"kepada_user_id"</span>: <span class="number">3</span>,
+    <span class="key">"isi_disposisi"</span>: <span class="string">"Tolong diproses segera"</span>,
+    <span class="key">"sifat_disposisi"</span>: <span class="string">"segera"</span>
+}</pre>
+            </div>
+        </div>
+        
+        <!-- Laporan -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method-badge method-GET">GET</span>
+                <span class="endpoint-url">/api/laporan/surat-masuk</span>
+                <span class="endpoint-auth auth-required">Auth Required</span>
+            </div>
+            <div class="endpoint-body">
+                <p class="endpoint-desc">Generate laporan surat masuk.</p>
+                <pre><span class="comment">// Query Parameters:</span>
+?start_date=<span class="number">2024-01-01</span>&end_date=<span class="number">2024-01-31</span>&export=pdf</pre>
+            </div>
+        </div>
+        
+        <!-- Pencarian -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method-badge method-GET">GET</span>
+                <span class="endpoint-url">/api/search</span>
+                <span class="endpoint-auth auth-required">Auth Required</span>
+            </div>
+            <div class="endpoint-body">
+                <p class="endpoint-desc">Pencarian global di semua modul.</p>
+                <pre><span class="comment">// Query Parameters:</span>
+?q=rapat&type=all&limit=<span class="number">20</span></pre>
+            </div>
+        </div>
+        
+        <!-- Verifikasi QR -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method-badge method-GET">GET</span>
+                <span class="endpoint-url">/verify?d={base64data}</span>
+                <span class="endpoint-auth auth-optional">Public</span>
+            </div>
+            <div class="endpoint-body">
+                <p class="endpoint-desc">Verifikasi surat melalui QR Code dengan data base64 encoded.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
