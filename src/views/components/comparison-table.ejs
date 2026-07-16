@@ -1,0 +1,37 @@
+<!-- Comparison Table Component -->
+<div class="comparison-table">
+    <table>
+        <thead>
+            <tr>
+                <th><%= headerLabel || 'Fitur' %></th>
+                <% columns.forEach(function(col) { %>
+                    <th><%= col.title %><% if (col.badge) { %><span class="comp-badge"><%= col.badge %></span><% } %></th>
+                <% }); %>
+            </tr>
+        </thead>
+        <tbody>
+            <% rows.forEach(function(row) { %>
+                <tr>
+                    <td><strong><%= row.label %></strong></td>
+                    <% row.values.forEach(function(val) { %>
+                        <td class="<%= val === true ? 'comp-yes' : val === false ? 'comp-no' : '' %>">
+                            <%= val === true ? '✅' : val === false ? '❌' : val %>
+                        </td>
+                    <% }); %>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .comparison-table { overflow-x: auto; }
+    .comparison-table table { width: 100%; border-collapse: collapse; }
+    .comparison-table th, .comparison-table td { padding: 12px 16px; text-align: center; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+    .comparison-table th { background: #f9fafb; font-weight: 700; }
+    .comparison-table th:first-child, .comparison-table td:first-child { text-align: left; }
+    .comparison-table tr:hover { background: #f9fafb; }
+    .comp-badge { display: inline-block; padding: 2px 6px; background: #dbeafe; color: #1e40af; border-radius: 10px; font-size: 10px; margin-left: 6px; }
+    .comp-yes { color: #10b981; font-size: 18px; }
+    .comp-no { color: #ef4444; font-size: 18px; }
+</style>
