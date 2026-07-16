@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Log - Arsip Surat Digital Enterprise</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <style>
+        :root {
+            --primary: #1a56db; --secondary: #64748b; --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444; --dark: #1f2937;
+            --darker: #111827; --light: #f9fafb; --lighter: #ffffff; --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--light); color: var(--dark); display: flex; min-height: 100vh; }
+        
+        .sidebar { width: 260px; background: var(--darker); color: white; position: fixed; top: 0; left: 0; bottom: 0; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #374151; }
+        .sidebar-nav { padding: 20px 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #9ca3af; text-decoration: none; font-size: 14px; border-left: 3px solid transparent; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: rgba(26,86,219,0.2); color: white; border-left-color: var(--primary); }
+        
+        .main-content { flex: 1; margin-left: 260px; padding: 30px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+        .page-title { font-size: 24px; font-weight: 800; }
+        
+        .filter-bar { background: var(--lighter); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center; }
+        .filter-input, .filter-select { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: var(--font-sans); }
+        .filter-input:focus, .filter-select:focus { outline: none; border-color: var(--primary); }
+        
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; cursor: pointer; background: white; text-decoration: none; color: var(--dark); font-family: var(--font-sans); }
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: #1e40af; }
+        .btn-danger { color: var(--danger); border-color: var(--danger); }
+        
+        .log-table { background: var(--lighter); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: var(--light); }
+        th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--secondary); text-transform: uppercase; border-bottom: 2px solid var(--border); }
+        td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--light); }
+        tr:hover { background: #f8fafc; }
+        
+        .log-level { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; }
+        .level-info { background: #dbeafe; color: #1e40af; }
+        .level-warning { background: #fef3c7; color: #92400e; }
+        .level-error { background: #fee2e2; color: #991b1b; }
+        .level-success { background: #d1fae5; color: #065f46; }
+        
+        .pagination { display: flex; justify-content: center; gap: 5px; padding: 20px; }
+        .page-btn { padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; background: white; cursor: pointer; font-size: 13px; }
+        .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">⚙️ Admin Panel</div>
+        <nav class="sidebar-nav">
+            <a href="./dashboard.ejs" class="nav-item">📊 Dashboard</a>
+            <a href="./users/index.ejs" class="nav-item">👥 Pengguna</a>
+            <a href="./instansi/index.ejs" class="nav-item">🏢 Instansi</a>
+            <a href="./audit-log.ejs" class="nav-item active">📋 Audit Log</a>
+            <a href="./settings.ejs" class="nav-item">⚙️ Pengaturan</a>
+            <a href="./backup.ejs" class="nav-item">💾 Backup</a>
+            <a href="../../login" class="nav-item" style="color: #ef4444;">🚪 Logout</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">📋 Audit Log</h1>
+                <p style="color: var(--secondary); font-size: 14px;">Catatan aktivitas sistem</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-danger" onclick="clearLogs()">🗑️ Hapus Log Lama</button>
+                <button class="btn btn-primary" onclick="exportLogs()">📥 Export CSV</button>
+            </div>
+        </div>
+        
+        <div class="filter-bar">
+            <input type="text" class="filter-input" placeholder="🔍 Cari log..." style="flex: 1; min-width: 200px;">
+            <select class="filter-select">
+                <option value="">Semua Level</option>
+                <option value="info">Info</option>
+                <option value="warning">Warning</option>
+                <option value="error">Error</option>
+                <option value="success">Success</option>
+            </select>
+            <select class="filter-select">
+                <option value="">Semua Aksi</option>
+                <option value="LOGIN">Login</option>
+                <option value="CREATE">Create</option>
+                <option value="UPDATE">Update</option>
+                <option value="DELETE">Delete</option>
+            </select>
+            <input type="date" class="filter-input">
+            <button class="btn">🔄 Reset</button>
+        </div>
+        
+        <div class="log-table">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Waktu</th>
+                            <th>User</th>
+                            <th>Aksi</th>
+                            <th>Deskripsi</th>
+                            <th>IP Address</th>
+                            <th>Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="white-space: nowrap;">17 Jan 2024, 08:30</td>
+                            <td>admin</td>
+                            <td>LOGIN_SUCCESS</td>
+                            <td>User logged in successfully</td>
+                            <td>192.168.1.100</td>
+                            <td><span class="log-level level-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td>17 Jan 2024, 08:35</td>
+                            <td>admin</td>
+                            <td>CREATE_SURAT_MASUK</td>
+                            <td>Create surat masuk: SM-2024-005</td>
+                            <td>192.168.1.100</td>
+                            <td><span class="log-level level-info">Info</span></td>
+                        </tr>
+                        <tr>
+                            <td>17 Jan 2024, 08:45</td>
+                            <td>kabag</td>
+                            <td>CREATE_DISPOSISI</td>
+                            <td>Create disposisi for surat: SM-2024-001</td>
+                            <td>192.168.1.101</td>
+                            <td><span class="log-level level-info">Info</span></td>
+                        </tr>
+                        <tr>
+                            <td>17 Jan 2024, 09:00</td>
+                            <td>unknown</td>
+                            <td>LOGIN_FAILED</td>
+                            <td>Failed login attempt for user: test</td>
+                            <td>192.168.1.200</td>
+                            <td><span class="log-level level-warning">Warning</span></td>
+                        </tr>
+                        <tr>
+                            <td>17 Jan 2024, 09:15</td>
+                            <td>system</td>
+                            <td>ERROR</td>
+                            <td>Database connection timeout</td>
+                            <td>-</td>
+                            <td><span class="log-level level-error">Error</span></td>
+                        </tr>
+                        <tr>
+                            <td>17 Jan 2024, 09:30</td>
+                            <td>staff</td>
+                            <td>UPDATE_SURAT_MASUK</td>
+                            <td>Update surat masuk: SM-2024-003</td>
+                            <td>192.168.1.102</td>
+                            <td><span class="log-level level-info">Info</span></td>
+                        </tr>
+                        <tr>
+                            <td>17 Jan 2024, 10:00</td>
+                            <td>admin</td>
+                            <td>DELETE_SURAT_MASUK</td>
+                            <td>Delete surat masuk: SM-2024-010</td>
+                            <td>192.168.1.100</td>
+                            <td><span class="log-level level-warning">Warning</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination">
+                <button class="page-btn">«</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">...</button>
+                <button class="page-btn">15</button>
+                <button class="page-btn">»</button>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        function clearLogs() {
+            if (confirm('Hapus log yang lebih lama dari 90 hari?')) {
+                alert('Log lama berhasil dihapus.');
+            }
+        }
+        
+        function exportLogs() {
+            alert('Mengexport log ke CSV...');
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('auth_token')) window.location.href = '../../login';
+        });
+    </script>
+</body>
+</html>
