@@ -1,0 +1,50 @@
+<!-- Activity Feed Component -->
+<div class="activity-feed">
+    <% activities.forEach(function(activity) { %>
+        <div class="activity-item">
+            <div class="activity-avatar">
+                <span class="activity-avatar-inner"><%= (activity.user || 'S').charAt(0).toUpperCase() %></span>
+            </div>
+            <div class="activity-body">
+                <div class="activity-text">
+                    <strong><%= activity.user || 'System' %></strong>
+                    <%= activity.action %>
+                    <% if (activity.target) { %>
+                        <span class="activity-target"><%= activity.target %></span>
+                    <% } %>
+                </div>
+                <div class="activity-meta">
+                    <span class="activity-time"><%= activity.time %></span>
+                    <% if (activity.type) { %>
+                        <span class="activity-badge activity-<%= activity.type %>"><%= activity.type %></span>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    <% }); %>
+</div>
+
+<style>
+    .activity-feed { display: flex; flex-direction: column; gap: 2px; }
+    .activity-item { display: flex; gap: 12px; padding: 12px; border-radius: 8px; transition: all 0.15s; }
+    .activity-item:hover { background: #f9fafb; }
+    .activity-avatar { flex-shrink: 0; }
+    .activity-avatar-inner {
+        width: 32px; height: 32px; border-radius: 50%;
+        background: linear-gradient(135deg, #1a56db, #7c3aed);
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-weight: 700; font-size: 13px;
+    }
+    .activity-body { flex: 1; min-width: 0; }
+    .activity-text { font-size: 13px; line-height: 1.5; }
+    .activity-target { color: #1a56db; font-weight: 500; }
+    .activity-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+    .activity-time { font-size: 11px; color: #9ca3af; }
+    .activity-badge {
+        padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 600;
+    }
+    .activity-create { background: #dbeafe; color: #1e40af; }
+    .activity-update { background: #fef3c7; color: #92400e; }
+    .activity-delete { background: #fee2e2; color: #991b1b; }
+    .activity-login { background: #d1fae5; color: #065f46; }
+</style>
