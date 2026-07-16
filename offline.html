@@ -6,67 +6,277 @@
     <meta name="theme-color" content="#1a56db">
     <title>Offline - Arsip Surat Digital Enterprise</title>
     <style>
+        :root {
+            --primary: #1a56db;
+            --primary-light: #3b82f6;
+            --secondary: #64748b;
+            --light: #f9fafb;
+            --lighter: #ffffff;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0 New("#764ba2") 100%);
+            font-family: var(--font-sans);
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #ecfdf5 100%);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             padding: 20px;
-        }
-        .offline-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
             text-align: center;
-            max-width: 500px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
+        
+        .offline-container {
+            background: var(--lighter);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        
         .offline-icon {
             font-size: 80px;
             margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
         }
-        h1 { color: #1f2937; margin-bottom: 10px; }
-        p { color: #6b7280; margin-bottom: 20px; }
-        .status { color: #ef4444; font-weight: 600; margin-bottom: 20px; }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .offline-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        
+        .offline-subtitle {
+            font-size: 16px;
+            color: var(--secondary);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .offline-info {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .offline-info h3 {
+            font-size: 16px;
+            color: #1e40af;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .offline-info ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .offline-info li {
+            font-size: 13px;
+            color: var(--secondary);
+            padding: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .offline-info li::before {
+            content: "✅";
+            font-size: 12px;
+        }
+        
         .btn {
-            display: inline-block;
-            background: #1a56db;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 8px;
-            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            border: none;
-            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-family: var(--font-sans);
         }
-        .btn:hover { background: #1e40af; }
-        .retry-text { margin-top: 20px; font-size: 14px; color: #9ca3af; }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background: #1e40af;
+            border-color: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border-color: var(--primary);
+            margin-left: 10px;
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #ef4444;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: blink 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .offline-footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        
+        @media (max-width: 480px) {
+            .offline-container {
+                padding: 30px 20px;
+            }
+            .offline-icon {
+                font-size: 60px;
+            }
+            .offline-title {
+                font-size: 24px;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 10px;
+            }
+            .btn-outline {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="offline-card">
+    <div class="offline-container">
         <div class="offline-icon">📡</div>
-        <h1>Anda Sedang Offline</h1>
-        <p class="status">⚠️ Tidak terhubung ke internet</p>
-        <p>Maaf, koneksi internet Anda terputus. Silakan coba lagi saat sudah terhubung.</p>
-        <button class="btn" onclick="location.reload()">🔄 Coba Lagi</button>
-        <p class="retry-text">Mencoba menghubungkan kembali secara otomatis...</p>
-    </div>
-    
-    <script>
-        // Auto-retry every 10 seconds
-        setInterval(() => {
-            fetch('./').then(response => {
-                if (response.ok) location.reload();
-            }).catch(() => {});
-        }, 10000);
+        <h1 class="offline-title">Anda Sedang Offline</h1>
+        <p class="offline-subtitle">
+            Tidak dapat terhubung ke internet. Beberapa fitur mungkin tidak tersedia.
+        </p>
         
-        // Reload when coming online
-        window.addEventListener('online', () => location.reload());
+        <div class="offline-info">
+            <h3>
+                <span class="status-indicator"></span>
+                Status Koneksi: Offline
+            </h3>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 10px;">
+                Fitur yang tetap dapat diakses:
+            </p>
+            <ul>
+                <li>Melihat halaman yang sudah di-cache</li>
+                <li>Mengakses data yang tersimpan lokal</li>
+                <li>Membuat draft surat (tersimpan lokal)</li>
+                <li>Melihat riwayat aktivitas</li>
+            </ul>
+            <p style="font-size: 12px; color: #64748b; margin-top: 10px; font-style: italic;">
+                Data akan otomatis disinkronkan saat koneksi kembali.
+            </p>
+        </div>
+        
+        <div>
+            <button onclick="location.reload()" class="btn btn-primary">
+                🔄 Coba Lagi
+            </button>
+            <a href="./" class="btn btn-outline">
+                🏠 Ke Beranda
+            </a>
+        </div>
+        
+        <p class="offline-footer">
+            Arsip Surat Digital Enterprise v2.1.0 | <span id="connection-status">Memeriksa koneksi...</span>
+        </p>
+    </div>
+
+    <script>
+        // ==================== CONNECTION MONITORING ====================
+        const statusElement = document.getElementById('connection-status');
+        
+        function updateConnectionStatus() {
+            if (navigator.onLine) {
+                statusElement.textContent = 'Koneksi tersedia, mengalihkan...';
+                statusElement.style.color = '#10b981';
+                // Redirect to main page after 2 seconds
+                setTimeout(() => {
+                    window.location.href = './';
+                }, 2000);
+            } else {
+                statusElement.textContent = 'Masih offline';
+                statusElement.style.color = '#ef4444';
+            }
+        }
+        
+        updateConnectionStatus();
+        
+        window.addEventListener('online', () => {
+            updateConnectionStatus();
+            // Auto-reload when back online
+            setTimeout(() => {
+                window.location.href = './';
+            }, 1000);
+        });
+        
+        window.addEventListener('offline', () => {
+            updateConnectionStatus();
+        });
+        
+        // ==================== SERVICE WORKER REGISTRATION ====================
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(reg => {
+                    console.log('Service Worker registered from offline page');
+                    
+                    // Check for updates
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                console.log('New service worker available');
+                                // Optionally show update notification
+                            }
+                        });
+                    });
+                })
+                .catch(err => {
+                    console.error('Service Worker registration failed:', err);
+                });
+        }
     </script>
 </body>
 </html>
