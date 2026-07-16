@@ -1,0 +1,46 @@
+<!-- Voice Input Component -->
+<div class="voice-input" id="<%= id || 'voiceInput' %>">
+    <button class="voice-btn" id="<%= id || 'voiceInput' %>Btn" 
+            onclick="toggleVoice('<%= id || 'voiceInput' %>')" title="Input Suara">
+        🎤
+    </button>
+    <span class="voice-status" id="<%= id || 'voiceInput' %>Status">Klik untuk mulai</span>
+    <input type="hidden" id="<%= id || 'voiceInput' %>Value">
+</div>
+
+<style>
+    .voice-input { display: flex; align-items: center; gap: 10px; }
+    .voice-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid #e5e7eb; background: white; cursor: pointer; font-size: 20px; transition: all 0.2s; }
+    .voice-btn:hover { border-color: #1a56db; background: #f0f7ff; }
+    .voice-btn.recording { background: #ef4444; border-color: #ef4444; animation: pulse 1.5s infinite; color: white; }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); } 50% { box-shadow: 0 0 0 12px rgba(239,68,68,0); } }
+    .voice-status { font-size: 13px; color: #64748b; }
+</style>
+
+<script>
+    let recognition_<%= id || 'voiceInput' %> = null;
+    function toggleVoice(id) {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            alert('Browser tidak mendukung input suara');
+            return;
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!recognition_<%= id || 'voiceInput' %>) {
+            recognition_<%= id || 'voiceInput' %> = new SpeechRecognition();
+            recognition_<%= id || 'voiceInput' %>.lang = 'id-ID';
+            recognition_<%= id || 'voiceInput' %>.onresult = (e) => {
+                const text = e.results[0][0].transcript;
+                document.getElementById(id + 'Value').value = text;
+                document.getElementById(id + 'Status').textContent = '✅ ' + text;
+                document.getElementById(id + 'Btn').classList.remove('recording');
+            };
+            recognition_<%= id || 'voiceInput' %>.onerror = () => {
+                document.getElementById(id + 'Status').textContent = '❌ Gagal';
+                document.getElementById(id + 'Btn').classList.remove('recording');
+            };
+        }
+        recognition_<%= id || 'voiceInput' %>.start();
+        document.getElementById(id + 'Btn').classList.add('recording');
+        document.getElementById(id + 'Status').textContent = '🎙️ Mendengarkan...';
+    }
+</script>
