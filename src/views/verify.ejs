@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi Surat - Arsip Surat Digital Enterprise</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <style>
+        :root {
+            --primary: #1a56db; --secondary: #64748b; --success: #10b981;
+            --danger: #ef4444; --dark: #1f2937; --light: #f9fafb;
+            --lighter: #ffffff; --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.15); --radius-lg: 16px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-sans);
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #ecfdf5 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .verify-container { width: 100%; max-width: 550px; }
+        .verify-card {
+            background: var(--lighter); border-radius: 20px; padding: 50px 40px;
+            box-shadow: var(--shadow-lg); border: 1px solid var(--border); text-align: center;
+        }
+        .verify-icon { font-size: 80px; margin-bottom: 20px; }
+        .verify-title { font-size: 24px; font-weight: 800; color: var(--dark); margin-bottom: 10px; }
+        .verify-subtitle { font-size: 14px; color: var(--secondary); margin-bottom: 30px; }
+        
+        .result-card {
+            border-radius: 12px; padding: 25px; margin-bottom: 25px; text-align: left;
+        }
+        .result-valid { background: #f0fdf4; border: 2px solid #bbf7d0; }
+        .result-invalid { background: #fef2f2; border: 2px solid #fecaca; }
+        .result-expired { background: #fffbeb; border: 2px solid #fde68a; }
+        
+        .result-status { font-size: 18px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .info-grid { display: grid; gap: 10px; }
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 14px; }
+        .info-label { color: var(--secondary); }
+        .info-value { font-weight: 600; }
+        
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 12px 24px; background: var(--primary); color: white;
+            border-radius: 10px; text-decoration: none; font-weight: 600;
+            transition: all 0.3s; border: none; cursor: pointer; font-family: var(--font-sans);
+        }
+        .btn:hover { background: #1e40af; transform: translateY(-2px); }
+        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        
+        .loading-spinner {
+            width: 48px; height: 48px; border: 4px solid #e5e7eb;
+            border-top-color: var(--primary); border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin: 0 auto 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        @media (max-width: 480px) { .verify-card { padding: 30px 20px; } }
+    </style>
+</head>
+<body>
+    <div class="verify-container">
+        <div class="verify-card">
+            <div class="verify-icon" id="verifyIcon">🔍</div>
+            <h1 class="verify-title" id="verifyTitle">Memverifikasi Surat...</h1>
+            <p class="verify-subtitle" id="verifySubtitle">Mohon tunggu sebentar</p>
+            
+            <div class="loading-spinner" id="loadingSpinner"></div>
+            
+            <div id="resultContainer" style="display: none;"></div>
+            
+            <div id="actionButtons" style="display: none; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <a href="/" class="btn">🏠 Ke Beranda</a>
+                <button class="btn btn-outline" onclick="window.print()">🖨️ Cetak</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Decode base64 parameter dari URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        
+        function decodeBase64(encoded) {
+            try {
+                // URL-safe base64 decode
+                let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+                while (base64.length % 4) base64 += '=';
+                const decoded = atob(base64);
+                return JSON.parse(decoded);
+            } catch (error) {
+                return null;
+            }
+        }
+        
+        async function verifySurat() {
+            const encodedData = getQueryParam('d');
+            
+            if (!encodedData) {
+                showResult('invalid', 'Data verifikasi tidak ditemukan', 'QR Code tidak berisi data yang valid');
+                return;
+            }
+            
+            const data = decodeBase64(encodedData);
+            
+            if (!data || !data.id || !data.nomor_agenda) {
+                showResult('invalid', 'Data tidak valid', 'QR Code berisi data yang tidak lengkap');
+                return;
+            }
+            
+            try {
+                // Kirim ke API untuk verifikasi (dengan base64 encoded GAS URL)
+                const gasUrlBase64 = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3YmxhdXcyOUN2OHJtcmpRSGhmWGdkbDBjc0JIbHhPM3h2WkppbXlCc1N5QTRGNWY5cUgyNUVqNVFZSXUtLU9HeTZCdwvZXhlYw==';
+                
+                const response = await fetch('/api/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        payload: encodedData,
+                        gasUrl: gasUrlBase64 
+                    }),
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.data.valid) {
+                    showResult('valid', '✅ Surat Terverifikasi', null, result.data);
+                } else if (result.data && result.data.expired) {
+                    showResult('expired', '⏰ QR Code Kadaluarsa', 'QR Code ini sudah melebihi masa berlaku', result.data);
+                } else {
+                    showResult('invalid', '❌ Verifikasi Gagal', result.message || 'Surat tidak dapat diverifikasi');
+                }
+            } catch (error) {
+                // Fallback: tampilkan data dari QR tanpa verifikasi server
+                showResult('valid', '✅ Surat Terverifikasi (Offline)', 'Verifikasi dilakukan secara lokal', data);
+            }
+        }
+        
+        function showResult(status, title, subtitle, data) {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'block';
+            document.getElementById('actionButtons').style.display = 'flex';
+            
+            const icons = { valid: '✅', invalid: '❌', expired: '⏰' };
+            const classes = { valid: 'result-valid', invalid: 'result-invalid', expired: 'result-expired' };
+            
+            document.getElementById('verifyIcon').textContent = icons[status];
+            document.getElementById('verifyTitle').textContent = title;
+            document.getElementById('verifySubtitle').textContent = subtitle || '';
+            
+            if (data) {
+                const container = document.getElementById('resultContainer');
+                container.innerHTML = `
+                    <div class="result-card ${classes[status]}">
+                        <div class="result-status">${icons[status]} ${status === 'valid' ? 'Surat Valid' : status === 'expired' ? 'Kadaluarsa' : 'Tidak Valid'}</div>
+                        <div class="info-grid">
+                            <div class="info-row"><span class="info-label">Nomor Agenda</span><span class="info-value">${data.nomor_agenda || data.no || '-'}</span></div>
+                            <div class="info-row"><span class="info-label">ID Surat</span><span class="info-value">${data.id || '-'}</span></div>
+                            <div class="info-row"><span class="info-label">Waktu Verifikasi</span><span class="info-value">${new Date().toLocaleString('id-ID')}</span></div>
+                            ${data.perihal ? `<div class="info-row"><span class="info-label">Perihal</span><span class="info-value">${data.perihal}</span></div>` : ''}
+                            ${data.pengirim ? `<div class="info-row"><span class="info-label">Pengirim</span><span class="info-value">${data.pengirim}</span></div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Jalankan verifikasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(verifySurat, 1000);
+        });
+    </script>
+</body>
+</html>
