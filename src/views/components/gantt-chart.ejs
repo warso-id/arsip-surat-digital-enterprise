@@ -1,0 +1,41 @@
+<!-- Gantt Chart Component -->
+<div class="gantt-chart">
+    <div class="gantt-header">
+        <div class="gantt-task-col">Tugas</div>
+        <div class="gantt-timeline">
+            <% for (let i = 1; i <= 31; i++) { %>
+                <div class="gantt-day"><%= i %></div>
+            <% } %>
+        </div>
+    </div>
+    <div class="gantt-body">
+        <% tasks.forEach(function(task) { %>
+            <div class="gantt-row">
+                <div class="gantt-task-name"><%= task.name %></div>
+                <div class="gantt-timeline">
+                    <div class="gantt-bar <%= task.color || 'blue' %>" 
+                         style="left:<%= ((task.start-1)/31*100) %>%;width:<%= ((task.end-task.start+1)/31*100) %>%">
+                        <%= task.name %>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+</div>
+
+<style>
+    .gantt-chart { overflow-x:auto;border:1px solid #e5e7eb;border-radius:10px }
+    .gantt-header { display:flex;background:#f9fafb;border-bottom:1px solid #e5e7eb;min-width:800px }
+    .gantt-task-col { width:200px;padding:10px 16px;font-weight:700;font-size:13px;border-right:1px solid #e5e7eb;flex-shrink:0 }
+    .gantt-timeline { flex:1;display:flex }
+    .gantt-day { flex:1;text-align:center;padding:10px 0;font-size:10px;color:#9ca3af;border-right:1px solid #f3f4f6 }
+    .gantt-body { min-width:800px }
+    .gantt-row { display:flex;border-bottom:1px solid #f3f4f6 }
+    .gantt-task-name { width:200px;padding:12px 16px;font-size:13px;border-right:1px solid #e5e7eb;flex-shrink:0;background:white }
+    .gantt-timeline { flex:1;position:relative;height:44px }
+    .gantt-bar { position:absolute;top:8px;height:28px;border-radius:6px;font-size:11px;color:white;display:flex;align-items:center;padding:0 8px;min-width:20px;overflow:hidden;white-space:nowrap }
+    .gantt-bar.blue { background:#3b82f6 }
+    .gantt-bar.green { background:#10b981 }
+    .gantt-bar.yellow { background:#f59e0b }
+    .gantt-bar.red { background:#ef4444 }
+</style>
