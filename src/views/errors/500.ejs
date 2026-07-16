@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kesalahan Server - Arsip Surat Digital Enterprise">
+    <meta name="theme-color" content="#1a56db">
+    <meta name="robots" content="noindex, nofollow">
+    <title>500 - Kesalahan Server | Arsip Surat Digital Enterprise</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSI4IiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iMTYiIHk9IjIyIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+">
+    
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --lighter: #ffffff;
+            --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+            --radius-lg: 16px;
+            --transition: all 0.3s ease;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-sans);
+            background: linear-gradient(135deg, #fef2f2 0%, #fff7ed 50%, #fffbeb 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .error-container {
+            background: var(--lighter);
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: var(--shadow-lg);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .error-code {
+            font-size: 100px;
+            font-weight: 900;
+            color: var(--danger);
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+        
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .error-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+        
+        .error-message {
+            font-size: 16px;
+            color: var(--secondary);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .error-details {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+            font-size: 13px;
+            color: #991b1b;
+            display: none;
+        }
+        
+        .error-details summary {
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+            font-family: var(--font-sans);
+        }
+        
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-danger { background: var(--danger); color: white; border-color: var(--danger); }
+        .btn-danger:hover { background: #dc2626; border-color: #dc2626; transform: translateY(-2px); }
+        .btn-outline { background: transparent; color: var(--primary); border-color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+        
+        @media (max-width: 480px) {
+            .error-container { padding: 40px 20px; }
+            .error-code { font-size: 70px; }
+            .btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">⚠️</div>
+        <div class="error-code">500</div>
+        <h1 class="error-title">Kesalahan Server Internal</h1>
+        <p class="error-message">
+            Maaf, terjadi kesalahan pada server. Tim teknis kami telah diberitahu 
+            dan sedang bekerja untuk memperbaiki masalah ini. Silakan coba lagi nanti.
+        </p>
+        
+        <details class="error-details" id="errorDetails">
+            <summary>Detail Teknis</summary>
+            <div id="errorInfo">
+                <p><strong>Waktu:</strong> <span id="errorTime"></span></p>
+                <p><strong>ID Error:</strong> <span id="errorId"></span></p>
+                <p>Jika masalah berlanjut, hubungi administrator dengan menyertakan ID error di atas.</p>
+            </div>
+        </details>
+        
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="location.reload()">🔄 Muat Ulang</button>
+            <a href="../../" class="btn btn-outline">🏠 Ke Beranda</a>
+            <button class="btn btn-outline" onclick="toggleDetails()">📋 Detail</button>
+        </div>
+    </div>
+    
+    <script>
+        // ==================== ERROR DETAILS ====================
+        function toggleDetails() {
+            const details = document.getElementById('errorDetails');
+            details.style.display = details.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        // ==================== ERROR INFORMATION ====================
+        document.getElementById('errorTime').textContent = new Date().toLocaleString('id-ID');
+        document.getElementById('errorId').textContent = 'ERR-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        
+        // ==================== AUTO RETRY ====================
+        let retryCount = 0;
+        const maxRetries = 3;
+        
+        function autoRetry() {
+            if (retryCount < maxRetries) {
+                retryCount++;
+                console.log(`Auto-retry attempt ${retryCount}/${maxRetries}...`);
+                
+                setTimeout(() => {
+                    fetch(window.location.href)
+                        .then(response => {
+                            if (response.ok) {
+                                location.reload();
+                            }
+                        })
+                        .catch(() => {
+                            console.log('Retry failed');
+                        });
+                }, 5000 * retryCount);
+            }
+        }
+        
+        // Start auto retry after 10 seconds
+        setTimeout(autoRetry, 10000);
+        
+        // ==================== KEYBOARD SHORTCUTS ====================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+                e.preventDefault();
+                location.reload();
+            }
+        });
+    </script>
+</body>
+</html>
