@@ -1,0 +1,32 @@
+<!-- Heatmap Calendar Component -->
+<div class="heatmap">
+    <div class="heatmap-legend">
+        <span>Kurang</span>
+        <div class="legend-colors">
+            <span style="background:#ebedf0"></span><span style="background:#9be9a8"></span>
+            <span style="background:#40c463"></span><span style="background:#30a14e"></span>
+            <span style="background:#216e39"></span>
+        </div>
+        <span>Banyak</span>
+    </div>
+    <div class="heatmap-grid">
+        <% for (let week = 0; week < 52; week++) { %>
+            <div class="heatmap-week">
+                <% for (let day = 0; day < 7; day++) { %>
+                    <div class="heatmap-day" style="background:<%= getColor(data[week*7+day] || 0) %>" 
+                         title="<%= getDate(week, day) %>: <%= data[week*7+day] || 0 %> aktivitas"></div>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<style>
+    .heatmap { overflow-x: auto; padding: 10px; }
+    .heatmap-legend { display: flex; align-items: center; gap: 8px; justify-content: flex-end; margin-bottom: 8px; font-size: 11px; color: #64748b; }
+    .legend-colors { display: flex; gap: 2px; }
+    .legend-colors span { width: 12px; height: 12px; border-radius: 2px; }
+    .heatmap-grid { display: flex; gap: 2px; }
+    .heatmap-week { display: flex; flex-direction: column; gap: 2px; }
+    .heatmap-day { width: 12px; height: 12px; border-radius: 2px; }
+</style>
