@@ -1,0 +1,60 @@
+<!-- Signature Pad Component -->
+<div class="signature-pad" id="<%= id || 'signature' %>">
+    <canvas class="signature-canvas" id="<%= id || 'signature' %>Canvas" 
+            width="400" height="200"></canvas>
+    <div class="signature-actions">
+        <button type="button" class="sig-btn" onclick="clearSignature('<%= id || 'signature' %>')">🗑️ Hapus</button>
+        <button type="button" class="sig-btn sig-btn-save" onclick="saveSignature('<%= id || 'signature' %>')">💾 Simpan</button>
+    </div>
+    <input type="hidden" name="<%= name || 'signature' %>" id="<%= id || 'signature' %>Data">
+    <% if (value) { %>
+        <img src="<%= value %>" alt="Signature" class="signature-preview" id="<%= id || 'signature' %>Preview">
+    <% } %>
+</div>
+
+<style>
+    .signature-pad { display: inline-block; }
+    .signature-canvas {
+        border: 2px solid #e5e7eb; border-radius: 10px;
+        background: white; cursor: crosshair; display: block;
+    }
+    .signature-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .sig-btn {
+        padding: 6px 14px; border: 1px solid #e5e7eb; border-radius: 6px;
+        background: white; cursor: pointer; font-size: 12px; font-family: inherit;
+    }
+    .sig-btn:hover { background: #f9fafb; }
+    .sig-btn-save { background: #1a56db; color: white; border-color: #1a56db; }
+    .sig-btn-save:hover { background: #1e40af; }
+    .signature-preview { max-width: 400px; max-height: 200px; border: 1px solid #e5e7eb; border-radius: 8px; }
+</style>
+
+<script>
+    (function() {
+        const canvas = document.getElementById('<%= id || "signature" %>Canvas');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+        
+        canvas.addEventListener('mousedown', (e) => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
+        canvas.addEventListener('mousemove', (e) => { if (!drawing) return; ctx.lineTo(e.offsetX, e.offsetY); ctx.strokeStyle = '#1f2937'; ctx.lineWidth = 2; ctx.stroke(); });
+        canvas.addEventListener('mouseup', () => { drawing = false; });
+        canvas.addEventListener('mouseleave', () => { drawing = false; });
+        
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; const rect = canvas.getBoundingClientRect(); ctx.beginPath(); ctx.moveTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top); });
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if (!drawing) return; const rect = canvas.getBoundingClientRect(); ctx.lineTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top); ctx.strokeStyle = '#1f2937'; ctx.lineWidth = 2; ctx.stroke(); });
+        canvas.addEventListener('touchend', () => { drawing = false; });
+    })();
+    
+    function clearSignature(id) {
+        const canvas = document.getElementById(id + 'Canvas');
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        document.getElementById(id + 'Data').value = '';
+    }
+    
+    function saveSignature(id) {
+        const canvas = document.getElementById(id + 'Canvas');
+        const dataUrl = canvas.toDataURL('image/png');
+        document.getElementById(id + 'Data').value = dataUrl;
+        alert('Tanda tangan disimpan!');
+    }
+</script>
