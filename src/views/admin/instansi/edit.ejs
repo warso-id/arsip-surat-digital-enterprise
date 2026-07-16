@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Instansi - Admin Panel</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <style>
+        :root {
+            --primary: #1a56db; --primary-dark: #1e40af; --secondary: #64748b;
+            --success: #10b981; --danger: #ef4444; --dark: #1f2937;
+            --darker: #111827; --light: #f9fafb; --lighter: #ffffff; --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1); --transition: all 0.3s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--light); color: var(--dark); display: flex; min-height: 100vh; }
+        
+        .sidebar { width: 260px; background: var(--darker); color: white; position: fixed; top: 0; left: 0; bottom: 0; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #374151; }
+        .sidebar-nav { padding: 20px 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #9ca3af; text-decoration: none; font-size: 14px; border-left: 3px solid transparent; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: rgba(26,86,219,0.2); color: white; border-left-color: var(--primary); }
+        
+        .main-content { flex: 1; margin-left: 260px; padding: 30px; }
+        .page-header { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; }
+        .back-btn { text-decoration: none; color: var(--secondary); font-size: 20px; }
+        .page-title { font-size: 24px; font-weight: 800; }
+        
+        .instansi-info { background: var(--lighter); border-radius: 12px; padding: 20px; border: 1px solid var(--border); margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
+        .instansi-logo { width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, var(--primary), #7c3aed); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: white; }
+        
+        .form-card { background: var(--lighter); border-radius: 16px; padding: 30px; border: 1px solid var(--border); box-shadow: var(--shadow); max-width: 700px; }
+        .card-title { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: var(--font-sans); background: var(--light); }
+        .form-input:focus, .form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,86,219,0.1); }
+        .form-textarea { min-height: 80px; resize: vertical; }
+        
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border: 2px solid transparent; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; transition: var(--transition); font-family: var(--font-sans); }
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-danger { background: var(--danger); color: white; border-color: var(--danger); }
+        .btn-outline { background: transparent; color: var(--secondary); border-color: var(--border); }
+        .form-actions { display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px; }
+        
+        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } .form-card { padding: 20px; } .form-grid { grid-template-columns: 1fr; } .form-actions { flex-direction: column; } .btn { width: 100%; justify-content: center; } }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">⚙️ Admin Panel</div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.ejs" class="nav-item">📊 Dashboard</a>
+            <a href="../users/index.ejs" class="nav-item">👥 Pengguna</a>
+            <a href="./index.ejs" class="nav-item active">🏢 Instansi</a>
+            <a href="../../../login" class="nav-item" style="color: #ef4444;">🚪 Logout</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <a href="./index.ejs" class="back-btn">←</a>
+            <h1 class="page-title">✏️ Edit Instansi</h1>
+        </div>
+        
+        <div class="instansi-info">
+            <div class="instansi-logo">ID</div>
+            <div>
+                <strong style="font-size: 18px;">Instansi Default</strong>
+                <div style="font-size: 13px; color: var(--secondary);">Kode: INST-001 | 25 Pengguna | 1,245 Surat</div>
+            </div>
+        </div>
+        
+        <form class="form-card">
+            <h3 class="card-title">📋 Informasi Instansi</h3>
+            <div class="form-grid">
+                <div class="form-group"><label class="form-label">Kode Instansi</label><input type="text" class="form-input" value="INST-001" disabled></div>
+                <div class="form-group"><label class="form-label">Nama Instansi</label><input type="text" class="form-input" value="Instansi Default"></div>
+                <div class="form-group full-width"><label class="form-label">Alamat</label><textarea class="form-textarea">Jl. Contoh No. 123, Jakarta</textarea></div>
+                <div class="form-group"><label class="form-label">Phone</label><input type="tel" class="form-input" value="021-1234567"></div>
+                <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" value="info@instansi.id"></div>
+                <div class="form-group"><label class="form-label">Website</label><input type="url" class="form-input" value="https://instansi.id"></div>
+            </div>
+            
+            <div class="form-actions">
+                <a href="./index.ejs" class="btn btn-outline">Batal</a>
+                <button type="button" class="btn btn-danger">🔒 Nonaktifkan</button>
+                <button type="submit" class="btn btn-primary">💾 Simpan</button>
+            </div>
+        </form>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('auth_token')) window.location.href = '../../../login';
+        });
+    </script>
+</body>
+</html>
