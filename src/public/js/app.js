@@ -1,447 +1,573 @@
-/**
- * APP.JS - Main Application Scripts
- * Arsip Surat Digital Enterprise v2.0.0
- */
+// ==================== APP.JS ====================
+// Arsip Surat Digital Enterprise - Main Application Script
+// Version: 2.1.0
 
-// ==================== GLOBAL VARIABLES ====================
-const APP = {
-    name: 'Arsip Surat Digital Enterprise',
-    version: '2.0.0',
-    apiBaseUrl: '/api',
-    token: null,
-    user: null
-};
+(function() {
+    'use strict';
 
-// ==================== INITIALIZATION ====================
-document.addEventListener('DOMContentLoaded', () => {
-    initApp();
-    initLoadingScreen();
-    initNavigation();
-    initBackToTop();
-    initTooltips();
-    initDropdowns();
-    checkAuth();
-});
-
-function initApp() {
-    console.log(`🚀 ${APP.name} v${APP.version}`);
-    
-    // Load token from localStorage
-    APP.token = localStorage.getItem('accessToken');
-    APP.user = JSON.parse(localStorage.getItem('user') || 'null');
-}
-
-// ==================== LOADING SCREEN ====================
-function initLoadingScreen() {
-    const loadingScreen = document.getElementById('loading-screen');
-    if (!loadingScreen) return;
-    
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            loadingScreen.classList.add('hidden');
-        }, 500);
-    });
-}
-
-// ==================== NAVIGATION ====================
-function initNavigation() {
-    // Mobile menu toggle
-    const menuToggle = document.getElementById('menu-toggle');
-    const sidebar = document.getElementById('sidebar');
-    
-    if (menuToggle && sidebar) {
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-        });
-        
-        // Close sidebar on overlay click
-        document.addEventListener('click', (e) => {
-            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-                sidebar.classList.remove('open');
-            }
-        });
-    }
-    
-    // Active nav item
-    const currentPath = window.location.pathname;
-    document.querySelectorAll('.nav-item, .sidebar-link').forEach(link => {
-        if (link.getAttribute('href') === currentPath) {
-            link.classList.add('active');
-        }
-    });
-}
-
-// ==================== BACK TO TOP ====================
-function initBackToTop() {
-    const btn = document.getElementById('backToTop');
-    if (!btn) return;
-    
-    window.addEventListener('scroll', () => {
-        btn.style.opacity = window.scrollY > 500 ? '1' : '0';
-        btn.style.visibility = window.scrollY > 500 ? 'visible' : 'hidden';
-    });
-    
-    btn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-}
-
-// ==================== TOOLTIPS ====================
-function initTooltips() {
-    document.querySelectorAll('[data-tooltip]').forEach(el => {
-        el.addEventListener('mouseenter', (e) => {
-            const tooltip = document.createElement('div');
-            tooltip.className = 'tooltip';
-            tooltip.textContent = el.getAttribute('data-tooltip');
-            document.body.appendChild(tooltip);
-            
-            const rect = el.getBoundingClientRect();
-            tooltip.style.left = rect.left + rect.width / 2 - tooltip.offsetWidth / 2 + 'px';
-            tooltip.style.top = rect.top - tooltip.offsetHeight - 8 + 'px';
-            
-            el.addEventListener('mouseleave', () => tooltip.remove(), { once: true });
-        });
-    });
-}
-
-// ==================== DROPDOWNS ====================
-function initDropdowns() {
-    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
-        toggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const dropdown = toggle.nextElementSibling;
-            dropdown.classList.toggle('show');
-        });
-    });
-    
-    document.addEventListener('click', () => {
-        document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
-            menu.classList.remove('show');
-        });
-    });
-}
-
-// ==================== AUTH CHECK ====================
-function checkAuth() {
-    const authPages = ['/login', '/register'];
-    const currentPath = window.location.pathname;
-    
-    if (!APP.token && !authPages.includes(currentPath) && currentPath !== '/') {
-        // Redirect to login if not authenticated
-        if (currentPath.startsWith('/dashboard') || currentPath.startsWith('/surat')) {
-            window.location.href = '/login';
-        }
-    }
-}
-
-// ==================== API HELPERS ====================
-async function apiRequest(url, options = {}) {
-    const defaultOptions = {
-        headers: {
-            'Content-Type': 'application/json',
-            ...(APP.token && { 'Authorization': `Bearer ${APP.token}` })
-        }
+    // ==================== GLOBAL CONFIGURATION ====================
+    const CONFIG = {
+        APP_NAME: 'Arsip Surat Digital Enterprise',
+        APP_VERSION: '2.1.0',
+        API_BASE_URL: '/api',
+        TOKEN_KEY: 'auth_token',
+        USER_KEY: 'user_data',
+        THEME_KEY: 'app_theme',
+        SESSION_TIMEOUT: 3600000, // 1 hour
+        AUTO_LOGOUT_WARNING: 300000, // 5 minutes before timeout
     };
+
+    // ==================== UTILITY FUNCTIONS ====================
     
-    const mergedOptions = {
-        ...defaultOptions,
-        ...options,
-        headers: {
-            ...defaultOptions.headers,
-            ...options.headers
-        }
-    };
-    
-    try {
-        const response = await fetch(APP.apiBaseUrl + url, mergedOptions);
+    /**
+     * Format date to Indonesian locale
+     */
+    function formatDate(date, format = 'full') {
+        if (!date) return '-';
         
-        if (response.status === 401) {
-            // Token expired, try refresh
-            const refreshed = await refreshToken();
-            if (refreshed) {
-                // Retry with new token
-                mergedOptions.headers['Authorization'] = `Bearer ${APP.token}`;
-                return fetch(APP.apiBaseUrl + url, mergedOptions);
-            } else {
-                // Redirect to login
-                localStorage.clear();
-                window.location.href = '/login';
-                return;
-            }
-        }
-        
-        return response;
-    } catch (error) {
-        console.error('API Request Error:', error);
-        throw error;
-    }
-}
-
-async function refreshToken() {
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (!refreshToken) return false;
-    
-    try {
-        const response = await fetch(APP.apiBaseUrl + '/auth/refresh-token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ refreshToken })
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem('accessToken', data.data.accessToken);
-            localStorage.setItem('refreshToken', data.data.refreshToken);
-            APP.token = data.data.accessToken;
-            return true;
-        }
-        return false;
-    } catch {
-        return false;
-    }
-}
-
-// ==================== NOTIFICATION ====================
-function showNotification(message, type = 'info', duration = 3000) {
-    const container = document.getElementById('notification-container') || createNotificationContainer();
-    
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <span class="notification-icon">${getNotificationIcon(type)}</span>
-        <span class="notification-message">${message}</span>
-        <button class="notification-close" onclick="this.parentElement.remove()">✕</button>
-    `;
-    
-    container.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'fadeOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, duration);
-}
-
-function createNotificationContainer() {
-    const container = document.createElement('div');
-    container.id = 'notification-container';
-    container.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    `;
-    document.body.appendChild(container);
-    return container;
-}
-
-function getNotificationIcon(type) {
-    const icons = {
-        success: '✅',
-        error: '❌',
-        warning: '⚠️',
-        info: 'ℹ️'
-    };
-    return icons[type] || icons.info;
-}
-
-// ==================== MODAL HELPERS ====================
-function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.remove('show');
-        document.body.style.overflow = '';
-    }
-}
-
-function closeAllModals() {
-    document.querySelectorAll('.modal-overlay.show').forEach(modal => {
-        modal.classList.remove('show');
-    });
-    document.body.style.overflow = '';
-}
-
-// Close modal on overlay click
-document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal-overlay')) {
-        e.target.classList.remove('show');
-        document.body.style.overflow = '';
-    }
-});
-
-// Close modal on Escape key
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closeAllModals();
-    }
-});
-
-// ==================== FORMAT HELPERS ====================
-function formatDate(dateString, format = 'full') {
-    if (!dateString) return '-';
-    
-    const date = new Date(dateString);
-    
-    const formats = {
-        full: { day: 'numeric', month: 'long', year: 'numeric' },
-        short: { day: 'numeric', month: 'short', year: 'numeric' },
-        date: { day: '2-digit', month: '2-digit', year: 'numeric' },
-        time: { hour: '2-digit', minute: '2-digit' },
-        datetime: { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }
-    };
-    
-    return date.toLocaleDateString('id-ID', formats[format] || formats.full);
-}
-
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-}
-
-function truncateText(text, maxLength = 50) {
-    if (!text || text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
-}
-
-// ==================== CONFIRMATION DIALOG ====================
-async function confirmDialog(message, title = 'Konfirmasi') {
-    return new Promise((resolve) => {
-        const overlay = document.createElement('div');
-        overlay.className = 'modal-overlay show';
-        overlay.innerHTML = `
-            <div class="modal modal-sm">
-                <div class="modal-header">
-                    <h3>${title}</h3>
-                </div>
-                <div class="modal-body">
-                    <p>${message}</p>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" id="confirm-cancel">Batal</button>
-                    <button class="btn btn-danger" id="confirm-ok">Ya, Lanjutkan</button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(overlay);
-        
-        overlay.querySelector('#confirm-cancel').addEventListener('click', () => {
-            overlay.remove();
-            resolve(false);
-        });
-        
-        overlay.querySelector('#confirm-ok').addEventListener('click', () => {
-            overlay.remove();
-            resolve(true);
-        });
-    });
-}
-
-// ==================== LOGOUT ====================
-async function logout() {
-    const confirmed = await confirmDialog('Apakah Anda yakin ingin keluar?', 'Logout');
-    if (!confirmed) return;
-    
-    try {
-        await apiRequest('/auth/logout', { method: 'POST' });
-    } catch (error) {
-        console.error('Logout error:', error);
-    } finally {
-        localStorage.clear();
-        window.location.href = '/login';
-    }
-}
-
-// ==================== EXPORT HELPERS ====================
-function exportToCSV(data, filename) {
-    if (!data || data.length === 0) {
-        showNotification('Tidak ada data untuk diexport', 'warning');
-        return;
-    }
-    
-    const headers = Object.keys(data[0]);
-    const csvContent = [
-        headers.join(','),
-        ...data.map(row => headers.map(h => `"${row[h] || ''}"`).join(','))
-    ].join('\n');
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${filename}.csv`;
-    link.click();
-}
-
-// ==================== DEBOUNCE ====================
-function debounce(func, wait = 300) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
+        const d = new Date(date);
+        const options = {
+            full: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
+            short: { year: 'numeric', month: 'short', day: 'numeric' },
+            time: { hour: '2-digit', minute: '2-digit' },
+            datetime: { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }
         };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// ==================== EVENT LISTENERS ====================
-// Handle AJAX form submissions
-document.addEventListener('submit', (e) => {
-    const form = e.target;
-    if (form.classList.contains('ajax-form')) {
-        e.preventDefault();
-        handleAjaxForm(form);
+        
+        return d.toLocaleDateString('id-ID', options[format] || options.full);
     }
-});
 
-async function handleAjaxForm(form) {
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const formData = new FormData(form);
-    
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner spinner-sm"></span> Memproses...';
+    /**
+     * Format file size
+     */
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
+
+    /**
+     * Generate random ID
+     */
+    function generateId(length = 10) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+    /**
+     * Debounce function
+     */
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    /**
+     * Escape HTML
+     */
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    // ==================== STORAGE HELPERS ====================
     
-    try {
-        const url = form.getAttribute('action') || window.location.pathname;
-        const method = form.getAttribute('method') || 'POST';
-        
-        const response = await apiRequest(url, {
-            method,
-            body: formData
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-            showNotification(data.message || 'Berhasil!', 'success');
-            if (data.redirect) {
-                window.location.href = data.redirect;
+    const Storage = {
+        set(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (e) {
+                console.error('Storage set error:', e);
             }
-        } else {
-            showNotification(data.message || 'Gagal!', 'error');
+        },
+        
+        get(key) {
+            try {
+                const item = localStorage.getItem(key);
+                return item ? JSON.parse(item) : null;
+            } catch (e) {
+                console.error('Storage get error:', e);
+                return null;
+            }
+        },
+        
+        remove(key) {
+            try {
+                localStorage.removeItem(key);
+            } catch (e) {
+                console.error('Storage remove error:', e);
+            }
+        },
+        
+        clear() {
+            try {
+                localStorage.clear();
+            } catch (e) {
+                console.error('Storage clear error:', e);
+            }
         }
-    } catch (error) {
-        showNotification('Terjadi kesalahan. Silakan coba lagi.', 'error');
-    } finally {
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = submitBtn.getAttribute('data-original-text') || 'Simpan';
+    };
+
+    // ==================== AUTHENTICATION ====================
+    
+    const Auth = {
+        isAuthenticated() {
+            const token = Storage.get(CONFIG.TOKEN_KEY);
+            if (!token) return false;
+            
+            // Check token expiration
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const exp = payload.exp * 1000;
+                return Date.now() < exp;
+            } catch (e) {
+                return false;
+            }
+        },
+        
+        getToken() {
+            return Storage.get(CONFIG.TOKEN_KEY);
+        },
+        
+        setToken(token) {
+            Storage.set(CONFIG.TOKEN_KEY, token);
+        },
+        
+        removeToken() {
+            Storage.remove(CONFIG.TOKEN_KEY);
+        },
+        
+        getUser() {
+            return Storage.get(CONFIG.USER_KEY);
+        },
+        
+        setUser(user) {
+            Storage.set(CONFIG.USER_KEY, user);
+        },
+        
+        removeUser() {
+            Storage.remove(CONFIG.USER_KEY);
+        },
+        
+        logout() {
+            this.removeToken();
+            this.removeUser();
+            window.location.href = '/login';
+        },
+        
+        checkAuth() {
+            if (!this.isAuthenticated()) {
+                const currentPath = window.location.pathname;
+                if (!currentPath.includes('/login') && 
+                    !currentPath.includes('/auth/')) {
+                    this.logout();
+                }
+            }
         }
-    }
-}
+    };
+
+    // ==================== API HELPER ====================
+    
+    const API = {
+        async request(url, options = {}) {
+            const token = Auth.getToken();
+            
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    ...(token && { 'Authorization': `Bearer ${token}` })
+                },
+                ...options
+            };
+            
+            try {
+                const response = await fetch(CONFIG.API_BASE_URL + url, defaultOptions);
+                
+                // Handle 401 Unauthorized
+                if (response.status === 401) {
+                    Auth.logout();
+                    throw new Error('Session expired');
+                }
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'Request failed');
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        },
+        
+        get(url, params = {}) {
+            const queryString = new URLSearchParams(params).toString();
+            const fullUrl = queryString ? `${url}?${queryString}` : url;
+            return this.request(fullUrl, { method: 'GET' });
+        },
+        
+        post(url, data = {}) {
+            return this.request(url, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+        },
+        
+        put(url, data = {}) {
+            return this.request(url, {
+                method: 'PUT',
+                body: JSON.stringify(data)
+            });
+        },
+        
+        delete(url) {
+            return this.request(url, { method: 'DELETE' });
+        },
+        
+        upload(url, formData, onProgress) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable && onProgress) {
+                        const percentComplete = (e.loaded / e.total) * 100;
+                        onProgress(percentComplete);
+                    }
+                });
+                
+                xhr.addEventListener('load', () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        resolve(JSON.parse(xhr.responseText));
+                    } else {
+                        reject(new Error('Upload failed'));
+                    }
+                });
+                
+                xhr.addEventListener('error', () => reject(new Error('Upload failed')));
+                
+                xhr.open('POST', CONFIG.API_BASE_URL + url);
+                xhr.setRequestHeader('Authorization', `Bearer ${Auth.getToken()}`);
+                xhr.send(formData);
+            });
+        }
+    };
+
+    // ==================== NOTIFICATION SYSTEM ====================
+    
+    const NotificationSystem = {
+        show(message, type = 'info', duration = 5000) {
+            const container = this.getContainer();
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            
+            notification.innerHTML = `
+                <span class="notification-icon">${icons[type]}</span>
+                <span class="notification-message">${message}</span>
+                <button class="notification-close" onclick="this.parentElement.remove()">✕</button>
+                <div class="notification-progress"></div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Animate progress bar
+            const progressBar = notification.querySelector('.notification-progress');
+            progressBar.style.animation = `shrink ${duration}ms linear forwards`;
+            
+            // Auto remove
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.animation = 'slideOut 0.3s ease forwards';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, duration);
+        },
+        
+        getContainer() {
+            let container = document.getElementById('notification-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'notification-container';
+                container.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 9999;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    max-width: 400px;
+                `;
+                document.body.appendChild(container);
+                
+                // Add styles
+                const style = document.createElement('style');
+                style.textContent = `
+                    .notification {
+                        background: white;
+                        border-radius: 8px;
+                        padding: 16px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        position: relative;
+                        overflow: hidden;
+                        animation: slideIn 0.3s ease;
+                        border-left: 4px solid #3b82f6;
+                    }
+                    .notification-success { border-left-color: #10b981; }
+                    .notification-error { border-left-color: #ef4444; }
+                    .notification-warning { border-left-color: #f59e0b; }
+                    .notification-info { border-left-color: #3b82f6; }
+                    .notification-icon { font-size: 20px; }
+                    .notification-message { flex: 1; font-size: 14px; color: #1f2937; }
+                    .notification-close {
+                        background: none;
+                        border: none;
+                        cursor: pointer;
+                        color: #9ca3af;
+                        font-size: 16px;
+                        padding: 4px;
+                    }
+                    .notification-progress {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        height: 3px;
+                        background: currentColor;
+                        opacity: 0.3;
+                    }
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                    @keyframes shrink {
+                        from { width: 100%; }
+                        to { width: 0%; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            return container;
+        }
+    };
+
+    // ==================== SESSION MANAGEMENT ====================
+    
+    const SessionManager = {
+        lastActivity: Date.now(),
+        warningShown: false,
+        
+        init() {
+            this.trackActivity();
+            this.checkSession();
+        },
+        
+        trackActivity() {
+            const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+            events.forEach(event => {
+                document.addEventListener(event, () => {
+                    this.lastActivity = Date.now();
+                    this.warningShown = false;
+                });
+            });
+        },
+        
+        checkSession() {
+            setInterval(() => {
+                const inactiveTime = Date.now() - this.lastActivity;
+                
+                if (inactiveTime >= CONFIG.SESSION_TIMEOUT - CONFIG.AUTO_LOGOUT_WARNING && 
+                    !this.warningShown) {
+                    this.showWarning();
+                    this.warningShown = true;
+                }
+                
+                if (inactiveTime >= CONFIG.SESSION_TIMEOUT) {
+                    Auth.logout();
+                }
+            }, 10000); // Check every 10 seconds
+        },
+        
+        showWarning() {
+            NotificationSystem.show(
+                'Sesi Anda akan berakhir dalam 5 menit karena tidak ada aktivitas.', 
+                'warning', 
+                10000
+            );
+        }
+    };
+
+    // ==================== THEME MANAGER ====================
+    
+    const ThemeManager = {
+        init() {
+            const savedTheme = Storage.get(CONFIG.THEME_KEY) || 'light';
+            this.applyTheme(savedTheme);
+        },
+        
+        applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            Storage.set(CONFIG.THEME_KEY, theme);
+        },
+        
+        toggleTheme() {
+            const current = Storage.get(CONFIG.THEME_KEY) || 'light';
+            const newTheme = current === 'light' ? 'dark' : 'light';
+            this.applyTheme(newTheme);
+        }
+    };
+
+    // ==================== PWA INSTALL PROMPT ====================
+    
+    const PWAInstaller = {
+        deferredPrompt: null,
+        
+        init() {
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                this.deferredPrompt = e;
+                this.showInstallButton();
+            });
+            
+            window.addEventListener('appinstalled', () => {
+                console.log('PWA installed successfully');
+                this.deferredPrompt = null;
+            });
+        },
+        
+        showInstallButton() {
+            const btn = document.createElement('button');
+            btn.textContent = '📱 Install Aplikasi';
+            btn.className = 'pwa-install-btn';
+            btn.onclick = () => this.install();
+            document.body.appendChild(btn);
+        },
+        
+        async install() {
+            if (!this.deferredPrompt) return;
+            
+            this.deferredPrompt.prompt();
+            const result = await this.deferredPrompt.userChoice;
+            
+            console.log('User choice:', result.outcome);
+            this.deferredPrompt = null;
+            
+            // Remove install button
+            const btn = document.querySelector('.pwa-install-btn');
+            if (btn) btn.remove();
+        }
+    };
+
+    // ==================== OFFLINE HANDLER ====================
+    
+    const OfflineHandler = {
+        isOnline: navigator.onLine,
+        
+        init() {
+            window.addEventListener('online', () => {
+                this.isOnline = true;
+                NotificationSystem.show('Koneksi internet kembali tersedia', 'success');
+                this.syncPendingData();
+            });
+            
+            window.addEventListener('offline', () => {
+                this.isOnline = false;
+                NotificationSystem.show('Anda sedang offline. Data akan disimpan lokal.', 'warning');
+            });
+        },
+        
+        async syncPendingData() {
+            const pending = Storage.get('pending_sync') || [];
+            if (pending.length === 0) return;
+            
+            NotificationSystem.show('Menyinkronkan data offline...', 'info');
+            
+            for (const item of pending) {
+                try {
+                    await API.post(item.url, item.data);
+                } catch (error) {
+                    console.error('Sync failed:', error);
+                }
+            }
+            
+            Storage.remove('pending_sync');
+            NotificationSystem.show('Sinkronisasi selesai', 'success');
+        },
+        
+        saveForSync(url, data) {
+            const pending = Storage.get('pending_sync') || [];
+            pending.push({ url, data, timestamp: Date.now() });
+            Storage.set('pending_sync', pending);
+        }
+    };
+
+    // ==================== EXPORT MODULES ====================
+    
+    window.App = {
+        CONFIG,
+        formatDate,
+        formatFileSize,
+        generateId,
+        debounce,
+        escapeHtml,
+        Storage,
+        Auth,
+        API,
+        NotificationSystem,
+        SessionManager,
+        ThemeManager,
+        PWAInstaller,
+        OfflineHandler
+    };
+
+    // ==================== INITIALIZATION ====================
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log(`${CONFIG.APP_NAME} v${CONFIG.APP_VERSION} initialized`);
+        
+        // Initialize modules
+        ThemeManager.init();
+        SessionManager.init();
+        PWAInstaller.init();
+        OfflineHandler.init();
+        
+        // Check authentication
+        Auth.checkAuth();
+        
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(reg => console.log('SW registered'))
+                .catch(err => console.error('SW registration failed:', err));
+        }
+    });
+
+})();
