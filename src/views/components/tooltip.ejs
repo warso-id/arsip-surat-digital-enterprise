@@ -1,0 +1,19 @@
+<!-- Tooltip Component -->
+<span class="tooltip-wrapper">
+    <%- content %>
+    <span class="tooltip-text tooltip-<%= position || 'top' %>"><%= text %></span>
+</span>
+
+<style>
+    .tooltip-wrapper { position: relative; display: inline-block; cursor: help; }
+    .tooltip-text {
+        visibility: hidden; opacity: 0; position: absolute; z-index: 100;
+        background: #1f2937; color: white; padding: 6px 12px; border-radius: 6px;
+        font-size: 12px; white-space: nowrap; transition: all 0.2s; pointer-events: none;
+    }
+    .tooltip-top { bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 6px; }
+    .tooltip-bottom { top: 100%; left: 50%; transform: translateX(-50%); margin-top: 6px; }
+    .tooltip-left { right: 100%; top: 50%; transform: translateY(-50%); margin-right: 6px; }
+    .tooltip-right { left: 100%; top: 50%; transform: translateY(-50%); margin-left: 6px; }
+    .tooltip-wrapper:hover .tooltip-text { visibility: visible; opacity: 1; }
+</style>
