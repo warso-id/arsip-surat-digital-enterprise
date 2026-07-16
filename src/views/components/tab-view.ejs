@@ -1,0 +1,38 @@
+<!-- Tab View Component -->
+<div class="tab-view" id="<%= id || 'tabView' %>">
+    <div class="tab-header">
+        <% tabs.forEach(function(tab, index) { %>
+            <button class="tab-btn <%= index === 0 ? 'active' : '' %>" 
+                    onclick="switchTabView('<%= id || 'tabView' %>', <%= index %>)">
+                <%= tab.icon ? tab.icon + ' ' : '' %><%= tab.label %>
+                <% if (tab.count !== undefined) { %><span class="tab-count"><%= tab.count %></span><% } %>
+            </button>
+        <% }); %>
+    </div>
+    <div class="tab-content">
+        <% tabs.forEach(function(tab, index) { %>
+            <div class="tab-panel <%= index === 0 ? 'active' : '' %>" data-index="<%= index %>">
+                <%- tab.content %>
+            </div>
+        <% }); %>
+    </div>
+</div>
+
+<style>
+    .tab-view { border:1px solid #e5e7eb;border-radius:10px;overflow:hidden }
+    .tab-header { display:flex;background:#f9fafb;border-bottom:1px solid #e5e7eb;overflow-x:auto }
+    .tab-btn { padding:12px 20px;border:none;background:none;cursor:pointer;font-size:14px;font-weight:500;color:#64748b;font-family:inherit;white-space:nowrap;border-bottom:2px solid transparent;transition:all 0.2s;display:flex;align-items:center;gap:6px }
+    .tab-btn:hover { color:#1f2937;background:rgba(0,0,0,0.02) }
+    .tab-btn.active { color:#1a56db;border-bottom-color:#1a56db;font-weight:600 }
+    .tab-count { background:#e5e7eb;padding:1px 6px;border-radius:8px;font-size:11px }
+    .tab-btn.active .tab-count { background:#dbeafe;color:#1a56db }
+    .tab-panel { display:none;padding:20px }
+    .tab-panel.active { display:block }
+</style>
+
+<script>
+    function switchTabView(id, index) {
+        document.querySelectorAll('#' + id + ' .tab-btn').forEach((btn, i) => btn.classList.toggle('active', i === index));
+        document.querySelectorAll('#' + id + ' .tab-panel').forEach((panel, i) => panel.classList.toggle('active', i === index));
+    }
+</script>
