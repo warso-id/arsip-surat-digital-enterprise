@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup & Restore - Arsip Surat Digital Enterprise</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <style>
+        :root {
+            --primary: #1a56db; --secondary: #64748b; --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444; --dark: #1f2937;
+            --darker: #111827; --light: #f9fafb; --lighter: #ffffff; --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--light); color: var(--dark); display: flex; min-height: 100vh; }
+        
+        .sidebar { width: 260px; background: var(--darker); color: white; position: fixed; top: 0; left: 0; bottom: 0; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #374151; }
+        .sidebar-nav { padding: 20px 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #9ca3af; text-decoration: none; font-size: 14px; border-left: 3px solid transparent; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: rgba(26,86,219,0.2); color: white; border-left-color: var(--primary); }
+        
+        .main-content { flex: 1; margin-left: 260px; padding: 30px; max-width: 800px; }
+        .page-title { font-size: 24px; font-weight: 800; margin-bottom: 30px; }
+        
+        .card {
+            background: var(--lighter); border-radius: 16px; padding: 30px;
+            border: 1px solid var(--border); margin-bottom: 25px;
+        }
+        .card-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border: 2px solid transparent; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; font-family: var(--font-sans); transition: all 0.3s; }
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: #1e40af; transform: translateY(-2px); }
+        .btn-success { background: var(--success); color: white; border-color: var(--success); }
+        .btn-warning { background: var(--warning); color: white; border-color: var(--warning); }
+        .btn-outline { background: transparent; color: var(--primary); border-color: var(--primary); }
+        
+        .backup-list { list-style: none; }
+        .backup-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px; background: var(--light); border-radius: 10px;
+            margin-bottom: 10px; border: 1px solid var(--border);
+        }
+        .backup-info { display: flex; align-items: center; gap: 15px; }
+        .backup-icon { font-size: 28px; }
+        .backup-name { font-weight: 600; font-size: 14px; }
+        .backup-meta { font-size: 12px; color: var(--secondary); }
+        .backup-actions { display: flex; gap: 8px; }
+        
+        .schedule-info {
+            background: #fffbeb; border: 1px solid #fde68a;
+            border-radius: 10px; padding: 20px; margin-top: 20px;
+        }
+        
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--light); }
+        .toggle-row:last-child { border-bottom: none; }
+        .toggle-label { font-weight: 500; }
+        .toggle-switch { position: relative; width: 50px; height: 26px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; border-radius: 26px; transition: 0.3s; }
+        .toggle-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
+        input:checked + .toggle-slider { background: var(--primary); }
+        input:checked + .toggle-slider:before { transform: translateX(24px); }
+        
+        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">⚙️ Admin Panel</div>
+        <nav class="sidebar-nav">
+            <a href="./dashboard.ejs" class="nav-item">📊 Dashboard</a>
+            <a href="./users/index.ejs" class="nav-item">👥 Pengguna</a>
+            <a href="./audit-log.ejs" class="nav-item">📋 Audit Log</a>
+            <a href="./backup.ejs" class="nav-item active">💾 Backup</a>
+            <a href="../../login" class="nav-item" style="color: #ef4444;">🚪 Logout</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <h1 class="page-title">💾 Backup & Restore</h1>
+        
+        <!-- Create Backup -->
+        <div class="card">
+            <div class="card-title">📦 Buat Backup Baru</div>
+            <p style="font-size: 14px; color: var(--secondary); margin-bottom: 20px;">
+                Backup database dan file storage sistem.
+            </p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="createBackup('full')">💾 Backup Penuh (DB + Files)</button>
+                <button class="btn btn-outline" onclick="createBackup('db')">🗄️ Backup Database Saja</button>
+                <button class="btn btn-outline" onclick="createBackup('files')">📁 Backup Files Saja</button>
+            </div>
+        </div>
+        
+        <!-- Backup List -->
+        <div class="card">
+            <div class="card-title">📋 Daftar Backup</div>
+            <ul class="backup-list">
+                <li class="backup-item">
+                    <div class="backup-info">
+                        <span class="backup-icon">📦</span>
+                        <div>
+                            <div class="backup-name">backup-2024-01-17-08-30-00.zip</div>
+                            <div class="backup-meta">15.2 MB • 17 Jan 2024, 08:30</div>
+                        </div>
+                    </div>
+                    <div class="backup-actions">
+                        <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="downloadBackup()">⬇️ Download</button>
+                        <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; color: var(--success);" onclick="restoreBackup()">🔄 Restore</button>
+                        <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; color: var(--danger);" onclick="deleteBackup()">🗑️</button>
+                    </div>
+                </li>
+                <li class="backup-item">
+                    <div class="backup-info">
+                        <span class="backup-icon">📦</span>
+                        <div>
+                            <div class="backup-name">backup-2024-01-16-00-00-00.zip</div>
+                            <div class="backup-meta">14.8 MB • 16 Jan 2024, 00:00 (Auto)</div>
+                        </div>
+                    </div>
+                    <div class="backup-actions">
+                        <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">⬇️ Download</button>
+                        <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; color: var(--success);">🔄 Restore</button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Upload Restore -->
+        <div class="card">
+            <div class="card-title">📤 Upload & Restore</div>
+            <p style="font-size: 14px; color: var(--secondary); margin-bottom: 20px;">
+                Upload file backup (.zip) untuk melakukan restore.
+            </p>
+            <div style="border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 10px;">📤</div>
+                <p style="font-weight: 600; margin-bottom: 5px;">Drop file backup di sini</p>
+                <p style="font-size: 13px; color: var(--secondary);">atau klik untuk memilih file</p>
+                <input type="file" accept=".zip" style="display: none;" id="backupFile">
+                <button class="btn btn-outline" style="margin-top: 15px;" onclick="document.getElementById('backupFile').click()">📁 Pilih File</button>
+            </div>
+        </div>
+        
+        <!-- Auto Backup Settings -->
+        <div class="card">
+            <div class="card-title">⚙️ Pengaturan Backup Otomatis</div>
+            <div class="toggle-row">
+                <div>
+                    <div class="toggle-label">Backup Otomatis</div>
+                    <div style="font-size: 12px; color: var(--secondary);">Jalankan backup secara otomatis</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div>
+                    <div class="toggle-label">Frekuensi Backup</div>
+                    <div style="font-size: 12px; color: var(--secondary);">Setiap hari pukul 02:00</div>
+                </div>
+                <select style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;">
+                    <option value="daily" selected>Harian</option>
+                    <option value="weekly">Mingguan</option>
+                    <option value="monthly">Bulanan</option>
+                </select>
+            </div>
+            <div class="toggle-row">
+                <div>
+                    <div class="toggle-label">Simpan Backup</div>
+                    <div style="font-size: 12px; color: var(--secondary);">Jumlah backup yang disimpan</div>
+                </div>
+                <select style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;">
+                    <option value="3">3 backup terakhir</option>
+                    <option value="7" selected>7 backup terakhir</option>
+                    <option value="14">14 backup terakhir</option>
+                    <option value="30">30 backup terakhir</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" style="margin-top: 15px;">💾 Simpan Pengaturan</button>
+        </div>
+    </main>
+    
+    <script>
+        function createBackup(type) {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = '⏳ Membuat backup...';
+            
+            setTimeout(() => {
+                alert(`Backup ${type} berhasil dibuat!`);
+                btn.disabled = false;
+                btn.textContent = type === 'full' ? '💾 Backup Penuh (DB + Files)' : '🗄️ Backup Database Saja';
+                location.reload();
+            }, 2000);
+        }
+        
+        function downloadBackup() { alert('Mendownload backup...'); }
+        function restoreBackup() { 
+            if (confirm('Restore backup ini? Data saat ini akan ditimpa.')) {
+                alert('Restore berhasil!');
+            }
+        }
+        function deleteBackup() {
+            if (confirm('Hapus backup ini?')) {
+                alert('Backup berhasil dihapus.');
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('auth_token')) window.location.href = '../../login';
+        });
+    </script>
+</body>
+</html>
