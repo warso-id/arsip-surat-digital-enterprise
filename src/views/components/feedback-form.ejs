@@ -1,0 +1,45 @@
+<!-- Feedback Form Component -->
+<div class="feedback-form">
+    <h4><%= title || 'Kirim Feedback' %></h4>
+    <div class="feedback-rating">
+        <span class="rating-label">Seberapa puas Anda?</span>
+        <div class="rating-emojis">
+            <% ['😡','😟','😐','😊','😍'].forEach(function(emoji, i) { %>
+                <button class="emoji-btn" onclick="rateFeedback(<%= i+1 %>)" data-rate="<%= i+1 %>"><%= emoji %></button>
+            <% }); %>
+        </div>
+    </div>
+    <textarea class="feedback-textarea" placeholder="Ceritakan pengalaman Anda..." rows="3"></textarea>
+    <button class="feedback-submit" onclick="submitFeedback()">📤 Kirim Feedback</button>
+</div>
+
+<style>
+    .feedback-form { background:white;border:1px solid #e5e7eb;border-radius:12px;padding:24px }
+    .feedback-form h4 { font-size:16px;font-weight:700;margin-bottom:16px }
+    .feedback-rating { margin-bottom:16px }
+    .rating-label { font-size:13px;color:#64748b;display:block;margin-bottom:8px }
+    .rating-emojis { display:flex;gap:8px }
+    .emoji-btn { font-size:28px;background:none;border:2px solid transparent;border-radius:8px;cursor:pointer;padding:4px 8px;transition:all 0.2s }
+    .emoji-btn:hover { transform:scale(1.2);border-color:#1a56db }
+    .emoji-btn.selected { border-color:#1a56db;background:#eff6ff }
+    .feedback-textarea { width:100%;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;font-size:14px;font-family:inherit;resize:vertical;margin-bottom:12px }
+    .feedback-textarea:focus { outline:none;border-color:#1a56db }
+    .feedback-submit { padding:10px 20px;background:#1a56db;color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-family:inherit;font-size:14px }
+    .feedback-submit:hover { background:#1e40af }
+</style>
+
+<script>
+    let selectedRate = 0;
+    document.querySelectorAll('.emoji-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedRate = this.dataset.rate;
+        });
+    });
+    function submitFeedback() {
+        const message = document.querySelector('.feedback-textarea').value;
+        console.log('Feedback:', { rate: selectedRate, message });
+        alert('Terima kasih atas feedback Anda!');
+    }
+</script>
