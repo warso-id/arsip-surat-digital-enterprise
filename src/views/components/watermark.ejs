@@ -1,0 +1,14 @@
+<!-- Watermark Component -->
+<div class="watermark-container">
+    <div class="watermark-text"><%= text || 'CONFIDENTIAL' %></div>
+    <%- content %>
+</div>
+
+<style>
+    .watermark-container { position:relative;overflow:hidden }
+    .watermark-text {
+        position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);
+        font-size:60px;font-weight:900;color:rgba(0,0,0,0.03);white-space:nowrap;
+        pointer-events:none;user-select:none;z-index:1
+    }
+</style>
