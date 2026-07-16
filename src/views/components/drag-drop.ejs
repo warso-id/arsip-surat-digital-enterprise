@@ -1,0 +1,50 @@
+<!-- Drag & Drop Component -->
+<div class="drag-drop-zone" id="<%= id || 'dragDrop' %>"
+     ondragover="event.preventDefault(); this.classList.add('drag-over')"
+     ondragleave="this.classList.remove('drag-over')"
+     ondrop="handleDrop(event, '<%= id || 'dragDrop' %>')">
+    <div class="drag-drop-content">
+        <div class="drag-icon">📤</div>
+        <div class="drag-text"><strong>Drag & drop file di sini</strong></div>
+        <div class="drag-hint">atau klik untuk memilih file</div>
+        <div class="drag-hint">Format: <%= accept || 'PDF, DOC, JPG, PNG' %> | Max: <%= maxSize || 10 %>MB</div>
+    </div>
+    <input type="file" id="<%= id || 'dragDrop' %>Input" <%= multiple ? 'multiple' : '' %> 
+           accept="<%= accept || '.pdf,.doc,.docx,.jpg,.png' %>" style="display:none"
+           onchange="handleFiles(this.files, '<%= id || 'dragDrop' %>')">
+    <div class="drag-file-list" id="<%= id || 'dragDrop' %>List"></div>
+</div>
+
+<style>
+    .drag-drop-zone {
+        border: 2px dashed #d1d5db; border-radius: 12px; padding: 40px 20px;
+        text-align: center; cursor: pointer; transition: all 0.3s; background: #f9fafb;
+    }
+    .drag-drop-zone:hover, .drag-drop-zone.drag-over { border-color: #1a56db; background: #eff6ff; }
+    .drag-icon { font-size: 48px; margin-bottom: 12px; }
+    .drag-text { font-size: 15px; color: #374151; margin-bottom: 4px; }
+    .drag-hint { font-size: 12px; color: #9ca3af; }
+    .drag-file-list { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+    .drag-file-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; }
+    .drag-file-item .remove { margin-left: auto; cursor: pointer; color: #ef4444; }
+</style>
+
+<script>
+    function handleDrop(event, id) {
+        event.preventDefault();
+        event.currentTarget.classList.remove('drag-over');
+        handleFiles(event.dataTransfer.files, id);
+    }
+    function handleFiles(files, id) {
+        const list = document.getElementById(id + 'List');
+        Array.from(files).forEach(file => {
+            const item = document.createElement('div');
+            item.className = 'drag-file-item';
+            item.innerHTML = `📄 ${file.name} (${(file.size/1024).toFixed(1)} KB) <span class="remove" onclick="this.parentElement.remove()">✕</span>`;
+            list.appendChild(item);
+        });
+    }
+    document.querySelectorAll('.drag-drop-zone').forEach(zone => {
+        zone.addEventListener('click', () => zone.querySelector('input[type="file"]').click());
+    });
+</script>
