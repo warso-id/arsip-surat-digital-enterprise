@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistik Detail - Arsip Surat Digital Enterprise</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <style>
+        :root {
+            --primary: #1a56db; --secondary: #64748b; --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444; --dark: #1f2937;
+            --darker: #111827; --light: #f9fafb; --lighter: #ffffff; --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--light); color: var(--dark); display: flex; min-height: 100vh; }
+        
+        .sidebar { width: 260px; background: var(--darker); color: white; position: fixed; top: 0; left: 0; bottom: 0; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #374151; }
+        .sidebar-nav { padding: 20px 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #9ca3af; text-decoration: none; font-size: 14px; border-left: 3px solid transparent; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: rgba(26,86,219,0.2); color: white; border-left-color: var(--primary); }
+        
+        .main-content { flex: 1; margin-left: 260px; padding: 30px; }
+        .page-title { font-size: 24px; font-weight: 800; margin-bottom: 30px; }
+        
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px; }
+        .chart-card { background: var(--lighter); border-radius: 16px; padding: 25px; border: 1px solid var(--border); }
+        .chart-title { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
+        .chart-placeholder { background: var(--light); border-radius: 8px; padding: 20px; text-align: center; min-height: 200px; display: flex; align-items: center; justify-content: center; }
+        
+        .stats-detail { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .detail-card { background: var(--lighter); border-radius: 12px; padding: 20px; border: 1px solid var(--border); text-align: center; }
+        .detail-value { font-size: 32px; font-weight: 800; }
+        .detail-label { font-size: 13px; color: var(--secondary); margin-top: 5px; }
+        .detail-change { font-size: 11px; font-weight: 600; margin-top: 5px; }
+        .change-up { color: var(--success); }
+        .change-down { color: var(--danger); }
+        
+        @media (max-width: 1024px) { .chart-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">🏢 Arsip Surat Digital</div>
+        <nav class="sidebar-nav">
+            <a href="./index.ejs" class="nav-item active">📊 Dashboard</a>
+            <a href="../surat-masuk/index.ejs" class="nav-item">📥 Surat Masuk</a>
+            <a href="../surat-keluar/index.ejs" class="nav-item">📤 Surat Keluar</a>
+            <a href="../../login" class="nav-item" style="color: #ef4444;">🚪 Logout</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <h1 class="page-title">📊 Statistik Detail</h1>
+        
+        <div class="stats-detail">
+            <div class="detail-card">
+                <div class="detail-value" style="color: var(--primary);">1,245</div>
+                <div class="detail-label">Total Surat Masuk</div>
+                <div class="detail-change change-up">↑ 12.5% dari bulan lalu</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-value" style="color: var(--success);">856</div>
+                <div class="detail-label">Total Surat Keluar</div>
+                <div class="detail-change change-up">↑ 8.3% dari bulan lalu</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-value" style="color: var(--warning);">423</div>
+                <div class="detail-label">Disposisi Aktif</div>
+                <div class="detail-change change-down">↓ 3.2% dari bulan lalu</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-value" style="color: #7c3aed;">45</div>
+                <div class="detail-label">Pengguna Aktif</div>
+                <div class="detail-change change-up">↑ 5 baru</div>
+            </div>
+        </div>
+        
+        <div class="chart-grid">
+            <div class="chart-card">
+                <div class="chart-title">📈 Tren Surat Masuk (6 Bulan)</div>
+                <div class="chart-placeholder">
+                    <svg viewBox="0 0 500 200" width="100%" height="200">
+                        <polyline points="50,150 120,120 190,140 260,80 330,100 400,50 470,70" fill="none" stroke="#3b82f6" stroke-width="3"/>
+                        <circle cx="50" cy="150" r="4" fill="#3b82f6"/><circle cx="120" cy="120" r="4" fill="#3b82f6"/>
+                        <circle cx="190" cy="140" r="4" fill="#3b82f6"/><circle cx="260" cy="80" r="4" fill="#3b82f6"/>
+                        <circle cx="330" cy="100" r="4" fill="#3b82f6"/><circle cx="400" cy="50" r="4" fill="#3b82f6"/>
+                        <circle cx="470" cy="70" r="4" fill="#3b82f6"/>
+                        <text x="50" y="180" font-size="10" fill="#64748b" text-anchor="middle">Agu</text>
+                        <text x="190" y="180" font-size="10" fill="#64748b" text-anchor="middle">Sep</text>
+                        <text x="330" y="180" font-size="10" fill="#64748b" text-anchor="middle">Okt</text>
+                        <text x="470" y="180" font-size="10" fill="#64748b" text-anchor="middle">Jan</text>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-title">📊 Distribusi Status Surat</div>
+                <div class="chart-placeholder">
+                    <svg viewBox="0 0 300 200" width="100%" height="200">
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="#e5e7eb" stroke-width="40" stroke-dasharray="150 350"/>
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="#3b82f6" stroke-width="40" stroke-dasharray="200 300" stroke-dashoffset="-150"/>
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="#10b981" stroke-width="40" stroke-dasharray="100 400" stroke-dashoffset="-350"/>
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="#f59e0b" stroke-width="40" stroke-dasharray="50 450" stroke-dashoffset="-450"/>
+                        <text x="100" y="100" font-size="16" font-weight="700" fill="#1f2937" text-anchor="middle">1,245</text>
+                        <text x="100" y="118" font-size="11" fill="#64748b" text-anchor="middle">Total</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('auth_token')) window.location.href = '../../login';
+        });
+    </script>
+</body>
+</html>
