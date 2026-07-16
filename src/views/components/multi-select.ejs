@@ -1,0 +1,38 @@
+<!-- Multi Select Component -->
+<div class="multi-select" id="<%= id || 'multiSelect' %>">
+    <div class="ms-trigger" onclick="toggleMS('<%= id || 'multiSelect' %>')">
+        <span class="ms-placeholder"><%= placeholder || 'Pilih...' %></span>
+        <span class="ms-arrow">▾</span>
+    </div>
+    <div class="ms-dropdown" id="<%= id || 'multiSelect' %>Dropdown" style="display:none">
+        <input type="text" class="ms-search" placeholder="Cari..." oninput="filterMS(this, '<%= id || 'multiSelect' %>')">
+        <div class="ms-options">
+            <% options.forEach(function(opt) { %>
+                <label class="ms-option">
+                    <input type="checkbox" value="<%= opt.value %>" <%= opt.selected ? 'checked' : '' %>>
+                    <%= opt.label %>
+                </label>
+            <% }); %>
+        </div>
+    </div>
+</div>
+
+<style>
+    .multi-select { position:relative }
+    .ms-trigger { display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;cursor:pointer;background:white;min-height:42px }
+    .ms-trigger:hover { border-color:#1a56db }
+    .ms-placeholder { color:#9ca3af;font-size:14px }
+    .ms-arrow { font-size:10px;color:#9ca3af }
+    .ms-dropdown { position:absolute;top:100%;left:0;right:0;margin-top:4px;background:white;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,0.1);z-index:100;overflow:hidden }
+    .ms-search { width:100%;padding:10px 14px;border:none;border-bottom:1px solid #e5e7eb;outline:none;font-size:13px;font-family:inherit }
+    .ms-options { max-height:200px;overflow-y:auto;padding:4px }
+    .ms-option { display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;border-radius:6px;font-size:13px }
+    .ms-option:hover { background:#f3f4f6 }
+    .ms-option input { accent-color:#1a56db }
+</style>
+
+<script>
+    function toggleMS(id) { const d=document.getElementById(id+'Dropdown');d.style.display=d.style.display==='none'?'block':'none' }
+    function filterMS(input, id) { const q=input.value.toLowerCase();document.querySelectorAll('#'+id+' .ms-option').forEach(o=>o.style.display=o.textContent.toLowerCase().includes(q)?'flex':'none') }
+    document.addEventListener('click',e=>{if(!e.target.closest('.multi-select'))document.querySelectorAll('.ms-dropdown').forEach(d=>d.style.display='none')})
+</script>
