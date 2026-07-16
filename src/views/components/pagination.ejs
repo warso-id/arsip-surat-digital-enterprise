@@ -1,0 +1,138 @@
+<!-- Pagination Component -->
+<!-- Usage: <%- include('../components/pagination', { currentPage: 1, totalPages: 10, baseUrl: '/surat-masuk' }) %> -->
+
+<style>
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .pagination-info {
+        font-size: 13px;
+        color: #64748b;
+    }
+    
+    .pagination {
+        display: flex;
+        gap: 5px;
+        list-style: none;
+    }
+    
+    .page-item {
+        display: inline-block;
+    }
+    
+    .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 8px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        background: white;
+        color: #1f2937;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .page-link:hover {
+        background: #f9fafb;
+        border-color: #3b82f6;
+        color: #1a56db;
+    }
+    
+    .page-link.active {
+        background: #1a56db;
+        color: white;
+        border-color: #1a56db;
+    }
+    
+    .page-link.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+    
+    .page-size-select {
+        padding: 8px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 13px;
+        background: white;
+    }
+</style>
+
+<div class="pagination-container">
+    <div class="pagination-info">
+        Menampilkan <strong><%= startItem %></strong> - <strong><%= endItem %></strong> 
+        dari <strong><%= totalItems %></strong> data
+    </div>
+    
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <select class="page-size-select" onchange="changePageSize(this.value)" aria-label="Jumlah data per halaman">
+            <option value="10" <%= pageSize === 10 ? 'selected' : '' %>>10 / halaman</option>
+            <option value="25" <%= pageSize === 25 ? 'selected' : '' %>>25 / halaman</option>
+            <option value="50" <%= pageSize === 50 ? 'selected' : '' %>>50 / halaman</option>
+            <option value="100" <%= pageSize === 100 ? 'selected' : '' %>>100 / halaman</option>
+        </select>
+        
+        <ul class="pagination">
+            <!-- First Page -->
+            <li class="page-item">
+                <a class="page-link <%= currentPage === 1 ? 'disabled' : '' %>" 
+                   href="<%= baseUrl %>?page=1&size=<%= pageSize %>" 
+                   aria-label="Halaman pertama" title="Pertama">««</a>
+            </li>
+            
+            <!-- Previous Page -->
+            <li class="page-item">
+                <a class="page-link <%= currentPage === 1 ? 'disabled' : '' %>" 
+                   href="<%= baseUrl %>?page=<%= currentPage - 1 %>&size=<%= pageSize %>" 
+                   aria-label="Halaman sebelumnya" title="Sebelumnya">«</a>
+            </li>
+            
+            <!-- Page Numbers -->
+            <% for (let i = startPage; i <= endPage; i++) { %>
+                <li class="page-item">
+                    <a class="page-link <%= i === currentPage ? 'active' : '' %>" 
+                       href="<%= baseUrl %>?page=<%= i %>&size=<%= pageSize %>"
+                       <%= i === currentPage ? 'aria-current="page"' : '' %>>
+                        <%= i %>
+                    </a>
+                </li>
+            <% } %>
+            
+            <!-- Next Page -->
+            <li class="page-item">
+                <a class="page-link <%= currentPage === totalPages ? 'disabled' : '' %>" 
+                   href="<%= baseUrl %>?page=<%= currentPage + 1 %>&size=<%= pageSize %>" 
+                   aria-label="Halaman berikutnya" title="Berikutnya">»</a>
+            </li>
+            
+            <!-- Last Page -->
+            <li class="page-item">
+                <a class="page-link <%= currentPage === totalPages ? 'disabled' : '' %>" 
+                   href="<%= baseUrl %>?page=<%= totalPages %>&size=<%= pageSize %>" 
+                   aria-label="Halaman terakhir" title="Terakhir">»»</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    function changePageSize(size) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('size', size);
+        url.searchParams.set('page', '1');
+        window.location.href = url.toString();
+    }
+</script>
