@@ -1,0 +1,52 @@
+<!-- Toast Notification Component -->
+<!-- Usage: <%- include('../components/toast', { id: 'toast1', type: 'success', message: 'Data berhasil disimpan!' }) %> -->
+
+<div class="toast toast-<%= type || 'info' %>" id="<%= id || 'toast' %>" role="alert">
+    <div class="toast-content">
+        <span class="toast-icon">
+            <% const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' }; %>
+            <%= icons[type] || icons.info %>
+        </span>
+        <span class="toast-message"><%= message %></span>
+    </div>
+    <button class="toast-close" onclick="closeToast('<%= id %>')" aria-label="Close">✕</button>
+    <div class="toast-progress"></div>
+</div>
+
+<style>
+    .toast {
+        position: fixed; bottom: 20px; right: 20px;
+        background: white; border-radius: 10px; padding: 16px 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 9999;
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; min-width: 300px; max-width: 450px;
+        animation: slideInRight 0.3s ease; overflow: hidden;
+        border-left: 4px solid #3b82f6;
+    }
+    .toast-success { border-left-color: #10b981; }
+    .toast-error { border-left-color: #ef4444; }
+    .toast-warning { border-left-color: #f59e0b; }
+    .toast-content { display: flex; align-items: center; gap: 10px; flex: 1; }
+    .toast-icon { font-size: 20px; }
+    .toast-message { font-size: 14px; color: #1f2937; }
+    .toast-close { background: none; border: none; cursor: pointer; font-size: 16px; color: #9ca3af; }
+    .toast-progress {
+        position: absolute; bottom: 0; left: 0; height: 3px;
+        background: currentColor; opacity: 0.3;
+        animation: shrink 5s linear forwards;
+    }
+    @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes shrink { from { width: 100%; } to { width: 0%; } }
+</style>
+
+<script>
+    function closeToast(id) {
+        const toast = document.getElementById(id);
+        if (toast) {
+            toast.style.animation = 'slideOutRight 0.3s ease forwards';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }
+    // Auto close after 5 seconds
+    setTimeout(() => closeToast('<%= id %>'), 5000);
+</script>
