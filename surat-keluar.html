@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surat Keluar - Arsip Surat Digital Enterprise v3.0</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <link rel="manifest" href="/src/manifest.json">
+    
+    <script src="/src/public/js/enterprise-core.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1a56db; --primary-dark: #1e40af; --primary-light: #3b82f6;
+            --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+            --dark: #1f2937; --light: #f9fafb; --border: #e5e7eb;
+            --sidebar-width: 260px; --header-height: 70px;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #1f2937; min-height: 100vh;
+        }
+        
+        .dashboard-layout { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: var(--sidebar-width); position: fixed; top: 0; left: 0; bottom: 0;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: white; z-index: 100; overflow-y: auto; transition: transform 0.3s;
+        }
+        
+        .sidebar-header { padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
+        .sidebar-logo img { width: 40px; height: 40px; border-radius: 10px; }
+        .sidebar-logo h2 { font-size: 16px; font-weight: 700; }
+        
+        .sidebar-nav { padding: 16px 12px; }
+        .nav-section { margin-bottom: 24px; }
+        .nav-section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; padding: 8px 12px; margin-bottom: 4px; }
+        
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            color: #94a3b8; text-decoration: none; border-radius: 8px;
+            transition: all 0.2s; font-size: 14px; font-weight: 500; cursor: pointer;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
+        .nav-item.active { background: var(--primary); color: white; }
+        .nav-icon { font-size: 18px; width: 24px; text-align: center; }
+        
+        .main-content { flex: 1; margin-left: var(--sidebar-width); min-height: 100vh; }
+        
+        .header {
+            background: white; padding: 0 32px; height: var(--header-height);
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50;
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .menu-toggle { display: none; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--dark); }
+        .user-menu { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px 12px; border-radius: 8px; }
+        .user-menu:hover { background: var(--light); }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+        
+        .page-content { padding: 32px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .page-title { font-size: 28px; font-weight: 800; }
+        
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 16px; flex-wrap: wrap; }
+        .toolbar-left { display: flex; gap: 12px; align-items: center; }
+        .toolbar-right { display: flex; gap: 12px; align-items: center; }
+        
+        .search-box { position: relative; }
+        .search-box input { padding: 10px 16px 10px 40px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; width: 300px; background: white; }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
+        
+        .filter-select { padding: 10px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: white; cursor: pointer; }
+        
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; text-decoration: none; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,86,219,0.3); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; transform: translateY(-1px); }
+        .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        
+        .card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-title { font-size: 18px; font-weight: 700; }
+        
+        .table-responsive { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        .data-table th { background: #f8fafc; font-weight: 600; color: #374151; white-space: nowrap; }
+        .data-table tr:hover { background: #f9fafb; }
+        .data-table tr { transition: background 0.2s; }
+        
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-purple { background: #ede9fe; color: #5b21b6; }
+        
+        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; flex-wrap: wrap; gap: 12px; }
+        .pagination-info { font-size: 14px; color: #6b7280; }
+        .pagination-buttons { display: flex; gap: 8px; }
+        .page-btn { padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; background: white; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+        .page-btn:hover { background: var(--light); }
+        .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; justify-content: center; align-items: center; animation: fadeIn 0.3s ease; }
+        .modal-overlay.show { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .modal { background: white; border-radius: 16px; padding: 32px; max-width: 800px; width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+        .modal-title { font-size: 20px; font-weight: 700; }
+        .modal-close { background: #f3f4f6; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .modal-close:hover { background: #e5e7eb; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--dark); }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 16px; border: 2px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; transition: all 0.3s; background: white; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(26,86,219,0.1); }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-hint { font-size: 12px; color: #6b7280; margin-top: 4px; }
+        
+        /* Status Timeline */
+        .status-timeline { display: flex; align-items: center; gap: 8px; margin: 20px 0; }
+        .timeline-step { display: flex; align-items: center; gap: 8px; }
+        .timeline-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--border); }
+        .timeline-dot.active { background: var(--success); }
+        .timeline-dot.current { background: var(--primary); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(26,86,219,0.4); } 50% { box-shadow: 0 0 0 8px rgba(26,86,219,0); } }
+        .timeline-line { width: 40px; height: 2px; background: var(--border); }
+        .timeline-line.active { background: var(--success); }
+        .timeline-label { font-size: 12px; color: #6b7280; }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: block; }
+            .page-content { padding: 20px; }
+            .toolbar { flex-direction: column; }
+            .search-box input { width: 100%; }
+            .toolbar-left, .toolbar-right { width: 100%; }
+            .toolbar-left { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/dashboard.html" class="sidebar-logo">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgcng9IjQwIiBmaWxsPSJ1cmwoI2dyYWQpIi8+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzFhNTZkYiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzdjM2FlZCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjx0ZXh0IHg9IjEwMCIgeT0iMTIwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iODAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+" alt="Logo">
+                    <h2>Arsip Surat</h2>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Menu Utama</div>
+                    <a href="/dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+                    <a href="/surat-masuk.html" class="nav-item"><span class="nav-icon">📥</span> Surat Masuk</a>
+                    <a href="/surat-keluar.html" class="nav-item active"><span class="nav-icon">📤</span> Surat Keluar</a>
+                    <a href="/disposisi.html" class="nav-item"><span class="nav-icon">📋</span> Disposisi</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Lainnya</div>
+                    <a href="/laporan.html" class="nav-item"><span class="nav-icon">📈</span> Laporan</a>
+                    <a href="/admin.html" class="nav-item"><span class="nav-icon">⚙️</span> Admin Panel</a>
+                    <a href="/profile.html" class="nav-item"><span class="nav-icon">👤</span> Profil Saya</a>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">☰</button>
+                    <h2 style="font-size:18px;">📤 Manajemen Surat Keluar</h2>
+                </div>
+                <div class="user-menu" onclick="window.location.href='/profile.html'">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <span id="userName" style="font-size:14px;font-weight:500;">Administrator</span>
+                </div>
+            </header>
+            
+            <div class="page-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">📤 Surat Keluar</h1>
+                        <p style="color:#6b7280;margin-top:4px;">Kelola semua surat keluar instansi Anda</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openCreateModal()">
+                        ➕ Buat Surat Keluar
+                    </button>
+                </div>
+                
+                <!-- Stats Summary -->
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:24px;">
+                    <div class="card" style="text-align:center;">
+                        <div style="font-size:32px;font-weight:800;color:var(--primary);" id="totalSK">89</div>
+                        <div style="color:#6b7280;font-size:14px;">Total Surat Keluar</div>
+                    </div>
+                    <div class="card" style="text-align:center;">
+                        <div style="font-size:32px;font-weight:800;color:var(--success);" id="totalTerkirim">72</div>
+                        <div style="color:#6b7280;font-size:14px;">Terkirim</div>
+                    </div>
+                    <div class="card" style="text-align:center;">
+                        <div style="font-size:32px;font-weight:800;color:var(--warning);" id="totalDraft">12</div>
+                        <div style="color:#6b7280;font-size:14px;">Draft</div>
+                    </div>
+                    <div class="card" style="text-align:center;">
+                        <div style="font-size:32px;font-weight:800;color:var(--danger);" id="totalPending">5</div>
+                        <div style="color:#6b7280;font-size:14px;">Pending</div>
+                    </div>
+                </div>
+                
+                <!-- Toolbar -->
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="searchSurat" placeholder="Cari nomor surat, tujuan, perihal..." onkeyup="searchSurat()">
+                        </div>
+                        <select class="filter-select" id="filterStatus" onchange="filterSurat()">
+                            <option value="">Semua Status</option>
+                            <option value="draft">Draft</option>
+                            <option value="terkirim">Terkirim</option>
+                            <option value="pending">Pending</option>
+                            <option value="arsip">Arsip</option>
+                        </select>
+                        <select class="filter-select" id="filterKlasifikasi" onchange="filterSurat()">
+                            <option value="">Semua Klasifikasi</option>
+                            <option value="biasa">Biasa</option>
+                            <option value="penting">Penting</option>
+                            <option value="rahasia">Rahasia</option>
+                        </select>
+                        <input type="date" class="filter-select" id="filterDate" onchange="filterSurat()">
+                    </div>
+                    <div class="toolbar-right">
+                        <button class="btn btn-outline btn-sm" onclick="exportData()">📥 Export Excel</button>
+                        <button class="btn btn-outline btn-sm" onclick="exportPDF()">📄 Export PDF</button>
+                        <button class="btn btn-outline btn-sm" onclick="refreshData()">🔄 Refresh</button>
+                    </div>
+                </div>
+                
+                <!-- Table -->
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                                    <th>No. Agenda</th>
+                                    <th>No. Surat</th>
+                                    <th>Tanggal</th>
+                                    <th>Tujuan</th>
+                                    <th>Perihal</th>
+                                    <th>Klasifikasi</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="suratKeluarTable">
+                                <!-- Data loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="pagination">
+                        <div class="pagination-info">
+                            Menampilkan <span id="showFrom">1</span>-<span id="showTo">10</span> dari <span id="totalData">89</span> data
+                        </div>
+                        <div class="pagination-buttons" id="paginationButtons"></div>
+                    </div>
+                </div>
+                
+                <!-- Bulk Actions -->
+                <div id="bulkActions" style="display:none; margin-top:16px; padding:16px; background:white; border-radius:12px; border:1px solid var(--border);">
+                    <span id="selectedCount" style="font-weight:600;">0 surat dipilih</span>
+                    <button class="btn btn-success btn-sm" onclick="bulkUpdateStatus('terkirim')">✅ Tandai Terkirim</button>
+                    <button class="btn btn-warning btn-sm" onclick="bulkUpdateStatus('draft')">📝 Jadikan Draft</button>
+                    <button class="btn btn-danger btn-sm" onclick="bulkDelete()">🗑️ Hapus</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create/Edit Modal -->
+    <div class="modal-overlay" id="suratModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">➕ Buat Surat Keluar Baru</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <form id="suratForm" onsubmit="saveSurat(event)">
+                <input type="hidden" id="suratId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="noAgenda">Nomor Agenda *</label>
+                        <input type="text" id="noAgenda" required placeholder="SK-089/2024">
+                        <div class="form-hint">Format: SK-XXX/TAHUN</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="noSurat">Nomor Surat *</label>
+                        <input type="text" id="noSurat" required placeholder="050/SK/DISKOMINFO/I/2024">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tanggalSurat">Tanggal Surat *</label>
+                        <input type="date" id="tanggalSurat" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tanggalKirim">Tanggal Kirim</label>
+                        <input type="date" id="tanggalKirim">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tujuan">Tujuan *</label>
+                    <input type="text" id="tujuan" required placeholder="Nama instansi/organisasi tujuan">
+                </div>
+                
+                <div class="form-group">
+                    <label for="alamatTujuan">Alamat Tujuan</label>
+                    <textarea id="alamatTujuan" rows="2" placeholder="Alamat lengkap tujuan..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="perihal">Perihal *</label>
+                    <textarea id="perihal" rows="3" required placeholder="Perihal surat..."></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="klasifikasi">Klasifikasi</label>
+                        <select id="klasifikasi">
+                            <option value="biasa">Biasa</option>
+                            <option value="penting">Penting</option>
+                            <option value="segera">Segera</option>
+                            <option value="rahasia">Rahasia</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sifat">Sifat Surat</label>
+                        <select id="sifat">
+                            <option value="biasa">Biasa</option>
+                            <option value="penting">Penting</option>
+                            <option value="segera">Segera</option>
+                            <option value="rahasia">Rahasia</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status">
+                            <option value="draft">Draft</option>
+                            <option value="terkirim">Terkirim</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="metodeKirim">Metode Pengiriman</label>
+                        <select id="metodeKirim">
+                            <option value="pos">Pos</option>
+                            <option value="email">Email</option>
+                            <option value="kurir">Kurir</option>
+                            <option value="langsung">Langsung</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Status Timeline -->
+                <div class="status-timeline">
+                    <div class="timeline-step">
+                        <div class="timeline-dot active"></div>
+                        <span class="timeline-label">Draft</span>
+                    </div>
+                    <div class="timeline-line active"></div>
+                    <div class="timeline-step">
+                        <div class="timeline-dot current"></div>
+                        <span class="timeline-label">Review</span>
+                    </div>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-step">
+                        <div class="timeline-dot"></div>
+                        <span class="timeline-label">Terkirim</span>
+                    </div>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-step">
+                        <div class="timeline-dot"></div>
+                        <span class="timeline-label">Arsip</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fileSurat">Upload File Surat (PDF/DOC)</label>
+                    <input type="file" id="fileSurat" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="previewFile(event)">
+                    <div id="filePreview" style="margin-top:10px;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="catatan">Catatan Internal</label>
+                    <textarea id="catatan" rows="2" placeholder="Catatan internal (tidak terlihat oleh penerima)..."></textarea>
+                </div>
+                
+                <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:24px;">
+                    <button type="button" class="btn btn-outline" onclick="saveAsDraft()">💾 Simpan Draft</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Batal</button>
+                    <button type="submit" class="btn btn-primary">📤 Simpan & Kirim</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">📄 Detail Surat Keluar</h3>
+                <button class="modal-close" onclick="closeDetailModal()">✕</button>
+            </div>
+            <div id="detailContent">
+                <!-- Detail content loaded dynamically -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ==================== SURAT KELUAR MANAGEMENT ====================
+        let currentPage = 1;
+        const pageSize = 10;
+        let allSuratKeluar = [];
+        let selectedItems = new Set();
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            await EnterpriseCore.initialize();
+            
+            if (!EnterpriseCore.isAuthenticated()) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            const user = EnterpriseCore.getCurrentUser();
+            if (user) {
+                document.getElementById('userAvatar').textContent = user.nama_lengkap?.charAt(0) || 'A';
+                document.getElementById('userName').textContent = user.nama_lengkap || 'Administrator';
+            }
+            
+            await loadSuratKeluar();
+        });
+        
+        async function loadSuratKeluar() {
+            try {
+                const response = await EnterpriseCore.api.call('surat-keluar/list', {
+                    action: 'surat-keluar/list',
+                    page: currentPage,
+                    limit: pageSize
+                });
+                
+                if (response?.success) {
+                    allSuratKeluar = response.data || [];
+                }
+            } catch (error) {
+                console.log('Using demo data for surat keluar');
+                allSuratKeluar = generateDemoData();
+            }
+            
+            updateStats();
+            renderTable();
+        }
+        
+        function generateDemoData() {
+            return [
+                { id: 1, no_agenda: 'SK-001/2024', no_surat: '050/SK/DISKOMINFO/I/2024', tanggal_surat: '2024-01-10', tanggal_kirim: '2024-01-11', tujuan: 'Kementerian Kominfo', perihal: 'Laporan Tahunan 2023', klasifikasi: 'penting', sifat: 'penting', status: 'terkirim', metode_kirim: 'pos' },
+                { id: 2, no_agenda: 'SK-002/2024', no_surat: '051/SK/DISKOMINFO/I/2024', tanggal_surat: '2024-01-12', tanggal_kirim: null, tujuan: 'Dinas Pendidikan Provinsi', perihal: 'Undangan Rapat Koordinasi Program', klasifikasi: 'biasa', sifat: 'biasa', status: 'draft', metode_kirim: 'email' },
+                { id: 3, no_agenda: 'SK-003/2024', no_surat: '052/SK/DISKOMINFO/I/2024', tanggal_surat: '2024-01-15', tanggal_kirim: '2024-01-15', tujuan: 'Badan Pusat Statistik', perihal: 'Permohonan Data Sensus 2024', klasifikasi: 'penting', sifat: 'segera', status: 'terkirim', metode_kirim: 'langsung' },
+                { id: 4, no_agenda: 'SK-004/2024', no_surat: '053/SK/DISKOMINFO/I/2024', tanggal_surat: '2024-01-16', tanggal_kirim: null, tujuan: 'Sekretariat Daerah', perihal: 'Usulan Program Kerja 2024', klasifikasi: 'rahasia', sifat: 'rahasia', status: 'pending', metode_kirim: 'kurir' },
+                { id: 5, no_agenda: 'SK-005/2024', no_surat: '054/SK/DISKOMINFO/I/2024', tanggal_surat: '2024-01-18', tanggal_kirim: '2024-01-18', tujuan: 'DPRD Kota', perihal: 'Jawaban Pertanyaan Dewan', klasifikasi: 'penting', sifat: 'penting', status: 'terkirim', metode_kirim: 'langsung' },
+                { id: 6, no_agenda: 'SK-006/2024', no_surat: '055/SK/DISKOMINFO/I/2024', tanggal_surat: '2024-01-20', tanggal_kirim: null, tujuan: 'Camat Setiabudi', perihal: 'Pemberitahuan Kegiatan', klasifikasi: 'biasa', sifat: 'biasa', status: 'draft', metode_kirim: 'pos' },
+            ];
+        }
+        
+        function updateStats() {
+            document.getElementById('totalSK').textContent = allSuratKeluar.length;
+            document.getElementById('totalTerkirim').textContent = allSuratKeluar.filter(s => s.status === 'terkirim').length;
+            document.getElementById('totalDraft').textContent = allSuratKeluar.filter(s => s.status === 'draft').length;
+            document.getElementById('totalPending').textContent = allSuratKeluar.filter(s => s.status === 'pending').length;
+        }
+        
+        function renderTable() {
+            const tbody = document.getElementById('suratKeluarTable');
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = allSuratKeluar.slice(start, end);
+            
+            tbody.innerHTML = pageData.map(surat => `
+                <tr>
+                    <td><input type="checkbox" value="${surat.id}" onchange="toggleSelect(${surat.id})" ${selectedItems.has(surat.id) ? 'checked' : ''}></td>
+                    <td><strong>${surat.no_agenda}</strong></td>
+                    <td>${surat.no_surat}</td>
+                    <td>${formatDate(surat.tanggal_surat)}</td>
+                    <td>${surat.tujuan}</td>
+                    <td>${surat.perihal.substring(0, 40)}${surat.perihal.length > 40 ? '...' : ''}</td>
+                    <td>${getKlasifikasiBadge(surat.klasifikasi)}</td>
+                    <td>${getStatusBadge(surat.status)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline" onclick="viewDetail(${surat.id})" title="Lihat Detail">👁️</button>
+                        <button class="btn btn-sm btn-outline" onclick="editSurat(${surat.id})" title="Edit">✏️</button>
+                        <button class="btn btn-sm btn-outline" onclick="duplicateSurat(${surat.id})" title="Duplikat">📋</button>
+                        <button class="btn btn-sm btn-outline" onclick="deleteSurat(${surat.id})" title="Hapus" style="color:#ef4444;">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('showFrom').textContent = allSuratKeluar.length > 0 ? start + 1 : 0;
+            document.getElementById('showTo').textContent = Math.min(end, allSuratKeluar.length);
+            document.getElementById('totalData').textContent = allSuratKeluar.length;
+            
+            renderPagination();
+        }
+        
+        function renderPagination() {
+            const totalPages = Math.ceil(allSuratKeluar.length / pageSize);
+            const container = document.getElementById('paginationButtons');
+            
+            let html = `<button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>«</button>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    html += '<span style="padding:8px;">...</span>';
+                }
+            }
+            
+            html += `<button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>»</button>`;
+            container.innerHTML = html;
+        }
+        
+        function changePage(page) {
+            const totalPages = Math.ceil(allSuratKeluar.length / pageSize);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTable();
+        }
+        
+        function searchSurat() {
+            const query = document.getElementById('searchSurat').value.toLowerCase();
+            if (!query) { renderTable(); return; }
+            
+            const filtered = allSuratKeluar.filter(s => 
+                s.no_agenda.toLowerCase().includes(query) ||
+                s.no_surat.toLowerCase().includes(query) ||
+                s.tujuan.toLowerCase().includes(query) ||
+                s.perihal.toLowerCase().includes(query)
+            );
+            
+            const originalAll = [...allSuratKeluar];
+            allSuratKeluar = filtered;
+            currentPage = 1;
+            renderTable();
+            allSuratKeluar = originalAll;
+        }
+        
+        function filterSurat() {
+            const status = document.getElementById('filterStatus').value;
+            const klasifikasi = document.getElementById('filterKlasifikasi').value;
+            const date = document.getElementById('filterDate').value;
+            
+            let filtered = [...allSuratKeluar];
+            if (status) filtered = filtered.filter(s => s.status === status);
+            if (klasifikasi) filtered = filtered.filter(s => s.klasifikasi === klasifikasi);
+            if (date) filtered = filtered.filter(s => s.tanggal_surat === date || s.tanggal_kirim === date);
+            
+            const originalAll = [...allSuratKeluar];
+            allSuratKeluar = filtered;
+            currentPage = 1;
+            renderTable();
+            allSuratKeluar = originalAll;
+        }
+        
+        function openCreateModal() {
+            document.getElementById('modalTitle').textContent = '➕ Buat Surat Keluar Baru';
+            document.getElementById('suratForm').reset();
+            document.getElementById('suratId').value = '';
+            document.getElementById('tanggalSurat').value = new Date().toISOString().split('T')[0];
+            document.getElementById('suratModal').classList.add('show');
+        }
+        
+        function editSurat(id) {
+            const surat = allSuratKeluar.find(s => s.id === id);
+            if (!surat) return;
+            
+            document.getElementById('modalTitle').textContent = '✏️ Edit Surat Keluar';
+            document.getElementById('suratId').value = surat.id;
+            document.getElementById('noAgenda').value = surat.no_agenda;
+            document.getElementById('noSurat').value = surat.no_surat;
+            document.getElementById('tanggalSurat').value = surat.tanggal_surat;
+            document.getElementById('tanggalKirim').value = surat.tanggal_kirim || '';
+            document.getElementById('tujuan').value = surat.tujuan;
+            document.getElementById('alamatTujuan').value = surat.alamat_tujuan || '';
+            document.getElementById('perihal').value = surat.perihal;
+            document.getElementById('klasifikasi').value = surat.klasifikasi;
+            document.getElementById('sifat').value = surat.sifat;
+            document.getElementById('status').value = surat.status;
+            document.getElementById('metodeKirim').value = surat.metode_kirim || 'pos';
+            document.getElementById('catatan').value = surat.catatan || '';
+            
+            document.getElementById('suratModal').classList.add('show');
+        }
+        
+        function closeModal() {
+            document.getElementById('suratModal').classList.remove('show');
+        }
+        
+        async function saveSurat(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('suratId').value;
+            const data = {
+                no_agenda: document.getElementById('noAgenda').value,
+                no_surat: document.getElementById('noSurat').value,
+                tanggal_surat: document.getElementById('tanggalSurat').value,
+                tanggal_kirim: document.getElementById('tanggalKirim').value,
+                tujuan: document.getElementById('tujuan').value,
+                alamat_tujuan: document.getElementById('alamatTujuan').value,
+                perihal: document.getElementById('perihal').value,
+                klasifikasi: document.getElementById('klasifikasi').value,
+                sifat: document.getElementById('sifat').value,
+                status: document.getElementById('status').value,
+                metode_kirim: document.getElementById('metodeKirim').value,
+                catatan: document.getElementById('catatan').value,
+            };
+            
+            const fileInput = document.getElementById('fileSurat');
+            if (fileInput.files.length > 0) {
+                try {
+                    const fileData = await EnterpriseCore.base64.encodeFile(fileInput.files[0]);
+                    data.file = fileData;
+                } catch (error) {
+                    console.error('File encoding error:', error);
+                }
+            }
+            
+            try {
+                const encodedData = EnterpriseCore.base64.encodeObject(data);
+                const endpoint = id ? 'surat-keluar/update' : 'surat-keluar/create';
+                
+                await EnterpriseCore.api.call(endpoint, { ...data, id: id || undefined, action: endpoint });
+                EnterpriseCore.notifications.success('Surat keluar berhasil disimpan!');
+            } catch (error) {
+                console.log('Demo mode save');
+                if (id) {
+                    const index = allSuratKeluar.findIndex(s => s.id == id);
+                    if (index > -1) allSuratKeluar[index] = { ...allSuratKeluar[index], ...data };
+                } else {
+                    data.id = Date.now();
+                    allSuratKeluar.unshift(data);
+                }
+            }
+            
+            closeModal();
+            updateStats();
+            renderTable();
+            EnterpriseCore.notifications.success('Data surat keluar berhasil disimpan!');
+        }
+        
+        function saveAsDraft() {
+            document.getElementById('status').value = 'draft';
+            document.getElementById('suratForm').dispatchEvent(new Event('submit'));
+        }
+        
+        function duplicateSurat(id) {
+            const surat = allSuratKeluar.find(s => s.id === id);
+            if (!surat) return;
+            
+            const newSurat = { ...surat, id: Date.now(), no_agenda: surat.no_agenda.replace(/\d+/, m => String(Number(m) + 1).padStart(3, '0')), status: 'draft' };
+            allSuratKeluar.unshift(newSurat);
+            updateStats();
+            renderTable();
+            EnterpriseCore.notifications.success('Surat berhasil diduplikasi!');
+        }
+        
+        async function deleteSurat(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus surat ini? Tindakan ini tidak dapat dibatalkan.')) return;
+            
+            try {
+                await EnterpriseCore.api.call('surat-keluar/delete', { id, action: 'surat-keluar/delete' });
+            } catch (error) {
+                console.log('Demo mode delete');
+            }
+            
+            allSuratKeluar = allSuratKeluar.filter(s => s.id !== id);
+            selectedItems.delete(id);
+            updateStats();
+            renderTable();
+            updateBulkActions();
+            EnterpriseCore.notifications.success('Surat berhasil dihapus!');
+        }
+        
+        function viewDetail(id) {
+            const surat = allSuratKeluar.find(s => s.id === id);
+            if (!surat) return;
+            
+            const content = document.getElementById('detailContent');
+            content.innerHTML = `
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div><strong>No. Agenda:</strong> ${surat.no_agenda}</div>
+                    <div><strong>No. Surat:</strong> ${surat.no_surat}</div>
+                    <div><strong>Tanggal Surat:</strong> ${formatDate(surat.tanggal_surat)}</div>
+                    <div><strong>Tanggal Kirim:</strong> ${formatDate(surat.tanggal_kirim) || 'Belum dikirim'}</div>
+                    <div><strong>Tujuan:</strong> ${surat.tujuan}</div>
+                    <div><strong>Klasifikasi:</strong> ${getKlasifikasiBadge(surat.klasifikasi)}</div>
+                    <div><strong>Status:</strong> ${getStatusBadge(surat.status)}</div>
+                    <div><strong>Metode Kirim:</strong> ${surat.metode_kirim || '-'}</div>
+                </div>
+                <div style="margin-top:16px;"><strong>Perihal:</strong> ${surat.perihal}</div>
+                ${surat.alamat_tujuan ? `<div style="margin-top:8px;"><strong>Alamat:</strong> ${surat.alamat_tujuan}</div>` : ''}
+                ${surat.catatan ? `<div style="margin-top:8px;padding:12px;background:#fef3c7;border-radius:8px;"><strong>📝 Catatan:</strong> ${surat.catatan}</div>` : ''}
+            `;
+            
+            document.getElementById('detailModal').classList.add('show');
+        }
+        
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('show');
+        }
+        
+        function toggleSelect(id) {
+            if (selectedItems.has(id)) selectedItems.delete(id);
+            else selectedItems.add(id);
+            updateBulkActions();
+        }
+        
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const start = (currentPage - 1) * pageSize;
+            const pageData = allSuratKeluar.slice(start, start + pageSize);
+            
+            if (selectAll.checked) {
+                pageData.forEach(s => selectedItems.add(s.id));
+            } else {
+                pageData.forEach(s => selectedItems.delete(s.id));
+            }
+            renderTable();
+            updateBulkActions();
+        }
+        
+        function updateBulkActions() {
+            const bulkActions = document.getElementById('bulkActions');
+            const selectedCount = document.getElementById('selectedCount');
+            
+            if (selectedItems.size > 0) {
+                bulkActions.style.display = 'flex';
+                bulkActions.style.gap = '12px';
+                bulkActions.style.alignItems = 'center';
+                selectedCount.textContent = `${selectedItems.size} surat dipilih`;
+            } else {
+                bulkActions.style.display = 'none';
+            }
+        }
+        
+        function bulkUpdateStatus(status) {
+            selectedItems.forEach(id => {
+                const surat = allSuratKeluar.find(s => s.id === id);
+                if (surat) surat.status = status;
+            });
+            selectedItems.clear();
+            updateStats();
+            renderTable();
+            updateBulkActions();
+            EnterpriseCore.notifications.success(`Status berhasil diubah menjadi "${status}"!`);
+        }
+        
+        function bulkDelete() {
+            if (!confirm(`Hapus ${selectedItems.size} surat yang dipilih?`)) return;
+            allSuratKeluar = allSuratKeluar.filter(s => !selectedItems.has(s.id));
+            selectedItems.clear();
+            updateStats();
+            renderTable();
+            updateBulkActions();
+            EnterpriseCore.notifications.success('Surat berhasil dihapus!');
+        }
+        
+        function exportData() {
+            EnterpriseCore.notifications.info('Mengexport data ke Excel...');
+            // Implementation for Excel export
+        }
+        
+        function exportPDF() {
+            EnterpriseCore.notifications.info('Mengexport data ke PDF...');
+            // Implementation for PDF export
+        }
+        
+        function refreshData() {
+            loadSuratKeluar();
+            EnterpriseCore.notifications.success('Data berhasil diperbarui!');
+        }
+        
+        function previewFile(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('filePreview');
+            if (file) {
+                preview.innerHTML = `<p style="font-size:13px;color:#6b7280;">📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)</p>`;
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+        
+        function getStatusBadge(status) {
+            const badges = {
+                'draft': '<span class="badge badge-warning">📝 Draft</span>',
+                'terkirim': '<span class="badge badge-success">✅ Terkirim</span>',
+                'pending': '<span class="badge badge-danger">⏳ Pending</span>',
+                'arsip': '<span class="badge badge-info">📦 Arsip</span>',
+            };
+            return badges[status] || badges['draft'];
+        }
+        
+        function getKlasifikasiBadge(klasifikasi) {
+            const badges = {
+                'biasa': '<span class="badge badge-info">Biasa</span>',
+                'penting': '<span class="badge badge-warning">Penting</span>',
+                'segera': '<span class="badge badge-danger">Segera</span>',
+                'rahasia': '<span class="badge badge-purple">Rahasia</span>',
+            };
+            return badges[klasifikasi] || badges['biasa'];
+        }
+        
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+        
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+        
+        // Close modals on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeDetailModal();
+            }
+        });
+        
+        // Close modals on backdrop click
+        document.getElementById('suratModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        
+        document.getElementById('detailModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeDetailModal();
+        });
+    </script>
+</body>
+</html>
