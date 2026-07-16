@@ -1,0 +1,15 @@
+<!-- Parallax Component -->
+<div class="parallax" style="background-image:url('<%= image %>');height:<%= height || '300px' %>">
+    <div class="parallax-content">
+        <h2><%= title %></h2>
+        <% if (subtitle) { %><p><%= subtitle %></p><% } %>
+    </div>
+</div>
+
+<style>
+    .parallax { background-attachment:fixed;background-position:center;background-repeat:no-repeat;background-size:cover;position:relative;display:flex;align-items:center;justify-content:center }
+    .parallax-content { text-align:center;color:white;text-shadow:0 2px 10px rgba(0,0,0,0.5);padding:20px }
+    .parallax-content h2 { font-size:32px;font-weight:800;margin-bottom:8px }
+    .parallax-content p { font-size:16px;opacity:0.9 }
+    @media(max-width:768px){ .parallax { background-attachment:scroll } }
+</style>
