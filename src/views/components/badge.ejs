@@ -1,0 +1,25 @@
+<!-- Badge Component -->
+<span class="badge-comp badge-<%= type || 'default' %> badge-<%= size || 'md' %>">
+    <%= text %>
+    <% if (removable) { %>
+        <button class="badge-close" onclick="this.parentElement.remove()">✕</button>
+    <% } %>
+</span>
+
+<style>
+    .badge-comp {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-weight: 600; border-radius: 12px; white-space: nowrap;
+    }
+    .badge-sm { padding: 2px 8px; font-size: 10px; }
+    .badge-md { padding: 3px 10px; font-size: 11px; }
+    .badge-lg { padding: 5px 14px; font-size: 13px; }
+    .badge-default { background: #f3f4f6; color: #374151; }
+    .badge-primary { background: #dbeafe; color: #1e40af; }
+    .badge-success { background: #d1fae5; color: #065f46; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-info { background: #e0e7ff; color: #3730a3; }
+    .badge-close { background: none; border: none; cursor: pointer; font-size: 10px; padding: 0 2px; opacity: 0.6; }
+    .badge-close:hover { opacity: 1; }
+</style>
