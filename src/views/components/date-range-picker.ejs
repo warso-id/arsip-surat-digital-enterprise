@@ -1,0 +1,65 @@
+<!-- Date Range Picker Component -->
+<div class="date-range-picker">
+    <div class="date-range-inputs">
+        <div class="date-field">
+            <label class="date-label">Dari Tanggal</label>
+            <input type="date" class="form-input" id="<%= id || 'range' %>Start" 
+                   value="<%= startDate || '' %>" onchange="updateRange()">
+        </div>
+        <span class="date-separator">s/d</span>
+        <div class="date-field">
+            <label class="date-label">Sampai Tanggal</label>
+            <input type="date" class="form-input" id="<%= id || 'range' %>End" 
+                   value="<%= endDate || '' %>" onchange="updateRange()">
+        </div>
+    </div>
+    <div class="quick-dates">
+        <button class="quick-date-btn" onclick="setQuickDate('today')">Hari Ini</button>
+        <button class="quick-date-btn" onclick="setQuickDate('week')">Minggu Ini</button>
+        <button class="quick-date-btn" onclick="setQuickDate('month')">Bulan Ini</button>
+        <button class="quick-date-btn" onclick="setQuickDate('year')">Tahun Ini</button>
+        <button class="quick-date-btn" onclick="clearDates()">Reset</button>
+    </div>
+</div>
+
+<style>
+    .date-range-picker { margin-bottom: 16px; }
+    .date-range-inputs { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 12px; }
+    .date-field { flex: 1; }
+    .date-label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #64748b; }
+    .form-input { width: 100%; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: inherit; }
+    .form-input:focus { outline: none; border-color: #1a56db; }
+    .date-separator { color: #9ca3af; padding-bottom: 8px; }
+    
+    .quick-dates { display: flex; gap: 6px; flex-wrap: wrap; }
+    .quick-date-btn {
+        padding: 4px 10px; border: 1px solid #e5e7eb; border-radius: 16px;
+        background: white; cursor: pointer; font-size: 11px; transition: all 0.2s;
+    }
+    .quick-date-btn:hover { background: #f9fafb; border-color: #1a56db; color: #1a56db; }
+</style>
+
+<script>
+    function setQuickDate(period) {
+        const now = new Date();
+        let start = new Date();
+        const end = new Date();
+        
+        switch (period) {
+            case 'today': break;
+            case 'week': start.setDate(now.getDate() - now.getDay()); break;
+            case 'month': start.setDate(1); break;
+            case 'year': start.setMonth(0); start.setDate(1); break;
+        }
+        
+        document.getElementById('<%= id || "range" %>Start').value = start.toISOString().split('T')[0];
+        document.getElementById('<%= id || "range" %>End').value = end.toISOString().split('T')[0];
+        if (typeof updateRange === 'function') updateRange();
+    }
+    
+    function clearDates() {
+        document.getElementById('<%= id || "range" %>Start').value = '';
+        document.getElementById('<%= id || "range" %>End').value = '';
+        if (typeof updateRange === 'function') updateRange();
+    }
+</script>
