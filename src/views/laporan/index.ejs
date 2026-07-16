@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Laporan - Arsip Surat Digital Enterprise">
+    <meta name="theme-color" content="#1a56db">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Laporan - Arsip Surat Digital Enterprise</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSI4IiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iMTYiIHk9IjIyIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+">
+    
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --darker: #111827;
+            --light: #f9fafb;
+            --lighter: #ffffff;
+            --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --radius: 10px;
+            --radius-lg: 16px;
+            --transition: all 0.3s ease;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-sans);
+            background: var(--light);
+            color: var(--dark);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: var(--darker);
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 50;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #374151;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-nav { padding: 20px 0; }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: rgba(26,86,219,0.2); color: white; border-left-color: var(--primary); }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title { font-size: 24px; font-weight: 800; }
+        
+        /* Report Cards */
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .report-card {
+            background: var(--lighter);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: var(--transition);
+            text-decoration: none;
+            color: var(--dark);
+        }
+        
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border-color: var(--primary);
+        }
+        
+        .report-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .report-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .report-description {
+            font-size: 13px;
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+        
+        /* Filter Section */
+        .filter-section {
+            background: var(--lighter);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group { margin-bottom: 0; }
+        
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: var(--font-sans);
+        }
+        
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+            font-family: var(--font-sans);
+        }
+        
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-success { background: var(--success); color: white; border-color: var(--success); }
+        .btn-outline { background: transparent; color: var(--primary); border-color: var(--primary); }
+        
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <span style="font-size: 20px;">🏢</span>
+            <span style="font-weight: 700;">Arsip Surat Digital</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard/index.ejs" class="nav-item">📊 Dashboard</a>
+            <a href="../surat-masuk/index.ejs" class="nav-item">📥 Surat Masuk</a>
+            <a href="../surat-keluar/index.ejs" class="nav-item">📤 Surat Keluar</a>
+            <a href="../disposisi/index.ejs" class="nav-item">📋 Disposisi</a>
+            <a href="./index.ejs" class="nav-item active">📊 Laporan</a>
+            <a href="../../login" class="nav-item" style="color: #ef4444; margin-top: 20px;">🚪 Logout</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">📊 Laporan</h1>
+            <p style="color: var(--secondary); font-size: 14px; margin-top: 5px;">
+                Generate dan download laporan arsip surat
+            </p>
+        </div>
+        
+        <!-- Filter -->
+        <div class="filter-section">
+            <h3 style="margin-bottom: 20px;">Filter Laporan</h3>
+            <div class="filter-grid">
+                <div class="form-group">
+                    <label class="form-label">Jenis Laporan</label>
+                    <select class="form-select">
+                        <option value="">Pilih Jenis</option>
+                        <option value="surat-masuk">Surat Masuk</option>
+                        <option value="surat-keluar">Surat Keluar</option>
+                        <option value="disposisi">Disposisi</option>
+                        <option value="rekap">Rekap Semua</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Periode</label>
+                    <select class="form-select">
+                        <option value="bulanan">Bulanan</option>
+                        <option value="triwulan">Triwulan</option>
+                        <option value="semester">Semester</option>
+                        <option value="tahunan">Tahunan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tanggal Mulai</label>
+                    <input type="date" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tanggal Akhir</label>
+                    <input type="date" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Format</label>
+                    <select class="form-select">
+                        <option value="pdf">PDF</option>
+                        <option value="excel">Excel</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-primary" onclick="generateReport()">📊 Generate Laporan</button>
+                <button class="btn btn-outline" onclick="resetFilter()">🔄 Reset</button>
+            </div>
+        </div>
+        
+        <!-- Report Types -->
+        <div class="report-grid">
+            <a href="./surat-masuk.ejs" class="report-card">
+                <div class="report-icon">📥</div>
+                <h3 class="report-title">Laporan Surat Masuk</h3>
+                <p class="report-description">
+                    Laporan detail surat masuk berdasarkan periode, kategori, dan status
+                </p>
+            </a>
+            
+            <a href="./surat-keluar.ejs" class="report-card">
+                <div class="report-icon">📤</div>
+                <h3 class="report-title">Laporan Surat Keluar</h3>
+                <p class="report-description">
+                    Laporan detail surat keluar dengan tracking pengiriman
+                </p>
+            </a>
+            
+            <a href="./disposisi.ejs" class="report-card">
+                <div class="report-icon">📋</div>
+                <h3 class="report-title">Laporan Disposisi</h3>
+                <p class="report-description">
+                    Laporan alur disposisi dan status tindak lanjut
+                </p>
+            </a>
+            
+            <div class="report-card" onclick="generateRekap()">
+                <div class="report-icon">📊</div>
+                <h3 class="report-title">Rekap Semua</h3>
+                <p class="report-description">
+                    Laporan rekapitulasi gabungan surat masuk, keluar, dan disposisi
+                </p>
+            </div>
+            
+            <div class="report-card" onclick="exportData()">
+                <div class="report-icon">💾</div>
+                <h3 class="report-title">Export Data</h3>
+                <p class="report-description">
+                    Export data mentah dalam format CSV/Excel untuk analisis lanjutan
+                </p>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        function generateReport() {
+            alert('Generating report...');
+            // API call to generate report
+        }
+        
+        function resetFilter() {
+            document.querySelectorAll('.form-input, .form-select').forEach(el => {
+                el.value = '';
+            });
+        }
+        
+        function generateRekap() {
+            alert('Generating rekap laporan...');
+        }
+        
+        function exportData() {
+            alert('Exporting data...');
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('auth_token');
+            if (!token) window.location.href = '../../login';
+        });
+    </script>
+</body>
+</html>
