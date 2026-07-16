@@ -1,140 +1,182 @@
-# Arsip Surat Digital Enterprise - Apache Configuration
-# Security and Performance Optimizations
+# ==================== APACHE CONFIGURATION ====================
+# Arsip Surat Digital Enterprise
+# Server configuration for Apache
 
 # Enable Rewrite Engine
 RewriteEngine On
 
-# Force HTTPS (uncomment in production)
-# RewriteCond %{HTTPS} off
-# RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
-
-# Remove trailing slash
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)/$ /$1 [L,R=301]
-
-# Security Headers
+# ==================== SECURITY HEADERS ====================
 <IfModule mod_headers.c>
-    # Prevent MIME-type sniffing
-    Header set X-Content-Type-Options "nosniff"
+    # HSTS (HTTP Strict Transport Security)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     
-    # Enable XSS protection
-    Header set X-XSS-Protection "1; mode=block"
+    # XSS Protection
+    Header always set X-XSS-Protection "1; mode=block"
     
-    # Prevent clickjacking
-    Header set X-Frame-Options "SAMEORIGIN"
+    # Content Type Options
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Frame Options
+    Header always set X-Frame-Options "SAMEORIGIN"
     
     # Referrer Policy
-    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
     
     # Content Security Policy
-    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https:; frame-ancestors 'self'; form-action 'self'"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.github.com; frame-ancestors 'self';"
     
     # Permissions Policy
-    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
     
     # Cache Control
-    <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf|svg|woff|woff2)$">
-        Header set Cache-Control "max-age=31536000, public"
-    </FilesMatch>
-    
     <FilesMatch "\.(html|htm)$">
-        Header set Cache-Control "max-age=7200, must-revalidate"
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
     </FilesMatch>
     
-    <FilesMatch "\.(json|xml)$">
-        Header set Cache-Control "max-age=3600, must-revalidate"
+    <FilesMatch "\.(css|js|json|xml|txt)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    
+    <FilesMatch "\.(ico|pdf|jpg|jpeg|png|gif|svg|webp)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    
+    <FilesMatch "\.(woff|woff2|ttf|eot)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
 </IfModule>
 
-# Disable directory listing
+# ==================== DIRECTORY LISTING ====================
 Options -Indexes
 
-# Protect sensitive files
+# ==================== DEFAULT DOCUMENT ====================
+DirectoryIndex index.html index.php index.ejs
+
+# ==================== ERROR PAGES ====================
+ErrorDocument 400 /src/views/errors/400.ejs
+ErrorDocument 401 /src/views/errors/401.ejs
+ErrorDocument 403 /src/views/errors/403.ejs
+ErrorDocument 404 /src/views/errors/404.ejs
+ErrorDocument 500 /src/views/errors/500.ejs
+ErrorDocument 502 /src/views/errors/500.ejs
+ErrorDocument 503 /src/views/errors/500.ejs
+
+# ==================== BLOCK SENSITIVE FILES ====================
 <FilesMatch "^\.">
     Order allow,deny
     Deny from all
 </FilesMatch>
 
-<FilesMatch "\.(env|log|sql|md|yml|yaml)$">
-    Order allow,deny
-    Deny from all
+<FilesMatch "\.(env|log|sql|sqlite|db|md|lock|json)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
-# Protect sensitive directories
-RedirectMatch 403 ^/src/?$
-RedirectMatch 403 ^/config/?$
-RedirectMatch 403 ^/storage/?$
-RedirectMatch 403 ^/database/?$
-RedirectMatch 403 ^/tests/?$
-RedirectMatch 403 ^/tools/?$
-RedirectMatch 403 ^/docker/?$
-RedirectMatch 403 ^/node_modules/?$
-RedirectMatch 403 ^/\.git/?$
-
-# Block access to composer/package files
-<FilesMatch "^(composer\.json|composer\.lock|package\.json|package-lock\.json|yarn\.lock)$">
-    Order allow,deny
-    Deny from all
+# Allow specific JSON files
+<FilesMatch "^(manifest|version|package)\.json$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
 </FilesMatch>
 
-# PHP Settings (if using PHP)
-<IfModule mod_php.c>
-    php_value upload_max_filesize 50M
-    php_value post_max_size 50M
-    php_value max_execution_time 300
-    php_value max_input_time 300
-    php_value memory_limit 256M
-    
-    # Hide PHP version
-    php_flag expose_php Off
-    
-    # Enable error logging
-    php_flag log_errors On
-    php_value error_log /path/to/storage/logs/php-error.log
-</IfModule>
+# Block access to sensitive directories
+RedirectMatch 403 ^/src/config/.*$
+RedirectMatch 403 ^/src/database/.*$
+RedirectMatch 403 ^/storage/.*$
+RedirectMatch 403 ^/node_modules/.*$
+RedirectMatch 403 ^/tests/.*$
+RedirectMatch 403 ^/tools/.*$
+RedirectMatch 403 ^/.github/.*$
+RedirectMatch 403 ^/docker/.*$
 
-# GZIP Compression
+# ==================== COMPRESSION ====================
 <IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/plain
-    AddOutputFilterByType DEFLATE text/html
-    AddOutputFilterByType DEFLATE text/xml
-    AddOutputFilterByType DEFLATE text/css
-    AddOutputFilterByType DEFLATE text/javascript
-    AddOutputFilterByType DEFLATE application/xml
-    AddOutputFilterByType DEFLATE application/xhtml+xml
-    AddOutputFilterByType DEFLATE application/rss+xml
-    AddOutputFilterByType DEFLATE application/javascript
-    AddOutputFilterByType DEFLATE application/x-javascript
-    AddOutputFilterByType DEFLATE application/json
-    AddOutputFilterByType DEFLATE application/ld+json
-    AddOutputFilterByType DEFLATE image/svg+xml
-    AddOutputFilterByType DEFLATE application/font-woff
-    AddOutputFilterByType DEFLATE application/font-woff2
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript
+    AddOutputFilterByType DEFLATE application/javascript application/json application/xml
+    AddOutputFilterByType DEFLATE application/x-javascript application/rss+xml
+    AddOutputFilterByType DEFLATE image/svg+xml application/vnd.ms-fontobject
+    AddOutputFilterByType DEFLATE application/x-font-ttf font/opentype
+    
+    # Remove browser bugs
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+    Header append Vary User-Agent
 </IfModule>
 
-# SPA Routing (for PWA)
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteBase /
-    
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-    
-    # Redirect Trailing Slashes
-    RewriteRule ^index\.html$ - [L]
-    
-    # Handle Front Controller
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.html [L]
+# ==================== URL REWRITING ====================
+# Remove trailing slashes
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+# Serve .ejs files as .html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)\.html$ $1.ejs [L]
+
+# SPA Fallback (if using client-side routing)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.html [L,QSA]
+
+# ==================== CORS HEADERS ====================
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
 </IfModule>
 
-# Custom Error Pages
-ErrorDocument 400 /errors/400.html
-ErrorDocument 401 /errors/401.html
-ErrorDocument 403 /errors/403.html
-ErrorDocument 404 /errors/404.html
-ErrorDocument 500 /errors/500.html
-ErrorDocument 502 /errors/502.html
-ErrorDocument 503 /errors/503.html
+# ==================== PERFORMANCE ====================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Default expiration
+    ExpiresDefault "access plus 1 month"
+    
+    # HTML
+    ExpiresByType text/html "access plus 0 seconds"
+    
+    # CSS, JavaScript
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    
+    # Images
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # Fonts
+    ExpiresByType application/x-font-ttf "access plus 1 year"
+    ExpiresByType application/x-font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+    ExpiresByType font/opentype "access plus 1 year"
+</IfModule>
+
+# ==================== CHARSET ====================
+AddDefaultCharset UTF-8
+
+# ==================== MIME TYPES ====================
+AddType application/javascript .js
+AddType application/json .json
+AddType image/svg+xml .svg
+AddType application/x-font-woff .woff
+AddType application/font-woff2 .woff2
+AddType application/vnd.ms-fontobject .eot
+AddType application/x-font-ttf .ttf
+AddType font/opentype .otf
+AddType application/manifest+json .webmanifest
