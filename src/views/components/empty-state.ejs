@@ -1,30 +1,48 @@
-<!-- Empty State Component -->
-<!-- Usage: <%- include('../components/empty-state', { icon: '📭', title: 'Tidak ada data', message: 'Belum ada surat masuk', actionText: 'Tambah Surat', actionUrl: '/surat-masuk/create' }) %> -->
-
-<div class="empty-state">
-    <div class="empty-state-icon"><%= icon || '📭' %></div>
-    <h3 class="empty-state-title"><%= title || 'Tidak ada data' %></h3>
-    <p class="empty-state-message"><%= message || 'Belum ada data yang tersedia' %></p>
+<!-- Enhanced Empty State Component -->
+<div class="empty-state-container">
+    <div class="empty-state-illustration">
+        <svg viewBox="0 0 200 150" width="200" height="150" xmlns="http://www.w3.org/2000/svg">
+            <rect x="40" y="30" width="120" height="90" rx="8" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="2"/>
+            <rect x="55" y="45" width="90" height="8" rx="4" fill="#e5e7eb"/>
+            <rect x="55" y="60" width="70" height="8" rx="4" fill="#e5e7eb"/>
+            <rect x="55" y="75" width="80" height="8" rx="4" fill="#e5e7eb"/>
+            <rect x="55" y="90" width="50" height="8" rx="4" fill="#e5e7eb"/>
+            <circle cx="160" cy="120" r="25" fill="#dbeafe"/>
+            <text x="160" y="126" font-family="Arial" font-size="20" fill="#1a56db" text-anchor="middle">+</text>
+        </svg>
+    </div>
+    <h3 class="empty-state-title"><%= title || 'Belum Ada Data' %></h3>
+    <p class="empty-state-message"><%= message || 'Silakan tambahkan data pertama Anda' %></p>
     <% if (actionText && actionUrl) { %>
         <a href="<%= actionUrl %>" class="empty-state-action">
-            <%= actionText %>
+            <%= actionIcon || '➕' %> <%= actionText %>
+        </a>
+    <% } %>
+    <% if (secondaryText && secondaryUrl) { %>
+        <a href="<%= secondaryUrl %>" class="empty-state-secondary">
+            <%= secondaryText %>
         </a>
     <% } %>
 </div>
 
 <style>
-    .empty-state {
+    .empty-state-container {
         text-align: center; padding: 60px 20px;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
-    .empty-state-icon { font-size: 64px; margin-bottom: 20px; }
-    .empty-state-title { font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 8px; }
-    .empty-state-message { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+    .empty-state-illustration { margin-bottom: 24px; opacity: 0.8; }
+    .empty-state-title { font-size: 20px; font-weight: 700; color: #1f2937; margin-bottom: 8px; }
+    .empty-state-message { font-size: 14px; color: #64748b; margin-bottom: 24px; max-width: 400px; }
     .empty-state-action {
         display: inline-flex; align-items: center; gap: 8px;
-        padding: 10px 20px; background: #1a56db; color: white;
-        border-radius: 8px; text-decoration: none; font-weight: 600;
-        font-size: 14px; transition: all 0.3s;
+        padding: 12px 24px; background: #1a56db; color: white;
+        border-radius: 10px; text-decoration: none; font-weight: 600;
+        font-size: 15px; transition: all 0.3s;
     }
-    .empty-state-action:hover { background: #1e40af; transform: translateY(-2px); }
+    .empty-state-action:hover { background: #1e40af; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26,86,219,0.3); }
+    .empty-state-secondary {
+        display: inline-block; margin-top: 12px; font-size: 13px; color: #1a56db;
+        text-decoration: none; font-weight: 500;
+    }
+    .empty-state-secondary:hover { text-decoration: underline; }
 </style>
