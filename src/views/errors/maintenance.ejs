@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance - Arsip Surat Digital Enterprise</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <style>
+        :root {
+            --primary: #1a56db; --secondary: #64748b; --dark: #1f2937;
+            --light: #f9fafb; --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-sans);
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #ecfdf5 100%);
+            min-height: 100vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 20px; text-align: center;
+        }
+        .maintenance-card {
+            background: white; border-radius: 24px; padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1); max-width: 550px; width: 100%;
+        }
+        .maintenance-icon { font-size: 100px; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .maintenance-title { font-size: 28px; font-weight: 800; color: var(--dark); margin-bottom: 15px; }
+        .maintenance-message { font-size: 16px; color: var(--secondary); margin-bottom: 30px; line-height: 1.6; }
+        .progress-bar {
+            width: 100%; height: 8px; background: #e5e7eb;
+            border-radius: 4px; overflow: hidden; margin-bottom: 20px;
+        }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--primary), #7c3aed);
+            border-radius: 4px; animation: progress 2s ease-in-out infinite;
+            width: 60%;
+        }
+        @keyframes progress {
+            0%, 100% { width: 20%; }
+            50% { width: 80%; }
+        }
+        .info-text { font-size: 13px; color: var(--secondary); }
+        .info-text strong { color: var(--dark); }
+        .social-links { margin-top: 20px; display: flex; gap: 15px; justify-content: center; }
+        .social-link {
+            width: 40px; height: 40px; border-radius: 50%; background: var(--light);
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; font-size: 20px; transition: all 0.3s;
+        }
+        .social-link:hover { background: var(--primary); transform: translateY(-3px); }
+        
+        @media (max-width: 480px) {
+            .maintenance-card { padding: 40px 20px; }
+            .maintenance-icon { font-size: 70px; }
+            .maintenance-title { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="maintenance-card">
+        <div class="maintenance-icon">🔧</div>
+        <h1 class="maintenance-title">Dalam Pemeliharaan</h1>
+        <p class="maintenance-message">
+            Sistem sedang dalam pemeliharaan rutin untuk meningkatkan performa dan keamanan.
+            Kami akan kembali dalam waktu singkat.
+        </p>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <p class="info-text">
+            <strong>Estimasi selesai:</strong> 30 menit<br>
+            <strong>Waktu mulai:</strong> <span id="startTime"></span>
+        </p>
+        <div class="social-links">
+            <a href="mailto:developer@arsipsurat.id" class="social-link" title="Email">📧</a>
+            <a href="https://github.com/warso-id" class="social-link" title="GitHub">💻</a>
+        </div>
+    </div>
+    <script>
+        document.getElementById('startTime').textContent = new Date().toLocaleTimeString('id-ID');
+        setTimeout(() => location.reload(), 60000);
+    </script>
+</body>
+</html>
