@@ -1,0 +1,149 @@
+<!-- Search Bar Component -->
+<!-- Usage: <%- include('../components/search-bar', { placeholder: 'Cari surat...', filters: [...] }) %> -->
+
+<div class="search-bar">
+    <div class="search-input-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+            type="text" 
+            class="search-input" 
+            id="<%= inputId || 'searchInput' %>"
+            placeholder="<%= placeholder || 'Cari...' %>"
+            value="<%= value || '' %>"
+            onkeyup="<%= onSearch || 'handleSearch' %>(this.value)"
+        >
+        <% if (value) { %>
+        <button class="search-clear" onclick="clearSearch()" aria-label="Clear search">✕</button>
+        <% } %>
+    </div>
+    
+    <% if (typeof filters !== 'undefined' && filters.length > 0) { %>
+    <div class="search-filters">
+        <% filters.forEach(function(filter) { %>
+        <select class="filter-select" id="<%= filter.id %>" onchange="<%= filter.onChange || 'applyFilter' %>()">
+            <option value=""><%= filter.label || 'Filter' %></option>
+            <% if (filter.options) { %>
+                <% filter.options.forEach(function(option) { %>
+                <option value="<%= option.value %>" <%= option.selected ? 'selected' : '' %>>
+                    <%= option.label %>
+                </option>
+                <% }); %>
+            <% } %>
+        </select>
+        <% }); %>
+    </div>
+    <% } %>
+    
+    <% if (showDate !== false) { %>
+    <div class="search-dates">
+        <input type="date" class="date-input" id="startDate" onchange="applyFilter()" 
+               value="<%= startDate || '' %>" placeholder="Tanggal Mulai">
+        <span style="color: #64748b;">s/d</span>
+        <input type="date" class="date-input" id="endDate" onchange="applyFilter()" 
+               value="<%= endDate || '' %>" placeholder="Tanggal Akhir">
+    </div>
+    <% } %>
+    
+    <div class="search-actions">
+        <button class="btn btn-sm" onclick="<%= onSearch || 'handleSearch' %>()" 
+                style="background: var(--primary); color: white; border: none;">
+            🔍 Cari
+        </button>
+        <button class="btn btn-sm btn-outline" onclick="clearSearch()">
+            🔄 Reset
+        </button>
+    </div>
+</div>
+
+<style>
+    .search-bar {
+        background: #fff;
+        padding: 1rem 1.25rem;
+        border-radius: 0.75rem;
+        border: 1px solid #e5e7eb;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 1.25rem;
+    }
+    .search-input-wrapper {
+        flex: 1;
+        min-width: 200px;
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .search-icon {
+        position: absolute;
+        left: 0.75rem;
+        font-size: 1rem;
+        color: #64748b;
+        pointer-events: none;
+    }
+    .search-input {
+        width: 100%;
+        padding: 0.625rem 2.5rem 0.625rem 2.5rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-family: inherit;
+    }
+    .search-input:focus {
+        outline: none;
+        border-color: #1a56db;
+        box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+    }
+    .search-clear {
+        position: absolute;
+        right: 0.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #64748b;
+        font-size: 1rem;
+        padding: 0.25rem;
+    }
+    .search-filters {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    .filter-select, .date-input {
+        padding: 0.625rem 0.75rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        font-size: 0.8125rem;
+        font-family: inherit;
+        background: #fff;
+    }
+    .filter-select:focus, .date-input:focus {
+        outline: none;
+        border-color: #1a56db;
+    }
+    .search-dates {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+    }
+    .search-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    @media (max-width: 768px) {
+        .search-bar { flex-direction: column; }
+        .search-dates { width: 100%; }
+        .search-actions { width: 100%; }
+        .search-actions .btn { flex: 1; justify-content: center; }
+    }
+</style>
+
+<script>
+    function clearSearch() {
+        const input = document.getElementById('<%= inputId || "searchInput" %>');
+        if (input) input.value = '';
+        document.querySelectorAll('.filter-select, .date-input').forEach(el => el.value = '');
+        if (typeof applyFilter === 'function') applyFilter();
+    }
+</script>
