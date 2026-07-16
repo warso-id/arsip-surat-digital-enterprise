@@ -1,0 +1,30 @@
+<!-- Empty State Component -->
+<!-- Usage: <%- include('../components/empty-state', { icon: '📭', title: 'Tidak ada data', message: 'Belum ada surat masuk', actionText: 'Tambah Surat', actionUrl: '/surat-masuk/create' }) %> -->
+
+<div class="empty-state">
+    <div class="empty-state-icon"><%= icon || '📭' %></div>
+    <h3 class="empty-state-title"><%= title || 'Tidak ada data' %></h3>
+    <p class="empty-state-message"><%= message || 'Belum ada data yang tersedia' %></p>
+    <% if (actionText && actionUrl) { %>
+        <a href="<%= actionUrl %>" class="empty-state-action">
+            <%= actionText %>
+        </a>
+    <% } %>
+</div>
+
+<style>
+    .empty-state {
+        text-align: center; padding: 60px 20px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .empty-state-icon { font-size: 64px; margin-bottom: 20px; }
+    .empty-state-title { font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 8px; }
+    .empty-state-message { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+    .empty-state-action {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 20px; background: #1a56db; color: white;
+        border-radius: 8px; text-decoration: none; font-weight: 600;
+        font-size: 14px; transition: all 0.3s;
+    }
+    .empty-state-action:hover { background: #1e40af; transform: translateY(-2px); }
+</style>
