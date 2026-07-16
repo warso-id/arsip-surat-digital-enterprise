@@ -1,0 +1,28 @@
+<!-- Status Badge Component -->
+<!-- Usage: <%- include('../components/status-badge', { status: 'active', label: 'Aktif' }) %> -->
+
+<span class="status-badge status-<%= status || 'default' %>">
+    <%= label || status %>
+</span>
+
+<style>
+    .status-badge {
+        display: inline-block; padding: 3px 10px; border-radius: 12px;
+        font-size: 11px; font-weight: 600; white-space: nowrap;
+    }
+    .status-active { background: #d1fae5; color: #065f46; }
+    .status-inactive { background: #fee2e2; color: #991b1b; }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-proses { background: #dbeafe; color: #1e40af; }
+    .status-selesai { background: #d1fae5; color: #065f46; }
+    .status-arsip { background: #e0e7ff; color: #3730a3; }
+    .status-baru { background: #dbeafe; color: #1e40af; }
+    .status-konsep { background: #e0e7ff; color: #3730a3; }
+    .status-terkirim { background: #d1fae5; color: #065f46; }
+    .status-draft { background: #f3f4f6; color: #374151; }
+    .status-ditolak { background: #fee2e2; color: #991b1b; }
+    .status-penting { background: #fef3c7; color: #92400e; }
+    .status-rahasia { background: #fee2e2; color: #991b1b; }
+    .status-segera { background: #fef3c7; color: #92400e; }
+    .status-default { background: #f3f4f6; color: #374151; }
+</style>
