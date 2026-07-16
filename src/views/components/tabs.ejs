@@ -1,0 +1,57 @@
+<!-- Tabs Component -->
+<!-- Usage: <%- include('../components/tabs', { id: 'myTabs', tabs: [{ id: 'tab1', label: 'Tab 1', active: true }, { id: 'tab2', label: 'Tab 2' }] }) %> -->
+
+<div class="tabs-container" id="<%= id || 'tabs' %>">
+    <div class="tabs-header">
+        <% tabs.forEach(function(tab) { %>
+            <button class="tab-btn <%= tab.active ? 'active' : '' %>" 
+                    onclick="switchTab_<%= id %>('<%= tab.id %>')"
+                    data-tab="<%= tab.id %>">
+                <%= tab.icon ? tab.icon + ' ' : '' %><%= tab.label %>
+                <% if (tab.count !== undefined) { %>
+                    <span class="tab-count"><%= tab.count %></span>
+                <% } %>
+            </button>
+        <% }); %>
+    </div>
+    <div class="tabs-content">
+        <%- body %>
+    </div>
+</div>
+
+<style>
+    .tabs-container { margin-bottom: 20px; }
+    .tabs-header {
+        display: flex; gap: 0; border-bottom: 2px solid #e5e7eb;
+        margin-bottom: 20px; overflow-x: auto;
+    }
+    .tab-btn {
+        padding: 10px 20px; border: none; background: none;
+        cursor: pointer; font-size: 14px; font-weight: 500;
+        color: #64748b; font-family: inherit;
+        border-bottom: 2px solid transparent; margin-bottom: -2px;
+        transition: all 0.2s; white-space: nowrap;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .tab-btn:hover { color: #1f2937; }
+    .tab-btn.active { color: #1a56db; border-bottom-color: #1a56db; font-weight: 600; }
+    .tab-count {
+        background: #e5e7eb; color: #64748b; padding: 1px 6px;
+        border-radius: 8px; font-size: 11px;
+    }
+    .tab-btn.active .tab-count { background: #dbeafe; color: #1a56db; }
+    
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+</style>
+
+<script>
+    function switchTab_<%= id %>(tabId) {
+        document.querySelectorAll('#<%= id %> .tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tabId);
+        });
+        document.querySelectorAll('#<%= id %> .tab-panel').forEach(panel => {
+            panel.classList.toggle('active', panel.dataset.tab === tabId);
+        });
+    }
+</script>
