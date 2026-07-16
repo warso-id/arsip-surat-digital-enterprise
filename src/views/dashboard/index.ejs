@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard Arsip Surat Digital Enterprise">
+    <meta name="theme-color" content="#1a56db">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Dashboard - Arsip Surat Digital Enterprise</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSI4IiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iMTYiIHk9IjIyIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+">
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="../../public/css/app.css">
+    <link rel="stylesheet" href="../../public/css/dashboard.css">
+    
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --darker: #111827;
+            --light: #f9fafb;
+            --lighter: #ffffff;
+            --border: #e5e7eb;
+            --sidebar-width: 260px;
+            --header-height: 64px;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+            --radius: 10px;
+            --radius-lg: 16px;
+            --transition: all 0.3s ease;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-sans);
+            background: var(--light);
+            color: var(--dark);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--darker);
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #374151;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .sidebar-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+        
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+        
+        .nav-section {
+            padding: 0 20px;
+            margin-bottom: 10px;
+        }
+        
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6b7280;
+            padding: 10px 0;
+            letter-spacing: 1px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+        
+        .nav-item.active {
+            background: rgba(26, 86, 219, 0.2);
+            color: white;
+            border-left-color: var(--primary);
+        }
+        
+        .nav-item .badge {
+            background: var(--danger);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: auto;
+        }
+        
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid #374151;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: var(--transition);
+        }
+        
+        /* ========== HEADER ========== */
+        .header {
+            background: var(--lighter);
+            height: var(--header-height);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--dark);
+            display: none;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header-btn {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .header-btn:hover {
+            background: var(--border);
+        }
+        
+        .notification-dot {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+        }
+        
+        /* ========== CONTENT AREA ========== */
+        .content {
+            padding: 30px;
+        }
+        
+        /* ========== STATS GRID ========== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--lighter);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .stat-icon.blue { background: #dbeafe; }
+        .stat-icon.green { background: #d1fae5; }
+        .stat-icon.yellow { background: #fef3c7; }
+        .stat-icon.red { background: #fee2e2; }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--darker);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: var(--secondary);
+        }
+        
+        .stat-change {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .stat-change.positive { color: var(--success); }
+        .stat-change.negative { color: var(--danger); }
+        
+        /* ========== CHART SECTION ========== */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: var(--lighter);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            border: 1px solid var(--border);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .chart-period {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .period-btn {
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: none;
+            cursor: pointer;
+            font-size: 12px;
+            transition: var(--transition);
+        }
+        
+        .period-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 300px;
+            background: var(--light);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary);
+        }
+        
+        /* ========== RECENT ACTIVITY ========== */
+        .activity-list {
+            list-style: none;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .activity-time {
+            font-size: 11px;
+            color: var(--secondary);
+        }
+        
+        /* ========== QUICK ACTIONS ========== */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .action-card {
+            background: var(--lighter);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--dark);
+            transition: var(--transition);
+        }
+        
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+        
+        .action-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .action-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1024px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -100%;
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: block;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+        
+        /* ========== OVERLAY ========== */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 49;
+        }
+        
+        .sidebar-overlay.open {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0ibG9nby1ncmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMWE1NmRiIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojN2MzYWVkIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHJ4PSI0MCIgZmlsbD0idXJsKCNsb2dvLWdyYWQpIi8+PHRleHQgeD0iMTAwIiB5PSIxMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BRDwvdGV4dD48L3N2Zz4=" 
+                 alt="Logo" class="sidebar-logo" width="40" height="40">
+            <span class="sidebar-title">Arsip Surat Digital</span>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Menu Utama</div>
+                <a href="./index.ejs" class="nav-item active">📊 Dashboard</a>
+                <a href="../surat-masuk/index.ejs" class="nav-item">📥 Surat Masuk <span class="badge">12</span></a>
+                <a href="../surat-keluar/index.ejs" class="nav-item">📤 Surat Keluar</a>
+                <a href="../disposisi/index.ejs" class="nav-item">📋 Disposisi <span class="badge">5</span></a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Manajemen</div>
+                <a href="../kategori/index.ejs" class="nav-item">📂 Kategori</a>
+                <a href="../instansi/index.ejs" class="nav-item">🏢 Instansi</a>
+                <a href="../pengguna/index.ejs" class="nav-item">👥 Pengguna</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Laporan</div>
+                <a href="../laporan/index.ejs" class="nav-item">📊 Laporan</a>
+                <a href="../laporan/surat-masuk.ejs" class="nav-item">📄 Lap. Surat Masuk</a>
+                <a href="../laporan/surat-keluar.ejs" class="nav-item">📄 Lap. Surat Keluar</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Lainnya</div>
+                <a href="../pengaturan/index.ejs" class="nav-item">⚙️ Pengaturan</a>
+                <a href="../../docs/" class="nav-item">📖 Dokumentasi</a>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">AD</div>
+                <div>
+                    <div class="user-name">Admin User</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+            </div>
+            <a href="../../login" class="nav-item" style="color: #ef4444;" onclick="return confirmLogout()">
+                🚪 Logout
+            </a>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                    ☰
+                </button>
+                <h1 class="header-title">Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <button class="header-btn" title="Notifikasi">
+                    🔔
+                    <span class="notification-dot"></span>
+                </button>
+                <button class="header-btn" title="Pesan">
+                    💬
+                </button>
+                <span style="font-size: 13px; color: var(--secondary);">
+                    📅 <span id="current-date"></span>
+                </span>
+            </div>
+        </header>
+        
+        <!-- Content -->
+        <div class="content">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon blue">📥</div>
+                        <span class="stat-change positive">↑ 12%</span>
+                    </div>
+                    <div class="stat-value">1,245</div>
+                    <div class="stat-label">Total Surat Masuk</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon green">📤</div>
+                        <span class="stat-change positive">↑ 8%</span>
+                    </div>
+                    <div class="stat-value">856</div>
+                    <div class="stat-label">Total Surat Keluar</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon yellow">📋</div>
+                        <span class="stat-change negative">↓ 3%</span>
+                    </div>
+                    <div class="stat-value">423</div>
+                    <div class="stat-label">Disposisi Aktif</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon red">⏳</div>
+                    </div>
+                    <div class="stat-value">28</div>
+                    <div class="stat-label">Menunggu Tindakan</div>
+                </div>
+            </div>
+            
+            <!-- Chart Grid -->
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Statistik Surat</h3>
+                        <div class="chart-period">
+                            <button class="period-btn">Harian</button>
+                            <button class="period-btn active">Mingguan</button>
+                            <button class="period-btn">Bulanan</button>
+                        </div>
+                    </div>
+                    <div class="chart-placeholder">
+                        <svg viewBox="0 0 600 300" width="100%" height="300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Grid -->
+                            <line x1="80" y1="20" x2="80" y2="270" stroke="#e5e7eb" stroke-width="1"/>
+                            <line x1="80" y1="270" x2="580" y2="270" stroke="#e5e7eb" stroke-width="1"/>
+                            <line x1="80" y1="220" x2="580" y2="220" stroke="#f3f4f6" stroke-width="1" stroke-dasharray="4"/>
+                            <line x1="80" y1="170" x2="580" y2="170" stroke="#f3f4f6" stroke-width="1" stroke-dasharray="4"/>
+                            <line x1="80" y1="120" x2="580" y2="120" stroke="#f3f4f6" stroke-width="1" stroke-dasharray="4"/>
+                            <line x1="80" y1="70" x2="580" y2="70" stroke="#f3f4f6" stroke-width="1" stroke-dasharray="4"/>
+                            
+                            <!-- Bars -->
+                            <rect x="110" y="180" width="40" height="90" rx="4" fill="#3b82f6" opacity="0.8"/>
+                            <rect x="170" y="140" width="40" height="130" rx="4" fill="#3b82f6" opacity="0.8"/>
+                            <rect x="230" y="100" width="40" height="170" rx="4" fill="#3b82f6" opacity="0.8"/>
+                            <rect x="290" y="160" width="40" height="110" rx="4" fill="#3b82f6" opacity="0.8"/>
+                            <rect x="350" y="120" width="40" height="150" rx="4" fill="#3b82f6" opacity="0.8"/>
+                            <rect x="410" y="80" width="40" height="190" rx="4" fill="#3b82f6" opacity="0.8"/>
+                            <rect x="470" y="150" width="40" height="120" rx="4" fill="#3b82f6" opacity="0.8"/>
+                            
+                            <!-- Labels -->
+                            <text x="130" y="290" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Sen</text>
+                            <text x="190" y="290" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Sel</text>
+                            <text x="250" y="290" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Rab</text>
+                            <text x="310" y="290" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Kam</text>
+                            <text x="370" y="290" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Jum</text>
+                            <text x="430" y="290" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Sab</text>
+                            <text x="490" y="290" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Min</text>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Aktivitas Terbaru</h3>
+                    </div>
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-icon" style="background: #dbeafe;">📥</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Surat Masuk #SM-2024-001</div>
+                                <div class="activity-time">5 menit yang lalu</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon" style="background: #d1fae5;">📋</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Disposisi oleh Kepala Bagian</div>
+                                <div class="activity-time">15 menit yang lalu</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon" style="background: #fef3c7;">📤</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Surat Keluar #SK-2024-089</div>
+                                <div class="activity-time">30 menit yang lalu</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon" style="background: #fee2e2;">🔒</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Login oleh Admin</div>
+                                <div class="activity-time">1 jam yang lalu</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <h3 style="margin-bottom: 15px;">Aksi Cepat</h3>
+            <div class="quick-actions">
+                <a href="../surat-masuk/create.ejs" class="action-card">
+                    <div class="action-icon">📥</div>
+                    <div class="action-title">Input Surat Masuk</div>
+                </a>
+                <a href="../surat-keluar/create.ejs" class="action-card">
+                    <div class="action-icon">📤</div>
+                    <div class="action-title">Buat Surat Keluar</div>
+                </a>
+                <a href="../disposisi/index.ejs" class="action-card">
+                    <div class="action-icon">📋</div>
+                    <div class="action-title">Kelola Disposisi</div>
+                </a>
+                <a href="../laporan/index.ejs" class="action-card">
+                    <div class="action-icon">📊</div>
+                    <div class="action-title">Generate Laporan</div>
+                </a>
+                <a href="../pencarian/index.ejs" class="action-card">
+                    <div class="action-icon">🔍</div>
+                    <div class="action-title">Cari Surat</div>
+                </a>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // ==================== SIDEBAR TOGGLE ====================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+        
+        // ==================== CONFIRM LOGOUT ====================
+        function confirmLogout() {
+            return confirm('Apakah Anda yakin ingin logout?');
+        }
+        
+        // ==================== CURRENT DATE ====================
+        function updateDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('current-date').textContent = 
+                now.toLocaleDateString('id-ID', options);
+        }
+        
+        // ==================== PERIOD BUTTONS ====================
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.period-btn').forEach(b => 
+                    b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDate();
+            
+            // Check authentication
+            const token = localStorage.getItem('auth_token');
+            if (!token) {
+                window.location.href = '../../login';
+            }
+        });
+        
+        // ==================== AUTO REFRESH ====================
+        // Refresh stats every 5 minutes
+        setInterval(() => {
+            console.log('Auto-refreshing dashboard...');
+            // Fetch updated stats here
+        }, 300000);
+        
+        // ==================== RESPONSIVE HANDLING ====================
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>
