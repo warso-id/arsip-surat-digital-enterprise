@@ -31,16 +31,15 @@
     
     <title>Arsip Surat Digital Enterprise - Sistem Manajemen Surat Menyurat Profesional</title>
     
-    <!-- ==================== FAVICON (Base64 SVG - No 404) ==================== -->
+    <!-- ==================== FAVICON (Base64 SVG) ==================== -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSI4IiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iMTYiIHk9IjIyIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+">
     
     <!-- ==================== PWA MANIFEST ==================== -->
     <link rel="manifest" href="./manifest.json">
     
     <!-- ==================== STYLES ==================== -->
-    <!-- System Font Stack - No external font files needed -->
     <style>
-        /* ========== CRITICAL CSS (Inline - No 404) ========== */
+        /* ========== CRITICAL CSS (Inline) ========== */
         :root {
             --primary: #1a56db;
             --primary-dark: #1e40af;
@@ -137,6 +136,21 @@
         }
         .nav-link:hover, .nav-link.active { color: var(--primary); background: rgba(26,86,219,0.1); }
         
+        /* Dropdown Menu */
+        .dropdown { position: relative; }
+        .dropdown-menu {
+            display: none; position: absolute; top: 100%; left: 0;
+            background: var(--lighter); border: 1px solid var(--border);
+            border-radius: var(--radius); box-shadow: var(--shadow-lg);
+            min-width: 200px; z-index: 101; padding: 8px 0;
+        }
+        .dropdown:hover .dropdown-menu { display: block; }
+        .dropdown-menu a {
+            display: block; padding: 8px 16px; text-decoration: none;
+            color: var(--dark); font-size: 14px; transition: background 0.2s;
+        }
+        .dropdown-menu a:hover { background: var(--light); color: var(--primary); }
+        
         /* Buttons */
         .btn {
             display: inline-flex; align-items: center; gap: 8px;
@@ -152,6 +166,8 @@
         .btn-lg { padding: 14px 28px; font-size: 16px; border-radius: 10px; }
         .btn-block { width: 100%; justify-content: center; }
         .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-success { background: var(--success); color: white; border-color: var(--success); }
+        .btn-success:hover { background: #059669; border-color: #059669; transform: translateY(-2px); }
         
         /* Mobile Toggle */
         .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 10px; }
@@ -196,22 +212,23 @@
         .feature-card {
             background: var(--light); padding: 30px;
             border-radius: var(--radius-lg); border: 1px solid var(--border);
-            transition: var(--transition);
+            transition: var(--transition); cursor: pointer;
         }
         .feature-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--primary-light); }
         .feature-icon { font-size: 40px; margin-bottom: 15px; }
         .feature-card h3 { font-size: 20px; margin-bottom: 10px; color: var(--darker); }
         .feature-card p { color: var(--secondary); font-size: 14px; margin-bottom: 15px; }
         .feature-list { list-style: none; }
-        .feature-list li { padding: 4px 0; font-size: 13px; color: var(--secondary); }
+        .feature-list li { padding: 4px 0; font-size: 13px; color: var(--secondary); display: flex; align-items: center; gap: 8px; }
+        .feature-list li::before { content: "✅"; font-size: 12px; }
         
         /* About */
         .about-section { background: var(--light); }
         .about-content { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
         .about-text h3 { font-size: 20px; margin: 20px 0 15px; }
         .about-list { list-style: none; }
-        .about-list li { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-        .about-list li strong { color: var(--dark); min-width: 120px; }
+        .about-list li { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; align-items: center; }
+        .about-list li strong { color: var(--dark); min-width: 160px; }
         .about-list li span { color: var(--secondary); }
         .about-image svg { width: 100%; border-radius: var(--radius-lg); }
         
@@ -219,11 +236,85 @@
         .guide-section { background: var(--lighter); }
         .guide-steps { display: flex; align-items: flex-start; justify-content: center; gap: 0; margin-bottom: 40px; }
         .step { text-align: center; flex: 1; max-width: 200px; }
-        .step-number { width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; margin: 0 auto 15px; }
+        .step-number { width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; margin: 0 auto 15px; transition: transform 0.3s; }
+        .step:hover .step-number { transform: scale(1.1); }
         .step h3 { font-size: 16px; margin-bottom: 5px; }
         .step p { font-size: 13px; color: var(--secondary); }
         .step-connector { width: 50px; height: 2px; background: var(--primary-light); margin-top: 30px; flex-shrink: 0; }
         .guide-cta { text-align: center; }
+        
+        /* App Screenshots */
+        .screenshots-section { background: var(--light); }
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .screenshot-card {
+            background: var(--lighter); border-radius: var(--radius-lg);
+            border: 1px solid var(--border); overflow: hidden;
+            transition: var(--transition);
+        }
+        .screenshot-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+        .screenshot-card svg { width: 100%; height: 200px; object-fit: cover; }
+        .screenshot-info { padding: 15px; }
+        .screenshot-info h3 { font-size: 16px; margin-bottom: 5px; }
+        .screenshot-info p { font-size: 13px; color: var(--secondary); }
+        
+        /* Tech Stack */
+        .tech-section { background: var(--lighter); }
+        .tech-grid {
+            display: flex; flex-wrap: wrap; gap: 20px;
+            justify-content: center; align-items: center;
+        }
+        .tech-item {
+            background: var(--light); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 15px 25px;
+            font-weight: 600; font-size: 14px; color: var(--dark);
+            display: flex; align-items: center; gap: 8px;
+            transition: var(--transition);
+        }
+        .tech-item:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow); }
+        
+        /* Roadmap */
+        .roadmap-section { background: var(--light); }
+        .roadmap-timeline { position: relative; max-width: 800px; margin: 0 auto; padding-left: 40px; }
+        .roadmap-timeline::before {
+            content: ''; position: absolute; left: 15px; top: 0; bottom: 0;
+            width: 3px; background: var(--primary-light); border-radius: 2px;
+        }
+        .roadmap-item { position: relative; margin-bottom: 30px; padding: 20px; background: var(--lighter); border-radius: var(--radius-lg); border: 1px solid var(--border); }
+        .roadmap-item::before {
+            content: ''; position: absolute; left: -33px; top: 25px;
+            width: 14px; height: 14px; background: var(--primary);
+            border-radius: 50%; border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        .roadmap-item.completed { border-color: var(--success); opacity: 0.8; }
+        .roadmap-item.completed::before { background: var(--success); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3); }
+        .roadmap-tag { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-bottom: 8px; }
+        .roadmap-tag.released { background: #d1fae5; color: #065f46; }
+        .roadmap-tag.in-progress { background: #fef3c7; color: #92400e; }
+        .roadmap-tag.planned { background: #e0e7ff; color: #3730a3; }
+        .roadmap-item h3 { font-size: 18px; margin-bottom: 5px; }
+        .roadmap-item p { font-size: 13px; color: var(--secondary); }
+        
+        /* FAQ */
+        .faq-section { background: var(--lighter); }
+        .faq-list { max-width: 800px; margin: 0 auto; }
+        .faq-item { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+        .faq-question {
+            width: 100%; padding: 20px; text-align: left; background: none; border: none;
+            font-size: 16px; font-weight: 600; color: var(--dark); cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+            font-family: var(--font-sans);
+        }
+        .faq-question:hover { background: var(--light); }
+        .faq-answer { padding: 0 20px 20px; font-size: 14px; color: var(--secondary); display: none; }
+        .faq-item.open .faq-answer { display: block; }
+        .faq-item.open .faq-question { color: var(--primary); }
+        .faq-icon { font-size: 20px; transition: transform 0.3s; }
+        .faq-item.open .faq-icon { transform: rotate(45deg); }
         
         /* Contact */
         .contact-section { background: var(--light); }
@@ -232,7 +323,7 @@
         .contact-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
         .contact-icon { font-size: 40px; margin-bottom: 10px; }
         .contact-card h3 { margin-bottom: 5px; }
-        .contact-card a { color: var(--primary); text-decoration: none; font-size: 14px; }
+        .contact-card a { color: var(--primary); text-decoration: none; font-size: 14px; word-break: break-all; }
         .contact-card a:hover { text-decoration: underline; }
         
         /* CTA */
@@ -246,7 +337,7 @@
         /* Footer */
         .footer { background: var(--darker); color: white; padding: 40px 20px 20px; }
         .footer-container { max-width: var(--max-width); margin: 0 auto; }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 30px; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 30px; }
         .footer-brand h4 { color: white; margin-bottom: 10px; }
         .footer-brand p { color: #9ca3af; font-size: 13px; }
         .footer-links h4 { color: white; margin-bottom: 15px; font-size: 16px; }
@@ -271,6 +362,20 @@
         .back-to-top.visible { opacity: 1; visibility: visible; }
         .back-to-top:hover { background: var(--primary-dark); transform: translateY(-3px); }
         
+        /* Notification Toast */
+        .toast {
+            position: fixed; top: 80px; right: 20px;
+            background: var(--lighter); border-radius: var(--radius);
+            box-shadow: var(--shadow-lg); padding: 16px 20px;
+            z-index: 200; display: flex; align-items: center; gap: 10px;
+            transform: translateX(120%); transition: transform 0.3s ease;
+            max-width: 400px; border-left: 4px solid var(--primary);
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+        .toast-close { background: none; border: none; cursor: pointer; font-size: 18px; color: var(--secondary); }
+        
         /* ========== RESPONSIVE ========== */
         @media (max-width: 1024px) {
             .hero-container { grid-template-columns: 1fr; text-align: center; }
@@ -289,15 +394,21 @@
             .features-grid { grid-template-columns: 1fr; }
             .guide-steps { flex-direction: column; align-items: center; gap: 20px; }
             .step-connector { width: 2px; height: 30px; margin: 0; }
+            .roadmap-timeline { padding-left: 30px; }
+            .roadmap-item::before { left: -23px; }
             
             .nav-menu {
                 position: fixed; top: 70px; left: -100%;
                 width: 100%; height: calc(100vh - 70px);
                 background: var(--lighter); flex-direction: column;
                 padding: 20px; transition: 0.3s; overflow-y: auto;
+                align-items: flex-start; gap: 10px;
             }
             .nav-menu.active { left: 0; }
             .nav-toggle { display: block; }
+            .dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 20px; }
+            .dropdown:hover .dropdown-menu { display: none; }
+            .dropdown.open .dropdown-menu { display: block; }
             .footer-grid { grid-template-columns: 1fr; }
             .footer-bottom { flex-direction: column; text-align: center; }
         }
@@ -309,8 +420,9 @@
         }
     </style>
     
-    <!-- External CSS (Load with fallback) -->
+    <!-- External CSS -->
     <link rel="stylesheet" href="./src/public/css/app.css" onerror="console.log('CSS fallback: using inline styles')">
+    <link rel="stylesheet" href="./src/public/css/dashboard.css" onerror="console.log('Dashboard CSS fallback')">
     
     <!-- ==================== SCHEMA.ORG STRUCTURED DATA ==================== -->
     <script type="application/ld+json">
@@ -346,12 +458,17 @@
     <!-- ==================== SKIP LINK (ACCESSIBILITY) ==================== -->
     <a href="#main-content" class="skip-link">Lewati ke konten utama</a>
 
+    <!-- ==================== NOTIFICATION TOAST ==================== -->
+    <div id="toast" class="toast" role="alert" aria-live="polite">
+        <span id="toast-message"></span>
+        <button class="toast-close" onclick="hideToast()" aria-label="Tutup notifikasi">✕</button>
+    </div>
+
     <!-- ==================== NAVIGATION ==================== -->
     <nav class="navbar" id="navbar" role="navigation" aria-label="Navigasi utama">
         <div class="nav-container">
             <div class="nav-brand">
                 <a href="./" aria-label="Beranda Arsip Surat Digital">
-                    <!-- Logo Base64 SVG - No 404 -->
                     <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0ibG9nby1ncmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMWE1NmRiIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojN2MzYWVkIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHJ4PSI0MCIgZmlsbD0idXJsKCNsb2dvLWdyYWQpIi8+PHRleHQgeD0iMTAwIiB5PSIxMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BRDwvdGV4dD48L3N2Zz4=" 
                          alt="Logo Arsip Surat Digital" class="nav-logo" width="40" height="40">
                     <span class="nav-title">Arsip Surat Digital</span>
@@ -367,9 +484,19 @@
             <ul class="nav-menu" id="nav-menu" role="menubar">
                 <li role="none"><a href="#beranda" class="nav-link active" role="menuitem">Beranda</a></li>
                 <li role="none"><a href="#fitur" class="nav-link" role="menuitem">Fitur</a></li>
-                <li role="none"><a href="#tentang" class="nav-link" role="menuitem">Tentang</a></li>
+                <li class="dropdown" role="none">
+                    <a href="#tentang" class="nav-link" role="menuitem" aria-haspopup="true">Tentang ▾</a>
+                    <div class="dropdown-menu" role="menu">
+                        <a href="#tentang" role="menuitem">Tentang Kami</a>
+                        <a href="#teknologi" role="menuitem">Teknologi</a>
+                        <a href="#roadmap" role="menuitem">Roadmap</a>
+                        <a href="#screenshots" role="menuitem">Tampilan Aplikasi</a>
+                    </div>
+                </li>
                 <li role="none"><a href="#panduan" class="nav-link" role="menuitem">Panduan</a></li>
+                <li role="none"><a href="#faq" class="nav-link" role="menuitem">FAQ</a></li>
                 <li role="none"><a href="#kontak" class="nav-link" role="menuitem">Kontak</a></li>
+                <li role="none"><a href="./docs/" class="nav-link" role="menuitem">Dokumentasi</a></li>
                 <li role="none"><a href="./login" class="btn btn-primary">Masuk</a></li>
             </ul>
         </div>
@@ -382,7 +509,7 @@
             <div class="hero-container">
                 <div class="hero-content">
                     <div class="hero-badge">
-                        <span class="badge-new">🚀 Versi 2.0.0</span>
+                        <span class="badge-new">🚀 Versi 2.1.0</span>
                         <span class="badge-open">Open Source</span>
                     </div>
                     <h1 id="hero-title" class="hero-title">
@@ -395,7 +522,8 @@
                     </p>
                     <div class="hero-cta">
                         <a href="./login" class="btn btn-primary btn-lg">🚀 Mulai Sekarang</a>
-                        <a href="#panduan" class="btn btn-outline btn-lg">📖 Pelajari Lebih Lanjut</a>
+                        <a href="./docs/" class="btn btn-outline btn-lg">📖 Dokumentasi</a>
+                        <a href="https://github.com/warso-id/arsip-surat-digital-enterprise" class="btn btn-outline btn-lg" target="_blank" rel="noopener">⭐ GitHub</a>
                     </div>
                     <div class="hero-stats">
                         <div class="stat-item">
@@ -413,32 +541,55 @@
                     </div>
                 </div>
                 <div class="hero-image">
-                    <!-- Dashboard Preview SVG - No 404 -->
+                    <!-- Dashboard Preview SVG -->
                     <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" aria-label="Preview Dashboard Arsip Surat Digital">
-                        <rect width="600" height="400" rx="16" fill="#ffffff"/>
+                        <defs>
+                            <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#eff6ff"/>
+                                <stop offset="100%" style="stop-color:#f0fdf4"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="600" height="400" rx="16" fill="url(#heroGrad)"/>
                         <!-- Top Bar -->
-                        <rect x="0" y="0" width="600" height="50" rx="16" fill="#f8fafc"/>
+                        <rect x="0" y="0" width="600" height="50" rx="16" fill="#ffffff" opacity="0.8"/>
                         <rect x="20" y="15" width="120" height="20" rx="4" fill="#e2e8f0"/>
-                        <rect x="400" y="12" width="180" height="26" rx="13" fill="#3b82f6"/>
+                        <circle cx="560" cy="25" r="12" fill="#3b82f6"/>
+                        <rect x="440" y="18" width="100" height="14" rx="7" fill="#dbeafe"/>
                         <!-- Sidebar -->
-                        <rect x="0" y="50" width="150" height="350" fill="#1e293b"/>
+                        <rect x="0" y="50" width="150" height="350" fill="#1e293b" opacity="0.95"/>
                         <rect x="15" y="70" width="120" height="8" rx="4" fill="#334155"/>
                         <rect x="15" y="90" width="100" height="8" rx="4" fill="#334155"/>
                         <rect x="15" y="110" width="110" height="8" rx="4" fill="#334155"/>
+                        <rect x="15" y="140" width="90" height="8" rx="4" fill="#334155"/>
                         <!-- Stat Cards -->
-                        <rect x="170" y="70" width="130" height="80" rx="8" fill="#dbeafe"/>
-                        <rect x="315" y="70" width="130" height="80" rx="8" fill="#d1fae5"/>
-                        <rect x="460" y="70" width="120" height="80" rx="8" fill="#fef3c7"/>
+                        <rect x="170" y="70" width="130" height="80" rx="8" fill="#ffffff" stroke="#dbeafe" stroke-width="1"/>
+                        <text x="235" y="100" font-family="Arial" font-size="18" font-weight="bold" fill="#1e40af" text-anchor="middle">📥 150</text>
+                        <text x="235" y="125" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Surat Masuk</text>
+                        
+                        <rect x="315" y="70" width="130" height="80" rx="8" fill="#ffffff" stroke="#d1fae5" stroke-width="1"/>
+                        <text x="380" y="100" font-family="Arial" font-size="18" font-weight="bold" fill="#065f46" text-anchor="middle">📤 89</text>
+                        <text x="380" y="125" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Surat Keluar</text>
+                        
+                        <rect x="460" y="70" width="120" height="80" rx="8" fill="#ffffff" stroke="#fef3c7" stroke-width="1"/>
+                        <text x="520" y="100" font-family="Arial" font-size="18" font-weight="bold" fill="#92400e" text-anchor="middle">📋 25</text>
+                        <text x="520" y="125" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Disposisi</text>
+                        
                         <!-- Chart Area -->
-                        <rect x="170" y="170" width="410" height="200" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+                        <rect x="170" y="170" width="410" height="200" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
                         <!-- Chart Lines -->
                         <polyline points="190,330 250,280 310,300 370,240 430,260 490,200 550,220" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round"/>
+                        <circle cx="190" cy="330" r="4" fill="#3b82f6"/>
+                        <circle cx="250" cy="280" r="4" fill="#3b82f6"/>
+                        <circle cx="310" cy="300" r="4" fill="#3b82f6"/>
+                        <circle cx="370" cy="240" r="4" fill="#3b82f6"/>
+                        <circle cx="430" cy="260" r="4" fill="#3b82f6"/>
+                        <circle cx="490" cy="200" r="4" fill="#3b82f6"/>
+                        <circle cx="550" cy="220" r="4" fill="#3b82f6"/>
+                        <!-- Grid Lines -->
+                        <line x1="170" y1="280" x2="580" y2="280" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="4"/>
+                        <line x1="170" y1="230" x2="580" y2="230" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="4"/>
                         <!-- Text -->
-                        <text x="300" y="100" font-family="Arial" font-size="18" font-weight="bold" fill="#1e40af" text-anchor="middle">📥 150</text>
-                        <text x="300" y="120" font-family="Arial" font-size="10" fill="#64748b" text-anchor="middle">Surat Masuk</text>
-                        <text x="520" y="100" font-family="Arial" font-size="18" font-weight="bold" fill="#92400e" text-anchor="middle">📋 25</text>
-                        <text x="520" y="120" font-family="Arial" font-size="10" fill="#64748b" text-anchor="middle">Disposisi</text>
-                        <text x="375" y="375" font-family="Arial" font-size="14" fill="#64748b" text-anchor="middle">Dashboard Arsip Surat Digital Enterprise</text>
+                        <text x="375" y="385" font-family="Arial" font-size="13" fill="#64748b" text-anchor="middle">Dashboard Arsip Surat Digital Enterprise v2.1</text>
                     </svg>
                 </div>
             </div>
@@ -451,25 +602,27 @@
                 <p class="section-description">Solusi lengkap untuk manajemen arsip surat di instansi Anda</p>
                 
                 <div class="features-grid">
-                    <article class="feature-card">
+                    <article class="feature-card" onclick="window.location.href='./docs/USER_GUIDE.md#surat-masuk'">
                         <div class="feature-icon">📥</div>
                         <h3>Surat Masuk & Keluar</h3>
                         <p>Kelola surat masuk dan surat keluar dengan sistem tracking yang akurat dan real-time.</p>
                         <ul class="feature-list">
-                            <li>✅ Nomor agenda otomatis</li>
-                            <li>✅ Upload multiple file</li>
-                            <li>✅ QR Code verifikasi</li>
+                            <li>Nomor agenda otomatis</li>
+                            <li>Upload multiple file</li>
+                            <li>QR Code verifikasi</li>
+                            <li>Tracking status</li>
                         </ul>
                     </article>
                     
-                    <article class="feature-card">
+                    <article class="feature-card" onclick="window.location.href='./docs/USER_GUIDE.md#disposisi'">
                         <div class="feature-icon">📋</div>
                         <h3>Disposisi Digital</h3>
                         <p>Sistem disposisi elektronik yang memudahkan alur persetujuan dan distribusi surat.</p>
                         <ul class="feature-list">
-                            <li>✅ Multi-level approval</li>
-                            <li>✅ Tracking real-time</li>
-                            <li>✅ Notifikasi otomatis</li>
+                            <li>Multi-level approval</li>
+                            <li>Tracking real-time</li>
+                            <li>Notifikasi otomatis</li>
+                            <li>Riwayat lengkap</li>
                         </ul>
                     </article>
                     
@@ -478,9 +631,10 @@
                         <h3>Pencarian Cepat</h3>
                         <p>Temukan surat dengan cepat menggunakan fitur pencarian full-text dan filter advance.</p>
                         <ul class="feature-list">
-                            <li>✅ Full-text search</li>
-                            <li>✅ Filter multi-kriteria</li>
-                            <li>✅ Export hasil pencarian</li>
+                            <li>Full-text search</li>
+                            <li>Filter multi-kriteria</li>
+                            <li>Export hasil pencarian</li>
+                            <li>Pencarian tersimpan</li>
                         </ul>
                     </article>
                     
@@ -489,9 +643,10 @@
                         <h3>Laporan & Statistik</h3>
                         <p>Generate laporan otomatis dengan visualisasi data dan export ke berbagai format.</p>
                         <ul class="feature-list">
-                            <li>✅ Chart interaktif</li>
-                            <li>✅ Export PDF & Excel</li>
-                            <li>✅ Laporan periodik</li>
+                            <li>Chart interaktif</li>
+                            <li>Export PDF & Excel</li>
+                            <li>Laporan periodik</li>
+                            <li>Dashboard real-time</li>
                         </ul>
                     </article>
                     
@@ -500,9 +655,10 @@
                         <h3>Keamanan Terjamin</h3>
                         <p>Enkripsi data, role-based access control, dan audit trail untuk keamanan maksimal.</p>
                         <ul class="feature-list">
-                            <li>✅ JWT Authentication</li>
-                            <li>✅ RBAC (Role-Based Access)</li>
-                            <li>✅ Audit trail lengkap</li>
+                            <li>JWT Authentication</li>
+                            <li>RBAC (Role-Based Access)</li>
+                            <li>Audit trail lengkap</li>
+                            <li>Enkripsi AES-256</li>
                         </ul>
                     </article>
                     
@@ -511,9 +667,10 @@
                         <h3>Akses Mobile (PWA)</h3>
                         <p>Akses arsip surat kapan saja dan di mana saja melalui perangkat mobile.</p>
                         <ul class="feature-list">
-                            <li>✅ Installable app</li>
-                            <li>✅ Offline mode</li>
-                            <li>✅ Push notification</li>
+                            <li>Installable app</li>
+                            <li>Offline mode</li>
+                            <li>Push notification</li>
+                            <li>Responsive design</li>
                         </ul>
                     </article>
                 </div>
@@ -531,35 +688,161 @@
                         
                         <h3>Mengapa Memilih Kami?</h3>
                         <ul class="about-list">
-                            <li><strong>🔓 Open Source</strong> <span>Bebas digunakan dan dimodifikasi</span></li>
+                            <li><strong>🔓 Open Source</strong> <span>Bebas digunakan dan dimodifikasi (MIT License)</span></li>
                             <li><strong>📋 Standar ANRI</strong> <span>Sesuai standar Arsip Nasional RI</span></li>
-                            <li><strong>🏢 Multi Instansi</strong> <span>Mendukung banyak instansi</span></li>
-                            <li><strong>🔄 Integrasi Mudah</strong> <span>RESTful API untuk integrasi</span></li>
-                            <li><strong>🔄 Update Berkala</strong> <span>Fitur baru secara regular</span></li>
-                            <li><strong>👥 Komunitas Aktif</strong> <span>Dukungan komunitas</span></li>
+                            <li><strong>🏢 Multi Instansi</strong> <span>Mendukung banyak instansi dalam satu sistem</span></li>
+                            <li><strong>🔄 RESTful API</strong> <span>Integrasi mudah dengan sistem lain</span></li>
+                            <li><strong>🔄 Update Berkala</strong> <span>Fitur baru dan perbaikan secara regular</span></li>
+                            <li><strong>👥 Komunitas Aktif</strong> <span>Dukungan dan kontribusi dari komunitas</span></li>
+                            <li><strong>📱 Progressive Web App</strong> <span>Akses mobile tanpa install</span></li>
+                            <li><strong>🐳 Docker Ready</strong> <span>Deployment mudah dengan container</span></li>
                         </ul>
                     </div>
                     <div class="about-image">
-                        <!-- About Illustration SVG -->
                         <svg viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="500" height="400" rx="16" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+                            <defs>
+                                <linearGradient id="aboutGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#eff6ff"/>
+                                    <stop offset="100%" style="stop-color:#f0fdf4"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="500" height="400" rx="16" fill="url(#aboutGrad)" stroke="#e2e8f0" stroke-width="1"/>
                             <!-- Document -->
-                            <rect x="100" y="60" width="200" height="260" rx="8" fill="white" stroke="#3b82f6" stroke-width="2"/>
-                            <rect x="100" y="60" width="200" height="40" rx="8" fill="#3b82f6"/>
-                            <rect x="120" y="120" width="160" height="8" rx="4" fill="#e2e8f0"/>
-                            <rect x="120" y="140" width="140" height="8" rx="4" fill="#e2e8f0"/>
-                            <rect x="120" y="160" width="150" height="8" rx="4" fill="#e2e8f0"/>
-                            <rect x="120" y="180" width="100" height="8" rx="4" fill="#e2e8f0"/>
+                            <rect x="80" y="40" width="220" height="280" rx="10" fill="white" stroke="#3b82f6" stroke-width="2"/>
+                            <rect x="80" y="40" width="220" height="45" rx="10" fill="#3b82f6"/>
+                            <rect x="100" y="105" width="180" height="8" rx="4" fill="#e2e8f0"/>
+                            <rect x="100" y="125" width="160" height="8" rx="4" fill="#e2e8f0"/>
+                            <rect x="100" y="145" width="170" height="8" rx="4" fill="#e2e8f0"/>
+                            <rect x="100" y="165" width="120" height="8" rx="4" fill="#e2e8f0"/>
+                            <rect x="100" y="195" width="180" height="8" rx="4" fill="#e2e8f0"/>
+                            <rect x="100" y="215" width="150" height="8" rx="4" fill="#e2e8f0"/>
+                            <!-- Stamp -->
+                            <circle cx="190" cy="280" r="35" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.6"/>
+                            <text x="190" y="285" font-family="Arial" font-size="10" fill="#ef4444" text-anchor="middle" opacity="0.6">TERARSIP</text>
                             <!-- Checkmark -->
-                            <circle cx="300" cy="280" r="30" fill="#10b981"/>
-                            <path d="M288 280 L296 288 L312 272" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="330" cy="300" r="35" fill="#10b981"/>
+                            <path d="M315 300 L325 310 L345 290" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
                             <!-- Search Icon -->
-                            <circle cx="350" cy="150" r="40" fill="#dbeafe"/>
-                            <circle cx="350" cy="150" r="15" stroke="#3b82f6" stroke-width="3" fill="none"/>
-                            <line x1="361" y1="161" x2="375" y2="175" stroke="#3b82f6" stroke-width="3" stroke-linecap="round"/>
+                            <circle cx="370" cy="120" r="45" fill="#dbeafe"/>
+                            <circle cx="370" cy="120" r="18" stroke="#3b82f6" stroke-width="3" fill="none"/>
+                            <line x1="383" y1="133" x2="398" y2="148" stroke="#3b82f6" stroke-width="3" stroke-linecap="round"/>
+                            <!-- Chart -->
+                            <rect x="320" y="200" width="150" height="80" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+                            <polyline points="340,260 370,240 400,250 430,220 460,230" fill="none" stroke="#10b981" stroke-width="2"/>
                             <!-- Text -->
-                            <text x="250" y="380" font-family="Arial" font-size="16" fill="#64748b" text-anchor="middle">Sistem Manajemen Arsip Surat Profesional</text>
+                            <text x="250" y="385" font-family="Arial" font-size="15" fill="#64748b" text-anchor="middle">Sistem Manajemen Arsip Surat Profesional</text>
                         </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== TECH STACK SECTION ========== -->
+        <section id="teknologi" class="tech-section" aria-labelledby="tech-title">
+            <div class="section-container">
+                <h2 id="tech-title" class="section-title">Teknologi yang Digunakan</h2>
+                <p class="section-description">Dibangun dengan teknologi modern dan terpercaya</p>
+                <div class="tech-grid">
+                    <div class="tech-item">🟢 Node.js</div>
+                    <div class="tech-item">📦 Express.js</div>
+                    <div class="tech-item">🗄️ SQLite / PostgreSQL</div>
+                    <div class="tech-item">📄 EJS Templates</div>
+                    <div class="tech-item">🎨 Tailwind CSS</div>
+                    <div class="tech-item">📱 Progressive Web App</div>
+                    <div class="tech-item">🐳 Docker</div>
+                    <div class="tech-item">🔐 JWT Auth</div>
+                    <div class="tech-item">📊 Chart.js</div>
+                    <div class="tech-item">🧪 Jest Testing</div>
+                    <div class="tech-item">🔄 CI/CD (GitHub Actions)</div>
+                    <div class="tech-item">📝 RESTful API</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== ROADMAP SECTION ========== -->
+        <section id="roadmap" class="roadmap-section" aria-labelledby="roadmap-title">
+            <div class="section-container">
+                <h2 id="roadmap-title" class="section-title">Roadmap Pengembangan</h2>
+                <p class="section-description">Rencana pengembangan fitur ke depan</p>
+                <div class="roadmap-timeline">
+                    <div class="roadmap-item completed">
+                        <span class="roadmap-tag released">✅ Rilis</span>
+                        <h3>v2.0.0 - Enterprise Edition</h3>
+                        <p>Multi-instansi, RBAC, PWA support, RESTful API, Dashboard statistik, Export PDF/Excel</p>
+                    </div>
+                    <div class="roadmap-item completed">
+                        <span class="roadmap-tag released">✅ Rilis</span>
+                        <h3>v2.1.0 - Enhancement</h3>
+                        <p>QR Code verifikasi, notifikasi real-time, advanced search, backup system</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <span class="roadmap-tag in-progress">🔄 Dalam Proses</span>
+                        <h3>v2.2.0 - Collaboration</h3>
+                        <p>Multi-user collaboration, commenting system, workflow automation</p>
+                    </div>
+                    <div class="roadmap-item">
+                        <span class="roadmap-tag planned">📋 Direncanakan</span>
+                        <h3>v3.0.0 - Cloud Edition</h3>
+                        <p>Cloud storage integration, SSO, microservices architecture, AI-powered classification</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== SCREENSHOTS SECTION ========== -->
+        <section id="screenshots" class="screenshots-section" aria-labelledby="screenshots-title">
+            <div class="section-container">
+                <h2 id="screenshots-title" class="section-title">Tampilan Aplikasi</h2>
+                <p class="section-description">Interface modern dan mudah digunakan</p>
+                <div class="screenshots-grid">
+                    <div class="screenshot-card">
+                        <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="400" height="250" fill="#f8fafc"/>
+                            <rect x="0" y="0" width="400" height="35" fill="#1e293b"/>
+                            <rect x="10" y="8" width="60" height="18" rx="4" fill="#334155"/>
+                            <rect x="0" y="35" width="80" height="215" fill="#1e40af" opacity="0.9"/>
+                            <rect x="10" y="50" width="60" height="8" rx="4" fill="#93c5fd"/>
+                            <rect x="10" y="65" width="50" height="8" rx="4" fill="#93c5fd"/>
+                            <rect x="10" y="80" width="55" height="8" rx="4" fill="#93c5fd"/>
+                            <rect x="100" y="50" width="130" height="60" rx="8" fill="white" stroke="#dbeafe" stroke-width="1"/>
+                            <rect x="250" y="50" width="130" height="60" rx="8" fill="white" stroke="#d1fae5" stroke-width="1"/>
+                            <rect x="100" y="125" width="280" height="100" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+                            <text x="200" y="235" font-family="Arial" font-size="10" fill="#64748b" text-anchor="middle">Dashboard View</text>
+                        </svg>
+                        <div class="screenshot-info">
+                            <h3>Dashboard</h3>
+                            <p>Overview statistik dan grafik</p>
+                        </div>
+                    </div>
+                    <div class="screenshot-card">
+                        <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="400" height="250" fill="#f8fafc"/>
+                            <rect x="0" y="0" width="400" height="35" fill="#1e293b"/>
+                            <rect x="0" y="35" width="80" height="215" fill="#1e40af" opacity="0.9"/>
+                            <rect x="100" y="50" width="280" height="30" rx="6" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+                            <rect x="100" y="95" width="280" height="30" rx="6" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+                            <rect x="100" y="140" width="280" height="30" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+                            <text x="200" y="235" font-family="Arial" font-size="10" fill="#64748b" text-anchor="middle">Surat Masuk List</text>
+                        </svg>
+                        <div class="screenshot-info">
+                            <h3>Manajemen Surat</h3>
+                            <p>List surat masuk dan keluar</p>
+                        </div>
+                    </div>
+                    <div class="screenshot-card">
+                        <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="400" height="250" fill="#f8fafc"/>
+                            <rect x="0" y="0" width="400" height="35" fill="#1e293b"/>
+                            <rect x="0" y="35" width="80" height="215" fill="#1e40af" opacity="0.9"/>
+                            <rect x="100" y="50" width="280" height="150" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+                            <circle cx="240" cy="125" r="40" fill="#dbeafe"/>
+                            <text x="240" y="130" font-family="Arial" font-size="20" fill="#1e40af" text-anchor="middle">📋</text>
+                            <text x="200" y="235" font-family="Arial" font-size="10" fill="#64748b" text-anchor="middle">Disposisi Tracking</text>
+                        </svg>
+                        <div class="screenshot-info">
+                            <h3>Disposisi</h3>
+                            <p>Tracking alur disposisi surat</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -598,7 +881,63 @@
                 </div>
                 
                 <div class="guide-cta">
-                    <a href="https://github.com/warso-id/arsip-surat-digital-enterprise/wiki" class="btn btn-primary btn-lg" target="_blank" rel="noopener">📖 Baca Panduan Lengkap</a>
+                    <a href="./docs/" class="btn btn-primary btn-lg">📖 Baca Panduan Lengkap</a>
+                    <a href="./docs/INSTALLATION.md" class="btn btn-outline btn-lg" style="margin-left: 10px;">🛠️ Panduan Instalasi</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== FAQ SECTION ========== -->
+        <section id="faq" class="faq-section" aria-labelledby="faq-title">
+            <div class="section-container">
+                <h2 id="faq-title" class="section-title">Pertanyaan Umum</h2>
+                <p class="section-description">Jawaban untuk pertanyaan yang sering diajukan</p>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                            <span>Apa itu Arsip Surat Digital Enterprise?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Arsip Surat Digital Enterprise adalah sistem manajemen arsip surat berbasis web yang dirancang untuk membantu perusahaan dan instansi pemerintah dalam mengelola surat masuk, surat keluar, dan disposisi secara digital. Sistem ini open source dan gratis digunakan.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                            <span>Apakah sistem ini gratis?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Ya! Sistem ini sepenuhnya gratis dan open source di bawah MIT License. Anda bebas menggunakan, memodifikasi, dan mendistribusikannya.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                            <span>Bagaimana cara instalasi?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Ada beberapa cara instalasi: menggunakan Docker (direkomendasikan), instalasi manual dengan Node.js, atau menggunakan script setup otomatis. Lihat <a href="./docs/INSTALLATION.md">panduan instalasi</a> untuk detail lengkap.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                            <span>Apakah mendukung multi-instansi?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Ya, sistem ini mendukung multi-instansi. Setiap instansi memiliki data terpisah dan pengguna dengan role yang berbeda-beda (Admin, Operator, Pimpinan, dll).</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                            <span>Apakah ada API untuk integrasi?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Ya, tersedia RESTful API lengkap untuk integrasi dengan sistem lain. Dokumentasi API dapat dilihat di <a href="./docs/API_DOCUMENTATION.md">API Documentation</a>.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -623,7 +962,22 @@
                     <div class="contact-card">
                         <div class="contact-icon">📖</div>
                         <h3>Dokumentasi</h3>
-                        <a href="https://github.com/warso-id/arsip-surat-digital-enterprise/wiki" target="_blank" rel="noopener">Baca Dokumentasi</a>
+                        <a href="./docs/">Baca Dokumentasi</a>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">🐛</div>
+                        <h3>Laporkan Bug</h3>
+                        <a href="https://github.com/warso-id/arsip-surat-digital-enterprise/issues" target="_blank" rel="noopener">Buat Issue</a>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">💡</div>
+                        <h3>Fitur Request</h3>
+                        <a href="https://github.com/warso-id/arsip-surat-digital-enterprise/issues/new?template=feature_request.md" target="_blank" rel="noopener">Usulkan Fitur</a>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">🔒</div>
+                        <h3>Keamanan</h3>
+                        <a href="./SECURITY.md">Kebijakan Keamanan</a>
                     </div>
                 </div>
             </div>
@@ -637,6 +991,7 @@
                 <div class="cta-buttons">
                     <a href="./login" class="btn btn-primary btn-lg">🚀 Mulai Gratis</a>
                     <a href="https://github.com/warso-id/arsip-surat-digital-enterprise" class="btn btn-outline btn-lg" target="_blank" rel="noopener">⭐ Star di GitHub</a>
+                    <a href="./docs/CONTRIBUTING.md" class="btn btn-outline btn-lg">🤝 Kontribusi</a>
                 </div>
             </div>
         </section>
@@ -647,9 +1002,9 @@
         <div class="footer-container">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <h4>Arsip Surat Digital Enterprise</h4>
+                    <h4>🏢 Arsip Surat Digital Enterprise</h4>
                     <p>Sistem Manajemen Arsip Surat Profesional untuk Perusahaan & Instansi</p>
-                    <p class="footer-version">Versi <span id="appVersion">2.0.0</span></p>
+                    <p class="footer-version">Versi <span id="appVersion">2.1.0</span></p>
                 </div>
                 <div class="footer-links">
                     <h4>Navigasi</h4>
@@ -658,21 +1013,33 @@
                         <li><a href="#fitur">Fitur</a></li>
                         <li><a href="#tentang">Tentang</a></li>
                         <li><a href="#panduan">Panduan</a></li>
+                        <li><a href="#faq">FAQ</a></li>
                         <li><a href="#kontak">Kontak</a></li>
                     </ul>
                 </div>
                 <div class="footer-links">
                     <h4>Resources</h4>
                     <ul>
-                        <li><a href="https://github.com/warso-id/arsip-surat-digital-enterprise" target="_blank" rel="noopener">GitHub</a></li>
-                        <li><a href="https://github.com/warso-id/arsip-surat-digital-enterprise/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a></li>
-                        <li><a href="https://github.com/warso-id/arsip-surat-digital-enterprise/blob/main/LICENSE" target="_blank" rel="noopener">License</a></li>
+                        <li><a href="https://github.com/warso-id/arsip-surat-digital-enterprise" target="_blank" rel="noopener">GitHub Repository</a></li>
+                        <li><a href="./docs/">Dokumentasi</a></li>
+                        <li><a href="./docs/API_DOCUMENTATION.md">API Reference</a></li>
+                        <li><a href="./CHANGELOG.md">Changelog</a></li>
+                        <li><a href="./LICENSE">License (MIT)</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Komunitas</h4>
+                    <ul>
+                        <li><a href="./docs/CONTRIBUTING.md">Berkontribusi</a></li>
+                        <li><a href="./CODE_OF_CONDUCT.md">Kode Etik</a></li>
+                        <li><a href="./SECURITY.md">Keamanan</a></li>
+                        <li><a href="https://github.com/warso-id/arsip-surat-digital-enterprise/discussions" target="_blank" rel="noopener">Diskusi</a></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Arsip Surat Digital Enterprise. Dirilis di bawah <a href="https://github.com/warso-id/arsip-surat-digital-enterprise/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>.</p>
-                <p>Dibuat dengan ❤️ oleh <a href="https://github.com/warso-id" target="_blank" rel="noopener">warso-id</a></p>
+                <p>&copy; 2024 Arsip Surat Digital Enterprise. Dirilis di bawah <a href="./LICENSE" target="_blank" rel="noopener">MIT License</a>.</p>
+                <p>Dibuat dengan ❤️ oleh <a href="https://github.com/warso-id" target="_blank" rel="noopener">warso-id</a> | <a href="./sitemap.xml">Sitemap</a></p>
             </div>
         </div>
     </footer>
@@ -681,7 +1048,6 @@
     <button id="backToTop" class="back-to-top" aria-label="Kembali ke atas" title="Kembali ke atas">↑</button>
 
     <!-- ==================== SCRIPTS ==================== -->
-    <!-- External JS (Load with fallback) -->
     <script src="./src/public/js/app.js" onerror="console.log('JS fallback: using inline scripts')"></script>
     
     <script>
@@ -713,11 +1079,26 @@
             });
         });
 
+        // Mobile dropdown toggle
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            const link = dropdown.querySelector('.nav-link');
+            if (link) {
+                link.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        dropdown.classList.toggle('open');
+                    }
+                });
+            }
+        });
+
         // ==================== SMOOTH SCROLL ====================
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href === '#') return;
                 e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
+                const target = document.querySelector(href);
                 if (target) {
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
@@ -738,7 +1119,8 @@
             
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
-                if (link.getAttribute('href') === '#' + current) {
+                const href = link.getAttribute('href');
+                if (href && href.replace('#', '') === current) {
                     link.classList.add('active');
                 }
             });
@@ -761,12 +1143,47 @@
             });
         }
 
+        // ==================== FAQ TOGGLE ====================
+        function toggleFaq(button) {
+            const faqItem = button.parentElement;
+            const isOpen = faqItem.classList.contains('open');
+            
+            // Close all FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('open');
+                item.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+            });
+            
+            // Toggle current
+            if (!isOpen) {
+                faqItem.classList.add('open');
+                button.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        // ==================== TOAST NOTIFICATION ====================
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            if (toast && toastMessage) {
+                toast.className = 'toast ' + type;
+                toastMessage.textContent = message;
+                toast.classList.add('show');
+                setTimeout(hideToast, 4000);
+            }
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            if (toast) toast.classList.remove('show');
+        }
+
         // ==================== PWA REGISTRATION ====================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')
-                    .then(reg => console.log('SW registered:', reg.scope))
-                    .catch(err => console.log('SW registration failed:', err));
+                    .then(reg => console.log('Service Worker registered:', reg.scope))
+                    .catch(err => console.log('Service Worker registration failed:', err));
             });
         }
 
@@ -775,11 +1192,31 @@
             .then(response => response.json())
             .then(data => {
                 const verEl = document.getElementById('appVersion');
-                if (verEl) verEl.textContent = data.version || '2.0.0';
+                if (verEl) verEl.textContent = data.version || '2.1.0';
             })
             .catch(() => {
                 // Version file not found, keep default
+                const verEl = document.getElementById('appVersion');
+                if (verEl) verEl.textContent = '2.1.0';
             });
+
+        // ==================== OFFLINE DETECTION ====================
+        window.addEventListener('online', () => {
+            showToast('Koneksi internet kembali tersedia', 'success');
+        });
+        
+        window.addEventListener('offline', () => {
+            showToast('Anda sedang offline. Beberapa fitur mungkin tidak tersedia.', 'error');
+        });
+
+        // ==================== KEYBOARD NAVIGATION ====================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                navMenu?.classList.remove('active');
+                navToggle?.setAttribute('aria-expanded', 'false');
+                hideToast();
+            }
+        });
     </script>
 </body>
 </html>
