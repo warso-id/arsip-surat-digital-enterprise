@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Role - Admin Panel</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <style>
+        :root {
+            --primary: #1a56db; --secondary: #64748b; --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444; --dark: #1f2937;
+            --darker: #111827; --light: #f9fafb; --lighter: #ffffff; --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--light); color: var(--dark); display: flex; min-height: 100vh; }
+        
+        .sidebar { width: 260px; background: var(--darker); color: white; position: fixed; top: 0; left: 0; bottom: 0; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #374151; }
+        .sidebar-nav { padding: 20px 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #9ca3af; text-decoration: none; font-size: 14px; border-left: 3px solid transparent; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: rgba(26,86,219,0.2); color: white; border-left-color: var(--primary); }
+        
+        .main-content { flex: 1; margin-left: 260px; padding: 30px; }
+        .page-title { font-size: 24px; font-weight: 800; margin-bottom: 25px; }
+        
+        .role-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .role-card {
+            background: var(--lighter); border-radius: 16px; padding: 25px;
+            border: 1px solid var(--border); transition: all 0.3s;
+        }
+        .role-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+        .role-icon { font-size: 40px; margin-bottom: 15px; }
+        .role-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+        .role-code { font-size: 12px; color: var(--secondary); margin-bottom: 10px; }
+        .role-desc { font-size: 13px; color: var(--secondary); margin-bottom: 15px; line-height: 1.5; }
+        .role-count { font-size: 24px; font-weight: 800; margin-bottom: 3px; }
+        .role-label { font-size: 12px; color: var(--secondary); }
+        
+        .permission-list { display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0; }
+        .permission-tag {
+            padding: 3px 8px; border-radius: 6px; font-size: 11px;
+            background: var(--light); border: 1px solid var(--border);
+        }
+        
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; cursor: pointer; text-decoration: none; color: var(--dark); font-family: var(--font-sans); }
+        .btn:hover { background: var(--light); }
+        
+        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">⚙️ Admin Panel</div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.ejs" class="nav-item">📊 Dashboard</a>
+            <a href="../users/index.ejs" class="nav-item">👥 Pengguna</a>
+            <a href="./index.ejs" class="nav-item active">🔑 Role</a>
+            <a href="../../../login" class="nav-item" style="color: #ef4444;">🚪 Logout</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <h1 class="page-title">🔑 Manajemen Role</h1>
+        
+        <div class="role-grid">
+            <div class="role-card">
+                <div class="role-icon">👑</div>
+                <div class="role-name">Super Admin</div>
+                <div class="role-code">superadmin</div>
+                <div class="role-desc">Akses penuh ke semua fitur sistem. Dapat mengelola instansi, pengguna, dan konfigurasi sistem.</div>
+                <div class="permission-list">
+                    <span class="permission-tag">✅ Semua Akses</span>
+                    <span class="permission-tag">👥 Kelola User</span>
+                    <span class="permission-tag">🏢 Kelola Instansi</span>
+                    <span class="permission-tag">⚙️ Konfigurasi</span>
+                    <span class="permission-tag">📊 Laporan</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                    <div>
+                        <div class="role-count" style="color: #7c3aed;">1</div>
+                        <div class="role-label">Pengguna</div>
+                    </div>
+                    <button class="btn">✏️ Edit</button>
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-icon">🔵</div>
+                <div class="role-name">Administrator</div>
+                <div class="role-code">admin</div>
+                <div class="role-desc">Mengelola surat dan pengguna dalam instansinya. Dapat membuat, mengedit, dan menghapus surat.</div>
+                <div class="permission-list">
+                    <span class="permission-tag">📥 Surat Masuk</span>
+                    <span class="permission-tag">📤 Surat Keluar</span>
+                    <span class="permission-tag">📋 Disposisi</span>
+                    <span class="permission-tag">👥 Kelola User</span>
+                    <span class="permission-tag">📊 Laporan</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                    <div>
+                        <div class="role-count" style="color: #3b82f6;">3</div>
+                        <div class="role-label">Pengguna</div>
+                    </div>
+                    <button class="btn">✏️ Edit</button>
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-icon">🟢</div>
+                <div class="role-name">Operator</div>
+                <div class="role-code">operator</div>
+                <div class="role-desc">Menginput dan memproses surat masuk dan keluar. Dapat membuat dan mengedit surat.</div>
+                <div class="permission-list">
+                    <span class="permission-tag">📥 Surat Masuk</span>
+                    <span class="permission-tag">📤 Surat Keluar</span>
+                    <span class="permission-tag">📋 Disposisi</span>
+                    <span class="permission-tag">🔍 Pencarian</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                    <div>
+                        <div class="role-count" style="color: #10b981;">25</div>
+                        <div class="role-label">Pengguna</div>
+                    </div>
+                    <button class="btn">✏️ Edit</button>
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-icon">🟡</div>
+                <div class="role-name">Pimpinan</div>
+                <div class="role-code">pimpinan</div>
+                <div class="role-desc">Memberikan disposisi dan persetujuan. Dapat melihat laporan dan statistik.</div>
+                <div class="permission-list">
+                    <span class="permission-tag">👁️ View Surat</span>
+                    <span class="permission-tag">📋 Disposisi</span>
+                    <span class="permission-tag">📊 Laporan</span>
+                    <span class="permission-tag">🔍 Pencarian</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                    <div>
+                        <div class="role-count" style="color: #f59e0b;">8</div>
+                        <div class="role-label">Pengguna</div>
+                    </div>
+                    <button class="btn">✏️ Edit</button>
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-icon">⚪</div>
+                <div class="role-name">Viewer</div>
+                <div class="role-code">viewer</div>
+                <div class="role-desc">Hanya dapat melihat data surat. Tidak dapat membuat atau mengedit.</div>
+                <div class="permission-list">
+                    <span class="permission-tag">👁️ View Surat</span>
+                    <span class="permission-tag">🔍 Pencarian</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                    <div>
+                        <div class="role-count" style="color: #64748b;">8</div>
+                        <div class="role-label">Pengguna</div>
+                    </div>
+                    <button class="btn">✏️ Edit</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('auth_token')) window.location.href = '../../../login';
+        });
+    </script>
+</body>
+</html>
