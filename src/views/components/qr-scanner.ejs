@@ -1,0 +1,42 @@
+<!-- QR Scanner Component -->
+<div class="qr-scanner" id="<%= id || 'qrScanner' %>">
+    <video id="<%= id || 'qrScanner' %>Video" class="scanner-video" autoplay playsinline></video>
+    <div class="scanner-overlay">
+        <div class="scanner-frame"></div>
+    </div>
+    <canvas id="<%= id || 'qrScanner' %>Canvas" style="display: none;"></canvas>
+    <div class="scanner-result" id="<%= id || 'qrScanner' %>Result"></div>
+    <div class="scanner-actions">
+        <button class="btn" onclick="startScanner('<%= id || 'qrScanner' %>')">📷 Mulai Scan</button>
+        <button class="btn" onclick="stopScanner('<%= id || 'qrScanner' %>')">⏹️ Stop</button>
+    </div>
+</div>
+
+<style>
+    .qr-scanner { position: relative; max-width: 400px; margin: 0 auto; }
+    .scanner-video { width: 100%; border-radius: 12px; }
+    .scanner-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+    .scanner-frame { width: 200px; height: 200px; border: 3px solid #10b981; border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.3); }
+    .scanner-result { margin-top: 12px; padding: 10px; background: #f0fdf4; border-radius: 8px; font-size: 14px; text-align: center; display: none; }
+    .scanner-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: center; }
+    .btn { padding: 8px 16px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; font-size: 13px; font-family: inherit; }
+    .btn:hover { background: #f9fafb; }
+</style>
+
+<script>
+    let stream_<%= id || 'qrScanner' %> = null;
+    async function startScanner(id) {
+        try {
+            stream_<%= id || 'qrScanner' %> = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            document.getElementById(id + 'Video').srcObject = stream_<%= id || 'qrScanner' %>;
+        } catch (err) {
+            alert('Tidak dapat mengakses kamera: ' + err.message);
+        }
+    }
+    function stopScanner(id) {
+        if (stream_<%= id || 'qrScanner' %>) {
+            stream_<%= id || 'qrScanner' %>.getTracks().forEach(track => track.stop());
+            document.getElementById(id + 'Video').srcObject = null;
+        }
+    }
+</script>
