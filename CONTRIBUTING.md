@@ -1,29 +1,47 @@
-# Contributing to Arsip Surat Digital Enterprise
+# 🤝 Panduan Berkontribusi
 
-Pertama-tama, terima kasih telah meluangkan waktu untuk berkontribusi! 🎉
+Terima kasih atas minat Anda untuk berkontribusi pada **Arsip Surat Digital Enterprise**!
 
-## Code of Conduct
+## 📋 Daftar Isi
 
-Proyek ini mengadopsi [Code of Conduct](CODE_OF_CONDUCT.md). Dengan berpartisipasi, Anda diharapkan untuk mematuhi kode etik ini.
+- [Cara Berkontribusi](#cara-berkontribusi)
+- [Setup Development](#setup-development)
+- [Standar Kode](#standar-kode)
+- [Pull Request Process](#pull-request-process)
+- [Testing](#testing)
+- [Dokumentasi](#dokumentasi)
 
-## Bagaimana Cara Berkontribusi?
+## Cara Berkontribusi
 
-### 🐛 Melaporkan Bug
+### 1. 🐛 Melaporkan Bug
 
-1. **Gunakan template issue** - Gunakan template bug report yang sudah disediakan
-2. **Deskripsikan dengan jelas** - Jelaskan steps to reproduce, expected behavior, dan actual behavior
-3. **Sertakan screenshot** - Jika memungkinkan, lampirkan screenshot error
-4. **Environment detail** - Sebutkan OS, browser, Node.js version yang digunakan
+Buat issue dengan template bug report dan sertakan:
+- Versi aplikasi
+- Langkah reproduksi
+- Perilaku yang diharapkan
+- Screenshot (jika ada)
+- Environment (OS, Browser, Node version)
 
-### 💡 Mengusulkan Fitur Baru
+### 2. 💡 Mengusulkan Fitur
 
-1. **Cek existing issues** - Pastikan fitur belum diusulkan sebelumnya
-2. **Gunakan template feature request** - Jelaskan use case dan manfaat fitur
-3. **Diskusikan** - Buka diskusi di issue sebelum mulai coding
+Buat issue dengan template feature request:
+- Deskripsi fitur
+- Use case
+- Mockup/wireframe (opsional)
+- Dampak pada fitur existing
 
-### 🔧 Pull Requests
+### 3. 🔧 Mengirim Pull Request
 
-1. **Fork repository**
-2. **Buat branch baru**
-   ```bash
-   git checkout -b feature/nama-fitur
+## Setup Development
+
+### Prerequisites
+
+```bash
+# Required
+Node.js >= 16.0.0
+npm >= 8.0.0
+Git
+
+# Optional
+Docker & Docker Compose
+SQLite Browser
