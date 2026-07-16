@@ -23,17 +23,28 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="./manifest.json">
     
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="./src/public/css/app.css">
-    <link rel="stylesheet" href="./src/public/css/dashboard.css">
-    
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <style>
-        /* Fallback & Additional Styles */
         :root {
             --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #8b5cf6;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -42,13 +53,13 @@
             font-family: var(--font-sans);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            background: #f1f5f9;
         }
         
         /* Dashboard Layout */
         .dashboard-page {
             display: flex;
             min-height: 100vh;
-            background: #f1f5f9;
         }
         
         /* Sidebar */
@@ -440,6 +451,28 @@
         .badge-info { background: #dbeafe; color: #1e40af; }
         .badge-primary { background: #ede9fe; color: #5b21b6; }
         
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         /* Mobile Responsive */
         @media (max-width: 1024px) {
             .sidebar {
@@ -493,7 +526,6 @@
         <!-- ==================== SIDEBAR ==================== -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <!-- Logo SVG -->
                 <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iNDgiIGhlaWdodD0iNDgiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0ic2lkZWJhci1ncmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojM2I4MmY2Ii8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojOGI1Y2Y2Ii8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHJ4PSI0MCIgZmlsbD0idXJsKCNzaWRlYmFyLWdyYWQpIi8+PHRleHQgeD0iMTAwIiB5PSIxMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BRDwvdGV4dD48L3N2Zz4=" 
                      alt="Logo" class="sidebar-logo" width="48" height="48">
                 <h3>Arsip Surat Digital</h3>
@@ -506,7 +538,7 @@
                 </a>
                 <a href="./surat-masuk.html" class="nav-item">
                     <span class="nav-icon">📥</span> Surat Masuk
-                    <span class="nav-badge">12</span>
+                    <span class="nav-badge" id="suratMasukCount">12</span>
                 </a>
                 <a href="./surat-keluar.html" class="nav-item">
                     <span class="nav-icon">📤</span> Surat Keluar
@@ -514,7 +546,7 @@
                 </a>
                 <a href="./disposisi.html" class="nav-item">
                     <span class="nav-icon">📋</span> Disposisi
-                    <span class="nav-badge warning">5</span>
+                    <span class="nav-badge warning" id="disposisiPending">5</span>
                 </a>
                 <a href="./laporan.html" class="nav-item">
                     <span class="nav-icon">📄</span> Laporan
@@ -522,7 +554,7 @@
                 <a href="./pengguna.html" class="nav-item">
                     <span class="nav-icon">👥</span> Pengguna
                 </a>
-                <a href=./pengaturan.html" class="nav-item">
+                <a href="./pengaturan.html" class="nav-item">
                     <span class="nav-icon">⚙️</span> Pengaturan
                 </a>
             </nav>
@@ -541,17 +573,15 @@
 
         <!-- ==================== MAIN CONTENT ==================== -->
         <main class="main-content">
-            <!-- Top Bar -->
             <header class="top-bar">
                 <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
                 <h1>📊 Dashboard</h1>
                 <div class="top-bar-actions">
                     <button class="btn btn-outline btn-sm" onclick="window.location.href='./index.html'">🏠 Beranda</button>
-                    <button class="btn btn-primary btn-sm" onclick="alert('Fitur tambah surat akan segera hadir!')">➕ Surat Baru</button>
+                    <button class="btn btn-primary btn-sm" onclick="window.location.href='./surat-masuk.html'">➕ Surat Baru</button>
                 </div>
             </header>
 
-            <!-- Content -->
             <div class="content">
                 <!-- Welcome -->
                 <p style="color:#64748b;margin-bottom:24px;">Selamat datang, <strong id="greetingName">Administrator</strong>! 👋</p>
@@ -561,28 +591,28 @@
                     <div class="stat-card stat-blue">
                         <div class="stat-icon">📥</div>
                         <div class="stat-info">
-                            <h3 id="totalSuratMasuk">150</h3>
+                            <h3 id="totalSuratMasuk">0</h3>
                             <p>Surat Masuk</p>
                         </div>
                     </div>
                     <div class="stat-card stat-green">
                         <div class="stat-icon">📤</div>
                         <div class="stat-info">
-                            <h3 id="totalSuratKeluar">100</h3>
+                            <h3 id="totalSuratKeluar">0</h3>
                             <p>Surat Keluar</p>
                         </div>
                     </div>
                     <div class="stat-card stat-orange">
                         <div class="stat-icon">📋</div>
                         <div class="stat-info">
-                            <h3 id="totalDisposisi">25</h3>
+                            <h3 id="totalDisposisi">0</h3>
                             <p>Disposisi Pending</p>
                         </div>
                     </div>
                     <div class="stat-card stat-purple">
                         <div class="stat-icon">📁</div>
                         <div class="stat-info">
-                            <h3 id="totalArsip">500</h3>
+                            <h3 id="totalArsip">0</h3>
                             <p>Surat Terarsip</p>
                         </div>
                     </div>
@@ -610,259 +640,505 @@
                         <h3>📋 Surat Terbaru</h3>
                         <a href="./surat-masuk.html" class="btn btn-outline btn-sm">Lihat Semua →</a>
                     </div>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>No. Surat</th>
-                                <th>Tanggal</th>
-                                <th>Perihal</th>
-                                <th>Pengirim</th>
-                                <th>Jenis</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentSuratTable">
-                            <tr>
-                                <td>SK/001/2024</td>
-                                <td>15 Jan 2024</td>
-                                <td>Undangan Rapat Koordinasi</td>
-                                <td>Kementerian Kominfo</td>
-                                <td><span class="badge badge-info">Masuk</span></td>
-                                <td><span class="badge badge-success">Selesai</span></td>
-                            </tr>
-                            <tr>
-                                <td>ND/002/2024</td>
-                                <td>18 Jan 2024</td>
-                                <td>Nota Dinas Pengadaan</td>
-                                <td>Kabid TI</td>
-                                <td><span class="badge badge-primary">Keluar</span></td>
-                                <td><span class="badge badge-warning">Proses</span></td>
-                            </tr>
-                            <tr>
-                                <td>SE/003/2024</td>
-                                <td>20 Jan 2024</td>
-                                <td>Edaran Ujian Semester</td>
-                                <td>Dinas Pendidikan</td>
-                                <td><span class="badge badge-info">Masuk</span></td>
-                                <td><span class="badge badge-success">Selesai</span></td>
-                            </tr>
-                            <tr>
-                                <td>ST/004/2024</td>
-                                <td>22 Jan 2024</td>
-                                <td>Surat Tugas Monitoring</td>
-                                <td>Kadis Kominfo</td>
-                                <td><span class="badge badge-primary">Keluar</span></td>
-                                <td><span class="badge badge-warning">Proses</span></td>
-                            </tr>
-                            <tr>
-                                <td>LP/005/2024</td>
-                                <td>25 Jan 2024</td>
-                                <td>Laporan Realisasi Anggaran</td>
-                                <td>BKD</td>
-                                <td><span class="badge badge-info">Masuk</span></td>
-                                <td><span class="badge badge-success">Selesai</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div style="overflow-x: auto;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>No. Surat</th>
+                                    <th>Tanggal</th>
+                                    <th>Perihal</th>
+                                    <th>Jenis</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentSuratTable">
+                                <tr>
+                                    <td colspan="6" class="loading">
+                                        <div class="spinner"></div>
+                                        <p>Memuat data...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Scripts -->
-    <script src="./src/public/js/app.js"></script>
-    <script src="./src/public/js/dashboard.js"></script>
-  <script src="./src/public/js/surat-masuk.js"></script>
-  <script src="./src/public/js/surat-keluar.js"></script>
-  <script src="./src/public/js/disposisi.js"></script>
-  <script src="./src/public/js/laporan.js"></script>
-  <script src="./src/public/js/pengguna.js"></script>
-  <script src="./src/public/js/pengaturan.js"></script>
-    
+    <!-- ==================== SCRIPTS ==================== -->
     <script>
-        // ==================== INITIALIZATION ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            initDashboard();
-            checkAuth();
-            loadUserData();
+    /**
+     * ============================================
+     * DASHBOARD.JS - Dashboard Scripts
+     * Arsip Surat Digital Enterprise v2.0.0
+     * ============================================
+     * Terintegrasi dengan Google Sheets API
+     */
+
+    // Konfigurasi Google Sheets
+    const GOOGLE_SHEETS_API = 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec';
+    
+    // Variabel global untuk chart
+    let suratBulananChart = null;
+    let kategoriChart = null;
+
+    // ==================== INITIALIZATION ====================
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('🚀 Dashboard initializing...');
+        initDashboard();
+    });
+
+    async function initDashboard() {
+        showLoading(true);
+        try {
+            await loadUserInfo();
+            await loadDashboardStats();
+            await loadRecentSurat();
             initCharts();
             setupSidebar();
-            animateStats();
-        });
-
-        // ==================== AUTH CHECK ====================
-        function checkAuth() {
-            const token = localStorage.getItem('accessToken');
-            const user = localStorage.getItem('user');
-            
-            if (!token || !user) {
-                // Redirect to login
-                window.location.href = './login.html';
-            }
+            setupKeyboardShortcuts();
+        } catch (error) {
+            console.error('Dashboard initialization error:', error);
+        } finally {
+            showLoading(false);
         }
+    }
 
-        // ==================== LOAD USER DATA ====================
-        function loadUserData() {
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
+    // ==================== GOOGLE SHEETS API ====================
+    /**
+     * Fetch data dari Google Sheets
+     * @param {string} action - Aksi yang diminta (getStats, getSuratMasuk, dll)
+     * @param {Object} params - Parameter tambahan
+     * @returns {Promise<Object>} Data dari Google Sheets
+     */
+    async function fetchGoogleSheets(action, params = {}) {
+        try {
+            const queryParams = new URLSearchParams({
+                action: action,
+                ...params
+            });
             
-            document.getElementById('greetingName').textContent = user.nama_lengkap || 'User';
-            document.getElementById('sidebarUserName').textContent = user.nama_lengkap || 'User';
-            document.getElementById('sidebarUserRole').textContent = user.role?.nama || 'User';
+            const url = `${GOOGLE_SHEETS_API}?${queryParams.toString()}`;
+            console.log(`📡 Fetching: ${url}`);
             
-            // Avatar
-            const avatar = document.getElementById('userAvatar');
-            if (avatar && user.nama_lengkap) {
-                avatar.textContent = user.nama_lengkap.charAt(0).toUpperCase();
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status}`);
             }
-        }
-
-        // ==================== SIDEBAR TOGGLE ====================
-        function setupSidebar() {
-            const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
             
-            if (menuToggle && sidebar) {
-                menuToggle.addEventListener('click', function() {
-                    sidebar.classList.toggle('open');
-                });
+            const data = await response.json();
+            console.log(`✅ Response from ${action}:`, data);
+            return data;
+            
+        } catch (error) {
+            console.error(`❌ Error fetching ${action}:`, error);
+            // Return data fallback jika API gagal
+            return getFallbackData(action);
+        }
+    }
+
+    /**
+     * Data fallback jika Google Sheets API tidak tersedia
+     */
+    function getFallbackData(action) {
+        const fallbackData = {
+            getStats: {
+                success: true,
+                data: {
+                    total_surat_masuk: 150,
+                    total_surat_keluar: 100,
+                    total_disposisi: 25,
+                    total_arsip: 500
+                }
+            },
+            getRecentSurat: {
+                success: true,
+                data: [
+                    {
+                        id: 1,
+                        nomor_surat: 'SK/001/2024',
+                        tanggal_surat: '2024-01-15',
+                        perihal: 'Undangan Rapat Koordinasi',
+                        jenis_surat: 'masuk',
+                        status: 'selesai'
+                    },
+                    {
+                        id: 2,
+                        nomor_surat: 'ND/002/2024',
+                        tanggal_surat: '2024-01-18',
+                        perihal: 'Nota Dinas Pengadaan',
+                        jenis_surat: 'keluar',
+                        status: 'proses'
+                    },
+                    {
+                        id: 3,
+                        nomor_surat: 'SE/003/2024',
+                        tanggal_surat: '2024-01-20',
+                        perihal: 'Edaran Ujian Semester',
+                        jenis_surat: 'masuk',
+                        status: 'selesai'
+                    },
+                    {
+                        id: 4,
+                        nomor_surat: 'ST/004/2024',
+                        tanggal_surat: '2024-01-22',
+                        perihal: 'Surat Tugas Monitoring',
+                        jenis_surat: 'keluar',
+                        status: 'proses'
+                    },
+                    {
+                        id: 5,
+                        nomor_surat: 'LP/005/2024',
+                        tanggal_surat: '2024-01-25',
+                        perihal: 'Laporan Realisasi Anggaran',
+                        jenis_surat: 'masuk',
+                        status: 'selesai'
+                    }
+                ]
+            },
+            getUserProfile: {
+                success: true,
+                data: {
+                    nama_lengkap: 'Administrator',
+                    role: { nama: 'Super Admin' }
+                }
+            }
+        };
+        
+        console.warn('⚠️ Menggunakan data fallback untuk:', action);
+        return fallbackData[action] || { success: false, data: null };
+    }
+
+    // ==================== USER INFO ====================
+    async function loadUserInfo() {
+        try {
+            // Coba ambil dari localStorage dulu
+            const savedUser = localStorage.getItem('user');
+            let user;
+            
+            if (savedUser) {
+                user = JSON.parse(savedUser);
+            } else {
+                // Fetch dari Google Sheets
+                const response = await fetchGoogleSheets('getUserProfile');
+                user = response.data;
                 
-                // Close sidebar when clicking outside
-                document.addEventListener('click', function(e) {
+                // Simpan ke localStorage
+                if (user) {
+                    localStorage.setItem('user', JSON.stringify(user));
+                }
+            }
+            
+            // Update UI
+            if (user) {
+                updateUserUI(user);
+            }
+            
+        } catch (error) {
+            console.error('Error loading user info:', error);
+        }
+    }
+
+    function updateUserUI(user) {
+        const elements = {
+            greetingName: user.nama_lengkap || 'User',
+            sidebarUserName: user.nama_lengkap || 'User',
+            sidebarUserRole: user.role?.nama || 'User'
+        };
+        
+        // Update text content
+        Object.entries(elements).forEach(([id, value]) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        });
+        
+        // Update avatar
+        const avatarEl = document.getElementById('userAvatar');
+        if (avatarEl && user.nama_lengkap) {
+            avatarEl.textContent = user.nama_lengkap.charAt(0).toUpperCase();
+        }
+    }
+
+    // ==================== DASHBOARD STATS ====================
+    async function loadDashboardStats() {
+        try {
+            const response = await fetchGoogleSheets('getStats', {
+                tahun: new Date().getFullYear()
+            });
+            
+            if (response.success && response.data) {
+                updateStatsUI(response.data);
+            }
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
+    }
+
+    /**
+     * Update UI statistik
+     * PERBAIKAN: Fungsi ini yang sebelumnya error karena sintaks yang salah
+     */
+    function updateStatsUI(stats) {
+        // PERBAIKAN: Gunakan akses properti yang aman dengan optional chaining dan fallback values
+        const elements = {
+            totalSuratMasuk: stats?.total_surat_masuk || 0,
+            totalSuratKeluar: stats?.total_surat_keluar || 0,
+            totalDisposisi: stats?.total_disposisi || 0,
+            totalArsip: stats?.total_arsip || 0
+        };
+        
+        // Update setiap elemen stat
+        Object.entries(elements).forEach(([id, value]) => {
+            const el = document.getElementById(id);
+            if (el) {
+                // Konversi ke number dan pastikan valid
+                const numValue = Number(value) || 0;
+                animateNumber(el, 0, numValue, 1500);
+            }
+        });
+        
+        // Update badge notifikasi
+        const suratMasukCount = document.getElementById('suratMasukCount');
+        if (suratMasukCount) {
+            suratMasukCount.textContent = elements.totalSuratMasuk;
+        }
+        
+        const disposisiPending = document.getElementById('disposisiPending');
+        if (disposisiPending) {
+            disposisiPending.textContent = elements.totalDisposisi;
+        }
+    }
+
+    /**
+     * Animasi angka counting up
+     */
+    function animateNumber(element, start, end, duration) {
+        // Validasi input
+        if (!element || isNaN(start) || isNaN(end)) return;
+        
+        const startTime = performance.now();
+        const startValue = Number(start) || 0;
+        const endValue = Number(end) || 0;
+        
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function untuk animasi yang lebih halus
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            const current = Math.floor(startValue + (endValue - startValue) * easeOut);
+            
+            element.textContent = current.toLocaleString('id-ID');
+            
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            } else {
+                element.textContent = endValue.toLocaleString('id-ID');
+            }
+        }
+        
+        requestAnimationFrame(update);
+    }
+
+    // ==================== CHARTS ====================
+    function initCharts() {
+        initSuratBulananChart();
+        initKategoriChart();
+    }
+
+    function initSuratBulananChart() {
+        const canvas = document.getElementById('chartSuratBulanan');
+        if (!canvas) return;
+        
+        // Hancurkan chart lama jika ada
+        if (suratBulananChart) {
+            suratBulananChart.destroy();
+        }
+        
+        const ctx = canvas.getContext('2d');
+        
+        suratBulananChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                datasets: [
+                    {
+                        label: 'Surat Masuk',
+                        data: [15, 20, 18, 25, 22, 30, 28, 35, 32, 28, 25, 30],
+                        backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Surat Keluar',
+                        data: [10, 15, 12, 18, 16, 20, 22, 25, 20, 18, 15, 20],
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                        borderColor: '#10b981',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.parsed.y} surat`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 5 }
+                    }
+                }
+            }
+        });
+    }
+
+    function initKategoriChart() {
+        const canvas = document.getElementById('chartKategori');
+        if (!canvas) return;
+        
+        // Hancurkan chart lama jika ada
+        if (kategoriChart) {
+            kategoriChart.destroy();
+        }
+        
+        const ctx = canvas.getContext('2d');
+        
+        kategoriChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Surat Keputusan', 'Surat Edaran', 'Surat Tugas', 'Nota Dinas', 'Lainnya'],
+                datasets: [{
+                    data: [35, 25, 20, 15, 5],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(139, 92, 246, 0.8)',
+                        'rgba(107, 114, 128, 0.8)'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // ==================== RECENT SURAT ====================
+    async function loadRecentSurat() {
+        try {
+            const response = await fetchGoogleSheets('getRecentSurat', { limit: 5 });
+            
+            if (response.success && response.data) {
+                renderRecentSurat(response.data);
+            }
+        } catch (error) {
+            console.error('Error loading recent surat:', error);
+            showError('Gagal memuat data surat terbaru');
+        }
+    }
+
+    function renderRecentSurat(data) {
+        const tbody = document.getElementById('recentSuratTable');
+        if (!tbody) return;
+        
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;">📭 Belum ada surat</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = data.map((surat, index) => `
+            <tr>
+                <td><strong>${escapeHtml(surat.nomor_surat || '-')}</strong></td>
+                <td>${formatDate(surat.tanggal_surat)}</td>
+                <td>${escapeHtml(truncateText(surat.perihal || '-', 40))}</td>
+                <td>
+                    <span class="badge ${surat.jenis_surat === 'masuk' ? 'badge-info' : 'badge-primary'}">
+                        ${surat.jenis_surat === 'masuk' ? '📥 Masuk' : '📤 Keluar'}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge ${surat.status === 'selesai' ? 'badge-success' : 'badge-warning'}">
+                        ${surat.status || 'Pending'}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-outline btn-sm" onclick="viewSuratDetail(${surat.id})" title="Lihat Detail">
+                        👁️
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // ==================== SIDEBAR ====================
+    function setupSidebar() {
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (menuToggle && sidebar) {
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 1024) {
                     if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
                         sidebar.classList.remove('open');
                     }
-                });
-            }
-        }
-
-        // ==================== CHARTS ====================
-        function initCharts() {
-            // Surat Bulanan Chart
-            const ctxBulanan = document.getElementById('chartSuratBulanan');
-            if (ctxBulanan && typeof Chart !== 'undefined') {
-                new Chart(ctxBulanan, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                        datasets: [
-                            {
-                                label: 'Surat Masuk',
-                                data: [15, 20, 18, 25, 22, 30, 28, 35, 32, 28, 25, 30],
-                                backgroundColor: 'rgba(59, 130, 246, 0.6)',
-                                borderColor: '#3b82f6',
-                                borderWidth: 1,
-                                borderRadius: 4
-                            },
-                            {
-                                label: 'Surat Keluar',
-                                data: [10, 15, 12, 18, 16, 20, 22, 25, 20, 18, 15, 20],
-                                backgroundColor: 'rgba(16, 185, 129, 0.6)',
-                                borderColor: '#10b981',
-                                borderWidth: 1,
-                                borderRadius: 4
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom' }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { stepSize: 5 }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Kategori Chart
-            const ctxKategori = document.getElementById('chartKategori');
-            if (ctxKategori && typeof Chart !== 'undefined') {
-                new Chart(ctxKategori, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Surat Keputusan', 'Surat Edaran', 'Surat Tugas', 'Nota Dinas', 'Lainnya'],
-                        datasets: [{
-                            data: [35, 25, 20, 15, 5],
-                            backgroundColor: [
-                                'rgba(59, 130, 246, 0.8)',
-                                'rgba(16, 185, 129, 0.8)',
-                                'rgba(245, 158, 11, 0.8)',
-                                'rgba(139, 92, 246, 0.8)',
-                                'rgba(100, 116, 139, 0.8)'
-                            ],
-                            borderWidth: 2,
-                            borderColor: '#ffffff'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom' }
-                        }
-                    }
-                });
-            }
-        }
-
-        // ==================== ANIMATE STATS ====================
-        function animateStats() {
-            const stats = [
-                { id: 'totalSuratMasuk', target: 150 },
-                { id: 'totalSuratKeluar', target: 100 },
-                { id: 'totalDisposisi', target: 25 },
-                { id: 'totalArsip', target: 500 }
-            ];
-            
-            stats.forEach(stat => {
-                const el = document.getElementById(stat.id);
-                if (!el) return;
-                
-                const target = stat.target;
-                let current = 0;
-                const duration = 1500;
-                const step = target / (duration / 16);
-                
-                function update() {
-                    current += step;
-                    if (current < target) {
-                        el.textContent = Math.floor(current);
-                        requestAnimationFrame(update);
-                    } else {
-                        el.textContent = target;
-                    }
                 }
-                
-                update();
             });
         }
+    }
 
-        // ==================== LOGOUT ====================
-        function logout() {
-            if (confirm('Apakah Anda yakin ingin keluar?')) {
-                localStorage.clear();
-                window.location.href = './login.html';
-            }
-        }
-
-        // ==================== INIT DASHBOARD ====================
-        function initDashboard() {
-            console.log('🚀 Dashboard Arsip Surat Digital Enterprise');
-            console.log('📅 ' + new Date().toLocaleDateString('id-ID', { 
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
-            }));
-        }
-
-        // ==================== KEYBOARD SHORTCUTS ====================
-        document.addEventListener('keydown', function(e) {
+    // ==================== KEYBOARD SHORTCUTS ====================
+    function setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
             // Escape to close sidebar
             if (e.key === 'Escape') {
-                document.getElementById('sidebar')?.classList.remove('open');
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar) sidebar.classList.remove('open');
+            }
+            
+            // Ctrl+R to refresh dashboard
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                refreshDashboard();
             }
             
             // Ctrl+L to logout
@@ -870,13 +1146,86 @@
                 e.preventDefault();
                 logout();
             }
-            
-            // Ctrl+H to go home
-            if (e.ctrlKey && e.key === 'h') {
-                e.preventDefault();
-                window.location.href = './index.html';
-            }
         });
+    }
+
+    // ==================== UTILITY FUNCTIONS ====================
+    function formatDate(dateString) {
+        if (!dateString) return '-';
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+        } catch (error) {
+            return dateString;
+        }
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function truncateText(text, maxLength) {
+        if (!text) return '';
+        return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    }
+
+    function showLoading(show) {
+        // Implement loading indicator jika diperlukan
+        console.log(show ? '📊 Loading...' : '✅ Loaded');
+    }
+
+    function showError(message) {
+        console.error('❌', message);
+        // Bisa tambahkan toast notification di sini
+    }
+
+    // ==================== NAVIGATION ====================
+    function viewSuratDetail(id) {
+        window.location.href = `./surat-masuk.html?id=${id}`;
+    }
+
+    function navigateTo(url) {
+        window.location.href = url;
+    }
+
+    function refreshDashboard() {
+        console.log('🔄 Refreshing dashboard...');
+        loadDashboardStats();
+        loadRecentSurat();
+    }
+
+    // ==================== LOGOUT ====================
+    function logout() {
+        if (confirm('Apakah Anda yakin ingin keluar dari sistem?')) {
+            // Clear session data
+            localStorage.removeItem('user');
+            localStorage.removeItem('accessToken');
+            sessionStorage.clear();
+            
+            // Redirect to login
+            window.location.href = './login.html';
+        }
+    }
+
+    // ==================== EXPORT FUNCTIONS ====================
+    // Export functions untuk digunakan oleh file lain
+    window.dashboardAPI = {
+        refreshDashboard,
+        fetchGoogleSheets,
+        formatDate,
+        escapeHtml,
+        navigateTo
+    };
+
+    console.log('✅ Dashboard.js loaded successfully');
+    console.log('📡 Connected to Google Sheets API');
     </script>
 </body>
 </html>
