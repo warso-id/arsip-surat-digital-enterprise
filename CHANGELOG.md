@@ -1,57 +1,92 @@
-# Changelog
+# 📝 Changelog
 
-All notable changes to this project will be documented in this file.
+Semua perubahan penting pada proyek ini akan dicatat di file ini.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Format berdasarkan [Keep a Changelog](https://keepachangelog.com/),
+dan proyek ini mengikuti [Semantic Versioning](https://semver.org/).
 
-## [2.0.0] - 2024-01-15
+## [2.1.0] - 2024-01-15
 
-### Added
-- 🎨 Complete UI/UX redesign with modern theme
-- 📱 Full PWA support with offline capabilities
-- 🔒 JWT Authentication with refresh tokens
-- 🎯 Role-based access control (RBAC)
-- 📊 Interactive dashboard with charts
-- 🔍 Advanced search with multiple filters
-- 📧 Email notifications system
-- 💾 Automatic backup system
-- 🐳 Full Docker support for development & production
-- 📚 Comprehensive API documentation
-- ✅ Unit testing & integration testing
-- 🔄 Queue system for background jobs
-- 📄 PDF report generation
-- 📊 Excel export functionality
-- 🏷️ QR Code generation for documents
-- 📝 Audit trail & activity logging
+### ✨ Ditambahkan
+- Fitur QR Code untuk verifikasi surat
+- Real-time notification system
+- Advanced search dengan multiple filters
+- Backup otomatis database
+- Tracking disposisi dengan timeline visual
+- Bulk update status surat
+- Export data ke CSV/Excel
+- Preview file sebelum download
+- Dark mode support
+- Keyboard shortcuts
 
-### Changed
-- 🔄 Restructured project architecture to MVC pattern
-- ⚡ Improved database queries performance
-- 🎨 Updated UI components for better UX
-- 📦 Reorganized file structure
+### 🔧 Diperbaiki
+- Bug pada pagination surat masuk
+- Memory leak pada file upload
+- Performance improvement untuk large datasets
+- Fix XSS vulnerability pada input form
+- Perbaikan validasi tanggal surat
 
-### Fixed
-- 🐛 File upload validation issues
-- 🐛 Date formatting inconsistencies
-- 🐛 Search functionality bugs
+### 🔄 Diubah
+- UI/UX improvement pada dashboard
+- Optimasi query database
+- Update dependencies ke versi terbaru
+- Restruktur folder views
 
-### Security
-- 🔐 Enhanced password hashing
-- 🛡️ Added rate limiting
-- 🔒 Implemented CORS properly
-- 🚫 Added SQL injection prevention
-- ✅ Input validation & sanitization
+## [2.0.0] - 2024-01-01
+
+### ✨ Ditambahkan
+- **BREAKING**: Multi-instansi support
+- Role-Based Access Control (RBAC)
+- Progressive Web App (PWA) support
+- RESTful API lengkap
+- Dashboard dengan statistik real-time
+- Export laporan ke PDF & Excel
+- Sistem notifikasi (email & in-app)
+- File upload dengan drag & drop
+- Audit trail (activity logging)
+- Docker support
+- CI/CD pipeline dengan GitHub Actions
+
+### 🔧 Diperbaiki
+- Security improvements (Helmet, Rate Limiting)
+- Input validation yang lebih ketat
+- Error handling yang lebih baik
+
+### 🗑️ Dihapus
+- Legacy authentication method
+- Deprecated API endpoints (v0)
 
 ## [1.0.0] - 2023-06-01
 
-### Added
-- 🚀 Initial release
-- 📨 CRUD operations for incoming & outgoing letters
-- 📋 Basic disposition management
-- 👥 User management
-- 📄 Basic report generation
-- 🔐 Simple authentication system
+### ✨ Ditambahkan
+- Initial release
+- Basic CRUD surat masuk & keluar
+- Simple disposisi system
+- User authentication
+- Basic dashboard
+- SQLite database support
 
+---
+
+## Template untuk Update
+
+```markdown
+## [Unreleased]
+
+### ✨ Ditambahkan
+- 
+
+### 🔧 Diperbaiki
+- 
+
+### 🔄 Diubah
+- 
+
+### 🗑️ Dihapus
+- 
+
+### ⚠️ Breaking Changes
+- 
+[2.1.0]: https://github.com/warso-id/arsip-surat-digital-enterprise/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/warso-id/arsip-surat-digital-enterprise/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/warso-id/arsip-surat-digital-enterprise/releases/tag/v1.0.0
