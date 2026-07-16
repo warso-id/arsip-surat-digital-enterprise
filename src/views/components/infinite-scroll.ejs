@@ -1,0 +1,60 @@
+<!-- Infinite Scroll Component -->
+<div class="infinite-scroll-container" id="<%= id || 'infiniteScroll' %>">
+    <div class="scroll-content" id="<%= id || 'infiniteScroll' %>Content">
+        <%- initialContent || '' %>
+    </div>
+    <div class="scroll-loader" id="<%= id || 'infiniteScroll' %>Loader" style="display: none;">
+        <div class="spinner"></div>
+        <p>Memuat data...</p>
+    </div>
+    <div class="scroll-end" id="<%= id || 'infiniteScroll' %>End" style="display: none;">
+        <p>✅ Semua data telah dimuat</p>
+    </div>
+</div>
+
+<style>
+    .infinite-scroll-container { position: relative; }
+    .scroll-loader, .scroll-end { text-align: center; padding: 20px; }
+    .spinner { width: 32px; height: 32px; border: 3px solid #e5e7eb; border-top-color: #1a56db; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .scroll-loader p, .scroll-end p { font-size: 13px; color: #64748b; }
+</style>
+
+<script>
+    let page_<%= id || 'infiniteScroll' %> = <%= startPage || 1 %>;
+    let loading_<%= id || 'infiniteScroll' %> = false;
+    let hasMore_<%= id || 'infiniteScroll' %> = true;
+
+    function loadMore_<%= id || 'infiniteScroll' %>() {
+        if (loading_<%= id || 'infiniteScroll' %> || !hasMore_<%= id || 'infiniteScroll' %>) return;
+        loading_<%= id || 'infiniteScroll' %> = true;
+        document.getElementById('<%= id || "infiniteScroll" %>Loader').style.display = 'block';
+        
+        page_<%= id || 'infiniteScroll' %>++;
+        
+        fetch(`<%= apiUrl || '/api/data' %>?page=${page_<%= id || 'infiniteScroll' %>}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.data && data.data.length > 0) {
+                    document.getElementById('<%= id || "infiniteScroll" %>Content').innerHTML += data.data.map(item => 
+                        `<div class="scroll-item">${JSON.stringify(item)}</div>`
+                    ).join('');
+                } else {
+                    hasMore_<%= id || 'infiniteScroll' %> = false;
+                    document.getElementById('<%= id || "infiniteScroll" %>End').style.display = 'block';
+                }
+            })
+            .catch(() => { page_<%= id || 'infiniteScroll' %>--; })
+            .finally(() => {
+                loading_<%= id || 'infiniteScroll' %> = false;
+                document.getElementById('<%= id || "infiniteScroll" %>Loader').style.display = 'none';
+            });
+    }
+
+    window.addEventListener('scroll', () => {
+        const loader = document.getElementById('<%= id || "infiniteScroll" %>Loader');
+        if (!loader) return;
+        const rect = loader.getBoundingClientRect();
+        if (rect.top <= window.innerHeight + 200) loadMore_<%= id || 'infiniteScroll' %>();
+    });
+</script>
