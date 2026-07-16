@@ -1,0 +1,79 @@
+<!-- Tag Input Component -->
+<div class="tag-input" id="<%= id || 'tagInput' %>">
+    <div class="tag-list" id="<%= id || 'tagInput' %>List">
+        <% if (typeof tags !== 'undefined' && tags.length > 0) { %>
+            <% tags.forEach(function(tag) { %>
+                <span class="tag-item">
+                    <%= tag %>
+                    <button class="tag-remove" onclick="removeTag('<%= id || 'tagInput' %>', '<%= tag %>')">✕</button>
+                </span>
+            <% }); %>
+        <% } %>
+    </div>
+    <input type="text" class="tag-input-field" placeholder="<%= placeholder || 'Ketik dan tekan Enter...' %>" 
+           onkeydown="handleTagInput(event, '<%= id || 'tagInput' %>')">
+    <input type="hidden" name="<%= name || 'tags' %>" id="<%= id || 'tagInput' %>Hidden" 
+           value="<%= (tags || []).join(',') %>">
+</div>
+
+<style>
+    .tag-input {
+        display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 12px;
+        border: 1px solid #e5e7eb; border-radius: 8px; background: #f9fafb;
+        min-height: 42px; align-items: center;
+    }
+    .tag-input:focus-within { border-color: #1a56db; box-shadow: 0 0 0 3px rgba(26,86,219,0.1); background: white; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag-item {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 3px 10px; background: #dbeafe; color: #1e40af;
+        border-radius: 16px; font-size: 12px; font-weight: 500;
+    }
+    .tag-remove {
+        background: none; border: none; cursor: pointer; font-size: 12px;
+        color: #1e40af; padding: 0 2px; opacity: 0.6;
+    }
+    .tag-remove:hover { opacity: 1; }
+    .tag-input-field {
+        border: none; outline: none; flex: 1; min-width: 120px;
+        font-size: 13px; font-family: inherit; background: transparent;
+    }
+</style>
+
+<script>
+    function handleTagInput(event, id) {
+        if (event.key === 'Enter' || event.key === ',') {
+            event.preventDefault();
+            const value = event.target.value.trim().replace(/,/g, '');
+            if (value) addTag(id, value);
+            event.target.value = '';
+        }
+    }
+    
+    function addTag(id, tag) {
+        const list = document.getElementById(id + 'List');
+        const existing = Array.from(list.querySelectorAll('.tag-item')).map(el => el.textContent.trim().replace('✕', ''));
+        if (existing.includes(tag)) return;
+        
+        const item = document.createElement('span');
+        item.className = 'tag-item';
+        item.innerHTML = `${tag} <button class="tag-remove" onclick="removeTag('${id}', '${tag}')">✕</button>`;
+        list.appendChild(item);
+        updateHidden(id);
+    }
+    
+    function removeTag(id, tag) {
+        const list = document.getElementById(id + 'List');
+        const items = list.querySelectorAll('.tag-item');
+        items.forEach(item => {
+            if (item.textContent.trim().replace('✕', '') === tag) item.remove();
+        });
+        updateHidden(id);
+    }
+    
+    function updateHidden(id) {
+        const tags = Array.from(document.getElementById(id + 'List').querySelectorAll('.tag-item'))
+            .map(el => el.textContent.trim().replace('✕', ''));
+        document.getElementById(id + 'Hidden').value = tags.join(',');
+    }
+</script>
