@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Instansi - Arsip Surat Digital Enterprise</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <style>
+        :root {
+            --primary: #1a56db; --primary-dark: #1e40af; --secondary: #64748b;
+            --danger: #ef4444; --dark: #1f2937; --light: #f9fafb;
+            --lighter: #ffffff; --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1); --transition: all 0.3s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--light); color: var(--dark); }
+        
+        .top-nav { background: var(--lighter); border-bottom: 1px solid var(--border); padding: 15px 30px; display: flex; align-items: center; gap: 20px; }
+        .back-btn { text-decoration: none; color: var(--secondary); font-size: 20px; }
+        .page-title { font-size: 20px; font-weight: 700; }
+        
+        .form-container { max-width: 700px; margin: 30px auto; padding: 0 20px; }
+        .form-card { background: var(--lighter); border-radius: 16px; padding: 40px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .form-label .required { color: var(--danger); }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: var(--font-sans); transition: var(--transition); background: var(--light); }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,86,219,0.1); background: var(--lighter); }
+        .form-textarea { min-height: 80px; resize: vertical; }
+        
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border: 2px solid transparent; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; transition: var(--transition); font-family: var(--font-sans); }
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow); }
+        .btn-outline { background: transparent; color: var(--secondary); border-color: var(--border); }
+        .form-actions { display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px; }
+        
+        @media (max-width: 768px) { .form-card { padding: 20px; } .form-grid { grid-template-columns: 1fr; } .form-actions { flex-direction: column; } .btn { width: 100%; justify-content: center; } }
+    </style>
+</head>
+<body>
+    <div class="top-nav">
+        <a href="./index.ejs" class="back-btn">←</a>
+        <h1 class="page-title">🏢 Tambah Instansi</h1>
+    </div>
+    
+    <div class="form-container">
+        <form id="createInstansiForm" class="form-card">
+            <h2 class="section-title">📋 Informasi Instansi</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Kode Instansi <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="kode" placeholder="Contoh: INST-001" required>
+                    <span style="font-size: 12px; color: var(--secondary);">Kode unik untuk identifikasi instansi</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nama Instansi <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="nama" placeholder="Nama instansi" required>
+                </div>
+                <div class="form-group full-width">
+                    <label class="form-label">Alamat</label>
+                    <textarea class="form-textarea" id="alamat" placeholder="Alamat lengkap"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nomor Telepon</label>
+                    <input type="tel" class="form-input" id="phone" placeholder="Nomor telepon">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="email" placeholder="Email instansi">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Website</label>
+                    <input type="url" class="form-input" id="website" placeholder="https://...">
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <a href="./index.ejs" class="btn btn-outline">Batal</a>
+                <button type="submit" class="btn btn-primary">💾 Simpan Instansi</button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        document.getElementById('createInstansiForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const data = {
+                kode: document.getElementById('kode').value,
+                nama: document.getElementById('nama').value,
+                alamat: document.getElementById('alamat').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                website: document.getElementById('website').value,
+            };
+            
+            try {
+                const token = localStorage.getItem('auth_token');
+                const response = await fetch('/api/instansi', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(data),
+                });
+                
+                if (response.ok) {
+                    alert('Instansi berhasil dibuat!');
+                    window.location.href = './index.ejs';
+                } else {
+                    const result = await response.json();
+                    alert(result.message || 'Gagal membuat instansi');
+                }
+            } catch (error) {
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('auth_token')) window.location.href = '../../login';
+        });
+    </script>
+</body>
+</html>
