@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pencarian - Arsip Surat Digital Enterprise</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <style>
+        :root {
+            --primary: #1a56db; --primary-dark: #1e40af; --secondary: #64748b;
+            --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+            --dark: #1f2937; --darker: #111827; --light: #f9fafb;
+            --lighter: #ffffff; --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--light); color: var(--dark); display: flex; min-height: 100vh; }
+        
+        .sidebar { width: 260px; background: var(--darker); color: white; position: fixed; top: 0; left: 0; bottom: 0; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #374151; font-weight: 700; }
+        .sidebar-nav { padding: 20px 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #9ca3af; text-decoration: none; font-size: 14px; border-left: 3px solid transparent; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: rgba(26,86,219,0.2); color: white; border-left-color: var(--primary); }
+        
+        .main-content { flex: 1; margin-left: 260px; padding: 30px; }
+        .page-title { font-size: 24px; font-weight: 800; margin-bottom: 30px; }
+        
+        /* Search Hero */
+        .search-hero { text-align: center; padding: 40px 20px; }
+        .search-hero-icon { font-size: 64px; margin-bottom: 20px; }
+        .search-hero-title { font-size: 24px; font-weight: 800; margin-bottom: 10px; }
+        .search-hero-subtitle { color: var(--secondary); margin-bottom: 30px; }
+        
+        .search-box { max-width: 700px; margin: 0 auto; display: flex; gap: 10px; }
+        .search-input { flex: 1; padding: 14px 20px; border: 2px solid var(--border); border-radius: 12px; font-size: 16px; font-family: var(--font-sans); }
+        .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,86,219,0.1); }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: var(--font-sans); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        
+        /* Advanced Filters */
+        .advanced-filters { max-width: 700px; margin: 20px auto 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .filter-chip { padding: 6px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 13px; cursor: pointer; background: white; transition: all 0.2s; }
+        .filter-chip:hover, .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        /* Results */
+        .results-container { max-width: 900px; margin: 40px auto 0; }
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--border); }
+        .results-count { font-size: 14px; color: var(--secondary); }
+        .result-tabs { display: flex; gap: 5px; }
+        .result-tab { padding: 8px 16px; border: none; background: none; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--secondary); border-bottom: 2px solid transparent; }
+        .result-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+        
+        .result-card { background: var(--lighter); border-radius: 12px; padding: 20px 25px; border: 1px solid var(--border); margin-bottom: 15px; transition: all 0.2s; cursor: pointer; }
+        .result-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .result-type { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-bottom: 8px; }
+        .type-surat-masuk { background: #dbeafe; color: #1e40af; }
+        .type-surat-keluar { background: #d1fae5; color: #065f46; }
+        .type-disposisi { background: #fef3c7; color: #92400e; }
+        .result-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+        .result-snippet { font-size: 13px; color: var(--secondary); margin-bottom: 10px; }
+        .result-meta { display: flex; gap: 20px; font-size: 12px; color: var(--secondary); }
+        .highlight { background: #fef08a; padding: 1px 4px; border-radius: 2px; }
+        
+        .no-results { text-align: center; padding: 60px 20px; color: var(--secondary); }
+        .no-results-icon { font-size: 64px; margin-bottom: 20px; }
+        
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 20px; }
+            .search-box { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">🏢 Arsip Surat Digital</div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard/index.ejs" class="nav-item">📊 Dashboard</a>
+            <a href="../surat-masuk/index.ejs" class="nav-item">📥 Surat Masuk</a>
+            <a href="../surat-keluar/index.ejs" class="nav-item">📤 Surat Keluar</a>
+            <a href="../disposisi/index.ejs" class="nav-item">📋 Disposisi</a>
+            <a href="./index.ejs" class="nav-item active">🔍 Pencarian</a>
+            <a href="../../login" class="nav-item" style="color: #ef4444; margin-top: 20px;">🚪 Logout</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <!-- Search Hero -->
+        <div class="search-hero">
+            <div class="search-hero-icon">🔍</div>
+            <h1 class="search-hero-title">Pencarian Arsip Surat</h1>
+            <p class="search-hero-subtitle">Cari surat masuk, surat keluar, atau disposisi dengan cepat</p>
+            
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchQuery" 
+                       placeholder="Ketik kata kunci pencarian..." 
+                       value="rapat koordinasi"
+                       onkeyup="if(event.key==='Enter') performSearch()">
+                <button class="btn btn-primary" onclick="performSearch()">🔍 Cari</button>
+            </div>
+            
+            <div class="advanced-filters">
+                <span style="font-size: 13px; color: var(--secondary); line-height: 2;">Filter:</span>
+                <button class="filter-chip active" onclick="toggleFilter(this, 'all')">Semua</button>
+                <button class="filter-chip" onclick="toggleFilter(this, 'surat-masuk')">Surat Masuk</button>
+                <button class="filter-chip" onclick="toggleFilter(this, 'surat-keluar')">Surat Keluar</button>
+                <button class="filter-chip" onclick="toggleFilter(this, 'disposisi')">Disposisi</button>
+                <input type="date" class="filter-chip" style="width: auto;" title="Filter tanggal">
+            </div>
+        </div>
+        
+        <!-- Results -->
+        <div class="results-container">
+            <div class="results-header">
+                <span class="results-count">Ditemukan <strong>3 hasil</strong> untuk "rapat koordinasi"</span>
+                <div class="result-tabs">
+                    <button class="result-tab active">Relevan</button>
+                    <button class="result-tab">Terbaru</button>
+                    <button class="result-tab">Terlama</button>
+                </div>
+            </div>
+            
+            <!-- Result 1 -->
+            <div class="result-card" onclick="window.location.href='../surat-masuk/show.ejs?id=1'">
+                <span class="result-type type-surat-masuk">📥 Surat Masuk</span>
+                <h3 class="result-title">SM-2024-001 - Undangan <span class="highlight">Rapat Koordinasi</span></h3>
+                <p class="result-snippet">
+                    Mengundang Kepala Bagian untuk menghadiri <span class="highlight">rapat koordinasi</span> 
+                    yang akan dilaksanakan pada tanggal 25 Januari 2024 bertempat di Ruang Rapat Utama...
+                </p>
+                <div class="result-meta">
+                    <span>📅 15 Jan 2024</span>
+                    <span>👤 Kementerian A</span>
+                    <span>📂 Penting</span>
+                    <span>Status: Proses</span>
+                </div>
+            </div>
+            
+            <!-- Result 2 -->
+            <div class="result-card" onclick="window.location.href='../disposisi/show.ejs?id=1'">
+                <span class="result-type type-disposisi">📋 Disposisi</span>
+                <h3 class="result-title">DSP-2024-001 - Disposisi <span class="highlight">Rapat Koordinasi</span></h3>
+                <p class="result-snippet">
+                    Tolong diproses dan siapkan bahan <span class="highlight">rapat koordinasi</span>. 
+                    Koordinasikan dengan bagian terkait untuk persiapan materi.
+                </p>
+                <div class="result-meta">
+                    <span>📅 15 Jan 2024, 09:00</span>
+                    <span>👤 Kabag Umum → Staff Admin</span>
+                    <span>Status: Pending</span>
+                </div>
+            </div>
+            
+            <!-- Result 3 -->
+            <div class="result-card" onclick="window.location.href='../surat-keluar/show.ejs?id=1'">
+                <span class="result-type type-surat-keluar">📤 Surat Keluar</span>
+                <h3 class="result-title">SK-2024-001 - Balasan Undangan <span class="highlight">Rapat</span></h3>
+                <p class="result-snippet">
+                    Menindaklanjuti undangan <span class="highlight">rapat koordinasi</span>, kami mengkonfirmasi 
+                    kehadiran Kepala Bagian pada acara tersebut...
+                </p>
+                <div class="result-meta">
+                    <span>📅 16 Jan 2024</span>
+                    <span>👤 Kementerian B</span>
+                    <span>Status: Terkirim</span>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        let activeFilter = 'all';
+        
+        function toggleFilter(chip, filter) {
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            activeFilter = filter;
+            performSearch();
+        }
+        
+        function performSearch() {
+            const query = document.getElementById('searchQuery').value.trim();
+            if (query) {
+                console.log('Searching:', query, 'Filter:', activeFilter);
+                // API call for search results
+            }
+        }
+        
+        document.querySelectorAll('.result-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.result-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('auth_token')) window.location.href = '../../login';
+            document.getElementById('searchQuery').focus();
+        });
+    </script>
+</body>
+</html>
