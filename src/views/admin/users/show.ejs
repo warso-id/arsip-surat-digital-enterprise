@@ -11,13 +11,13 @@
             --warning: #f59e0b; --danger: #ef4444; --dark: #1f2937;
             --darker: #111827; --light: #f9fafb; --lighter: #ffffff; --border: #e5e7eb;
             --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            --shadow: 0 4px 6px rgba(0,0,0,0.1); --radius: 10px; --radius-lg: 16px;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1); --radius-lg: 16px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: var(--font-sans); background: var(--light); color: var(--dark); display: flex; min-height: 100vh; }
         
         .sidebar { width: 260px; background: var(--darker); color: white; position: fixed; top: 0; left: 0; bottom: 0; }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid #374151; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #374151; font-weight: 700; }
         .sidebar-nav { padding: 20px 0; }
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #9ca3af; text-decoration: none; font-size: 14px; border-left: 3px solid transparent; }
         .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
@@ -27,7 +27,7 @@
         .page-header { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; }
         .back-btn { text-decoration: none; color: var(--secondary); font-size: 20px; }
         .page-title { font-size: 24px; font-weight: 800; }
-        .action-buttons { display: flex; gap: 10px; margin-left: auto; flex-wrap: wrap; }
+        .actions { display: flex; gap: 10px; margin-left: auto; flex-wrap: wrap; }
         
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border: 2px solid transparent; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.3s; font-family: var(--font-sans); }
         .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
@@ -52,14 +52,15 @@
         .info-value { font-weight: 600; }
         
         .activity-list { list-style: none; }
-        .activity-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--light); font-size: 13px; }
+        .activity-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--light); font-size: 13px; align-items: flex-start; }
         .activity-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
         .dot-login { background: var(--success); }
-        .dot-action { background: var(--primary); }
-        .dot-error { background: var(--danger); }
-        .activity-time { font-size: 11px; color: var(--secondary); }
+        .dot-create { background: var(--primary); }
+        .dot-update { background: var(--warning); }
+        .dot-delete { background: var(--danger); }
+        .activity-time { font-size: 11px; color: var(--secondary); margin-top: 3px; }
         
-        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } .profile-header { flex-direction: column; text-align: center; } .info-grid { grid-template-columns: 1fr; } .action-buttons { width: 100%; } .btn { flex: 1; justify-content: center; } }
+        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } .profile-header { flex-direction: column; text-align: center; } .info-grid { grid-template-columns: 1fr; } .actions { width: 100%; } .btn { flex: 1; justify-content: center; } }
     </style>
 </head>
 <body>
@@ -78,10 +79,10 @@
         <div class="page-header">
             <a href="./index.ejs" class="back-btn">←</a>
             <h1 class="page-title">Detail Pengguna</h1>
-            <div class="action-buttons">
-                <a href="./edit.ejs?id=1" class="btn btn-outline">✏️ Edit</a>
-                <button class="btn btn-warning">🔑 Reset Password</button>
-                <button class="btn btn-danger">🔒 Nonaktifkan</button>
+            <div class="actions">
+                <a href="./edit.ejs?id=3" class="btn btn-outline">✏️ Edit</a>
+                <button class="btn btn-warning" onclick="resetPassword(3)">🔑 Reset Password</button>
+                <button class="btn btn-danger" onclick="toggleStatus(3)">🔒 Nonaktifkan</button>
             </div>
         </div>
         
@@ -101,51 +102,59 @@
                 <div class="info-row"><span class="info-label">Email</span><span class="info-value">staff@instansi.id</span></div>
                 <div class="info-row"><span class="info-label">Nama Lengkap</span><span class="info-value">Staff Administrasi</span></div>
                 <div class="info-row"><span class="info-label">Jabatan</span><span class="info-value">Staff</span></div>
-                <div class="info-row"><span class="info-label">NIP</span><span class="info-value">-</span></div>
-                <div class="info-row"><span class="info-label">Phone</span><span class="info-value">-</span></div>
+                <div class="info-row"><span class="info-label">NIP</span><span class="info-value">198501012010011001</span></div>
+                <div class="info-row"><span class="info-label">Phone</span><span class="info-value">08123456789</span></div>
                 <div class="info-row"><span class="info-label">Role</span><span class="info-value">Operator</span></div>
-                <div class="info-row"><span class="info-label">Instansi</span><span class="info-value">Instansi Default</span></div>
+                <div class="info-row"><span class="info-label">Instansi</span><span class="info-value">Instansi Default (INST-001)</span></div>
             </div>
             
             <div class="info-card">
-                <h3 class="card-title">📊 Statistik</h3>
+                <h3 class="card-title">📊 Statistik Pengguna</h3>
                 <div class="info-row"><span class="info-label">Total Login</span><span class="info-value">45 kali</span></div>
                 <div class="info-row"><span class="info-label">Login Terakhir</span><span class="info-value">17 Jan 2024, 16:45</span></div>
                 <div class="info-row"><span class="info-label">Akun Dibuat</span><span class="info-value">01 Jan 2024</span></div>
                 <div class="info-row"><span class="info-label">Surat Diproses</span><span class="info-value">156 surat</span></div>
                 <div class="info-row"><span class="info-label">Disposisi Dibuat</span><span class="info-value">23 disposisi</span></div>
+                <div class="info-row"><span class="info-label">Login Gagal</span><span class="info-value">2 kali</span></div>
             </div>
         </div>
         
         <div class="info-card">
-            <h3 class="card-title">📋 Aktivitas Terbaru</h3>
+            <h3 class="card-title">📋 Aktivitas Terbaru (10)</h3>
             <ul class="activity-list">
                 <li class="activity-item">
                     <div class="activity-dot dot-login"></div>
                     <div>
-                        <strong>Login</strong> - Berhasil login ke sistem
-                        <div class="activity-time">17 Jan 2024, 16:45</div>
+                        <strong>LOGIN_SUCCESS</strong> - Berhasil login ke sistem
+                        <div class="activity-time">17 Jan 2024, 16:45 | IP: 192.168.1.100</div>
                     </div>
                 </li>
                 <li class="activity-item">
-                    <div class="activity-dot dot-action"></div>
+                    <div class="activity-dot dot-update"></div>
                     <div>
-                        <strong>Update Surat Masuk</strong> - SM-2024-005
-                        <div class="activity-time">17 Jan 2024, 15:30</div>
+                        <strong>UPDATE_SURAT_MASUK</strong> - Update surat masuk: SM-2024-005
+                        <div class="activity-time">17 Jan 2024, 15:30 | IP: 192.168.1.100</div>
                     </div>
                 </li>
                 <li class="activity-item">
-                    <div class="activity-dot dot-action"></div>
+                    <div class="activity-dot dot-create"></div>
                     <div>
-                        <strong>Create Disposisi</strong> - DSP-2024-008
-                        <div class="activity-time">17 Jan 2024, 14:00</div>
+                        <strong>CREATE_DISPOSISI</strong> - Create disposisi for surat: SM-2024-008
+                        <div class="activity-time">17 Jan 2024, 14:00 | IP: 192.168.1.100</div>
                     </div>
                 </li>
                 <li class="activity-item">
-                    <div class="activity-dot dot-error"></div>
+                    <div class="activity-dot dot-login"></div>
                     <div>
-                        <strong>Login Failed</strong> - Password salah
-                        <div class="activity-time">17 Jan 2024, 13:45</div>
+                        <strong>LOGIN_FAILED</strong> - Password salah
+                        <div class="activity-time">17 Jan 2024, 13:45 | IP: 192.168.1.100</div>
+                    </div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-dot dot-create"></div>
+                    <div>
+                        <strong>CREATE_SURAT_MASUK</strong> - Create surat masuk: SM-2024-010
+                        <div class="activity-time">17 Jan 2024, 11:00 | IP: 192.168.1.100</div>
                     </div>
                 </li>
             </ul>
@@ -153,6 +162,19 @@
     </main>
     
     <script>
+        function resetPassword(id) {
+            if (confirm('Reset password pengguna ini ke default?')) {
+                alert('Password berhasil direset. Beritahu pengguna untuk menggunakan password baru.');
+            }
+        }
+        
+        function toggleStatus(id) {
+            if (confirm('Nonaktifkan akun pengguna ini?')) {
+                alert('Status pengguna berhasil diubah.');
+                location.reload();
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', () => {
             if (!localStorage.getItem('auth_token')) window.location.href = '../../../login';
         });
