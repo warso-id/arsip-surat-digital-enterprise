@@ -1,0 +1,95 @@
+<!-- Filter Panel Component -->
+<div class="filter-panel" id="<%= id || 'filterPanel' %>">
+    <div class="filter-header">
+        <h3>🔍 Filter</h3>
+        <button class="filter-close" onclick="toggleFilterPanel('<%= id || 'filterPanel' %>')">✕</button>
+    </div>
+    <div class="filter-body">
+        <div class="filter-group">
+            <label class="filter-label">Status</label>
+            <select class="filter-select" onchange="applyFilters()">
+                <option value="">Semua Status</option>
+                <option value="baru">Baru</option>
+                <option value="proses">Proses</option>
+                <option value="selesai">Selesai</option>
+                <option value="arsip">Arsip</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">Kategori</label>
+            <select class="filter-select" onchange="applyFilters()">
+                <option value="">Semua Kategori</option>
+                <option value="biasa">Biasa</option>
+                <option value="penting">Penting</option>
+                <option value="rahasia">Rahasia</option>
+                <option value="segera">Segera</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">Tanggal</label>
+            <input type="date" class="filter-input" onchange="applyFilters()" placeholder="Dari">
+            <input type="date" class="filter-input" onchange="applyFilters()" placeholder="Sampai" style="margin-top: 6px;">
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">Prioritas</label>
+            <div class="filter-chips">
+                <label class="filter-chip"><input type="checkbox" value="rendah"> Rendah</label>
+                <label class="filter-chip"><input type="checkbox" value="sedang" checked> Sedang</label>
+                <label class="filter-chip"><input type="checkbox" value="tinggi"> Tinggi</label>
+            </div>
+        </div>
+    </div>
+    <div class="filter-footer">
+        <button class="btn-filter-reset" onclick="resetFilters()">🔄 Reset</button>
+        <button class="btn-filter-apply" onclick="applyFilters()">✅ Terapkan</button>
+    </div>
+</div>
+
+<style>
+    .filter-panel {
+        background: white; border: 1px solid #e5e7eb; border-radius: 12px;
+        width: 300px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    .filter-header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 16px 20px; border-bottom: 1px solid #f3f4f6;
+    }
+    .filter-header h3 { font-size: 15px; font-weight: 700; }
+    .filter-close { background: none; border: none; font-size: 16px; cursor: pointer; color: #9ca3af; }
+    .filter-body { padding: 16px 20px; }
+    .filter-group { margin-bottom: 16px; }
+    .filter-label { display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
+    .filter-select, .filter-input {
+        width: 100%; padding: 8px 12px; border: 1px solid #e5e7eb;
+        border-radius: 8px; font-size: 13px; font-family: inherit;
+    }
+    .filter-select:focus, .filter-input:focus { outline: none; border-color: #1a56db; }
+    .filter-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .filter-chip { font-size: 12px; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+    .filter-chip input { accent-color: #1a56db; }
+    
+    .filter-footer {
+        display: flex; gap: 8px; padding: 12px 20px; border-top: 1px solid #f3f4f6;
+    }
+    .btn-filter-reset, .btn-filter-apply {
+        flex: 1; padding: 8px; border-radius: 8px; font-size: 13px;
+        font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .btn-filter-reset { background: #f3f4f6; border: 1px solid #e5e7eb; color: #374151; }
+    .btn-filter-reset:hover { background: #e5e7eb; }
+    .btn-filter-apply { background: #1a56db; border: none; color: white; }
+    .btn-filter-apply:hover { background: #1e40af; }
+</style>
+
+<script>
+    function toggleFilterPanel(id) {
+        const panel = document.getElementById(id);
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+    function applyFilters() { console.log('Filters applied'); }
+    function resetFilters() {
+        document.querySelectorAll('.filter-select, .filter-input').forEach(el => el.value = '');
+        document.querySelectorAll('.filter-chip input').forEach(el => el.checked = false);
+        applyFilters();
+    }
+</script>
