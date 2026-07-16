@@ -1,0 +1,116 @@
+<!-- Header Component -->
+<!-- Usage: <%- include('../components/header', { title: 'Dashboard', user: {...} }) %> -->
+
+<header class="app-header">
+    <div class="header-left">
+        <button class="header-menu-btn" onclick="toggleSidebar()" aria-label="Toggle menu">
+            <span class="menu-bar"></span>
+            <span class="menu-bar"></span>
+            <span class="menu-bar"></span>
+        </button>
+        <h1 class="header-title"><%= title || 'Dashboard' %></h1>
+    </div>
+    
+    <div class="header-right">
+        <!-- Search -->
+        <div class="header-search">
+            <input type="text" placeholder="🔍 Cari..." class="header-search-input">
+        </div>
+        
+        <!-- Notifications -->
+        <button class="header-icon-btn" title="Notifikasi" onclick="window.location.href='/notifikasi'">
+            🔔
+            <% if (unreadCount > 0) { %>
+                <span class="header-badge"><%= unreadCount %></span>
+            <% } %>
+        </button>
+        
+        <!-- User Menu -->
+        <div class="header-user">
+            <button class="header-user-btn" onclick="toggleUserMenu()">
+                <span class="user-avatar-sm"><%= (user && user.fullname) ? user.fullname.charAt(0) : 'U' %></span>
+                <span class="user-name-sm"><%= user ? user.fullname : 'User' %></span>
+                <span class="dropdown-arrow">▾</span>
+            </button>
+            <div class="user-dropdown" id="userDropdown" style="display: none;">
+                <a href="/profile" class="dropdown-item">👤 Profil</a>
+                <a href="/pengaturan" class="dropdown-item">⚙️ Pengaturan</a>
+                <hr>
+                <a href="/auth/logout" class="dropdown-item" style="color: #ef4444;">🚪 Logout</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<style>
+    .app-header {
+        background: white; height: 60px; border-bottom: 1px solid #e5e7eb;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 20px; position: sticky; top: 0; z-index: 40;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-menu-btn {
+        display: none; background: none; border: none; cursor: pointer;
+        padding: 8px; flex-direction: column; gap: 4px;
+    }
+    .menu-bar { display: block; width: 20px; height: 2px; background: #1f2937; border-radius: 1px; }
+    .header-title { font-size: 16px; font-weight: 700; }
+    
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .header-search { position: relative; }
+    .header-search-input {
+        padding: 8px 12px 8px 32px; border: 1px solid #e5e7eb;
+        border-radius: 8px; font-size: 13px; width: 200px; font-family: inherit;
+    }
+    .header-search-input:focus { outline: none; border-color: #3b82f6; }
+    
+    .header-icon-btn {
+        background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
+        padding: 8px 12px; cursor: pointer; font-size: 16px; position: relative;
+    }
+    .header-badge {
+        position: absolute; top: -4px; right: -4px;
+        background: #ef4444; color: white; font-size: 10px;
+        padding: 1px 5px; border-radius: 8px; min-width: 16px; text-align: center;
+    }
+    
+    .header-user { position: relative; }
+    .header-user-btn {
+        display: flex; align-items: center; gap: 8px;
+        background: none; border: none; cursor: pointer; padding: 4px;
+    }
+    .user-avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 13px; }
+    .user-name-sm { font-size: 13px; font-weight: 500; }
+    .dropdown-arrow { font-size: 10px; color: #9ca3af; }
+    
+    .user-dropdown {
+        position: absolute; top: 100%; right: 0; margin-top: 8px;
+        background: white; border: 1px solid #e5e7eb; border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1); min-width: 180px; z-index: 100;
+        overflow: hidden;
+    }
+    .dropdown-item {
+        display: flex; align-items: center; gap: 8px;
+        padding: 10px 16px; font-size: 13px; color: #1f2937;
+        text-decoration: none; transition: background 0.15s;
+    }
+    .dropdown-item:hover { background: #f9fafb; }
+    .user-dropdown hr { border: none; border-top: 1px solid #e5e7eb; margin: 4px 0; }
+    
+    @media (max-width: 768px) {
+        .header-menu-btn { display: flex; }
+        .header-search-input { width: 120px; }
+    }
+</style>
+
+<script>
+    function toggleUserMenu() {
+        const menu = document.getElementById('userDropdown');
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.header-user')) {
+            document.getElementById('userDropdown').style.display = 'none';
+        }
+    });
+</script>
