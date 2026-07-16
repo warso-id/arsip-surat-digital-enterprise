@@ -1,49 +1,34 @@
-# https://warso-id.github.io/arsip-surat-digital-enterprise/robots.txt
-# Arsip Surat Digital Enterprise - Robots Configuration
+# ============================================================
+# ARSIP SURAT DIGITAL ENTERPRISE v3.0.0
+# Robots.txt Configuration
+# ============================================================
 
 User-agent: *
 Allow: /
-Disallow: /src/config/
-Disallow: /src/database/
-Disallow: /storage/
-Disallow: /node_modules/
-Disallow: /tests/
-Disallow: /tools/
-Disallow: /docker/
-Disallow: /.github/
-Disallow: /*.env*
-Disallow: /*.log
-Disallow: /package-lock.json
-Disallow: /composer.lock
+Disallow: /login.html
+Disallow: /dashboard.html
+Disallow: /admin.html
+Disallow: /profile.html
+Disallow: /src/
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /404.html
+Disallow: /offline.html
 
-# Crawl delay
+# Crawl-delay
 Crawl-delay: 10
 
 # Sitemap
 Sitemap: https://warso-id.github.io/arsip-surat-digital-enterprise/sitemap.xml
 
-# Specific bots
+# Google-specific
 User-agent: Googlebot
 Allow: /
-Crawl-delay: 5
+Disallow: /login.html
+Disallow: /src/
 
-User-agent: Bingbot
+# Bing-specific
+User-agent: bingbot
 Allow: /
 Crawl-delay: 10
-
-User-agent: YandexBot
-Allow: /
-Crawl-delay: 10
-
-# Block archive.org bot from storing sensitive pages
-User-agent: ia_archiver
-Disallow: /login
-Disallow: /admin
-Disallow: /api/
-
-# Block AI training bots
-User-agent: GPTBot
-Disallow: /
-
-User-agent: CCBot
-Disallow: /
