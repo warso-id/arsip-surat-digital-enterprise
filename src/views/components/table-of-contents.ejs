@@ -1,0 +1,32 @@
+<!-- Table of Contents Component -->
+<nav class="toc">
+    <h4 class="toc-title">📑 Daftar Isi</h4>
+    <ul class="toc-list">
+        <% items.forEach(function(item) { %>
+            <li class="toc-item toc-level-<%= item.level || 1 %>">
+                <a href="#<%= item.id %>"><%= item.title %></a>
+                <% if (item.children) { %>
+                    <ul>
+                        <% item.children.forEach(function(child) { %>
+                            <li class="toc-item toc-level-<%= (item.level || 1) + 1 %>">
+                                <a href="#<%= child.id %>"><%= child.title %></a>
+                            </li>
+                        <% }); %>
+                    </ul>
+                <% } %>
+            </li>
+        <% }); %>
+    </ul>
+</nav>
+
+<style>
+    .toc { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+    .toc-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+    .toc-list { list-style: none; padding: 0; }
+    .toc-item { margin-bottom: 4px; }
+    .toc-item a { color: #374151; text-decoration: none; font-size: 14px; }
+    .toc-item a:hover { color: #1a56db; }
+    .toc-level-1 { font-weight: 600; }
+    .toc-level-2 { padding-left: 16px; font-size: 13px; }
+    .toc-level-3 { padding-left: 32px; font-size: 12px; color: #64748b; }
+</style>
