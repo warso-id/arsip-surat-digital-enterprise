@@ -1,0 +1,61 @@
+<!-- OTP Input Component -->
+<div class="otp-container" id="<%= id || 'otp' %>">
+    <div class="otp-inputs">
+        <% for (let i = 0; i < (length || 6); i++) { %>
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                   data-index="<%= i %>" oninput="otpNext(this)" onkeydown="otpPrev(event,this)"
+                   onpaste="otpPaste(event,'<%= id || 'otp' %>')">
+        <% } %>
+    </div>
+    <input type="hidden" name="<%= name || 'otp' %>" id="<%= id || 'otp' %>Value">
+    <p class="otp-hint">Masukkan kode <%= length || 6 %> digit</p>
+    <% if (showResend) { %>
+        <button class="otp-resend" onclick="resendOTP()">Kirim Ulang Kode</button>
+    <% } %>
+</div>
+
+<style>
+    .otp-container { text-align: center; }
+    .otp-inputs { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+    .otp-digit {
+        width: 48px; height: 56px; text-align: center; font-size: 24px;
+        font-weight: 700; border: 2px solid #e5e7eb; border-radius: 10px;
+        font-family: inherit; transition: all 0.2s;
+    }
+    .otp-digit:focus { outline: none; border-color: #1a56db; box-shadow: 0 0 0 3px rgba(26,86,219,0.1); }
+    .otp-digit.filled { border-color: #10b981; background: #f0fdf4; }
+    .otp-hint { font-size: 13px; color: #64748b; }
+    .otp-resend { background: none; border: none; color: #1a56db; cursor: pointer; font-size: 13px; font-weight: 500; margin-top: 8px; }
+    .otp-resend:hover { text-decoration: underline; }
+</style>
+
+<script>
+    function otpNext(input) {
+        if (input.value.length === 1) {
+            input.classList.add('filled');
+            const next = input.nextElementSibling;
+            if (next) next.focus();
+        }
+        updateOTP('<%= id || "otp" %>');
+    }
+    function otpPrev(event, input) {
+        if (event.key === 'Backspace' && input.value.length === 0) {
+            const prev = input.previousElementSibling;
+            if (prev) { prev.focus(); prev.classList.remove('filled'); }
+        }
+        updateOTP('<%= id || "otp" %>');
+    }
+    function otpPaste(event, id) {
+        event.preventDefault();
+        const paste = event.clipboardData.getData('text').replace(/\D/g, '').substring(0, <%= length || 6 %>);
+        const inputs = document.querySelectorAll('#' + id + ' .otp-digit');
+        paste.split('').forEach((char, i) => { if (inputs[i]) { inputs[i].value = char; inputs[i].classList.add('filled'); } });
+        updateOTP(id);
+    }
+    function updateOTP(id) {
+        const inputs = document.querySelectorAll('#' + id + ' .otp-digit');
+        const value = Array.from(inputs).map(i => i.value).join('');
+        document.getElementById(id + 'Value').value = value;
+    }
+    function resendOTP() { alert('Kode OTP telah dikirim ulang!'); }
+</script>
