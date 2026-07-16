@@ -1,0 +1,24 @@
+<!-- Advanced Color Picker -->
+<div class="color-picker-adv">
+    <input type="color" id="<%= id || 'color' %>Picker" value="<%= value || '#1a56db' %>" 
+           onchange="updateColorPreview(this.value)">
+    <div class="color-presets">
+        <% ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#06b6d4','#84cc16','#f97316','#6366f1'].forEach(function(c){ %>
+            <button class="color-preset" style="background:<%= c %>" onclick="selectPreset('<%= c %>')" title="<%= c %>"></button>
+        <% }); %>
+    </div>
+    <input type="hidden" name="<%= name || 'color' %>" value="<%= value || '#1a56db' %>">
+</div>
+
+<style>
+    .color-picker-adv { display:flex;align-items:center;gap:12px }
+    input[type="color"] { width:40px;height:40px;border:none;border-radius:8px;cursor:pointer }
+    .color-presets { display:flex;gap:4px;flex-wrap:wrap }
+    .color-preset { width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all 0.15s }
+    .color-preset:hover { transform:scale(1.2);border-color:#1f2937 }
+</style>
+
+<script>
+    function updateColorPreview(color) { document.getElementById('<%= id || "color" %>Picker').value = color }
+    function selectPreset(color) { updateColorPreview(color) }
+</script>
