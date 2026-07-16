@@ -1,0 +1,143 @@
+<!-- Data Table Component -->
+<!-- Usage: <%- include('../components/data-table', { id: 'suratTable', columns: [...], data: [...], emptyMessage: 'Tidak ada data' }) %> -->
+
+<div class="data-table-container" id="<%= id || 'dataTable' %>">
+    <!-- Table Toolbar -->
+    <% if (showToolbar !== false) { %>
+    <div class="table-toolbar">
+        <div class="table-info">
+            Menampilkan <strong><%= startItem || 1 %></strong> - <strong><%= endItem || data.length %></strong> 
+            dari <strong><%= totalItems || data.length %></strong> data
+        </div>
+        <% if (showExport !== false) { %>
+        <div class="table-actions">
+            <button class="btn-table-action" onclick="exportTable_<%= id %>('csv')" title="Export CSV">📊 CSV</button>
+            <button class="btn-table-action" onclick="exportTable_<%= id %>('excel')" title="Export Excel">📑 Excel</button>
+            <button class="btn-table-action" onclick="printTable_<%= id %>()" title="Cetak">🖨️ Cetak</button>
+        </div>
+        <% } %>
+    </div>
+    <% } %>
+    
+    <!-- Table -->
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <% if (showCheckbox) { %>
+                    <th style="width: 40px;">
+                        <input type="checkbox" id="<%= id %>SelectAll" onchange="toggleSelectAll_<%= id %>(this)">
+                    </th>
+                    <% } %>
+                    <% columns.forEach(function(col) { %>
+                    <th style="<%= col.width ? 'width:' + col.width : '' %> <%= col.align ? 'text-align:' + col.align : '' %>">
+                        <%= col.header %>
+                        <% if (col.sortable) { %>
+                        <button class="sort-btn" onclick="sortTable_<%= id %>('<%= col.key %>')">↕</button>
+                        <% } %>
+                    </th>
+                    <% }); %>
+                </tr>
+            </thead>
+            <tbody id="<%= id %>Body">
+                <% if (data && data.length > 0) { %>
+                    <% data.forEach(function(row, index) { %>
+                    <tr class="<%= row._class || '' %>" onclick="<%= onRowClick ? onRowClick + '(' + index + ')' : '' %>">
+                        <% if (showCheckbox) { %>
+                        <td>
+                            <input type="checkbox" class="<%= id %>Checkbox" value="<%= row.id || index %>">
+                        </td>
+                        <% } %>
+                        <% columns.forEach(function(col) { %>
+                        <td style="<%= col.align ? 'text-align:' + col.align : '' %>">
+                            <% if (col.render) { %>
+                                <%- col.render(row[col.key], row) %>
+                            <% } else { %>
+                                <%= row[col.key] || '-' %>
+                            <% } %>
+                        </td>
+                        <% }); %>
+                    </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="<%= columns.length + (showCheckbox ? 1 : 0) %>" class="table-empty">
+                            <div class="empty-state">
+                                <div class="empty-icon">📭</div>
+                                <p><%= emptyMessage || 'Tidak ada data' %></p>
+                            </div>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    <% if (showPagination !== false && totalPages > 1) { %>
+    <div class="table-pagination">
+        <button class="page-btn" <%= currentPage === 1 ? 'disabled' : '' %> onclick="goToPage_<%= id %>(<%= currentPage - 1 %>)">«</button>
+        <% for (let i = startPage; i <= endPage; i++) { %>
+        <button class="page-btn <%= i === currentPage ? 'active' : '' %>" onclick="goToPage_<%= id %>(<%= i %>)"><%= i %></button>
+        <% } %>
+        <button class="page-btn" <%= currentPage === totalPages ? 'disabled' : '' %> onclick="goToPage_<%= id %>(<%= currentPage + 1 %>)">»</button>
+    </div>
+    <% } %>
+</div>
+
+<style>
+    .data-table-container { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; }
+    .table-toolbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #f3f4f6; }
+    .table-info { font-size: 13px; color: #64748b; }
+    .table-actions { display: flex; gap: 8px; }
+    .btn-table-action { padding: 6px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+    .btn-table-action:hover { background: #f9fafb; }
+    
+    .table-wrapper { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead { background: #f9fafb; }
+    .data-table th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #e5e7eb; white-space: nowrap; }
+    .data-table td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid #f3f4f6; }
+    .data-table tbody tr:hover { background: #f8fafc; }
+    .data-table tbody tr { cursor: pointer; }
+    
+    .sort-btn { background: none; border: none; cursor: pointer; font-size: 12px; padding: 2px; }
+    
+    .table-empty { text-align: center; padding: 40px 20px; }
+    .empty-state { color: #9ca3af; }
+    .empty-icon { font-size: 48px; margin-bottom: 10px; }
+    
+    .table-pagination { display: flex; justify-content: center; gap: 5px; padding: 15px; border-top: 1px solid #f3f4f6; }
+    .page-btn { padding: 6px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; font-size: 13px; }
+    .page-btn:hover:not(:disabled) { background: #f9fafb; }
+    .page-btn.active { background: #1a56db; color: white; border-color: #1a56db; }
+    .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+
+<script>
+    function toggleSelectAll_<%= id %>(checkbox) {
+        document.querySelectorAll('.<%= id %>Checkbox').forEach(cb => cb.checked = checkbox.checked);
+    }
+    
+    function getSelectedIds_<%= id %>() {
+        return Array.from(document.querySelectorAll('.<%= id %>Checkbox:checked')).map(cb => cb.value);
+    }
+    
+    function sortTable_<%= id %>(key) {
+        console.log('Sorting by:', key);
+        // Implementation for sorting
+    }
+    
+    function goToPage_<%= id %>(page) {
+        console.log('Go to page:', page);
+        // Implementation for pagination
+    }
+    
+    function exportTable_<%= id %>(format) {
+        console.log('Exporting to:', format);
+    }
+    
+    function printTable_<%= id %>() {
+        window.print();
+    }
+</script>
