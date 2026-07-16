@@ -1,0 +1,65 @@
+<!-- Dropdown Menu Component -->
+<div class="dropdown-menu-comp" id="<%= id || 'dropdown' %>">
+    <button class="dropdown-trigger" onclick="toggleDropdown('<%= id || 'dropdown' %>')">
+        <%= triggerText || 'Menu' %> <span class="dropdown-caret">▾</span>
+    </button>
+    <div class="dropdown-content" id="<%= id || 'dropdown' %>Content" style="display: none;">
+        <% if (typeof items !== 'undefined') { %>
+            <% items.forEach(function(item) { %>
+                <% if (item.divider) { %>
+                    <div class="dropdown-divider"></div>
+                <% } else { %>
+                    <a href="<%= item.url || '#' %>" class="dropdown-item <%= item.class || '' %>"
+                       <%= item.onclick ? 'onclick="' + item.onclick + '"' : '' %>
+                       <%= item.target ? 'target="' + item.target + '"' : '' %>>
+                        <% if (item.icon) { %><span class="dropdown-item-icon"><%= item.icon %></span><% } %>
+                        <%= item.label %>
+                        <% if (item.shortcut) { %><span class="dropdown-shortcut"><%= item.shortcut %></span><% } %>
+                    </a>
+                <% } %>
+            <% }); %>
+        <% } %>
+    </div>
+</div>
+
+<style>
+    .dropdown-menu-comp { position: relative; display: inline-block; }
+    .dropdown-trigger {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 8px 14px; background: white; border: 1px solid #e5e7eb;
+        border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500;
+        font-family: inherit; transition: all 0.2s;
+    }
+    .dropdown-trigger:hover { background: #f9fafb; }
+    .dropdown-caret { font-size: 10px; margin-left: 4px; }
+    
+    .dropdown-content {
+        position: absolute; top: 100%; right: 0; margin-top: 4px;
+        background: white; border: 1px solid #e5e7eb; border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1); min-width: 180px;
+        z-index: 100; overflow: hidden; padding: 4px;
+    }
+    .dropdown-item {
+        display: flex; align-items: center; gap: 8px;
+        padding: 8px 12px; text-decoration: none; color: #374151;
+        font-size: 13px; border-radius: 6px; transition: all 0.15s;
+    }
+    .dropdown-item:hover { background: #f3f4f6; }
+    .dropdown-item.danger { color: #ef4444; }
+    .dropdown-item.danger:hover { background: #fef2f2; }
+    .dropdown-item-icon { font-size: 16px; width: 20px; text-align: center; }
+    .dropdown-shortcut { margin-left: auto; font-size: 11px; color: #9ca3af; }
+    .dropdown-divider { border-top: 1px solid #e5e7eb; margin: 4px 0; }
+</style>
+
+<script>
+    function toggleDropdown(id) {
+        const content = document.getElementById(id + 'Content');
+        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+    }
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.dropdown-menu-comp')) {
+            document.querySelectorAll('.dropdown-content').forEach(el => el.style.display = 'none');
+        }
+    });
+</script>
