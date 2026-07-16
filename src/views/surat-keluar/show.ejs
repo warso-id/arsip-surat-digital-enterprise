@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Surat Masuk - Arsip Surat Digital Enterprise</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <style>
+        :root {
+            --primary: #1a56db; --primary-dark: #1e40af; --secondary: #64748b;
+            --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+            --dark: #1f2937; --light: #f9fafb; --lighter: #ffffff; --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1); --radius: 10px; --radius-lg: 16px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--light); color: var(--dark); display: flex; min-height: 100vh; }
+        
+        .sidebar { width: 260px; background: #111827; color: white; position: fixed; top: 0; left: 0; bottom: 0; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #374151; font-weight: 700; }
+        .sidebar-nav { padding: 20px 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #9ca3af; text-decoration: none; font-size: 14px; border-left: 3px solid transparent; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: rgba(26,86,219,0.2); color: white; border-left-color: var(--primary); }
+        
+        .main-content { flex: 1; margin-left: 260px; padding: 30px; }
+        .page-header { margin-bottom: 30px; }
+        .page-title { font-size: 24px; font-weight: 800; }
+        
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border: 2px solid transparent; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.3s; font-family: var(--font-sans); }
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow); }
+        .btn-outline { background: transparent; color: var(--primary); border-color: var(--primary); }
+        
+        /* Report Header */
+        .report-header {
+            background: var(--lighter); border-radius: var(--radius-lg); padding: 30px;
+            border: 1px solid var(--border); margin-bottom: 30px;
+        }
+        .report-title { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 20px; }
+        .report-meta { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; font-size: 14px; color: var(--secondary); }
+        
+        /* Stats */
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-box { background: var(--lighter); border-radius: var(--radius); padding: 20px; text-align: center; border: 1px solid var(--border); }
+        .stat-value { font-size: 28px; font-weight: 800; }
+        .stat-label { font-size: 12px; color: var(--secondary); margin-top: 5px; }
+        
+        /* Chart */
+        .chart-card { background: var(--lighter); border-radius: var(--radius-lg); padding: 30px; border: 1px solid var(--border); margin-bottom: 30px; }
+        
+        /* Table */
+        .table-card { background: var(--lighter); border-radius: var(--radius-lg); border: 1px solid var(--border); overflow: hidden; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: var(--light); }
+        th { padding: 14px 16px; text-align: left; font-size: 12px; font-weight: 600; color: var(--secondary); text-transform: uppercase; border-bottom: 2px solid var(--border); }
+        td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid var(--border); }
+        tr:hover { background: #f8fafc; }
+        
+        .footer-actions { display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px; }
+        
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 20px; }
+            .footer-actions { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+        }
+        
+        @media print {
+            .sidebar, .btn, .footer-actions { display: none; }
+            body { background: white; }
+            .main-content { margin: 0; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">🏢 Arsip Surat Digital</div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard/index.ejs" class="nav-item">📊 Dashboard</a>
+            <a href="../surat-masuk/index.ejs" class="nav-item">📥 Surat Masuk</a>
+            <a href="../surat-keluar/index.ejs" class="nav-item">📤 Surat Keluar</a>
+            <a href="../disposisi/index.ejs" class="nav-item">📋 Disposisi</a>
+            <a href="./index.ejs" class="nav-item active">📊 Laporan</a>
+            <a href="../../login" class="nav-item" style="color: #ef4444; margin-top: 20px;">🚪 Logout</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">📥 Laporan Surat Masuk</h1>
+            <p style="color: var(--secondary); font-size: 14px;">Periode: Januari 2024</p>
+        </div>
+        
+        <!-- Report Header -->
+        <div class="report-header">
+            <h2 class="report-title">LAPORAN SURAT MASUK</h2>
+            <div class="report-meta">
+                <span>📅 Periode: 1 - 31 Januari 2024</span>
+                <span>🏢 Instansi Default</span>
+                <span>🖨️ Dicetak: 17 Januari 2024</span>
+            </div>
+        </div>
+        
+        <!-- Statistics -->
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-value" style="color: var(--primary);">156</div>
+                <div class="stat-label">Total Surat Masuk</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" style="color: var(--warning);">45</div>
+                <div class="stat-label">Baru</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" style="color: #3b82f6;">67</div>
+                <div class="stat-label">Proses</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" style="color: var(--success);">34</div>
+                <div class="stat-label">Selesai</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" style="color: #7c3aed;">10</div>
+                <div class="stat-label">Arsip</div>
+            </div>
+        </div>
+        
+        <!-- Chart -->
+        <div class="chart-card">
+            <h3 style="margin-bottom: 20px;">📈 Grafik Surat Masuk per Minggu</h3>
+            <div style="background: var(--light); border-radius: var(--radius); padding: 30px; text-align: center; min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 600 200" width="100%" height="200" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="50" y1="20" x2="50" y2="180" stroke="#e5e7eb" stroke-width="1"/>
+                    <line x1="50" y1="180" x2="580" y2="180" stroke="#e5e7eb" stroke-width="1"/>
+                    <rect x="90" y="100" width="80" height="80" rx="4" fill="#3b82f6" opacity="0.8"/>
+                    <rect x="200" y="60" width="80" height="120" rx="4" fill="#3b82f6" opacity="0.8"/>
+                    <rect x="310" y="80" width="80" height="100" rx="4" fill="#3b82f6" opacity="0.8"/>
+                    <rect x="420" y="40" width="80" height="140" rx="4" fill="#3b82f6" opacity="0.8"/>
+                    <text x="130" y="195" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Minggu 1</text>
+                    <text x="240" y="195" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Minggu 2</text>
+                    <text x="350" y="195" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Minggu 3</text>
+                    <text x="460" y="195" font-family="Arial" font-size="11" fill="#64748b" text-anchor="middle">Minggu 4</text>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Table -->
+        <div class="table-card">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>No. Agenda</th>
+                            <th>Tanggal</th>
+                            <th>Pengirim</th>
+                            <th>Perihal</th>
+                            <th>Kategori</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>SM-2024-001</td><td>15/01/2024</td><td>Kementerian A</td><td>Undangan Rapat</td><td>Penting</td><td>Proses</td></tr>
+                        <tr><td>2</td><td>SM-2024-002</td><td>14/01/2024</td><td>Dinas B</td><td>Permohonan Data</td><td>Biasa</td><td>Proses</td></tr>
+                        <tr><td>3</td><td>SM-2024-003</td><td>13/01/2024</td><td>Instansi C</td><td>Laporan Tahunan</td><td>Rahasia</td><td>Selesai</td></tr>
+                        <tr><td>4</td><td>SM-2024-004</td><td>12/01/2024</td><td>Badan D</td><td>Nota Dinas</td><td>Biasa</td><td>Selesai</td></tr>
+                        <tr><td>5</td><td>SM-2024-005</td><td>11/01/2024</td><td>Lembaga E</td><td>Surat Edaran</td><td>Segera</td><td>Baru</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="footer-actions">
+            <button class="btn btn-outline" onclick="window.print()">🖨️ Cetak Laporan</button>
+            <button class="btn btn-primary" onclick="exportPDF()">📄 Export PDF</button>
+            <button class="btn btn-outline" onclick="exportExcel()">📊 Export Excel</button>
+            <a href="./index.ejs" class="btn btn-outline">← Kembali</a>
+        </div>
+    </main>
+    
+    <script>
+        function exportPDF() {
+            alert('Mengexport laporan ke PDF...');
+            window.open('/api/laporan/export?type=surat-masuk&format=pdf', '_blank');
+        }
+        
+        function exportExcel() {
+            alert('Mengexport laporan ke Excel...');
+            window.open('/api/laporan/export?type=surat-masuk&format=excel', '_blank');
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('auth_token')) window.location.href = '../../login';
+        });
+    </script>
+</body>
+</html>
