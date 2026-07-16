@@ -1,0 +1,99 @@
+<!-- Modal Component -->
+<!-- Usage: <%- include('../components/modal', { id: 'confirmModal', title: 'Konfirmasi', content: 'Apakah Anda yakin?' }) %> -->
+
+<div class="modal-overlay" id="<%= id %>" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title"><%= title || 'Modal' %></h3>
+            <button class="modal-close" onclick="closeModal('<%= id %>')" aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <% if (typeof content !== 'undefined') { %>
+                <p><%= content %></p>
+            <% } else { %>
+                <%- body %>
+            <% } %>
+        </div>
+        <% if (showFooter !== false) { %>
+        <div class="modal-footer">
+            <button class="btn btn-outline btn-sm" onclick="closeModal('<%= id %>')">Batal</button>
+            <button class="btn btn-primary btn-sm" onclick="confirmModal('<%= id %>')">OK</button>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease;
+    }
+    .modal-container {
+        background: #fff;
+        border-radius: 1rem;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        animation: slideUp 0.3s ease;
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .modal-title { font-size: 1.125rem; font-weight: 700; }
+    .modal-close {
+        background: none; border: none;
+        font-size: 1.25rem; cursor: pointer;
+        color: #64748b; padding: 0.25rem;
+    }
+    .modal-close:hover { color: #1f2937; }
+    .modal-body { padding: 1.5rem; }
+    .modal-footer {
+        display: flex; justify-content: flex-end; gap: 0.5rem;
+        padding: 1rem 1.5rem; border-top: 1px solid #e5e7eb;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+</style>
+
+<script>
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    function confirmModal(id) {
+        closeModal(id);
+        if (typeof onModalConfirm === 'function') onModalConfirm(id);
+    }
+    // Close on escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay[style*="flex"]').forEach(modal => {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            });
+        }
+    });
+    // Close on overlay click
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal-overlay')) {
+            e.target.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    });
+</script>
