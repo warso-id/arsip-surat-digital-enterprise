@@ -1,0 +1,37 @@
+<!-- Card Component -->
+<div class="ui-card <%= className || '' %>" <%= id ? 'id="' + id + '"' : '' %>>
+    <% if (title || header) { %>
+        <div class="ui-card-header">
+            <% if (title) { %><h3 class="ui-card-title"><%= title %></h3><% } %>
+            <% if (header) { %><%- header %><% } %>
+        </div>
+    <% } %>
+    <div class="ui-card-body">
+        <% if (typeof body !== 'undefined') { %>
+            <%- body %>
+        <% } else { %>
+            <%- content %>
+        <% } %>
+    </div>
+    <% if (footer) { %>
+        <div class="ui-card-footer"><%- footer %></div>
+    <% } %>
+</div>
+
+<style>
+    .ui-card {
+        background: white; border-radius: 16px; border: 1px solid #e5e7eb;
+        overflow: hidden; transition: all 0.3s;
+    }
+    .ui-card:hover { box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+    .ui-card-header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 20px 24px; border-bottom: 1px solid #f3f4f6;
+    }
+    .ui-card-title { font-size: 16px; font-weight: 700; }
+    .ui-card-body { padding: 24px; }
+    .ui-card-footer {
+        padding: 16px 24px; border-top: 1px solid #f3f4f6;
+        background: #f9fafb;
+    }
+</style>
