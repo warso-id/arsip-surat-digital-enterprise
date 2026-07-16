@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Daftar Surat Keluar - Arsip Surat Digital Enterprise">
+    <meta name="theme-color" content="#1a56db">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Surat Keluar - Arsip Surat Digital Enterprise</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSI4IiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iMTYiIHk9IjIyIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+">
+    
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --darker: #111827;
+            --light: #f9fafb;
+            --lighter: #ffffff;
+            --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --radius: 10px;
+            --radius-lg: 16px;
+            --transition: all 0.3s ease;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-sans);
+            background: var(--light);
+            color: var(--dark);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--darker);
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 50;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #374151;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-nav { padding: 20px 0; }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: rgba(26,86,219,0.2); color: white; border-left-color: var(--primary); }
+        .badge { background: var(--danger); color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-left: auto; }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-title { font-size: 24px; font-weight: 800; }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+            font-family: var(--font-sans);
+        }
+        
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow); }
+        .btn-outline { background: transparent; color: var(--primary); border-color: var(--primary); }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: var(--lighter);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .stat-value { font-size: 24px; font-weight: 800; }
+        .stat-label { font-size: 13px; color: var(--secondary); }
+        
+        /* Search Bar */
+        .search-bar {
+            background: var(--lighter);
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: var(--font-sans);
+        }
+        
+        .search-input:focus { outline: none; border-color: var(--primary); }
+        
+        .filter-select {
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: var(--font-sans);
+            background: white;
+        }
+        
+        /* Table */
+        .table-container {
+            background: var(--lighter);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead { background: var(--light); }
+        
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--secondary);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        td {
+            padding: 14px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        tr:hover { background: #f8fafc; }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .status-konsep { background: #e0e7ff; color: #3730a3; }
+        .status-terkirim { background: #d1fae5; color: #065f46; }
+        .status-draft { background: #f3f4f6; color: #374151; }
+        
+        .action-btn {
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            padding: 20px;
+        }
+        
+        .page-btn {
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <span style="font-size: 20px;">🏢</span>
+            <span style="font-weight: 700;">Arsip Surat Digital</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard/index.ejs" class="nav-item">📊 Dashboard</a>
+            <a href="../surat-masuk/index.ejs" class="nav-item">📥 Surat Masuk</a>
+            <a href="./index.ejs" class="nav-item active">📤 Surat Keluar <span class="badge">8</span></a>
+            <a href="../disposisi/index.ejs" class="nav-item">📋 Disposisi</a>
+            <a href="../laporan/index.ejs" class="nav-item">📊 Laporan</a>
+            <a href="../../login" class="nav-item" style="color: #ef4444; margin-top: 20px;">🚪 Logout</a>
+        </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">📤 Surat Keluar</h1>
+                <p style="color: var(--secondary); font-size: 14px; margin-top: 5px;">
+                    Kelola semua surat keluar yang dibuat
+                </p>
+            </div>
+            <a href="./create.ejs" class="btn btn-primary">+ Buat Surat Keluar</a>
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" style="color: var(--primary);">856</div>
+                <div class="stat-label">Total Surat Keluar</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color: var(--success);">745</div>
+                <div class="stat-label">Terkirim</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color: var(--warning);">89</div>
+                <div class="stat-label">Konsep</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color: var(--secondary);">22</div>
+                <div class="stat-label">Draft</div>
+            </div>
+        </div>
+        
+        <!-- Search -->
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="🔍 Cari surat keluar...">
+            <select class="filter-select">
+                <option value="">Semua Status</option>
+                <option value="konsep">Konsep</option>
+                <option value="terkirim">Terkirim</option>
+                <option value="draft">Draft</option>
+            </select>
+            <input type="date" class="filter-select">
+            <button class="btn btn-outline" style="padding: 10px 16px;">🔄 Reset</button>
+        </div>
+        
+        <!-- Table -->
+        <div class="table-container">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No. Surat</th>
+                            <th>Tanggal</th>
+                            <th>Tujuan</th>
+                            <th>Perihal</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>SK-2024-001</strong></td>
+                            <td>16 Jan 2024</td>
+                            <td>Kementerian B</td>
+                            <td>Balasan Undangan Rapat</td>
+                            <td><span class="status-badge status-terkirim">Terkirim</span></td>
+                            <td>
+                                <a href="./show.ejs?id=1" class="action-btn" title="Lihat">👁️</a>
+                                <a href="./edit.ejs?id=1" class="action-btn" title="Edit">✏️</a>
+                                <button class="action-btn" onclick="deleteSurat(1)" title="Hapus">🗑️</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>SK-2024-002</strong></td>
+                            <td>15 Jan 2024</td>
+                            <td>Dinas C</td>
+                            <td>Pengiriman Data</td>
+                            <td><span class="status-badge status-konsep">Konsep</span></td>
+                            <td>
+                                <a href="./show.ejs?id=2" class="action-btn">👁️</a>
+                                <a href="./edit.ejs?id=2" class="action-btn">✏️</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>SK-2024-003</strong></td>
+                            <td>14 Jan 2024</td>
+                            <td>Instansi D</td>
+                            <td>Laporan Bulanan</td>
+                            <td><span class="status-badge status-draft">Draft</span></td>
+                            <td>
+                                <a href="./edit.ejs?id=3" class="action-btn">✏️</a>
+                                <button class="action-btn" onclick="deleteSurat(3)">🗑️</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="page-btn">«</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">»</button>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        function deleteSurat(id) {
+            if (confirm('Hapus surat keluar ini?')) {
+                console.log('Deleting:', id);
+                alert('Surat berhasil dihapus');
+                location.reload();
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('auth_token');
+            if (!token) window.location.href = '../../login';
+        });
+    </script>
+</body>
+</html>
