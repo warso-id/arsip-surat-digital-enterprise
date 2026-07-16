@@ -1,0 +1,53 @@
+<!-- Rating Component -->
+<div class="rating" id="<%= id || 'rating' %>">
+    <% for (let i = 1; i <= (max || 5); i++) { %>
+        <span class="rating-star <%= i <= (value || 0) ? 'active' : '' %>" 
+              data-value="<%= i %>" 
+              onclick="setRating('<%= id || 'rating' %>', <%= i %>)"
+              onmouseover="hoverRating('<%= id || 'rating' %>', <%= i %>)"
+              onmouseout="resetRating('<%= id || 'rating' %>')">
+            ★
+        </span>
+    <% } %>
+    <span class="rating-text" id="<%= id || 'rating' %>Text">
+        <%= value ? value + '/' + (max || 5) : 'Belum dinilai' %>
+    </span>
+    <input type="hidden" id="<%= id || 'rating' %>Input" name="<%= name || 'rating' %>" value="<%= value || 0 %>">
+</div>
+
+<style>
+    .rating { display: inline-flex; align-items: center; gap: 2px; }
+    .rating-star {
+        font-size: 24px; color: #d1d5db; cursor: pointer;
+        transition: all 0.15s; user-select: none;
+    }
+    .rating-star:hover, .rating-star.hover { color: #fbbf24; transform: scale(1.2); }
+    .rating-star.active { color: #f59e0b; }
+    .rating-text { font-size: 13px; color: #64748b; margin-left: 8px; }
+</style>
+
+<script>
+    let originalValue_<%= id || 'rating' %> = <%= value || 0 %>;
+    
+    function setRating(id, value) {
+        document.getElementById(id + 'Input').value = value;
+        originalValue_<%= id || 'rating' %> = value;
+        document.getElementById(id + 'Text').textContent = value + '/' + (<%= max || 5 %>);
+        updateStars(id, value);
+    }
+    
+    function hoverRating(id, value) {
+        updateStars(id, value);
+    }
+    
+    function resetRating(id) {
+        updateStars(id, originalValue_<%= id || 'rating' %>);
+    }
+    
+    function updateStars(id, value) {
+        const stars = document.querySelectorAll('#' + id + ' .rating-star');
+        stars.forEach((star, index) => {
+            star.classList.toggle('active', index < value);
+        });
+    }
+</script>
