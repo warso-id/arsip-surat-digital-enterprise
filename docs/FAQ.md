@@ -20,16 +20,3 @@ Ya! Sistem ini sepenuhnya gratis dan open source di bawah MIT License. Anda beba
 - Audit trail
 
 ---
-
-## Instalasi
-
-### Bagaimana cara instalasi?
-Lihat [Panduan Instalasi](./INSTALLATION.md) untuk detail lengkap. Secara singkat:
-```bash
-git clone https://github.com/warso-id/arsip-surat-digital-enterprise.git
-cd arsip-surat-digital-enterprise
-cp .env.example .env
-npm install
-npm run migrate
-npm run seed
-npm run dev
