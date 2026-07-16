@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Halaman tidak ditemukan - Arsip Surat Digital Enterprise">
+    <meta name="theme-color" content="#1a56db">
+    <meta name="robots" content="noindex, nofollow">
+    <title>404 - Halaman Tidak Ditemukan | Arsip Surat Digital Enterprise</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSI4IiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iMTYiIHk9IjIyIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+">
+    
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --success: #10b981;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --lighter: #ffffff;
+            --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+            --radius-lg: 16px;
+            --transition: all 0.3s ease;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-sans);
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #ecfdf5 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .error-container {
+            background: var(--lighter);
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: var(--shadow-lg);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .error-code {
+            font-size: 120px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+        
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .error-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+        
+        .error-message {
+            font-size: 16px;
+            color: var(--secondary);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .error-suggestions {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .error-suggestions h3 {
+            font-size: 16px;
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+        
+        .error-suggestions ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .error-suggestions li {
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .error-suggestions li::before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+            font-family: var(--font-sans);
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: var(--font-sans);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+        }
+        
+        .breadcrumb {
+            font-size: 13px;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 480px) {
+            .error-container {
+                padding: 40px 20px;
+            }
+            .error-code {
+                font-size: 80px;
+            }
+            .error-icon {
+                font-size: 60px;
+            }
+            .error-title {
+                font-size: 22px;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">🔍</div>
+        <div class="error-code">404</div>
+        <h1 class="error-title">Halaman Tidak Ditemukan</h1>
+        <p class="error-message">
+            Maaf, halaman yang Anda cari tidak dapat ditemukan. 
+            Mungkin halaman telah dipindahkan, dihapus, atau URL yang dimasukkan salah.
+        </p>
+        
+        <!-- Search -->
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="🔍 Cari halaman..." 
+                   id="searchPage" onkeypress="searchOnEnter(event)">
+            <button class="btn btn-primary" onclick="searchPage()">Cari</button>
+        </div>
+        
+        <!-- Suggestions -->
+        <div class="error-suggestions">
+            <h3>💡 Coba hal berikut:</h3>
+            <ul>
+                <li>Periksa kembali URL yang dimasukkan</li>
+                <li>Gunakan fitur pencarian di atas</li>
+                <li>Kembali ke halaman sebelumnya</li>
+                <li>Kunjungi halaman beranda</li>
+                <li>Lihat dokumentasi atau bantuan</li>
+            </ul>
+        </div>
+        
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="../../">Beranda</a> › <span>404 Not Found</span>
+        </div>
+        
+        <!-- Actions -->
+        <div class="btn-group">
+            <a href="../../" class="btn btn-primary">🏠 Ke Beranda</a>
+            <a href="javascript:history.back()" class="btn btn-outline">← Kembali</a>
+            <a href="../../docs/" class="btn btn-outline">📖 Dokumentasi</a>
+        </div>
+    </div>
+    
+    <script>
+        // ==================== SEARCH FUNCTIONALITY ====================
+        function searchPage() {
+            const query = document.getElementById('searchPage').value.trim();
+            if (query) {
+                window.location.href = `../pencarian/index.ejs?q=${encodeURIComponent(query)}`;
+            }
+        }
+        
+        function searchOnEnter(event) {
+            if (event.key === 'Enter') {
+                searchPage();
+            }
+        }
+        
+        // ==================== AUTO REDIRECT SUGGESTIONS ====================
+        const currentPath = window.location.pathname;
+        
+        // Common misspellings redirect
+        const redirectMap = {
+            '/login.html': '/login',
+            '/dashboard.html': '/src/views/dashboard/',
+            '/surat-masuk.html': '/src/views/surat-masuk/',
+            '/surat-keluar.html': '/src/views/surat-keluar/',
+        };
+        
+        if (redirectMap[currentPath]) {
+            setTimeout(() => {
+                window.location.href = redirectMap[currentPath];
+            }, 3000);
+            document.querySelector('.error-message').innerHTML += 
+                '<br><small style="color: #10b981;">Mengalihkan ke halaman yang benar...</small>';
+        }
+        
+        // ==================== LOG ERROR ====================
+        console.error('404 Error:', {
+            path: currentPath,
+            referrer: document.referrer,
+            timestamp: new Date().toISOString()
+        });
+    </script>
+</body>
+</html>
