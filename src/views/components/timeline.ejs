@@ -1,0 +1,60 @@
+<!-- Timeline Component -->
+<div class="timeline">
+    <% events.forEach(function(event, index) { %>
+        <div class="timeline-item <%= event.type || '' %>">
+            <div class="timeline-marker">
+                <% if (event.icon) { %>
+                    <span class="timeline-icon"><%= event.icon %></span>
+                <% } else { %>
+                    <span class="timeline-dot"></span>
+                <% } %>
+            </div>
+            <div class="timeline-content">
+                <div class="timeline-header">
+                    <span class="timeline-title"><%= event.title %></span>
+                    <span class="timeline-time"><%= event.time %></span>
+                </div>
+                <% if (event.description) { %>
+                    <p class="timeline-desc"><%= event.description %></p>
+                <% } %>
+                <% if (event.user) { %>
+                    <span class="timeline-user">👤 <%= event.user %></span>
+                <% } %>
+            </div>
+        </div>
+    <% }); %>
+</div>
+
+<style>
+    .timeline { position: relative; padding-left: 30px; }
+    .timeline::before {
+        content: ''; position: absolute; left: 14px; top: 0; bottom: 0;
+        width: 2px; background: linear-gradient(to bottom, #3b82f6, #10b981);
+        border-radius: 1px;
+    }
+    .timeline-item { position: relative; margin-bottom: 24px; }
+    .timeline-marker { position: absolute; left: -30px; top: 2px; }
+    .timeline-dot {
+        width: 12px; height: 12px; background: #3b82f6; border-radius: 50%;
+        border: 2px solid white; box-shadow: 0 0 0 2px #3b82f6; display: block;
+    }
+    .timeline-icon {
+        width: 30px; height: 30px; border-radius: 50%; display: flex;
+        align-items: center; justify-content: center; font-size: 14px;
+        background: #f0fdf4; border: 2px solid #10b981;
+    }
+    .timeline-item.completed .timeline-dot { background: #10b981; box-shadow: 0 0 0 2px #10b981; }
+    .timeline-item.pending .timeline-dot { background: #f59e0b; box-shadow: 0 0 0 2px #f59e0b; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 2px #f59e0b; } 50% { box-shadow: 0 0 0 8px rgba(245,158,11,0.2); } }
+    
+    .timeline-content {
+        background: white; border: 1px solid #e5e7eb; border-radius: 10px;
+        padding: 14px 18px; transition: all 0.2s;
+    }
+    .timeline-content:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .timeline-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
+    .timeline-title { font-weight: 600; font-size: 14px; }
+    .timeline-time { font-size: 11px; color: #9ca3af; white-space: nowrap; }
+    .timeline-desc { font-size: 13px; color: #64748b; line-height: 1.5; }
+    .timeline-user { font-size: 11px; color: #9ca3af; margin-top: 6px; display: block; }
+</style>
