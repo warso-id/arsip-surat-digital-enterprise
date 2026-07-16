@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Surat Keluar - Arsip Surat Digital Enterprise</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <style>
+        :root {
+            --primary: #1a56db; --primary-dark: #1e40af; --secondary: #64748b;
+            --success: #10b981; --danger: #ef4444; --dark: #1f2937;
+            --light: #f9fafb; --lighter: #ffffff; --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1); --radius: 10px; --transition: all 0.3s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--light); color: var(--dark); }
+        
+        .top-nav { background: var(--lighter); border-bottom: 1px solid var(--border); padding: 15px 30px; display: flex; align-items: center; gap: 20px; }
+        .back-btn { text-decoration: none; color: var(--secondary); font-size: 20px; }
+        .back-btn:hover { color: var(--primary); }
+        .page-title { font-size: 20px; font-weight: 700; }
+        
+        .form-container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .form-card { background: var(--lighter); border-radius: 16px; padding: 40px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .form-section { margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid var(--border); }
+        .form-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .form-label .required { color: var(--danger); }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: var(--font-sans); transition: var(--transition); background: var(--light); }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,86,219,0.1); background: var(--lighter); }
+        .form-textarea { min-height: 150px; resize: vertical; }
+        
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border: 2px solid transparent; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; transition: var(--transition); font-family: var(--font-sans); }
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow); }
+        .btn-outline { background: transparent; color: var(--secondary); border-color: var(--border); }
+        .form-actions { display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px; flex-wrap: wrap; }
+        
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .status-konsep { background: #e0e7ff; color: #3730a3; }
+        .status-terkirim { background: #d1fae5; color: #065f46; }
+        
+        .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; display: none; }
+        .alert-success { background: #f0fdf4; color: #065f46; border: 1px solid #bbf7d0; }
+        .alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .alert.show { display: block; }
+        
+        @media (max-width: 768px) { .form-card { padding: 20px; } .form-grid { grid-template-columns: 1fr; } .form-actions { flex-direction: column; } .btn { width: 100%; justify-content: center; } }
+    </style>
+</head>
+<body>
+    <div class="top-nav">
+        <a href="./show.ejs?id=1" class="back-btn">←</a>
+        <h1 class="page-title">✏️ Edit Surat Keluar</h1>
+        <span class="status-badge status-konsep">Konsep</span>
+    </div>
+    
+    <div class="form-container">
+        <div id="alertContainer"></div>
+        
+        <form id="editForm" class="form-card">
+            <div class="form-section">
+                <h2 class="section-title">📄 Informasi Surat</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Nomor Surat <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="nomorSurat" value="SK-2024-001" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tanggal Surat <span class="required">*</span></label>
+                        <input type="date" class="form-input" id="tanggalSurat" value="2024-01-16" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tujuan <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="tujuan" value="Kementerian B" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Kategori</label>
+                        <select class="form-select" id="kategori">
+                            <option value="biasa">Biasa</option>
+                            <option value="penting" selected>Penting</option>
+                            <option value="rahasia">Rahasia</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Perihal <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="perihal" value="Balasan Undangan Rapat" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Isi Surat</label>
+                        <textarea class="form-textarea" id="isiSurat">Menindaklanjuti surat undangan, kami mengkonfirmasi kehadiran...</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="status">
+                            <option value="konsep" selected>Konsep</option>
+                            <option value="terkirim">Terkirim</option>
+                            <option value="draft">Draft</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Catatan</label>
+                        <textarea class="form-textarea" id="catatan" placeholder="Catatan..." style="min-height: 80px;"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <a href="./show.ejs?id=1" class="btn btn-outline">Batal</a>
+                <button type="submit" class="btn btn-primary">💾 Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = {
+                nomor_surat: document.getElementById('nomorSurat').value,
+                tanggal_surat: document.getElementById('tanggalSurat').value,
+                tujuan: document.getElementById('tujuan').value,
+                kategori: document.getElementById('kategori').value,
+                perihal: document.getElementById('perihal').value,
+                isi_surat: document.getElementById('isiSurat').value,
+                status: document.getElementById('status').value,
+                catatan: document.getElementById('catatan').value,
+            };
+            
+            try {
+                const token = localStorage.getItem('auth_token');
+                const response = await fetch('/api/surat-keluar/1', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(data),
+                });
+                
+                if (response.ok) {
+                    showAlert('Surat keluar berhasil diperbarui!', 'success');
+                    setTimeout(() => { window.location.href = './show.ejs?id=1'; }, 1000);
+                } else {
+                    showAlert('Gagal memperbarui surat keluar', 'error');
+                }
+            } catch (error) {
+                showAlert('Terjadi kesalahan', 'error');
+            }
+        });
+        
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            container.innerHTML = `<div class="alert alert-${type} show">${message}</div>`;
+            setTimeout(() => { container.innerHTML = ''; }, 5000);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('auth_token')) window.location.href = '../../login';
+        });
+    </script>
+</body>
+</html>
