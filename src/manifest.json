@@ -1,0 +1,127 @@
+{
+    "name": "Arsip Surat Digital Enterprise",
+    "short_name": "Arsip Surat",
+    "description": "Sistem Manajemen Arsip Surat Digital Enterprise - Kelola surat masuk, surat keluar, dan disposisi secara digital",
+    "start_url": "/dashboard.html",
+    "scope": "/",
+    "display": "standalone",
+    "display_override": ["standalone", "minimal-ui"],
+    "orientation": "any",
+    "background_color": "#1a56db",
+    "theme_color": "#1a56db",
+    "categories": ["business", "productivity", "utilities"],
+    "lang": "id-ID",
+    "dir": "ltr",
+    "prefer_related_applications": false,
+    
+    "icons": [
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MiA3MiI+PHJlY3Qgd2lkdGg9IjcyIiBoZWlnaHQ9IjcyIiByeD0iMTYiIGZpbGw9IiMxYTU2ZGIiLz48dGV4dCB4PSIzNiIgeT0iNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIzNiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BRDwvdGV4dD48L3N2Zz4=",
+            "sizes": "72x72",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiI+PHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMjAiIGZpbGw9IiMxYTU2ZGIiLz48dGV4dCB4PSI0OCIgeT0iNjIiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BRDwvdGV4dD48L3N2Zz4=",
+            "sizes": "96x96",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgcng9IjI0IiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iNjQiIHk9Ijg0IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iNjQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+",
+            "sizes": "128x128",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNDQgMTQ0Ij48cmVjdCB3aWR0aD0iMTQ0IiBoZWlnaHQ9IjE0NCIgcng9IjI4IiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iNzIiIHk9Ijk2IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iNzIiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+",
+            "sizes": "144x144",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNTIgMTUyIj48cmVjdCB3aWR0aD0iMTUyIiBoZWlnaHQ9IjE1MiIgcng9IjMwIiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iNzYiIHk9IjEwMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9Ijc2IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==",
+            "sizes": "152x152",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjM2IiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iOTYiIHk9IjEyMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9Ijk2IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==",
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgMzg0Ij48cmVjdCB3aWR0aD0iMzg0IiBoZWlnaHQ9IjM4NCIgcng9IjYwIiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iMTkyIiB5PSIyMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxODAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+",
+            "sizes": "384x384",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjgwIiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iMjU2IiB5PSIzMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNDAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjgwIiBmaWxsPSIjMWU0MGFmIi8+PHRleHQgeD0iMjU2IiB5PSIzMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNDAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "maskable"
+        }
+    ],
+    
+    "screenshots": [
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjgwIDcyMCI+PHJlY3Qgd2lkdGg9IjEyODAiIGhlaWdodD0iNzIwIiBmaWxsPSIjZjFmNWY5Ii8+PHRleHQgeD0iNjQwIiB5PSIzNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI0MCIgZmlsbD0iIzFmMjkzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RGFzaGJvYXJkIEFyc2lwIFN1cmF0IERpZ2l0YWw8L3RleHQ+PC9zdmc+",
+            "sizes": "1280x720",
+            "type": "image/svg+xml",
+            "form_factor": "wide",
+            "label": "Dashboard Arsip Surat Digital Enterprise"
+        }
+    ],
+    
+    "shortcuts": [
+        {
+            "name": "Dashboard",
+            "short_name": "Dashboard",
+            "description": "Lihat dashboard utama",
+            "url": "/dashboard.html",
+            "icons": [
+                {
+                    "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiI+PHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMjAiIGZpbGw9IiMxYTU2ZGIiLz48dGV4dCB4PSI0OCIgeT0iNjIiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI0OCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkRBPC90ZXh0Pjwvc3ZnPg==",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "Surat Masuk",
+            "short_name": "Surat Masuk",
+            "description": "Kelola surat masuk",
+            "url": "/surat-masuk.html",
+            "icons": [
+                {
+                    "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiI+PHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMjAiIGZpbGw9IiMxMGI5ODEiLz48dGV4dCB4PSI0OCIgeT0iNjIiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI0OCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlNNPC90ZXh0Pjwvc3ZnPg==",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "Surat Keluar",
+            "short_name": "Surat Keluar",
+            "description": "Kelola surat keluar",
+            "url": "/surat-keluar.html"
+        }
+    ],
+    
+    "related_applications": [],
+    
+    "edge_side_panel": {
+        "preferred_width": 400
+    },
+    
+    "handle_links": "preferred",
+    "launch_handler": {
+        "client_mode": ["navigate-existing", "auto"]
+    }
+}
