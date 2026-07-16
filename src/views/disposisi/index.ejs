@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manajemen Disposisi - Arsip Surat Digital Enterprise">
+    <meta name="theme-color" content="#1a56db">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Disposisi - Arsip Surat Digital Enterprise</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSI4IiBmaWxsPSIjMWE1NmRiIi8+PHRleHQgeD0iMTYiIHk9IjIyIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+">
+    
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --darker: #111827;
+            --light: #f9fafb;
+            --lighter: #ffffff;
+            --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --radius: 10px;
+            --radius-lg: 16px;
+            --transition: all 0.3s ease;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-sans);
+            background: var(--light);
+            color: var(--dark);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: var(--darker);
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 50;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #374151;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-nav { padding: 20px 0; }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: rgba(26,86,219,0.2); color: white; border-left-color: var(--primary); }
+        .badge { background: var(--danger); color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+        
+        .main-content { flex: 1; margin-left: 260px; padding: 30px; }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-title { font-size: 24px; font-weight: 800; }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--secondary);
+            font-family: var(--font-sans);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: var(--transition);
+        }
+        
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .tab-btn .count { 
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 5px;
+        }
+        
+        .count-pending { background: #fef3c7; color: #92400e; }
+        .count-proses { background: #dbeafe; color: #1e40af; }
+        .count-selesai { background: #d1fae5; color: #065f46; }
+        
+        /* Filter */
+        .filter-bar {
+            background: var(--lighter);
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .search-input, .filter-select, .date-input {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: var(--font-sans);
+        }
+        
+        .search-input { flex: 1; min-width: 200px; }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+            font-family: var(--font-sans);
+        }
+        
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow); }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        
+        /* Disposisi Cards */
+        .disposisi-list { display: flex; flex-direction: column; gap: 15px; }
+        
+        .disposisi-card {
+            background: var(--lighter);
+            border-radius: var(--radius-lg);
+            padding: 20px 25px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .disposisi-card:hover {
+            box-shadow: var(--shadow);
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        
+        .disposisi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .disposisi-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-proses { background: #dbeafe; color: #1e40af; }
+        .status-selesai { background: #d1fae5; color: #065f46; }
+        .status-ditolak { background: #fee2e2; color: #991b1b; }
+        
+        .disposisi-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .info-item { font-size: 13px; }
+        .info-label { color: var(--secondary); margin-bottom: 2px; }
+        .info-value { font-weight: 600; }
+        
+        .disposisi-isi {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--dark);
+            border-left: 3px solid var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .disposisi-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--secondary);
+        }
+        
+        .disposisi-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            padding: 20px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 20px; }
+            .disposisi-info { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <span style="font-size: 20px;">🏢</span>
+            <span style="font-weight: 700;">Arsip Surat Digital</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard/index.ejs" class="nav-item">📊 Dashboard</a>
+            <a href="../surat-masuk/index.ejs" class="nav-item">📥 Surat Masuk</a>
+            <a href="../surat-keluar/index.ejs" class="nav-item">📤 Surat Keluar</a>
+            <a href="./index.ejs" class="nav-item active">📋 Disposisi <span class="badge">5</span></a>
+            <a href="../laporan/index.ejs" class="nav-item">📊 Laporan</a>
+            <a href="../../login" class="nav-item" style="color: #ef4444; margin-top: 20px;">🚪 Logout</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">📋 Disposisi</h1>
+                <p style="color: var(--secondary); font-size: 14px; margin-top: 5px;">
+                    Kelola disposisi surat masuk
+                </p>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="filterByStatus('all')">
+                Semua <span class="count">45</span>
+            </button>
+            <button class="tab-btn" onclick="filterByStatus('pending')">
+                Pending <span class="count count-pending">12</span>
+            </button>
+            <button class="tab-btn" onclick="filterByStatus('proses')">
+                Proses <span class="count count-proses">18</span>
+            </button>
+            <button class="tab-btn" onclick="filterByStatus('selesai')">
+                Selesai <span class="count count-selesai">15</span>
+            </button>
+        </div>
+        
+        <!-- Filter -->
+        <div class="filter-bar">
+            <input type="text" class="search-input" placeholder="🔍 Cari disposisi...">
+            <select class="filter-select">
+                <option value="">Semua Sifat</option>
+                <option value="biasa">Biasa</option>
+                <option value="segera">Segera</option>
+                <option value="sangat-segera">Sangat Segera</option>
+            </select>
+            <input type="date" class="date-input" placeholder="Tanggal">
+            <button class="btn btn-sm" style="background: var(--light); border: 1px solid var(--border);">🔄 Reset</button>
+        </div>
+        
+        <!-- Disposisi List -->
+        <div class="disposisi-list">
+            <!-- Disposisi 1 -->
+            <div class="disposisi-card" onclick="window.location.href='./show.ejs?id=1'">
+                <div class="disposisi-header">
+                    <h3 class="disposisi-title">
+                        Disposisi #DSP-2024-001
+                    </h3>
+                    <span class="status-badge status-pending">Pending</span>
+                </div>
+                
+                <div class="disposisi-info">
+                    <div class="info-item">
+                        <div class="info-label">Surat</div>
+                        <div class="info-value">SM-2024-001 - Undangan Rapat</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Dari</div>
+                        <div class="info-value">Kepala Bagian Umum</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Kepada</div>
+                        <div class="info-value">Staff Administrasi</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Batas Waktu</div>
+                        <div class="info-value" style="color: var(--warning);">20 Jan 2024 (3 hari lagi)</div>
+                    </div>
+                </div>
+                
+                <div class="disposisi-isi">
+                    <strong>Isi Disposisi:</strong> Tolong diproses dan siapkan bahan rapat koordinasi. 
+                    Koordinasikan dengan bagian terkait untuk persiapan materi.
+                </div>
+                
+                <div class="disposisi-footer">
+                    <span>📅 Dibuat: 15 Jan 2024, 09:00</span>
+                    <div class="disposisi-actions">
+                        <button class="btn btn-sm" style="background: #d1fae5; color: #065f46; border: none;" 
+                                onclick="event.stopPropagation(); updateStatus(1, 'proses')">
+                            ✅ Proses
+                        </button>
+                        <button class="btn btn-sm" style="background: #fee2e2; color: #991b1b; border: none;"
+                                onclick="event.stopPropagation(); updateStatus(1, 'ditolak')">
+                            ❌ Tolak
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Disposisi 2 -->
+            <div class="disposisi-card" onclick="window.location.href='./show.ejs?id=2'">
+                <div class="disposisi-header">
+                    <h3 class="disposisi-title">Disposisi #DSP-2024-002</h3>
+                    <span class="status-badge status-proses">Proses</span>
+                </div>
+                
+                <div class="disposisi-info">
+                    <div class="info-item">
+                        <div class="info-label">Surat</div>
+                        <div class="info-value">SM-2024-005 - Permohonan Data</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Dari</div>
+                        <div class="info-value">Direktur Utama</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Kepada</div>
+                        <div class="info-value">Manager IT</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Batas Waktu</div>
+                        <div class="info-value">18 Jan 2024</div>
+                    </div>
+                </div>
+                
+                <div class="disposisi-isi">
+                    <strong>Isi Disposisi:</strong> Segera siapkan data yang diminta. Prioritaskan!
+                </div>
+                
+                <div class="disposisi-footer">
+                    <span>📅 Dibuat: 14 Jan 2024, 11:30</span>
+                    <div class="disposisi-actions">
+                        <button class="btn btn-sm" style="background: #d1fae5; color: #065f46; border: none;"
+                                onclick="event.stopPropagation(); updateStatus(2, 'selesai')">
+                            ✅ Selesai
+                        </button>
+                        <a href="./tracking.ejs?surat=5" class="btn btn-sm" 
+                           style="background: var(--light); border: 1px solid var(--border); color: var(--dark); text-decoration: none;"
+                           onclick="event.stopPropagation();">
+                            📋 Tracking
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Disposisi 3 (Selesai) -->
+            <div class="disposisi-card" style="opacity: 0.7;" onclick="window.location.href='./show.ejs?id=3'">
+                <div class="disposisi-header">
+                    <h3 class="disposisi-title">Disposisi #DSP-2024-003</h3>
+                    <span class="status-badge status-selesai">Selesai</span>
+                </div>
+                
+                <div class="disposisi-info">
+                    <div class="info-item">
+                        <div class="info-label">Surat</div>
+                        <div class="info-value">SM-2024-003 - Laporan Tahunan</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Dari</div>
+                        <div class="info-value">Kepala Bagian</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Kepada</div>
+                        <div class="info-value">Bagian Arsip</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Selesai Pada</div>
+                        <div class="info-value" style="color: var(--success);">13 Jan 2024</div>
+                    </div>
+                </div>
+                
+                <div class="disposisi-isi">
+                    <strong>Isi Disposisi:</strong> Arsipkan dokumen sesuai ketentuan.
+                </div>
+                
+                <div class="disposisi-footer">
+                    <span>✅ Selesai: 13 Jan 2024, 16:00</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination">
+            <button class="btn btn-sm" style="border: 1px solid var(--border);">«</button>
+            <button class="btn btn-sm" style="background: var(--primary); color: white;">1</button>
+            <button class="btn btn-sm" style="border: 1px solid var(--border);">2</button>
+            <button class="btn btn-sm" style="border: 1px solid var(--border);">3</button>
+            <button class="btn btn-sm" style="border: 1px solid var(--border);">»</button>
+        </div>
+    </main>
+    
+    <script>
+        function filterByStatus(status) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            console.log('Filtering by:', status);
+        }
+        
+        function updateStatus(id, status) {
+            if (confirm(`Ubah status disposisi menjadi "${status}"?`)) {
+                console.log('Updating disposisi:', id, 'to', status);
+                alert('Status disposisi berhasil diperbarui');
+                location.reload();
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('auth_token');
+            if (!token) window.location.href = '../../login';
+        });
+    </script>
+</body>
+</html>
