@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Disposisi - Arsip Surat Digital Enterprise</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <style>
+        :root {
+            --primary: #1a56db; --secondary: #64748b; --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444; --dark: #1f2937;
+            --darker: #111827; --light: #f9fafb; --lighter: #ffffff; --border: #e5e7eb;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--light); color: var(--dark); display: flex; min-height: 100vh; }
+        
+        .sidebar { width: 260px; background: var(--darker); color: white; position: fixed; top: 0; left: 0; bottom: 0; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #374151; }
+        .sidebar-nav { padding: 20px 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #9ca3af; text-decoration: none; font-size: 14px; border-left: 3px solid transparent; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: rgba(26,86,219,0.2); color: white; border-left-color: var(--primary); }
+        
+        .main-content { flex: 1; margin-left: 260px; padding: 30px; }
+        .page-title { font-size: 24px; font-weight: 800; margin-bottom: 30px; }
+        
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-box { background: var(--lighter); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid var(--border); }
+        .stat-value { font-size: 28px; font-weight: 800; }
+        .stat-label { font-size: 12px; color: var(--secondary); margin-top: 5px; }
+        
+        .table-card { background: var(--lighter); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: var(--light); }
+        th { padding: 14px 16px; text-align: left; font-size: 12px; font-weight: 600; color: var(--secondary); text-transform: uppercase; border-bottom: 2px solid var(--border); }
+        td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--light); }
+        tr:hover { background: #f8fafc; }
+        
+        .status-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-proses { background: #dbeafe; color: #1e40af; }
+        .status-selesai { background: #d1fae5; color: #065f46; }
+        
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border: 2px solid transparent; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; font-family: var(--font-sans); }
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-outline { background: transparent; color: var(--primary); border-color: var(--primary); }
+        .footer-actions { display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px; flex-wrap: wrap; }
+        
+        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } }
+        @media print { .sidebar, .btn, .footer-actions { display: none; } body { background: white; } .main-content { margin: 0; padding: 0; } }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">🏢 Arsip Surat Digital</div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard/index.ejs" class="nav-item">📊 Dashboard</a>
+            <a href="../disposisi/index.ejs" class="nav-item">📋 Disposisi</a>
+            <a href="./index.ejs" class="nav-item active">📊 Laporan</a>
+            <a href="../../login" class="nav-item" style="color: #ef4444;">🚪 Logout</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <h1 class="page-title">📋 Laporan Disposisi</h1>
+        
+        <div class="stats-row">
+            <div class="stat-box"><div class="stat-value" style="color: var(--primary);">156</div><div class="stat-label">Total Disposisi</div></div>
+            <div class="stat-box"><div class="stat-value" style="color: var(--warning);">45</div><div class="stat-label">Pending</div></div>
+            <div class="stat-box"><div class="stat-value" style="color: #3b82f6;">67</div><div class="stat-label">Proses</div></div>
+            <div class="stat-box"><div class="stat-value" style="color: var(--success);">44</div><div class="stat-label">Selesai</div></div>
+        </div>
+        
+        <div class="table-card">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr><th>No</th><th>No. Disposisi</th><th>Surat</th><th>Dari</th><th>Kepada</th><th>Status</th><th>Tanggal</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>DSP-2024-001</td><td>SM-2024-001</td><td>Kabag Umum</td><td>Staff Admin</td><td><span class="status-badge status-pending">Pending</span></td><td>15/01/2024</td></tr>
+                        <tr><td>2</td><td>DSP-2024-002</td><td>SM-2024-005</td><td>Direktur</td><td>Manager IT</td><td><span class="status-badge status-proses">Proses</span></td><td>14/01/2024</td></tr>
+                        <tr><td>3</td><td>DSP-2024-003</td><td>SM-2024-003</td><td>Kabag</td><td>Bagian Arsip</td><td><span class="status-badge status-selesai">Selesai</span></td><td>13/01/2024</td></tr>
+                        <tr><td>4</td><td>DSP-2024-004</td><td>SM-2024-008</td><td>Admin</td><td>Operator</td><td><span class="status-badge status-selesai">Selesai</span></td><td>12/01/2024</td></tr>
+                        <tr><td>5</td><td>DSP-2024-005</td><td>SM-2024-010</td><td>Pimpinan</td><td>Staff</td><td><span class="status-badge status-pending">Pending</span></td><td>11/01/2024</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer-actions">
+            <button class="btn btn-outline" onclick="window.print()">🖨️ Cetak</button>
+            <button class="btn btn-primary" onclick="exportPDF()">📄 Export PDF</button>
+            <a href="./index.ejs" class="btn btn-outline">← Kembali</a>
+        </div>
+    </main>
+    
+    <script>
+        function exportPDF() { alert('Mengexport PDF...'); }
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('auth_token')) window.location.href = '../../login';
+        });
+    </script>
+</body>
+</html>
