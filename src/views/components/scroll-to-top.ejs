@@ -1,0 +1,20 @@
+<!-- Scroll to Top Button -->
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Kembali ke atas">↑</button>
+
+<style>
+    .scroll-top {
+        position:fixed;bottom:24px;right:24px;width:44px;height:44px;
+        background:#1a56db;color:white;border:none;border-radius:50%;
+        font-size:20px;cursor:pointer;box-shadow:0 4px 12px rgba(26,86,219,0.3);
+        opacity:0;visibility:hidden;transition:all 0.3s;z-index:50;
+        display:flex;align-items:center;justify-content:center;
+    }
+    .scroll-top.visible { opacity:1;visibility:visible }
+    .scroll-top:hover { background:#1e40af;transform:translateY(-3px) }
+</style>
+
+<script>
+    window.addEventListener('scroll', () => {
+        document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 300);
+    });
+</script>
