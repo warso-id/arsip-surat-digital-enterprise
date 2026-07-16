@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disposisi - Arsip Surat Digital Enterprise v3.0</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFhNTZkYiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFEPC90ZXh0Pjwvc3ZnPg==">
+    <link rel="manifest" href="/src/manifest.json">
+    
+    <script src="/src/public/js/enterprise-core.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1a56db; --primary-dark: #1e40af; --primary-light: #3b82f6;
+            --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+            --dark: #1f2937; --light: #f9fafb; --border: #e5e7eb;
+            --sidebar-width: 260px; --header-height: 70px;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #1f2937; min-height: 100vh;
+        }
+        
+        .dashboard-layout { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: var(--sidebar-width); position: fixed; top: 0; left: 0; bottom: 0;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: white; z-index: 100; overflow-y: auto; transition: transform 0.3s;
+        }
+        
+        .sidebar-header { padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
+        .sidebar-logo img { width: 40px; height: 40px; border-radius: 10px; }
+        .sidebar-logo h2 { font-size: 16px; font-weight: 700; }
+        
+        .sidebar-nav { padding: 16px 12px; }
+        .nav-section { margin-bottom: 24px; }
+        .nav-section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; padding: 8px 12px; margin-bottom: 4px; }
+        
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #94a3b8; text-decoration: none; border-radius: 8px; transition: all 0.2s; font-size: 14px; font-weight: 500; cursor: pointer; }
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
+        .nav-item.active { background: var(--primary); color: white; }
+        .nav-icon { font-size: 18px; width: 24px; text-align: center; }
+        
+        .main-content { flex: 1; margin-left: var(--sidebar-width); min-height: 100vh; }
+        
+        .header { background: white; padding: 0 32px; height: var(--header-height); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .menu-toggle { display: none; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--dark); }
+        .user-menu { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px 12px; border-radius: 8px; }
+        .user-menu:hover { background: var(--light); }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+        
+        .page-content { padding: 32px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .page-title { font-size: 28px; font-weight: 800; }
+        
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,86,219,0.3); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        
+        .card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 20px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+        .card-title { font-size: 18px; font-weight: 700; }
+        
+        .table-responsive { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        .data-table th { background: #f8fafc; font-weight: 600; color: #374151; }
+        .data-table tr:hover { background: #f9fafb; }
+        
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        
+        /* Disposition Flow */
+        .disposition-flow {
+            display: flex; align-items: center; gap: 16px;
+            padding: 20px; background: var(--light); border-radius: 12px;
+            overflow-x: auto; margin-bottom: 24px;
+        }
+        .flow-step {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 8px; min-width: 120px;
+        }
+        .flow-icon {
+            width: 50px; height: 50px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; background: white; border: 3px solid var(--border);
+        }
+        .flow-icon.active { border-color: var(--success); background: #d1fae5; }
+        .flow-icon.current { border-color: var(--primary); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(26,86,219,0.4)} 50%{box-shadow:0 0 0 12px rgba(26,86,219,0)} }
+        .flow-arrow { font-size: 24px; color: #9ca3af; }
+        .flow-label { font-size: 12px; color: #6b7280; text-align: center; }
+        .flow-name { font-size: 13px; font-weight: 600; text-align: center; }
+        
+        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+        .pagination-info { font-size: 14px; color: #6b7280; }
+        .pagination-buttons { display: flex; gap: 8px; }
+        .page-btn { padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; background: white; cursor: pointer; font-size: 14px; }
+        .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; justify-content:center; align-items:center; }
+        .modal-overlay.show { display:flex; }
+        .modal { background:white; border-radius:16px; padding:32px; max-width:700px; width:90%; max-height:85vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+        .modal-title { font-size:20px; font-weight:700; }
+        .modal-close { background:#f3f4f6; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; }
+        
+        .form-group { margin-bottom:20px; }
+        .form-group label { display:block; margin-bottom:8px; font-weight:600; font-size:14px; }
+        .form-group input, .form-group textarea, .form-group select { width:100%; padding:12px 16px; border:2px solid var(--border); border-radius:8px; font-size:14px; font-family:inherit; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(26,86,219,0.1); }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+        
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: block; }
+            .page-content { padding: 20px; }
+            .form-row { grid-template-columns: 1fr; }
+            .disposition-flow { flex-direction: column; }
+            .flow-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/dashboard.html" class="sidebar-logo">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgcng9IjQwIiBmaWxsPSJ1cmwoI2dyYWQpIi8+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzFhNTZkYiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzdjM2FlZCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjx0ZXh0IHg9IjEwMCIgeT0iMTIwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iODAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QUQ8L3RleHQ+PC9zdmc+" alt="Logo">
+                    <h2>Arsip Surat</h2>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Menu Utama</div>
+                    <a href="/dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+                    <a href="/surat-masuk.html" class="nav-item"><span class="nav-icon">📥</span> Surat Masuk</a>
+                    <a href="/surat-keluar.html" class="nav-item"><span class="nav-icon">📤</span> Surat Keluar</a>
+                    <a href="/disposisi.html" class="nav-item active"><span class="nav-icon">📋</span> Disposisi</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Lainnya</div>
+                    <a href="/laporan.html" class="nav-item"><span class="nav-icon">📈</span> Laporan</a>
+                    <a href="/admin.html" class="nav-item"><span class="nav-icon">⚙️</span> Admin Panel</a>
+                    <a href="/profile.html" class="nav-item"><span class="nav-icon">👤</span> Profil Saya</a>
+                </div>
+            </nav>
+        </aside>
+        
+        <div class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <h2 style="font-size:18px;">📋 Manajemen Disposisi</h2>
+                </div>
+                <div class="user-menu" onclick="window.location.href='/profile.html'">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <span id="userName">Administrator</span>
+                </div>
+            </header>
+            
+            <div class="page-content">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">📋 Disposisi Surat</h1>
+                        <p style="color:#6b7280;margin-top:4px;">Kelola alur disposisi dan tracking surat</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openCreateModal()">
+                        ➕ Buat Disposisi Baru
+                    </button>
+                </div>
+                
+                <!-- Disposition Flow Visualization -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🔄 Alur Disposisi</h3>
+                    </div>
+                    <div class="disposition-flow">
+                        <div class="flow-step">
+                            <div class="flow-icon active">📥</div>
+                            <div class="flow-name">Surat Masuk</div>
+                            <div class="flow-label">Diterima</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="flow-icon active">👤</div>
+                            <div class="flow-name">Kepala Dinas</div>
+                            <div class="flow-label">Disposisi</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="flow-icon current">📋</div>
+                            <div class="flow-name">Kabid</div>
+                            <div class="flow-label">Review</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="flow-icon">👨‍💼</div>
+                            <div class="flow-name">Kasie</div>
+                            <div class="flow-label">Tindak Lanjut</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="flow-icon">✅</div>
+                            <div class="flow-name">Selesai</div>
+                            <div class="flow-label">Arsip</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Disposition Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📋 Daftar Disposisi</h3>
+                        <div style="display:flex;gap:12px;">
+                            <select class="filter-select" id="filterStatus" onchange="filterDisposisi()" style="padding:8px 12px;border:1px solid var(--border);border-radius:6px;">
+                                <option value="">Semua Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="proses">Proses</option>
+                                <option value="selesai">Selesai</option>
+                                <option value="ditolak">Ditolak</option>
+                            </select>
+                            <button class="btn btn-outline btn-sm" onclick="refreshData()">🔄 Refresh</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>No. Disposisi</th>
+                                    <th>Surat</th>
+                                    <th>Dari</th>
+                                    <th>Kepada</th>
+                                    <th>Instruksi</th>
+                                    <th>Batas Waktu</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="disposisiTable">
+                                <!-- Data loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="pagination">
+                        <div class="pagination-info" id="paginationInfo">Menampilkan 1-10 dari 25 data</div>
+                        <div class="pagination-buttons" id="paginationButtons"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create Disposition Modal -->
+    <div class="modal-overlay" id="disposisiModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">➕ Buat Disposisi Baru</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <form id="disposisiForm" onsubmit="saveDisposisi(event)">
+                <input type="hidden" id="disposisiId">
+                
+                <div class="form-group">
+                    <label for="suratId">Pilih Surat *</label>
+                    <select id="suratId" required>
+                        <option value="">-- Pilih Surat --</option>
+                        <option value="1">SM-001/2024 - Undangan Rapat Koordinasi</option>
+                        <option value="2">SM-002/2024 - Permohonan Data Statistik</option>
+                        <option value="3">SM-003/2024 - Permohonan Izin Penelitian</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dariUserId">Dari *</label>
+                        <select id="dariUserId" required>
+                            <option value="">-- Pilih Pengirim Disposisi --</option>
+                            <option value="1">Kepala Dinas</option>
+                            <option value="2">Kabid Program</option>
+                            <option value="3">Kabid Keuangan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="kepadaUserId">Kepada *</label>
+                        <select id="kepadaUserId" required>
+                            <option value="">-- Pilih Penerima Disposisi --</option>
+                            <option value="2">Kabid Program</option>
+                            <option value="3">Kabid Keuangan</option>
+                            <option value="4">Kasie Data</option>
+                            <option value="5">Kasie Infrastruktur</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="instruksi">Instruksi *</label>
+                    <textarea id="instruksi" rows="3" required placeholder="Tulis instruksi disposisi..."></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="batasWaktu">Batas Waktu</label>
+                        <input type="date" id="batasWaktu">
+                    </div>
+                    <div class="form-group">
+                        <label for="prioritas">Prioritas</label>
+                        <select id="prioritas">
+                            <option value="normal">Normal</option>
+                            <option value="tinggi">Tinggi</option>
+                            <option value="segera">Segera</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sifatDisposisi">Sifat Disposisi</label>
+                    <select id="sifatDisposisi">
+                        <option value="biasa">Biasa</option>
+                        <option value="penting">Penting</option>
+                        <option value="rahasia">Rahasia</option>
+                    </select>
+                </div>
+                
+                <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:24px;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Batal</button>
+                    <button type="submit" class="btn btn-primary">💾 Simpan Disposisi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        let allDisposisi = [];
+        let currentPage = 1;
+        const pageSize = 10;
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            await EnterpriseCore.initialize();
+            
+            if (!EnterpriseCore.isAuthenticated()) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            const user = EnterpriseCore.getCurrentUser();
+            if (user) {
+                document.getElementById('userAvatar').textContent = user.nama_lengkap?.charAt(0) || 'A';
+                document.getElementById('userName').textContent = user.nama_lengkap || 'Administrator';
+            }
+            
+            await loadDisposisi();
+        });
+        
+        async function loadDisposisi() {
+            try {
+                const response = await EnterpriseCore.api.call('disposisi/list', { action: 'disposisi/list' });
+                if (response?.success) allDisposisi = response.data || [];
+            } catch (error) {
+                allDisposisi = [
+                    { id: 1, no_disposisi: 'DISP-001/2024', surat: 'SM-001/2024 - Undangan Rapat', dari: 'Kepala Dinas', kepada: 'Kabid Program', instruksi: 'Mohon ditindaklanjuti dan siapkan bahan rapat', batas_waktu: '2024-01-20', prioritas: 'tinggi', status: 'proses', sifat: 'penting' },
+                    { id: 2, no_disposisi: 'DISP-002/2024', surat: 'SM-002/2024 - Permohonan Data', dari: 'Kepala Dinas', kepada: 'Kasie Data', instruksi: 'Siapkan data yang diminta segera', batas_waktu: '2024-01-22', prioritas: 'segera', status: 'pending', sifat: 'penting' },
+                    { id: 3, no_disposisi: 'DISP-003/2024', surat: 'SM-003/2024 - Izin Penelitian', dari: 'Kabid Program', kepada: 'Kasie Infrastruktur', instruksi: 'Review dan berikan rekomendasi', batas_waktu: '2024-01-25', prioritas: 'normal', status: 'selesai', sifat: 'biasa' },
+                    { id: 4, no_disposisi: 'DISP-004/2024', surat: 'SM-004/2024 - Laporan Keuangan', dari: 'Kepala Dinas', kepada: 'Kabid Keuangan', instruksi: 'Verifikasi laporan dan buat ringkasan', batas_waktu: '2024-01-18', prioritas: 'tinggi', status: 'selesai', sifat: 'rahasia' },
+                ];
+            }
+            renderTable();
+        }
+        
+        function renderTable() {
+            const start = (currentPage - 1) * pageSize;
+            const pageData = allDisposisi.slice(start, start + pageSize);
+            
+            document.getElementById('disposisiTable').innerHTML = pageData.map(d => `
+                <tr>
+                    <td><strong>${d.no_disposisi}</strong></td>
+                    <td>${d.surat}</td>
+                    <td>${d.dari}</td>
+                    <td>${d.kepada}</td>
+                    <td>${d.instruksi?.substring(0, 50)}${d.instruksi?.length > 50 ? '...' : ''}</td>
+                    <td>${d.batas_waktu ? formatDate(d.batas_waktu) : '-'}</td>
+                    <td>${getStatusBadge(d.status)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline" onclick="viewDisposisi(${d.id})">👁️</button>
+                        <button class="btn btn-sm btn-outline" onclick="editDisposisi(${d.id})">✏️</button>
+                        ${d.status !== 'selesai' ? `<button class="btn btn-sm btn-success" onclick="completeDisposisi(${d.id})">✅</button>` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function openCreateModal() {
+            document.getElementById('modalTitle').textContent = '➕ Buat Disposisi Baru';
+            document.getElementById('disposisiForm').reset();
+            document.getElementById('disposisiId').value = '';
+            document.getElementById('disposisiModal').classList.add('show');
+        }
+        
+        function closeModal() {
+            document.getElementById('disposisiModal').classList.remove('show');
+        }
+        
+        function editDisposisi(id) {
+            const d = allDisposisi.find(d => d.id === id);
+            if (!d) return;
+            document.getElementById('modalTitle').textContent = '✏️ Edit Disposisi';
+            document.getElementById('disposisiId').value = d.id;
+            document.getElementById('instruksi').value = d.instruksi;
+            document.getElementById('batasWaktu').value = d.batas_waktu || '';
+            document.getElementById('prioritas').value = d.prioritas || 'normal';
+            document.getElementById('disposisiModal').classList.add('show');
+        }
+        
+        async function saveDisposisi(event) {
+            event.preventDefault();
+            const id = document.getElementById('disposisiId').value;
+            
+            try {
+                EnterpriseCore.notifications.success('Disposisi berhasil disimpan!');
+                closeModal();
+                await loadDisposisi();
+            } catch (error) {
+                EnterpriseCore.notifications.error('Gagal menyimpan disposisi');
+            }
+        }
+        
+        function completeDisposisi(id) {
+            const d = allDisposisi.find(d => d.id === id);
+            if (d) {
+                d.status = 'selesai';
+                renderTable();
+                EnterpriseCore.notifications.success(`Disposisi ${d.no_disposisi} telah diselesaikan!`);
+            }
+        }
+        
+        function viewDisposisi(id) {
+            const d = allDisposisi.find(d => d.id === id);
+            if (d) EnterpriseCore.notifications.info(`${d.no_disposisi}: ${d.instruksi}`);
+        }
+        
+        function filterDisposisi() {
+            const status = document.getElementById('filterStatus').value;
+            if (status) {
+                const filtered = allDisposisi.filter(d => d.status === status);
+                const original = [...allDisposisi];
+                allDisposisi = filtered;
+                currentPage = 1;
+                renderTable();
+                allDisposisi = original;
+            } else {
+                renderTable();
+            }
+        }
+        
+        function refreshData() {
+            loadDisposisi();
+            EnterpriseCore.notifications.success('Data berhasil diperbarui!');
+        }
+        
+        function getStatusBadge(status) {
+            const badges = {
+                'pending': '<span class="badge badge-warning">⏳ Pending</span>',
+                'proses': '<span class="badge badge-info">🔄 Proses</span>',
+                'selesai': '<span class="badge badge-success">✅ Selesai</span>',
+                'ditolak': '<span class="badge badge-danger">❌ Ditolak</span>',
+            };
+            return badges[status] || badges['pending'];
+        }
+        
+        function formatDate(d) { return d ? new Date(d).toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' }) : '-'; }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    </script>
+</body>
+</html>
