@@ -1,0 +1,27 @@
+<!-- Announcement Marquee Component -->
+<div class="announcement-bar <%= type || 'info' %>">
+    <div class="announcement-content">
+        <span class="announcement-icon"><%= icon || '📢' %></span>
+        <span class="announcement-text"><%= text %></span>
+        <% if (actionText && actionUrl) { %>
+            <a href="<%= actionUrl %>" class="announcement-action"><%= actionText %></a>
+        <% } %>
+        <% if (dismissible) { %>
+            <button class="announcement-close" onclick="this.parentElement.parentElement.remove()">✕</button>
+        <% } %>
+    </div>
+</div>
+
+<style>
+    .announcement-bar { padding: 10px 20px; text-align: center; position: relative; }
+    .announcement-bar.info { background: #eff6ff; color: #1e40af; border-bottom: 1px solid #bfdbfe; }
+    .announcement-bar.warning { background: #fffbeb; color: #92400e; border-bottom: 1px solid #fde68a; }
+    .announcement-bar.success { background: #f0fdf4; color: #065f46; border-bottom: 1px solid #bbf7d0; }
+    .announcement-bar.danger { background: #fef2f2; color: #991b1b; border-bottom: 1px solid #fecaca; }
+    .announcement-content { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; font-size: 14px; }
+    .announcement-icon { font-size: 18px; }
+    .announcement-text { font-weight: 500; }
+    .announcement-action { color: inherit; font-weight: 700; text-decoration: underline; margin-left: 8px; }
+    .announcement-close { background: none; border: none; cursor: pointer; font-size: 16px; opacity: 0.6; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
+    .announcement-close:hover { opacity: 1; }
+</style>
