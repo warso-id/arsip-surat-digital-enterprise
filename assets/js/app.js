@@ -1,31 +1,48 @@
-// app.js - Main Application (FULL CRUD PWA)
+// app.js - Main Application (Updated with Router)
 class App {
     constructor() {
         this.version = CONFIG.APP_VERSION;
         this.currentRoute = null;
         this.isOnline = navigator.onLine;
         this.isLoading = false;
+        this.pageCache = new Map();
     }
 
     async init() {
         try {
             console.log('Initializing App v' + this.version);
             
+            // Setup event listeners
             this.setupEventListeners();
+            
+            // Check online status
             this.checkOnlineStatus();
+            
+            // Hide spinner
             this.hideSpinner();
             
-            // Check hash route
-            const hash = window.location.hash.replace('#', '');
+            // Listen for route changes from router
+            window.addEventListener('route-change', (event) => {
+                const { route } = event.detail;
+                this.navigateTo(route);
+            });
             
+            // Check authentication and show appropriate page
             if (auth.isAuthenticated) {
-                if (hash && Object.values(CONFIG.ROUTES).includes(hash)) {
-                    await this.navigateTo(hash, false);
-                } else {
-                    await this.navigateTo('dashboard', false);
-                }
+                // Router will handle the initial route
+                const route = router.getCurrentRoute() || 'dashboard';
+                await this.navigateTo(route);
             } else {
-                this.showLandingPage();
+                this.showLoginPage();
+            }
+            
+            // Process sync queue if online
+            if (this.isOnline) {
+                try {
+                    await api.processSyncQueue();
+                } catch (e) {
+                    console.log('Sync queue processing skipped');
+                }
             }
             
             console.log('App initialized successfully');
@@ -33,77 +50,84 @@ class App {
         } catch (error) {
             console.error('App initialization error:', error);
             this.hideSpinner();
-            this.showLandingPage();
+            this.showLoginPage();
         }
     }
 
     setupEventListeners() {
+        // Online/Offline events
         window.addEventListener('online', () => this.handleOnline());
         window.addEventListener('offline', () => this.handleOffline());
         
-        window.addEventListener('hashchange', () => {
-            const route = window.location.hash.replace('#', '');
-            if (route && auth.isAuthenticated) {
-                this.navigateTo(route, false);
-            }
-        });
-        
+        // Close modals on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') this.closeModal();
         });
         
+        // Close modal when clicking overlay
         document.addEventListener('click', (e) => {
             if (e.target.id === 'crud-modal') {
                 this.closeModal();
             }
         });
+
+        // Handle service worker messages
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'SYNC_QUEUE') {
+                    api.processSyncQueue();
+                }
+            });
+        }
     }
 
     checkOnlineStatus() {
         this.isOnline = navigator.onLine;
-        const indicator = document.getElementById('offline-indicator');
-        if (indicator) {
-            if (this.isOnline) {
-                indicator.classList.remove('show');
-                setTimeout(() => { indicator.style.display = 'none'; }, 300);
-            } else {
-                indicator.style.display = 'block';
-                setTimeout(() => indicator.classList.add('show'), 10);
-            }
-        }
+        this.updateOfflineIndicator();
         return this.isOnline;
+    }
+
+    updateOfflineIndicator() {
+        const indicator = document.getElementById('offline-indicator');
+        if (!indicator) return;
+        
+        if (this.isOnline) {
+            indicator.classList.remove('show');
+            setTimeout(() => {
+                indicator.style.display = 'none';
+            }, 300);
+        } else {
+            indicator.style.display = 'block';
+            setTimeout(() => indicator.classList.add('show'), 10);
+        }
     }
 
     handleOnline() {
         this.isOnline = true;
-        this.checkOnlineStatus();
+        this.updateOfflineIndicator();
         this.showToast('Koneksi internet tersedia', 'success');
-        if (this.currentRoute) {
-            this.navigateTo(this.currentRoute, false);
-        }
+        api.processSyncQueue().catch(e => {
+            console.log('Sync queue processing failed:', e);
+        });
     }
 
     handleOffline() {
         this.isOnline = false;
-        this.checkOnlineStatus();
+        this.updateOfflineIndicator();
         this.showToast('Anda sedang offline', 'warning');
     }
 
-    async navigateTo(route, addToHistory = true) {
+    async navigateTo(route) {
         if (this.isLoading) return;
+        
+        // Security: Sanitize route
+        route = Router.sanitizeRoute(route || 'dashboard');
         
         this.isLoading = true;
         this.currentRoute = route;
         
-        if (addToHistory) {
-            window.location.hash = route;
-        }
-        
-        if (!auth.isAuthenticated && route !== 'login') {
-            this.showLandingPage();
-            this.isLoading = false;
-            return;
-        }
+        // Show loading state
+        this.showPageLoading();
         
         try {
             switch(route) {
@@ -119,17 +143,17 @@ class App {
                 case 'disposisi':
                     await this.showDisposisi();
                     break;
-                case 'kategori':
-                    await this.showKategori();
-                    break;
-                case 'instansi':
-                    await this.showInstansi();
-                    break;
                 case 'laporan':
                     await this.showLaporan();
                     break;
                 case 'pengguna':
                     await this.showPengguna();
+                    break;
+                case 'instansi':
+                    await this.showInstansi();
+                    break;
+                case 'kategori':
+                    await this.showKategori();
                     break;
                 case 'pengaturan':
                     await this.showPengaturan();
@@ -137,131 +161,744 @@ class App {
                 case 'profile':
                     await this.showProfile();
                     break;
+                case 'notifikasi':
+                    await this.showNotifikasi();
+                    break;
+                case 'login':
+                    this.showLoginPage();
+                    break;
+                case 'register':
+                    this.showRegisterPage();
+                    break;
+                case 'logout':
+                    await this.logout();
+                    break;
                 default:
                     this.show404();
             }
         } catch (error) {
             console.error('Navigation error:', error);
+            this.showError('Gagal memuat halaman');
         } finally {
             this.isLoading = false;
+            this.hidePageLoading();
         }
     }
 
-    // Landing Page
-    showLandingPage() {
+    showPageLoading() {
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.innerHTML = `
+                <div style="text-align: center; padding: 50px;">
+                    <div class="spinner-enterprise"></div>
+                    <p class="spinner-text">Memuat halaman...</p>
+                </div>
+            `;
+        }
+    }
+
+    hidePageLoading() {
+        // Loading state is replaced by actual content
+    }
+
+    // ============================================
+    // PAGE RENDERERS
+    // ============================================
+
+    async showDashboard() {
+        if (!auth.isAuthenticated) {
+            this.showLoginPage();
+            return;
+        }
+
         const container = document.getElementById('app-container');
         if (!container) return;
 
         container.innerHTML = `
-            <div class="landing-page">
-                <div class="landing-container">
-                    <div class="landing-header">
-                        <div class="logo-placeholder">AS</div>
-                        <h1>Arsip Surat Digital</h1>
-                        <p class="subtitle">Sistem Manajemen Arsip Surat Enterprise 2026</p>
-                        <span class="version">🚀 Version ${this.version}</span>
-                        <br><br>
-                        <button class="btn-landing btn-login" onclick="window.app.showLoginForm()">
-                            <i class="fas fa-sign-in-alt"></i> Masuk
-                        </button>
-                        <button class="btn-landing btn-register" onclick="window.app.showRegisterForm()">
-                            <i class="fas fa-user-plus"></i> Daftar
-                        </button>
-                    </div>
-                    
-                    <div class="features-grid">
-                        <div class="feature-card">
-                            <div class="feature-icon">📥</div>
-                            <h3>Manajemen Surat Masuk</h3>
-                            <p>Kelola surat masuk dengan mudah, lengkap dengan tracking status dan disposisi otomatis.</p>
+            <div class="dashboard-page">
+                ${this.renderHeader()}
+                <div class="main-layout">
+                    ${this.renderSidebar()}
+                    <main class="main-content" id="main-content">
+                        <div class="dashboard-container">
+                            <div class="page-header">
+                                <h2><i class="fas fa-chart-pie"></i> Dashboard</h2>
+                                <div class="header-actions">
+                                    <span id="current-date">${this.formatDate(new Date())}</span>
+                                    <button onclick="app.refreshDashboard()" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-sync-alt"></i> Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="stats-grid" id="dashboard-stats">
+                                <div style="text-align: center; padding: 50px;">
+                                    <i class="fas fa-spinner fa-spin"></i> Memuat data...
+                                </div>
+                            </div>
+                            <div class="dashboard-grid">
+                                <div class="chart-container">
+                                    <h3>Aktivitas Terbaru</h3>
+                                    <div id="recent-activities">
+                                        <p class="text-center">Memuat aktivitas...</p>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <h3>Quick Actions</h3>
+                                    <div class="quick-actions">
+                                        <button class="btn btn-primary" data-route="surat-masuk">
+                                            <i class="fas fa-plus"></i> Surat Masuk Baru
+                                        </button>
+                                        <button class="btn btn-success" data-route="surat-keluar">
+                                            <i class="fas fa-plus"></i> Surat Keluar Baru
+                                        </button>
+                                        <button class="btn btn-info" data-route="disposisi">
+                                            <i class="fas fa-exchange-alt"></i> Buat Disposisi
+                                        </button>
+                                        <button class="btn btn-warning" data-route="laporan">
+                                            <i class="fas fa-chart-bar"></i> Generate Laporan
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">📤</div>
-                            <h3>Manajemen Surat Keluar</h3>
-                            <p>Buat dan kelola surat keluar dengan template dinamis dan export ke berbagai format.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">📋</div>
-                            <h3>Sistem Disposisi</h3>
-                            <p>Disposisi multi-level dengan notifikasi real-time dan tracking status lengkap.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">📊</div>
-                            <h3>Dashboard & Laporan</h3>
-                            <p>Dashboard interaktif dengan grafik dan laporan yang dapat diexport ke Excel/PDF.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">📱</div>
-                            <h3>PWA Support</h3>
-                            <p>Aplikasi dapat diinstall di mobile dan digunakan secara offline.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🔒</div>
-                            <h3>Keamanan Enterprise</h3>
-                            <p>Enkripsi Base64, JWT authentication, role-based access control.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="footer-landing">
-                        <p>&copy; 2026 Arsip Surat Digital Enterprise v${this.version}</p>
-                    </div>
+                    </main>
                 </div>
             </div>
         `;
+
+        // Load dashboard stats
+        await this.loadDashboardStats();
     }
 
-    // Dashboard
-    async showDashboard() {
+    async showSuratMasuk() {
+        if (!auth.isAuthenticated) {
+            this.showLoginPage();
+            return;
+        }
+
         const container = document.getElementById('app-container');
         if (!container) return;
 
-        container.innerHTML = this.getAppLayout('dashboard', 'Dashboard', 'fa-chart-pie');
-        
-        const mainContent = document.getElementById('main-content');
-        if (!mainContent) return;
-        
-        mainContent.innerHTML = `
-            <div class="page-header">
-                <h2><i class="fas fa-chart-pie"></i> Dashboard</h2>
-                <div class="header-actions">
-                    <span id="current-date">${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                    <button onclick="window.app.refreshDashboard()" class="btn btn-primary btn-sm">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                </div>
-            </div>
-            <div class="stats-grid" id="dashboard-stats">
-                <div class="text-center" style="padding: 50px;">
-                    <div class="spinner-enterprise"></div>
-                    <p class="spinner-text">Memuat statistik...</p>
+        container.innerHTML = `
+            <div class="dashboard-page">
+                ${this.renderHeader()}
+                <div class="main-layout">
+                    ${this.renderSidebar()}
+                    <main class="main-content" id="main-content">
+                        <div class="surat-container">
+                            <div class="page-header">
+                                <h2><i class="fas fa-inbox"></i> Surat Masuk</h2>
+                                <div class="header-actions">
+                                    <button class="btn btn-success btn-sm" onclick="app.exportData('surat-masuk')">
+                                        <i class="fas fa-download"></i> Export
+                                    </button>
+                                    <button class="btn btn-primary" onclick="app.showSuratMasukForm()">
+                                        <i class="fas fa-plus"></i> Tambah Surat Masuk
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-bar">
+                                <div class="filter-row">
+                                    <div class="search-box">
+                                        <i class="fas fa-search search-icon-input"></i>
+                                        <input type="text" id="search-surat-masuk" 
+                                               placeholder="Cari surat masuk..." 
+                                               class="form-control"
+                                               onkeyup="app.searchSuratMasuk()">
+                                    </div>
+                                    <select id="filter-status-masuk" class="form-control" onchange="app.filterSuratMasuk()">
+                                        <option value="">Semua Status</option>
+                                        <option value="baru">Baru</option>
+                                        <option value="diproses">Diproses</option>
+                                        <option value="selesai">Selesai</option>
+                                    </select>
+                                    <input type="date" id="filter-date-masuk" class="form-control" onchange="app.filterSuratMasuk()">
+                                    <button onclick="app.resetFilterSuratMasuk()" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-undo"></i> Reset
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive" id="surat-masuk-table">
+                                <p class="text-center">Memuat data...</p>
+                            </div>
+                            
+                            <div id="pagination-surat-masuk"></div>
+                        </div>
+                    </main>
                 </div>
             </div>
         `;
-        
-        await this.loadDashboardStats();
-        this.updateSidebarActive('dashboard');
+
+        await this.loadSuratMasukData();
     }
+
+    async showSuratKeluar() {
+        if (!auth.isAuthenticated) {
+            this.showLoginPage();
+            return;
+        }
+
+        const container = document.getElementById('app-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="dashboard-page">
+                ${this.renderHeader()}
+                <div class="main-layout">
+                    ${this.renderSidebar()}
+                    <main class="main-content" id="main-content">
+                        <div class="surat-container">
+                            <div class="page-header">
+                                <h2><i class="fas fa-paper-plane"></i> Surat Keluar</h2>
+                                <div class="header-actions">
+                                    <button class="btn btn-success btn-sm" onclick="app.exportData('surat-keluar')">
+                                        <i class="fas fa-download"></i> Export
+                                    </button>
+                                    <button class="btn btn-primary" onclick="app.showSuratKeluarForm()">
+                                        <i class="fas fa-plus"></i> Tambah Surat Keluar
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-bar">
+                                <div class="filter-row">
+                                    <div class="search-box">
+                                        <i class="fas fa-search search-icon-input"></i>
+                                        <input type="text" id="search-surat-keluar" 
+                                               placeholder="Cari surat keluar..." 
+                                               class="form-control"
+                                               onkeyup="app.searchSuratKeluar()">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive" id="surat-keluar-table">
+                                <p class="text-center">Memuat data...</p>
+                            </div>
+                            
+                            <div id="pagination-surat-keluar"></div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        `;
+
+        await this.loadSuratKeluarData();
+    }
+
+    async showDisposisi() {
+        if (!auth.isAuthenticated) {
+            this.showLoginPage();
+            return;
+        }
+
+        const container = document.getElementById('app-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="dashboard-page">
+                ${this.renderHeader()}
+                <div class="main-layout">
+                    ${this.renderSidebar()}
+                    <main class="main-content" id="main-content">
+                        <div class="disposisi-container">
+                            <div class="page-header">
+                                <h2><i class="fas fa-clipboard-list"></i> Disposisi</h2>
+                                <button class="btn btn-primary" onclick="app.showDisposisiForm()">
+                                    <i class="fas fa-plus"></i> Buat Disposisi
+                                </button>
+                            </div>
+                            <div class="table-responsive" id="disposisi-table">
+                                <p class="text-center">Memuat data...</p>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        `;
+
+        await this.loadDisposisiData();
+    }
+
+    async showLaporan() {
+        if (!auth.isAuthenticated) {
+            this.showLoginPage();
+            return;
+        }
+
+        const container = document.getElementById('app-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="dashboard-page">
+                ${this.renderHeader()}
+                <div class="main-layout">
+                    ${this.renderSidebar()}
+                    <main class="main-content" id="main-content">
+                        <div class="laporan-container">
+                            <div class="page-header">
+                                <h2><i class="fas fa-chart-bar"></i> Laporan</h2>
+                            </div>
+                            <div class="report-cards">
+                                <div class="report-card">
+                                    <div class="card-icon"><i class="fas fa-file-pdf"></i></div>
+                                    <div class="card-content">
+                                        <h3>Laporan Surat Masuk</h3>
+                                        <p>Generate laporan surat masuk per periode</p>
+                                        <button class="btn btn-primary" onclick="app.generateReport('surat-masuk')">
+                                            <i class="fas fa-download"></i> Generate
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="report-card">
+                                    <div class="card-icon"><i class="fas fa-file-pdf"></i></div>
+                                    <div class="card-content">
+                                        <h3>Laporan Surat Keluar</h3>
+                                        <p>Generate laporan surat keluar per periode</p>
+                                        <button class="btn btn-primary" onclick="app.generateReport('surat-keluar')">
+                                            <i class="fas fa-download"></i> Generate
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="report-card">
+                                    <div class="card-icon"><i class="fas fa-file-pdf"></i></div>
+                                    <div class="card-content">
+                                        <h3>Laporan Disposisi</h3>
+                                        <p>Generate laporan disposisi per periode</p>
+                                        <button class="btn btn-primary" onclick="app.generateReport('disposisi')">
+                                            <i class="fas fa-download"></i> Generate
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        `;
+    }
+
+    async showPengguna() {
+        if (!auth.isAuthenticated) {
+            this.showLoginPage();
+            return;
+        }
+
+        const container = document.getElementById('app-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="dashboard-page">
+                ${this.renderHeader()}
+                <div class="main-layout">
+                    ${this.renderSidebar()}
+                    <main class="main-content" id="main-content">
+                        <div class="page-header">
+                            <h2><i class="fas fa-users"></i> Manajemen Pengguna</h2>
+                            <button class="btn btn-primary" onclick="app.showAddUserForm()">
+                                <i class="fas fa-user-plus"></i> Tambah Pengguna
+                            </button>
+                        </div>
+                        <div class="table-responsive" id="pengguna-table">
+                            <p class="text-center">Memuat data...</p>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        `;
+
+        await this.loadPenggunaData();
+    }
+
+    async showInstansi() {
+        if (!auth.isAuthenticated) {
+            this.showLoginPage();
+            return;
+        }
+
+        const container = document.getElementById('app-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="dashboard-page">
+                ${this.renderHeader()}
+                <div class="main-layout">
+                    ${this.renderSidebar()}
+                    <main class="main-content" id="main-content">
+                        <div class="page-header">
+                            <h2><i class="fas fa-building"></i> Data Instansi</h2>
+                            <button class="btn btn-primary" onclick="app.showAddInstansiForm()">
+                                <i class="fas fa-plus"></i> Tambah Instansi
+                            </button>
+                        </div>
+                        <div class="table-responsive" id="instansi-table">
+                            <p class="text-center">Memuat data...</p>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        `;
+
+        await this.loadInstansiData();
+    }
+
+    async showKategori() {
+        if (!auth.isAuthenticated) {
+            this.showLoginPage();
+            return;
+        }
+
+        const container = document.getElementById('app-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="dashboard-page">
+                ${this.renderHeader()}
+                <div class="main-layout">
+                    ${this.renderSidebar()}
+                    <main class="main-content" id="main-content">
+                        <div class="page-header">
+                            <h2><i class="fas fa-tags"></i> Kategori Surat</h2>
+                            <button class="btn btn-primary" onclick="app.showAddKategoriForm()">
+                                <i class="fas fa-plus"></i> Tambah Kategori
+                            </button>
+                        </div>
+                        <div class="table-responsive" id="kategori-table">
+                            <p class="text-center">Memuat data...</p>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        `;
+
+        await this.loadKategoriData();
+    }
+
+    showPengaturan() {
+        if (!auth.isAuthenticated) {
+            this.showLoginPage();
+            return;
+        }
+
+        const container = document.getElementById('app-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="dashboard-page">
+                ${this.renderHeader()}
+                <div class="main-layout">
+                    ${this.renderSidebar()}
+                    <main class="main-content" id="main-content">
+                        <div class="page-header">
+                            <h2><i class="fas fa-cog"></i> Pengaturan</h2>
+                        </div>
+                        <div class="settings-container">
+                            <p>Pengaturan sistem sedang dalam pengembangan.</p>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        `;
+    }
+
+    showProfile() {
+        if (!auth.isAuthenticated) {
+            this.showLoginPage();
+            return;
+        }
+
+        const user = auth.getUser();
+        const container = document.getElementById('app-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="dashboard-page">
+                ${this.renderHeader()}
+                <div class="main-layout">
+                    ${this.renderSidebar()}
+                    <main class="main-content" id="main-content">
+                        <div class="profile-container">
+                            <div class="page-header">
+                                <h2><i class="fas fa-user"></i> Profil Pengguna</h2>
+                            </div>
+                            <div class="profile-card">
+                                <div class="profile-avatar-large">
+                                    <div class="avatar-placeholder">${(user.fullName || user.username || 'U').charAt(0).toUpperCase()}</div>
+                                </div>
+                                <div class="profile-details">
+                                    <h3>${user.fullName || user.username}</h3>
+                                    <p><strong>Username:</strong> ${user.username}</p>
+                                    <p><strong>Email:</strong> ${user.email || '-'}</p>
+                                    <p><strong>Role:</strong> ${user.role || '-'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        `;
+    }
+
+    showNotifikasi() {
+        if (!auth.isAuthenticated) {
+            this.showLoginPage();
+            return;
+        }
+
+        const container = document.getElementById('app-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="dashboard-page">
+                ${this.renderHeader()}
+                <div class="main-layout">
+                    ${this.renderSidebar()}
+                    <main class="main-content" id="main-content">
+                        <div class="page-header">
+                            <h2><i class="fas fa-bell"></i> Notifikasi</h2>
+                            <button class="btn btn-secondary btn-sm" onclick="app.markAllNotificationsRead()">
+                                <i class="fas fa-check-double"></i> Tandai Semua Dibaca
+                            </button>
+                        </div>
+                        <div id="notifikasi-list">
+                            <p class="text-center">Memuat notifikasi...</p>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        `;
+
+        this.loadNotifications();
+    }
+
+    showLoginPage() {
+        const container = document.getElementById('app-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="auth-page">
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <div class="auth-logo">AS</div>
+                            <h2>Arsip Surat Digital</h2>
+                            <p>Enterprise ${this.version}</p>
+                        </div>
+                        <form id="login-form" onsubmit="event.preventDefault(); app.handleLogin()">
+                            <div class="form-group">
+                                <label><i class="fas fa-user"></i> Username atau Email</label>
+                                <input type="text" id="login-identifier" class="form-control" 
+                                       placeholder="Masukkan username atau email" required autocomplete="username">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-lock"></i> Password</label>
+                                <input type="password" id="login-password" class="form-control" 
+                                       placeholder="Masukkan password" required autocomplete="current-password">
+                            </div>
+                            <div class="form-group">
+                                <label style="display: flex; align-items: center; gap: 8px;">
+                                    <input type="checkbox" id="login-remember">
+                                    <span>Ingat Saya</span>
+                                </label>
+                            </div>
+                            <div id="login-error" class="alert alert-error" style="display: none;"></div>
+                            <button type="submit" class="btn btn-primary btn-block" id="login-btn">
+                                <i class="fas fa-sign-in-alt"></i> Masuk
+                            </button>
+                        </form>
+                        <div class="auth-footer">
+                            <p>Belum punya akun? <a href="#" onclick="event.preventDefault(); app.showRegisterPage()">Daftar disini</a></p>
+                            <a href="#" onclick="event.preventDefault(); app.showForgotPassword()">Lupa password?</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    showRegisterPage() {
+        const container = document.getElementById('app-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="auth-page">
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <div class="auth-logo">AS</div>
+                            <h2>Registrasi</h2>
+                            <p>Buat akun baru</p>
+                        </div>
+                        <form id="register-form" onsubmit="event.preventDefault(); app.handleRegister()">
+                            <div class="form-group">
+                                <label><i class="fas fa-user"></i> Nama Lengkap</label>
+                                <input type="text" id="reg-fullname" class="form-control" 
+                                       placeholder="Masukkan nama lengkap" required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-user-circle"></i> Username</label>
+                                <input type="text" id="reg-username" class="form-control" 
+                                       placeholder="Masukkan username" required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-envelope"></i> Email</label>
+                                <input type="email" id="reg-email" class="form-control" 
+                                       placeholder="Masukkan email" required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-lock"></i> Password</label>
+                                <input type="password" id="reg-password" class="form-control" 
+                                       placeholder="Masukkan password" required minlength="6">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-lock"></i> Konfirmasi Password</label>
+                                <input type="password" id="reg-confirm-password" class="form-control" 
+                                       placeholder="Konfirmasi password" required minlength="6">
+                            </div>
+                            <div id="register-error" class="alert alert-error" style="display: none;"></div>
+                            <button type="submit" class="btn btn-primary btn-block" id="register-btn">
+                                <i class="fas fa-user-plus"></i> Daftar
+                            </button>
+                        </form>
+                        <div class="auth-footer">
+                            <p>Sudah punya akun? <a href="#" onclick="event.preventDefault(); app.showLoginPage()">Login disini</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    show404() {
+        const container = document.getElementById('app-container');
+        if (container) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 100px 20px;">
+                    <h1 style="font-size: 72px; color: #1a73e8;">404</h1>
+                    <h3>Halaman Tidak Ditemukan</h3>
+                    <p>Maaf, halaman yang Anda cari tidak tersedia.</p>
+                    <button class="btn btn-primary" data-route="dashboard">
+                        <i class="fas fa-home"></i> Kembali ke Dashboard
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    showError(message) {
+        const container = document.getElementById('app-container');
+        if (container) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 100px 20px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 64px; color: #ff9800;"></i>
+                    <h3>Error</h3>
+                    <p>${message}</p>
+                    <button class="btn btn-primary" onclick="location.reload()">
+                        <i class="fas fa-redo"></i> Muat Ulang
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    // ============================================
+    // COMPONENT RENDERERS
+    // ============================================
+
+    renderHeader() {
+        const user = auth.getUser();
+        return `
+            <header class="app-header">
+                <div class="header-container">
+                    <div class="header-left">
+                        <button class="menu-toggle" onclick="app.toggleSidebar()">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="logo-section">
+                            <div class="logo-placeholder-small">AS</div>
+                            <div>
+                                <h1>Arsip Surat Digital</h1>
+                                <span class="version-badge">Enterprise ${this.version}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="header-center">
+                        <div class="search-global">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Cari surat..." class="search-input"
+                                   onkeyup="if(event.key==='Enter') app.globalSearch(this.value)">
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <button class="btn-icon" data-route="notifikasi" title="Notifikasi">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge" id="notif-badge" style="display:none;">0</span>
+                        </button>
+                        <div class="user-info">
+                            <span>${user?.fullName || user?.username || 'User'}</span>
+                            <button onclick="app.logout()" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-sign-out-alt"></i> Keluar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+        `;
+    }
+
+    renderSidebar() {
+        return `
+            <aside class="sidebar">
+                <nav>
+                    <a href="/arsip-surat-digital-enterprise/dashboard" data-route="dashboard" class="nav-link active">
+                        <i class="fas fa-chart-pie"></i> Dashboard
+                    </a>
+                    <a href="/arsip-surat-digital-enterprise/surat-masuk" data-route="surat-masuk" class="nav-link">
+                        <i class="fas fa-inbox"></i> Surat Masuk
+                    </a>
+                    <a href="/arsip-surat-digital-enterprise/surat-keluar" data-route="surat-keluar" class="nav-link">
+                        <i class="fas fa-paper-plane"></i> Surat Keluar
+                    </a>
+                    <a href="/arsip-surat-digital-enterprise/disposisi" data-route="disposisi" class="nav-link">
+                        <i class="fas fa-clipboard-list"></i> Disposisi
+                    </a>
+                    <a href="/arsip-surat-digital-enterprise/laporan" data-route="laporan" class="nav-link">
+                        <i class="fas fa-chart-bar"></i> Laporan
+                    </a>
+                    <hr>
+                    <a href="/arsip-surat-digital-enterprise/pengguna" data-route="pengguna" class="nav-link">
+                        <i class="fas fa-users"></i> Pengguna
+                    </a>
+                    <a href="/arsip-surat-digital-enterprise/instansi" data-route="instansi" class="nav-link">
+                        <i class="fas fa-building"></i> Instansi
+                    </a>
+                    <a href="/arsip-surat-digital-enterprise/kategori" data-route="kategori" class="nav-link">
+                        <i class="fas fa-tags"></i> Kategori
+                    </a>
+                    <a href="/arsip-surat-digital-enterprise/pengaturan" data-route="pengaturan" class="nav-link">
+                        <i class="fas fa-cog"></i> Pengaturan
+                    </a>
+                </nav>
+            </aside>
+        `;
+    }
+
+    // ============================================
+    // DATA LOADING METHODS
+    // ============================================
 
     async loadDashboardStats() {
         try {
             const result = await api.getDashboardStats();
-            const stats = result.success ? result.data : this.getDefaultStats();
-            this.renderDashboardStats(stats);
+            if (result.success) {
+                this.renderDashboardStats(result.data);
+                this.renderRecentActivities(result.data.recentActivities || []);
+            }
         } catch (error) {
-            console.error('Error loading stats:', error);
-            this.renderDashboardStats(this.getDefaultStats());
+            console.error('Error loading dashboard:', error);
         }
-    }
-
-    getDefaultStats() {
-        return {
-            totalSuratMasuk: 0,
-            totalSuratKeluar: 0,
-            totalDisposisi: 0,
-            pendingDisposisi: 0,
-            totalPengguna: 0,
-            recentActivities: []
-        };
     }
 
     renderDashboardStats(stats) {
@@ -300,288 +937,93 @@ class App {
         `;
     }
 
-    async refreshDashboard() {
-        await this.loadDashboardStats();
-        this.showToast('Dashboard diperbarui', 'success');
-    }
-
-    // Surat Masuk
-    async showSuratMasuk() {
-        const container = document.getElementById('app-container');
+    renderRecentActivities(activities) {
+        const container = document.getElementById('recent-activities');
         if (!container) return;
-        
-        container.innerHTML = this.getAppLayout('surat-masuk', 'Surat Masuk', 'fa-inbox');
-        
-        const mainContent = document.getElementById('main-content');
-        if (!mainContent) return;
-        
-        mainContent.innerHTML = `
-            <div class="page-header">
-                <h2><i class="fas fa-inbox"></i> Surat Masuk</h2>
-                <div class="header-actions">
-                    <button onclick="window.app.showSuratMasukForm()" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Tambah Surat
-                    </button>
+
+        if (activities.length === 0) {
+            container.innerHTML = '<p class="text-center">Belum ada aktivitas</p>';
+            return;
+        }
+
+        container.innerHTML = activities.slice(0, 5).map(activity => `
+            <div class="activity-item">
+                <div class="activity-icon"><i class="fas fa-circle"></i></div>
+                <div class="activity-content">
+                    <p>${activity.description}</p>
+                    <small>${this.formatDateTime(activity.timestamp)}</small>
                 </div>
             </div>
-            <div class="filter-bar">
-                <div class="filter-row">
-                    <div class="search-box">
-                        <i class="fas fa-search search-icon-input"></i>
-                        <input type="text" id="search-surat-masuk" placeholder="Cari surat masuk..." 
-                               class="form-control" onkeyup="window.app.searchSuratMasuk()">
-                    </div>
-                    <select id="filter-status-masuk" class="form-control" onchange="window.app.filterSuratMasuk()">
-                        <option value="">Semua Status</option>
-                        <option value="baru">Baru</option>
-                        <option value="diproses">Diproses</option>
-                        <option value="selesai">Selesai</option>
-                    </select>
-                </div>
-            </div>
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>No. Agenda</th>
-                            <th>No. Surat</th>
-                            <th>Tanggal</th>
-                            <th>Pengirim</th>
-                            <th>Perihal</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-surat-masuk">
-                        <tr><td colspan="8" class="text-center">Memuat data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="pagination" id="pagination-surat-masuk"></div>
-        `;
-        
-        await this.loadSuratMasukData();
-        this.updateSidebarActive('surat-masuk');
+        `).join('');
     }
 
-    async loadSuratMasukData(page = 1) {
+    async loadSuratMasukData() {
         try {
-            const search = document.getElementById('search-surat-masuk')?.value || '';
-            const status = document.getElementById('filter-status-masuk')?.value || '';
-            
-            const result = await api.getSuratMasuk({ page, perPage: 10, search, status });
-            
+            const result = await api.getSuratMasuk();
             if (result.success) {
                 this.renderSuratMasukTable(result.data);
-                this.renderPagination('pagination-surat-masuk', result.pagination, 'surat-masuk');
-            } else {
-                document.getElementById('table-surat-masuk').innerHTML = 
-                    '<tr><td colspan="8" class="text-center">Gagal memuat data</td></tr>';
             }
         } catch (error) {
             console.error('Error loading surat masuk:', error);
-            document.getElementById('table-surat-masuk').innerHTML = 
-                '<tr><td colspan="8" class="text-center">Error: ' + error.message + '</td></tr>';
         }
     }
 
     renderSuratMasukTable(data) {
-        const tbody = document.getElementById('table-surat-masuk');
-        if (!tbody) return;
-        
+        const container = document.getElementById('surat-masuk-table');
+        if (!container) return;
+
         if (!data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" class="text-center">Tidak ada data</td></tr>';
+            container.innerHTML = '<p class="text-center">Tidak ada data surat masuk</p>';
             return;
         }
-        
-        tbody.innerHTML = data.map((item, index) => `
-            <tr>
-                <td>${index + 1}</td>
-                <td>${item.nomor_agenda || '-'}</td>
-                <td>${item.nomor_surat || '-'}</td>
-                <td>${this.formatDate(item.tanggal_surat)}</td>
-                <td>${item.pengirim || '-'}</td>
-                <td>${item.perihal || '-'}</td>
-                <td><span class="badge badge-${this.getStatusClass(item.status)}">${item.status || 'baru'}</span></td>
-                <td>
-                    <button class="btn btn-sm btn-info" onclick="window.app.viewSuratMasuk('${item.id}')" title="Lihat">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn btn-sm btn-warning" onclick="window.app.editSuratMasuk('${item.id}')" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger" onclick="window.app.deleteSuratMasuk('${item.id}')" title="Hapus">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
-    }
 
-    searchSuratMasuk() {
-        this.loadSuratMasukData();
-    }
-
-    filterSuratMasuk() {
-        this.loadSuratMasukData();
-    }
-
-    showSuratMasukForm() {
-        const modalBody = document.getElementById('modal-body');
-        const modalTitle = document.getElementById('modal-title');
-        const saveBtn = document.getElementById('modal-save-btn');
-        
-        if (!modalBody) return;
-        
-        modalTitle.textContent = 'Tambah Surat Masuk';
-        modalBody.innerHTML = `
-            <form onsubmit="return false;">
-                <div class="form-group">
-                    <label>Nomor Surat</label>
-                    <input type="text" id="sm-nomor" class="form-control" placeholder="Masukkan nomor surat">
-                </div>
-                <div class="form-group">
-                    <label>Tanggal Surat</label>
-                    <input type="date" id="sm-tanggal" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>Pengirim</label>
-                    <input type="text" id="sm-pengirim" class="form-control" placeholder="Nama pengirim">
-                </div>
-                <div class="form-group">
-                    <label>Perihal</label>
-                    <input type="text" id="sm-perihal" class="form-control" placeholder="Perihal surat">
-                </div>
-                <div class="form-group">
-                    <label>Sifat</label>
-                    <select id="sm-sifat" class="form-control">
-                        <option value="biasa">Biasa</option>
-                        <option value="penting">Penting</option>
-                        <option value="rahasia">Rahasia</option>
-                        <option value="segera">Segera</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Catatan</label>
-                    <textarea id="sm-catatan" class="form-control" rows="3" placeholder="Catatan tambahan"></textarea>
-                </div>
-                <div id="form-error" class="alert alert-error" style="display:none;"></div>
-            </form>
-        `;
-        
-        saveBtn.innerHTML = '<i class="fas fa-save"></i> Simpan';
-        saveBtn.onclick = async () => {
-            const data = {
-                nomor_surat: document.getElementById('sm-nomor').value,
-                tanggal_surat: document.getElementById('sm-tanggal').value,
-                pengirim: document.getElementById('sm-pengirim').value,
-                perihal: document.getElementById('sm-perihal').value,
-                sifat: document.getElementById('sm-sifat').value,
-                catatan: document.getElementById('sm-catatan').value
-            };
-            
-            if (!data.pengirim || !data.perihal) {
-                document.getElementById('form-error').textContent = 'Pengirim dan perihal wajib diisi';
-                document.getElementById('form-error').style.display = 'block';
-                return;
-            }
-            
-            const result = await api.createSuratMasuk(data);
-            
-            if (result.success) {
-                this.closeModal();
-                this.showToast('Surat masuk berhasil ditambahkan', 'success');
-                await this.loadSuratMasukData();
-            } else {
-                document.getElementById('form-error').textContent = result.message || 'Gagal menyimpan';
-                document.getElementById('form-error').style.display = 'block';
-            }
-        };
-        
-        this.showModal();
-    }
-
-    async viewSuratMasuk(id) {
-        const result = await api.makeRequest('getSuratMasukDetail', { id });
-        if (result.success) {
-            const item = result.data;
-            alert(`Detail Surat Masuk:\n\nNomor Agenda: ${item.nomor_agenda}\nNomor Surat: ${item.nomor_surat}\nTanggal: ${this.formatDate(item.tanggal_surat)}\nPengirim: ${item.pengirim}\nPerihal: ${item.perihal}\nStatus: ${item.status}`);
-        } else {
-            this.showToast('Gagal memuat detail', 'error');
-        }
-    }
-
-    async editSuratMasuk(id) {
-        this.showToast('Fitur edit akan segera hadir', 'info');
-    }
-
-    async deleteSuratMasuk(id) {
-        if (!confirm('Apakah Anda yakin ingin menghapus surat ini?')) return;
-        
-        const result = await api.deleteSuratMasuk(id);
-        if (result.success) {
-            this.showToast('Surat berhasil dihapus', 'success');
-            await this.loadSuratMasukData();
-        } else {
-            this.showToast(result.message || 'Gagal menghapus', 'error');
-        }
-    }
-
-    // Surat Keluar
-    async showSuratKeluar() {
-        const container = document.getElementById('app-container');
-        if (!container) return;
-        
-        container.innerHTML = this.getAppLayout('surat-keluar', 'Surat Keluar', 'fa-paper-plane');
-        
-        const mainContent = document.getElementById('main-content');
-        if (!mainContent) return;
-        
-        mainContent.innerHTML = `
-            <div class="page-header">
-                <h2><i class="fas fa-paper-plane"></i> Surat Keluar</h2>
-                <div class="header-actions">
-                    <button onclick="window.app.showSuratKeluarForm()" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Tambah Surat
-                    </button>
-                </div>
-            </div>
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
+        container.innerHTML = `
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>No. Agenda</th>
+                        <th>No. Surat</th>
+                        <th>Tanggal</th>
+                        <th>Pengirim</th>
+                        <th>Perihal</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.map((item, index) => `
                         <tr>
-                            <th>No</th>
-                            <th>No. Surat</th>
-                            <th>Tanggal</th>
-                            <th>Tujuan</th>
-                            <th>Perihal</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
+                            <td>${index + 1}</td>
+                            <td>${item.nomor_agenda || '-'}</td>
+                            <td>${item.nomor_surat || '-'}</td>
+                            <td>${this.formatDate(item.tanggal_surat)}</td>
+                            <td>${item.pengirim || '-'}</td>
+                            <td>${item.perihal || '-'}</td>
+                            <td><span class="badge badge-info">${item.status || 'baru'}</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-info" onclick="app.viewSuratMasuk('${item.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-warning" onclick="app.editSuratMasuk('${item.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="app.deleteSuratMasuk('${item.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody id="table-surat-keluar">
-                        <tr><td colspan="7" class="text-center">Memuat data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="pagination" id="pagination-surat-keluar"></div>
+                    `).join('')}
+                </tbody>
+            </table>
         `;
-        
-        await this.loadSuratKeluarData();
-        this.updateSidebarActive('surat-keluar');
     }
 
-    async loadSuratKeluarData(page = 1) {
+    async loadSuratKeluarData() {
         try {
-            const result = await api.getSuratKeluar({ page, perPage: 10 });
-            
+            const result = await api.getSuratKeluar();
             if (result.success) {
                 this.renderSuratKeluarTable(result.data);
-                this.renderPagination('pagination-surat-keluar', result.pagination, 'surat-keluar');
-            } else {
-                document.getElementById('table-surat-keluar').innerHTML = 
-                    '<tr><td colspan="7" class="text-center">Gagal memuat data</td></tr>';
             }
         } catch (error) {
             console.error('Error loading surat keluar:', error);
@@ -589,158 +1031,59 @@ class App {
     }
 
     renderSuratKeluarTable(data) {
-        const tbody = document.getElementById('table-surat-keluar');
-        if (!tbody) return;
-        
+        const container = document.getElementById('surat-keluar-table');
+        if (!container) return;
+
         if (!data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center">Tidak ada data</td></tr>';
+            container.innerHTML = '<p class="text-center">Tidak ada data surat keluar</p>';
             return;
         }
-        
-        tbody.innerHTML = data.map((item, index) => `
-            <tr>
-                <td>${index + 1}</td>
-                <td>${item.nomor_surat || '-'}</td>
-                <td>${this.formatDate(item.tanggal_surat)}</td>
-                <td>${item.tujuan || '-'}</td>
-                <td>${item.perihal || '-'}</td>
-                <td><span class="badge badge-info">${item.status || 'draft'}</span></td>
-                <td>
-                    <button class="btn btn-sm btn-info" onclick="window.app.viewSuratKeluar('${item.id}')"><i class="fas fa-eye"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="window.app.deleteSuratKeluar('${item.id}')"><i class="fas fa-trash"></i></button>
-                </td>
-            </tr>
-        `).join('');
-    }
 
-    showSuratKeluarForm() {
-        const modalBody = document.getElementById('modal-body');
-        const modalTitle = document.getElementById('modal-title');
-        const saveBtn = document.getElementById('modal-save-btn');
-        
-        if (!modalBody) return;
-        
-        modalTitle.textContent = 'Tambah Surat Keluar';
-        modalBody.innerHTML = `
-            <form onsubmit="return false;">
-                <div class="form-group">
-                    <label>Nomor Surat</label>
-                    <input type="text" id="sk-nomor" class="form-control" placeholder="Masukkan nomor surat">
-                </div>
-                <div class="form-group">
-                    <label>Tanggal Surat</label>
-                    <input type="date" id="sk-tanggal" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>Tujuan</label>
-                    <input type="text" id="sk-tujuan" class="form-control" placeholder="Tujuan surat">
-                </div>
-                <div class="form-group">
-                    <label>Perihal</label>
-                    <input type="text" id="sk-perihal" class="form-control" placeholder="Perihal surat">
-                </div>
-                <div id="form-error" class="alert alert-error" style="display:none;"></div>
-            </form>
-        `;
-        
-        saveBtn.innerHTML = '<i class="fas fa-save"></i> Simpan';
-        saveBtn.onclick = async () => {
-            const data = {
-                nomor_surat: document.getElementById('sk-nomor').value,
-                tanggal_surat: document.getElementById('sk-tanggal').value,
-                tujuan: document.getElementById('sk-tujuan').value,
-                perihal: document.getElementById('sk-perihal').value
-            };
-            
-            if (!data.tujuan || !data.perihal) {
-                document.getElementById('form-error').textContent = 'Tujuan dan perihal wajib diisi';
-                document.getElementById('form-error').style.display = 'block';
-                return;
-            }
-            
-            const result = await api.createSuratKeluar(data);
-            
-            if (result.success) {
-                this.closeModal();
-                this.showToast('Surat keluar berhasil ditambahkan', 'success');
-                await this.loadSuratKeluarData();
-            } else {
-                document.getElementById('form-error').textContent = result.message || 'Gagal menyimpan';
-                document.getElementById('form-error').style.display = 'block';
-            }
-        };
-        
-        this.showModal();
-    }
-
-    async viewSuratKeluar(id) {
-        const result = await api.makeRequest('getSuratKeluarDetail', { id });
-        if (result.success) {
-            const item = result.data;
-            alert(`Detail Surat Keluar:\n\nNomor: ${item.nomor_surat}\nTanggal: ${this.formatDate(item.tanggal_surat)}\nTujuan: ${item.tujuan}\nPerihal: ${item.perihal}\nStatus: ${item.status}`);
-        }
-    }
-
-    async deleteSuratKeluar(id) {
-        if (!confirm('Apakah Anda yakin ingin menghapus surat ini?')) return;
-        
-        const result = await api.deleteSuratKeluar(id);
-        if (result.success) {
-            this.showToast('Surat berhasil dihapus', 'success');
-            await this.loadSuratKeluarData();
-        } else {
-            this.showToast(result.message || 'Gagal menghapus', 'error');
-        }
-    }
-
-    // Disposisi
-    async showDisposisi() {
-        const container = document.getElementById('app-container');
-        if (!container) return;
-        
-        container.innerHTML = this.getAppLayout('disposisi', 'Disposisi', 'fa-clipboard-list');
-        
-        const mainContent = document.getElementById('main-content');
-        if (!mainContent) return;
-        
-        mainContent.innerHTML = `
-            <div class="page-header">
-                <h2><i class="fas fa-clipboard-list"></i> Disposisi</h2>
-                <button onclick="window.app.showDisposisiForm()" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Buat Disposisi
-                </button>
-            </div>
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
+        container.innerHTML = `
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>No. Surat</th>
+                        <th>Tanggal</th>
+                        <th>Tujuan</th>
+                        <th>Perihal</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.map((item, index) => `
                         <tr>
-                            <th>No</th>
-                            <th>Surat Masuk ID</th>
-                            <th>Instruksi</th>
-                            <th>Status</th>
-                            <th>Tanggal</th>
-                            <th>Aksi</th>
+                            <td>${index + 1}</td>
+                            <td>${item.nomor_surat || '-'}</td>
+                            <td>${this.formatDate(item.tanggal_surat)}</td>
+                            <td>${item.tujuan || '-'}</td>
+                            <td>${item.perihal || '-'}</td>
+                            <td><span class="badge badge-warning">${item.status || 'draft'}</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-info" onclick="app.viewSuratKeluar('${item.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-warning" onclick="app.editSuratKeluar('${item.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="app.deleteSuratKeluar('${item.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody id="table-disposisi">
-                        <tr><td colspan="6" class="text-center">Memuat data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="pagination" id="pagination-disposisi"></div>
+                    `).join('')}
+                </tbody>
+            </table>
         `;
-        
-        await this.loadDisposisiData();
-        this.updateSidebarActive('disposisi');
     }
 
-    async loadDisposisiData(page = 1) {
+    async loadDisposisiData() {
         try {
-            const result = await api.getDisposisi({ page, perPage: 10 });
-            
+            const result = await api.getDisposisi();
             if (result.success) {
                 this.renderDisposisiTable(result.data);
-                this.renderPagination('pagination-disposisi', result.pagination, 'disposisi');
             }
         } catch (error) {
             console.error('Error loading disposisi:', error);
@@ -748,741 +1091,595 @@ class App {
     }
 
     renderDisposisiTable(data) {
-        const tbody = document.getElementById('table-disposisi');
-        if (!tbody) return;
-        
+        const container = document.getElementById('disposisi-table');
+        if (!container) return;
+
         if (!data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center">Tidak ada data</td></tr>';
+            container.innerHTML = '<p class="text-center">Tidak ada data disposisi</p>';
             return;
         }
-        
-        tbody.innerHTML = data.map((item, index) => `
-            <tr>
-                <td>${index + 1}</td>
-                <td>${item.surat_masuk_id || '-'}</td>
-                <td>${item.instruksi || '-'}</td>
-                <td><span class="badge badge-${item.status === 'pending' ? 'warning' : 'success'}">${item.status || 'pending'}</span></td>
-                <td>${this.formatDate(item.created_at)}</td>
-                <td>
-                    <button class="btn btn-sm btn-success" onclick="window.app.approveDisposisi('${item.id}')">
-                        <i class="fas fa-check"></i> Setujui
-                    </button>
-                </td>
-            </tr>
-        `).join('');
-    }
 
-    showDisposisiForm() {
-        const modalBody = document.getElementById('modal-body');
-        const modalTitle = document.getElementById('modal-title');
-        const saveBtn = document.getElementById('modal-save-btn');
-        
-        if (!modalBody) return;
-        
-        modalTitle.textContent = 'Buat Disposisi';
-        modalBody.innerHTML = `
-            <form onsubmit="return false;">
-                <div class="form-group">
-                    <label>ID Surat Masuk</label>
-                    <input type="text" id="disp-surat-id" class="form-control" placeholder="Masukkan ID surat masuk">
-                </div>
-                <div class="form-group">
-                    <label>Instruksi</label>
-                    <textarea id="disp-instruksi" class="form-control" rows="3" placeholder="Instruksi disposisi"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Sifat</label>
-                    <select id="disp-sifat" class="form-control">
-                        <option value="biasa">Biasa</option>
-                        <option value="segera">Segera</option>
-                        <option value="sangat-segera">Sangat Segera</option>
-                    </select>
-                </div>
-                <div id="form-error" class="alert alert-error" style="display:none;"></div>
-            </form>
+        container.innerHTML = `
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Instruksi</th>
+                        <th>Sifat</th>
+                        <th>Batas Waktu</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.map((item, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${item.instruksi || '-'}</td>
+                            <td>${item.sifat || '-'}</td>
+                            <td>${this.formatDate(item.batas_waktu)}</td>
+                            <td><span class="badge badge-info">${item.status || 'pending'}</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-success" onclick="app.approveDisposisi('${item.id}')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
         `;
-        
-        saveBtn.innerHTML = '<i class="fas fa-save"></i> Simpan';
-        saveBtn.onclick = async () => {
-            const data = {
-                surat_masuk_id: document.getElementById('disp-surat-id').value,
-                instruksi: document.getElementById('disp-instruksi').value,
-                sifat: document.getElementById('disp-sifat').value
-            };
-            
-            const result = await api.createDisposisi(data);
-            
-            if (result.success) {
-                this.closeModal();
-                this.showToast('Disposisi berhasil dibuat', 'success');
-                await this.loadDisposisiData();
-            } else {
-                document.getElementById('form-error').textContent = result.message;
-                document.getElementById('form-error').style.display = 'block';
-            }
-        };
-        
-        this.showModal();
-    }
-
-    async approveDisposisi(id) {
-        const result = await api.updateDisposisi(id, { status: 'selesai' });
-        if (result.success) {
-            this.showToast('Disposisi disetujui', 'success');
-            await this.loadDisposisiData();
-        } else {
-            this.showToast('Gagal menyetujui', 'error');
-        }
-    }
-
-    // Kategori
-    async showKategori() {
-        const container = document.getElementById('app-container');
-        if (!container) return;
-        
-        container.innerHTML = this.getAppLayout('kategori', 'Kategori', 'fa-tags');
-        
-        const mainContent = document.getElementById('main-content');
-        if (!mainContent) return;
-        
-        mainContent.innerHTML = `
-            <div class="page-header">
-                <h2><i class="fas fa-tags"></i> Kategori</h2>
-                <button onclick="window.app.showKategoriForm()" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Tambah Kategori
-                </button>
-            </div>
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr><th>No</th><th>Nama</th><th>Deskripsi</th><th>Aksi</th></tr>
-                    </thead>
-                    <tbody id="table-kategori"><tr><td colspan="4" class="text-center">Memuat...</td></tr></tbody>
-                </table>
-            </div>
-        `;
-        
-        await this.loadKategoriData();
-        this.updateSidebarActive('kategori');
-    }
-
-    async loadKategoriData() {
-        const result = await api.getKategori();
-        const tbody = document.getElementById('table-kategori');
-        if (!tbody) return;
-        
-        if (result.success && result.data.length > 0) {
-            tbody.innerHTML = result.data.map((item, index) => `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${item.nama}</td>
-                    <td>${item.deskripsi || '-'}</td>
-                    <td>
-                        <button class="btn btn-sm btn-danger" onclick="window.app.deleteKategori('${item.id}')"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `).join('');
-        } else {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center">Tidak ada data</td></tr>';
-        }
-    }
-
-    showKategoriForm() {
-        const modalBody = document.getElementById('modal-body');
-        const modalTitle = document.getElementById('modal-title');
-        const saveBtn = document.getElementById('modal-save-btn');
-        
-        if (!modalBody) return;
-        
-        modalTitle.textContent = 'Tambah Kategori';
-        modalBody.innerHTML = `
-            <form onsubmit="return false;">
-                <div class="form-group">
-                    <label>Nama Kategori</label>
-                    <input type="text" id="kat-nama" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>Deskripsi</label>
-                    <input type="text" id="kat-deskripsi" class="form-control">
-                </div>
-            </form>
-        `;
-        
-        saveBtn.innerHTML = '<i class="fas fa-save"></i> Simpan';
-        saveBtn.onclick = async () => {
-            const data = {
-                nama: document.getElementById('kat-nama').value,
-                deskripsi: document.getElementById('kat-deskripsi').value
-            };
-            
-            const result = await api.createKategori(data);
-            if (result.success) {
-                this.closeModal();
-                this.showToast('Kategori ditambahkan', 'success');
-                await this.loadKategoriData();
-            }
-        };
-        
-        this.showModal();
-    }
-
-    async deleteKategori(id) {
-        if (!confirm('Hapus kategori?')) return;
-        const result = await api.deleteKategori(id);
-        if (result.success) {
-            this.showToast('Kategori dihapus', 'success');
-            await this.loadKategoriData();
-        }
-    }
-
-    // Instansi
-    async showInstansi() {
-        const container = document.getElementById('app-container');
-        if (!container) return;
-        
-        container.innerHTML = this.getAppLayout('instansi', 'Instansi', 'fa-building');
-        
-        const mainContent = document.getElementById('main-content');
-        if (!mainContent) return;
-        
-        mainContent.innerHTML = `
-            <div class="page-header">
-                <h2><i class="fas fa-building"></i> Instansi</h2>
-                <button onclick="window.app.showInstansiForm()" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Tambah Instansi
-                </button>
-            </div>
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr><th>No</th><th>Nama</th><th>Alamat</th><th>Telepon</th><th>Email</th><th>Aksi</th></tr>
-                    </thead>
-                    <tbody id="table-instansi"><tr><td colspan="6" class="text-center">Memuat...</td></tr></tbody>
-                </table>
-            </div>
-        `;
-        
-        await this.loadInstansiData();
-        this.updateSidebarActive('instansi');
-    }
-
-    async loadInstansiData() {
-        const result = await api.getInstansi();
-        const tbody = document.getElementById('table-instansi');
-        if (!tbody) return;
-        
-        if (result.success && result.data.length > 0) {
-            tbody.innerHTML = result.data.map((item, index) => `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${item.nama}</td>
-                    <td>${item.alamat || '-'}</td>
-                    <td>${item.telepon || '-'}</td>
-                    <td>${item.email || '-'}</td>
-                    <td>
-                        <button class="btn btn-sm btn-danger" onclick="window.app.deleteInstansi('${item.id}')"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `).join('');
-        } else {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center">Tidak ada data</td></tr>';
-        }
-    }
-
-    showInstansiForm() {
-        const modalBody = document.getElementById('modal-body');
-        const modalTitle = document.getElementById('modal-title');
-        const saveBtn = document.getElementById('modal-save-btn');
-        
-        if (!modalBody) return;
-        
-        modalTitle.textContent = 'Tambah Instansi';
-        modalBody.innerHTML = `
-            <form onsubmit="return false;">
-                <div class="form-group"><label>Nama Instansi</label><input type="text" id="ins-nama" class="form-control"></div>
-                <div class="form-group"><label>Alamat</label><input type="text" id="ins-alamat" class="form-control"></div>
-                <div class="form-group"><label>Telepon</label><input type="text" id="ins-telepon" class="form-control"></div>
-                <div class="form-group"><label>Email</label><input type="email" id="ins-email" class="form-control"></div>
-            </form>
-        `;
-        
-        saveBtn.innerHTML = '<i class="fas fa-save"></i> Simpan';
-        saveBtn.onclick = async () => {
-            const data = {
-                nama: document.getElementById('ins-nama').value,
-                alamat: document.getElementById('ins-alamat').value,
-                telepon: document.getElementById('ins-telepon').value,
-                email: document.getElementById('ins-email').value
-            };
-            
-            const result = await api.createInstansi(data);
-            if (result.success) {
-                this.closeModal();
-                this.showToast('Instansi ditambahkan', 'success');
-                await this.loadInstansiData();
-            }
-        };
-        
-        this.showModal();
-    }
-
-    async deleteInstansi(id) {
-        if (!confirm('Hapus instansi?')) return;
-        const result = await api.deleteInstansi(id);
-        if (result.success) {
-            this.showToast('Instansi dihapus', 'success');
-            await this.loadInstansiData();
-        }
-    }
-
-    // Laporan
-    async showLaporan() {
-        const container = document.getElementById('app-container');
-        if (!container) return;
-        
-        container.innerHTML = this.getAppLayout('laporan', 'Laporan', 'fa-chart-bar');
-        
-        const mainContent = document.getElementById('main-content');
-        if (!mainContent) return;
-        
-        mainContent.innerHTML = `
-            <div class="page-header">
-                <h2><i class="fas fa-chart-bar"></i> Laporan</h2>
-            </div>
-            <div class="report-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                <div class="stat-card" style="cursor:pointer;" onclick="window.app.generateReport('surat-masuk')">
-                    <div class="stat-icon"><i class="fas fa-file-pdf"></i></div>
-                    <div class="stat-info">
-                        <h3>Laporan Surat Masuk</h3>
-                        <p>Generate laporan surat masuk</p>
-                    </div>
-                </div>
-                <div class="stat-card" style="cursor:pointer;" onclick="window.app.generateReport('surat-keluar')">
-                    <div class="stat-icon"><i class="fas fa-file-pdf"></i></div>
-                    <div class="stat-info">
-                        <h3>Laporan Surat Keluar</h3>
-                        <p>Generate laporan surat keluar</p>
-                    </div>
-                </div>
-                <div class="stat-card" style="cursor:pointer;" onclick="window.app.generateReport('disposisi')">
-                    <div class="stat-icon"><i class="fas fa-file-pdf"></i></div>
-                    <div class="stat-info">
-                        <h3>Laporan Disposisi</h3>
-                        <p>Generate laporan disposisi</p>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        this.updateSidebarActive('laporan');
-    }
-
-    async generateReport(type) {
-        this.showToast(`Mengenerate laporan ${type}...`, 'info');
-        const result = await api.generateReport(type);
-        if (result.success) {
-            this.showToast('Laporan berhasil digenerate', 'success');
-        } else {
-            this.showToast('Gagal mengenerate laporan', 'error');
-        }
-    }
-
-    // Pengguna
-    async showPengguna() {
-        const container = document.getElementById('app-container');
-        if (!container) return;
-        
-        container.innerHTML = this.getAppLayout('pengguna', 'Pengguna', 'fa-users');
-        
-        const mainContent = document.getElementById('main-content');
-        if (!mainContent) return;
-        
-        mainContent.innerHTML = `
-            <div class="page-header">
-                <h2><i class="fas fa-users"></i> Manajemen Pengguna</h2>
-                <button onclick="window.app.showPenggunaForm()" class="btn btn-primary">
-                    <i class="fas fa-user-plus"></i> Tambah Pengguna
-                </button>
-            </div>
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr><th>No</th><th>Username</th><th>Email</th><th>Nama</th><th>Role</th><th>Status</th><th>Aksi</th></tr>
-                    </thead>
-                    <tbody id="table-pengguna"><tr><td colspan="7" class="text-center">Memuat...</td></tr></tbody>
-                </table>
-            </div>
-        `;
-        
-        await this.loadPenggunaData();
-        this.updateSidebarActive('pengguna');
     }
 
     async loadPenggunaData() {
-        const result = await api.getPengguna();
-        const tbody = document.getElementById('table-pengguna');
-        if (!tbody) return;
-        
-        if (result.success && result.data.length > 0) {
-            tbody.innerHTML = result.data.map((item, index) => `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${item.username}</td>
-                    <td>${item.email || '-'}</td>
-                    <td>${item.fullName || '-'}</td>
-                    <td><span class="badge badge-info">${item.role}</span></td>
-                    <td><span class="badge ${item.isActive ? 'badge-success' : 'badge-danger'}">${item.isActive ? 'Aktif' : 'Nonaktif'}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-danger" onclick="window.app.deletePengguna('${item.id}')"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `).join('');
-        } else {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center">Tidak ada data</td></tr>';
-        }
-    }
-
-    showPenggunaForm() {
-        const modalBody = document.getElementById('modal-body');
-        const modalTitle = document.getElementById('modal-title');
-        const saveBtn = document.getElementById('modal-save-btn');
-        
-        if (!modalBody) return;
-        
-        modalTitle.textContent = 'Tambah Pengguna';
-        modalBody.innerHTML = `
-            <form onsubmit="return false;">
-                <div class="form-group"><label>Username</label><input type="text" id="user-username" class="form-control"></div>
-                <div class="form-group"><label>Email</label><input type="email" id="user-email" class="form-control"></div>
-                <div class="form-group"><label>Nama Lengkap</label><input type="text" id="user-fullname" class="form-control"></div>
-                <div class="form-group"><label>Password</label><input type="password" id="user-password" class="form-control"></div>
-                <div class="form-group"><label>Role</label><select id="user-role" class="form-control"><option value="staff">Staff</option><option value="admin">Admin</option></select></div>
-            </form>
-        `;
-        
-        saveBtn.innerHTML = '<i class="fas fa-save"></i> Simpan';
-        saveBtn.onclick = async () => {
-            const data = {
-                username: document.getElementById('user-username').value,
-                email: document.getElementById('user-email').value,
-                fullName: document.getElementById('user-fullname').value,
-                password: document.getElementById('user-password').value,
-                role: document.getElementById('user-role').value
-            };
-            
-            const result = await api.createPengguna(data);
+        try {
+            const result = await api.getPengguna();
             if (result.success) {
-                this.closeModal();
-                this.showToast('Pengguna ditambahkan', 'success');
-                await this.loadPenggunaData();
+                this.renderPenggunaTable(result.data);
             }
-        };
-        
-        this.showModal();
-    }
-
-    async deletePengguna(id) {
-        if (!confirm('Hapus pengguna?')) return;
-        const result = await api.deletePengguna(id);
-        if (result.success) {
-            this.showToast('Pengguna dihapus', 'success');
-            await this.loadPenggunaData();
+        } catch (error) {
+            console.error('Error loading pengguna:', error);
         }
     }
 
-    // Pengaturan & Profile
-    async showPengaturan() {
-        const mainContent = document.getElementById('main-content');
-        if (mainContent) {
-            mainContent.innerHTML = '<h2>Pengaturan</h2><p>Halaman pengaturan</p>';
-        }
-        this.updateSidebarActive('pengaturan');
-    }
+    renderPenggunaTable(data) {
+        const container = document.getElementById('pengguna-table');
+        if (!container) return;
 
-    async showProfile() {
-        const mainContent = document.getElementById('main-content');
-        const user = auth.getUser();
-        if (mainContent && user) {
-            mainContent.innerHTML = `
-                <h2>Profil</h2>
-                <p>Username: ${user.username}</p>
-                <p>Email: ${user.email}</p>
-                <p>Role: ${user.role}</p>
-            `;
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p class="text-center">Tidak ada data pengguna</p>';
+            return;
         }
-    }
 
-    // Auth Forms
-    showLoginForm() {
-        const modalBody = document.getElementById('modal-body');
-        const modalTitle = document.getElementById('modal-title');
-        const saveBtn = document.getElementById('modal-save-btn');
-        
-        if (!modalBody) return;
-        
-        modalTitle.textContent = 'Masuk ke Sistem';
-        modalBody.innerHTML = `
-            <form onsubmit="return false;">
-                <div class="form-group">
-                    <label><i class="fas fa-user"></i> Username</label>
-                    <input type="text" id="login-username" class="form-control" placeholder="Masukkan username" required>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-lock"></i> Password</label>
-                    <input type="password" id="login-password" class="form-control" placeholder="Masukkan password" required>
-                </div>
-                <div class="form-group">
-                    <label><input type="checkbox" id="login-remember"> Ingat Saya</label>
-                </div>
-                <div id="login-error" class="alert alert-error" style="display:none;"></div>
-            </form>
+        container.innerHTML = `
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Username</th>
+                        <th>Nama</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.map((item, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${item.username}</td>
+                            <td>${item.fullName || '-'}</td>
+                            <td>${item.email || '-'}</td>
+                            <td><span class="badge badge-info">${item.role}</span></td>
+                            <td><span class="badge ${item.isActive ? 'badge-success' : 'badge-danger'}">
+                                ${item.isActive ? 'Aktif' : 'Nonaktif'}
+                            </span></td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="app.editPengguna('${item.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="app.deletePengguna('${item.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
         `;
-        
-        saveBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Masuk';
-        saveBtn.onclick = async () => {
-            const username = document.getElementById('login-username').value;
-            const password = document.getElementById('login-password').value;
-            const remember = document.getElementById('login-remember').checked;
-            const errorDiv = document.getElementById('login-error');
-            
-            if (!username || !password) {
-                errorDiv.textContent = 'Username dan password wajib diisi';
-                errorDiv.style.display = 'block';
-                return;
+    }
+
+    async loadInstansiData() {
+        try {
+            const result = await api.getInstansi();
+            if (result.success) {
+                this.renderInstansiTable(result.data);
             }
-            
-            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-            saveBtn.disabled = true;
-            
-            const result = await auth.login(username, password, remember);
+        } catch (error) {
+            console.error('Error loading instansi:', error);
+        }
+    }
+
+    renderInstansiTable(data) {
+        const container = document.getElementById('instansi-table');
+        if (!container) return;
+
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p class="text-center">Tidak ada data instansi</p>';
+            return;
+        }
+
+        container.innerHTML = `
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Instansi</th>
+                        <th>Alamat</th>
+                        <th>Telepon</th>
+                        <th>Email</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.map((item, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${item.nama || '-'}</td>
+                            <td>${item.alamat || '-'}</td>
+                            <td>${item.telepon || '-'}</td>
+                            <td>${item.email || '-'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="app.editInstansi('${item.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="app.deleteInstansi('${item.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    async loadKategoriData() {
+        try {
+            const result = await api.getKategori();
+            if (result.success) {
+                this.renderKategoriTable(result.data);
+            }
+        } catch (error) {
+            console.error('Error loading kategori:', error);
+        }
+    }
+
+    renderKategoriTable(data) {
+        const container = document.getElementById('kategori-table');
+        if (!container) return;
+
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p class="text-center">Tidak ada data kategori</p>';
+            return;
+        }
+
+        container.innerHTML = `
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Kategori</th>
+                        <th>Deskripsi</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.map((item, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${item.nama || '-'}</td>
+                            <td>${item.deskripsi || '-'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="app.editKategori('${item.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="app.deleteKategori('${item.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    async loadNotifications() {
+        try {
+            const result = await api.getNotifications();
+            if (result.success) {
+                this.renderNotifications(result.data);
+            }
+        } catch (error) {
+            console.error('Error loading notifications:', error);
+        }
+    }
+
+    renderNotifications(data) {
+        const container = document.getElementById('notifikasi-list');
+        if (!container) return;
+
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p class="text-center">Tidak ada notifikasi</p>';
+            return;
+        }
+
+        container.innerHTML = data.map(item => `
+            <div class="notification-item ${item.isRead ? 'read' : 'unread'}">
+                <div class="notification-icon">
+                    <i class="fas fa-${item.tipe === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>${item.judul}</h4>
+                    <p>${item.pesan}</p>
+                    <small>${this.formatDateTime(item.created_at)}</small>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ============================================
+    // AUTH METHODS
+    // ============================================
+
+    async handleLogin() {
+        const identifier = document.getElementById('login-identifier')?.value;
+        const password = document.getElementById('login-password')?.value;
+        const remember = document.getElementById('login-remember')?.checked;
+        const errorDiv = document.getElementById('login-error');
+        const loginBtn = document.getElementById('login-btn');
+        
+        if (!identifier || !password) {
+            this.showFormError(errorDiv, 'Username/email dan password wajib diisi');
+            return;
+        }
+        
+        this.setButtonLoading(loginBtn, true);
+        
+        try {
+            const result = await auth.login(identifier, password, remember);
             
             if (result.success) {
-                this.closeModal();
                 this.showToast('Login berhasil! Selamat datang.', 'success');
-                await this.navigateTo('dashboard');
+                router.navigate('dashboard');
             } else {
-                errorDiv.textContent = result.message;
-                errorDiv.style.display = 'block';
-                saveBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Masuk';
-                saveBtn.disabled = false;
+                this.showFormError(errorDiv, result.message || 'Login gagal');
             }
-        };
-        
-        this.showModal();
+        } catch (error) {
+            this.showFormError(errorDiv, 'Gagal terhubung ke server');
+        } finally {
+            this.setButtonLoading(loginBtn, false);
+        }
     }
 
-    showRegisterForm() {
-        const modalBody = document.getElementById('modal-body');
-        const modalTitle = document.getElementById('modal-title');
-        const saveBtn = document.getElementById('modal-save-btn');
+    async handleRegister() {
+        const fullname = document.getElementById('reg-fullname')?.value;
+        const username = document.getElementById('reg-username')?.value;
+        const email = document.getElementById('reg-email')?.value;
+        const password = document.getElementById('reg-password')?.value;
+        const confirmPassword = document.getElementById('reg-confirm-password')?.value;
+        const errorDiv = document.getElementById('register-error');
+        const registerBtn = document.getElementById('register-btn');
         
-        if (!modalBody) return;
+        if (!fullname || !username || !email || !password) {
+            this.showFormError(errorDiv, 'Semua field wajib diisi');
+            return;
+        }
         
-        modalTitle.textContent = 'Registrasi Pengguna Baru';
-        modalBody.innerHTML = `
-            <form onsubmit="return false;">
-                <div class="form-group"><label>Nama Lengkap</label><input type="text" id="reg-fullname" class="form-control" required></div>
-                <div class="form-group"><label>Username</label><input type="text" id="reg-username" class="form-control" required></div>
-                <div class="form-group"><label>Email</label><input type="email" id="reg-email" class="form-control" required></div>
-                <div class="form-group"><label>Password</label><input type="password" id="reg-password" class="form-control" required minlength="6"></div>
-                <div class="form-group"><label>Konfirmasi Password</label><input type="password" id="reg-confirm" class="form-control" required></div>
-                <div id="register-error" class="alert alert-error" style="display:none;"></div>
-            </form>
-        `;
+        if (password !== confirmPassword) {
+            this.showFormError(errorDiv, 'Password tidak cocok');
+            return;
+        }
         
-        saveBtn.innerHTML = '<i class="fas fa-user-plus"></i> Daftar';
-        saveBtn.onclick = async () => {
-            const password = document.getElementById('reg-password').value;
-            const confirm = document.getElementById('reg-confirm').value;
-            const errorDiv = document.getElementById('register-error');
-            
-            if (password !== confirm) {
-                errorDiv.textContent = 'Password tidak cocok';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            const data = {
-                fullName: document.getElementById('reg-fullname').value,
-                username: document.getElementById('reg-username').value,
-                email: document.getElementById('reg-email').value,
-                password: password
-            };
-            
-            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-            saveBtn.disabled = true;
-            
-            const result = await auth.register(data);
+        if (password.length < 6) {
+            this.showFormError(errorDiv, 'Password minimal 6 karakter');
+            return;
+        }
+        
+        this.setButtonLoading(registerBtn, true);
+        
+        try {
+            const result = await auth.register({ fullname, username, email, password });
             
             if (result.success) {
-                this.closeModal();
                 this.showToast('Registrasi berhasil! Silakan login.', 'success');
-                this.showLoginForm();
+                this.showLoginPage();
             } else {
-                errorDiv.textContent = result.message;
-                errorDiv.style.display = 'block';
-                saveBtn.innerHTML = '<i class="fas fa-user-plus"></i> Daftar';
-                saveBtn.disabled = false;
+                this.showFormError(errorDiv, result.message || 'Registrasi gagal');
             }
-        };
-        
-        this.showModal();
+        } catch (error) {
+            this.showFormError(errorDiv, 'Gagal terhubung ke server');
+        } finally {
+            this.setButtonLoading(registerBtn, false);
+        }
     }
 
     async logout() {
         if (confirm('Apakah Anda yakin ingin keluar?')) {
             await auth.logout();
-            this.showLandingPage();
+            router.navigate('login');
             this.showToast('Anda telah logout', 'info');
         }
     }
 
-    // Helper Methods
-    getAppLayout(route, title, icon) {
-        const user = auth.getUser();
-        return `
-            <div class="dashboard-page">
-                <header class="app-header">
-                    <div class="header-container">
-                        <div class="header-left">
-                            <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('active')">
-                                <i class="fas fa-bars"></i>
-                            </button>
-                            <div class="logo-section">
-                                <div class="logo-placeholder-small">AS</div>
-                                <div>
-                                    <h1>Arsip Surat Digital</h1>
-                                    <span class="version-badge">Enterprise ${this.version}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="header-right">
-                            <div class="user-info">
-                                <span>${user ? (user.fullName || user.username) : 'User'}</span>
-                                <button onclick="window.app.logout()" class="btn btn-secondary btn-sm">
-                                    <i class="fas fa-sign-out-alt"></i> Keluar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-                
-                <div class="main-layout">
-                    <aside class="sidebar">
-                        <nav>
-                            <a href="#dashboard" onclick="window.app.navigateTo('dashboard')" class="nav-link" data-section="dashboard">
-                                <i class="fas fa-chart-pie"></i> Dashboard
-                            </a>
-                            <a href="#surat-masuk" onclick="window.app.navigateTo('surat-masuk')" class="nav-link" data-section="surat-masuk">
-                                <i class="fas fa-inbox"></i> Surat Masuk
-                            </a>
-                            <a href="#surat-keluar" onclick="window.app.navigateTo('surat-keluar')" class="nav-link" data-section="surat-keluar">
-                                <i class="fas fa-paper-plane"></i> Surat Keluar
-                            </a>
-                            <a href="#disposisi" onclick="window.app.navigateTo('disposisi')" class="nav-link" data-section="disposisi">
-                                <i class="fas fa-clipboard-list"></i> Disposisi
-                            </a>
-                            <a href="#kategori" onclick="window.app.navigateTo('kategori')" class="nav-link" data-section="kategori">
-                                <i class="fas fa-tags"></i> Kategori
-                            </a>
-                            <a href="#instansi" onclick="window.app.navigateTo('instansi')" class="nav-link" data-section="instansi">
-                                <i class="fas fa-building"></i> Instansi
-                            </a>
-                            <a href="#laporan" onclick="window.app.navigateTo('laporan')" class="nav-link" data-section="laporan">
-                                <i class="fas fa-chart-bar"></i> Laporan
-                            </a>
-                            ${user && user.role === 'admin' ? `
-                            <a href="#pengguna" onclick="window.app.navigateTo('pengguna')" class="nav-link" data-section="pengguna">
-                                <i class="fas fa-users"></i> Pengguna
-                            </a>` : ''}
-                        </nav>
-                    </aside>
-                    
-                    <main class="main-content" id="main-content"></main>
-                </div>
-            </div>
-        `;
+    showForgotPassword() {
+        this.showToast('Fitur lupa password sedang dalam pengembangan', 'info');
     }
 
-    updateSidebarActive(route) {
-        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-        const activeLink = document.querySelector(`[data-section="${route}"]`);
-        if (activeLink) activeLink.classList.add('active');
+    // ============================================
+    // CRUD ACTIONS
+    // ============================================
+
+    showSuratMasukForm() {
+        this.showToast('Form surat masuk akan ditampilkan', 'info');
     }
 
-    renderPagination(containerId, pagination, type) {
-        const container = document.getElementById(containerId);
-        if (!container || !pagination || pagination.totalPages <= 1) return;
-        
-        let html = '';
-        for (let i = 1; i <= pagination.totalPages; i++) {
-            html += `<button class="${i === pagination.page ? 'active' : ''}" 
-                onclick="window.app.load${type === 'surat-masuk' ? 'SuratMasuk' : type === 'surat-keluar' ? 'SuratKeluar' : 'Disposisi'}Data(${i})">${i}</button>`;
+    showSuratKeluarForm() {
+        this.showToast('Form surat keluar akan ditampilkan', 'info');
+    }
+
+    showDisposisiForm() {
+        this.showToast('Form disposisi akan ditampilkan', 'info');
+    }
+
+    viewSuratMasuk(id) {
+        console.log('View surat masuk:', id);
+    }
+
+    editSuratMasuk(id) {
+        console.log('Edit surat masuk:', id);
+    }
+
+    async deleteSuratMasuk(id) {
+        if (confirm('Apakah Anda yakin ingin menghapus surat ini?')) {
+            try {
+                const result = await api.deleteSuratMasuk(id);
+                if (result.success) {
+                    this.showToast('Surat berhasil dihapus', 'success');
+                    await this.loadSuratMasukData();
+                } else {
+                    this.showToast(result.message || 'Gagal menghapus surat', 'error');
+                }
+            } catch (error) {
+                this.showToast('Gagal menghapus surat', 'error');
+            }
         }
-        container.innerHTML = html;
+    }
+
+    viewSuratKeluar(id) {
+        console.log('View surat keluar:', id);
+    }
+
+    editSuratKeluar(id) {
+        console.log('Edit surat keluar:', id);
+    }
+
+    async deleteSuratKeluar(id) {
+        if (confirm('Apakah Anda yakin ingin menghapus surat ini?')) {
+            try {
+                const result = await api.deleteSuratKeluar(id);
+                if (result.success) {
+                    this.showToast('Surat berhasil dihapus', 'success');
+                    await this.loadSuratKeluarData();
+                } else {
+                    this.showToast(result.message || 'Gagal menghapus surat', 'error');
+                }
+            } catch (error) {
+                this.showToast('Gagal menghapus surat', 'error');
+            }
+        }
+    }
+
+    async approveDisposisi(id) {
+        if (confirm('Setujui disposisi ini?')) {
+            try {
+                const result = await api.updateDisposisi(id, { status: 'selesai' });
+                if (result.success) {
+                    this.showToast('Disposisi disetujui', 'success');
+                    await this.loadDisposisiData();
+                } else {
+                    this.showToast('Gagal menyetujui disposisi', 'error');
+                }
+            } catch (error) {
+                this.showToast('Gagal menyetujui disposisi', 'error');
+            }
+        }
+    }
+
+    searchSuratMasuk() {
+        const searchValue = document.getElementById('search-surat-masuk')?.value || '';
+        console.log('Search surat masuk:', searchValue);
+    }
+
+    filterSuratMasuk() {
+        console.log('Filter surat masuk');
+    }
+
+    resetFilterSuratMasuk() {
+        document.getElementById('search-surat-masuk').value = '';
+        document.getElementById('filter-status-masuk').value = '';
+        document.getElementById('filter-date-masuk').value = '';
+        this.loadSuratMasukData();
+    }
+
+    searchSuratKeluar() {
+        const searchValue = document.getElementById('search-surat-keluar')?.value || '';
+        console.log('Search surat keluar:', searchValue);
+    }
+
+    globalSearch(query) {
+        console.log('Global search:', query);
+        router.navigate('surat-masuk', { search: query });
+    }
+
+    exportData(type) {
+        this.showToast(`Mengexport data ${type}...`, 'info');
+    }
+
+    async generateReport(type) {
+        try {
+            const result = await api.generateReport(type);
+            if (result.success) {
+                this.showToast('Laporan berhasil digenerate', 'success');
+            } else {
+                this.showToast('Gagal mengenerate laporan', 'error');
+            }
+        } catch (error) {
+            this.showToast('Gagal mengenerate laporan', 'error');
+        }
+    }
+
+    async refreshDashboard() {
+        await this.loadDashboardStats();
+        this.showToast('Dashboard diperbarui', 'success');
+    }
+
+    async markAllNotificationsRead() {
+        try {
+            await api.markAllNotificationsRead();
+            this.showToast('Semua notifikasi ditandai dibaca', 'success');
+            this.loadNotifications();
+        } catch (error) {
+            this.showToast('Gagal memperbarui notifikasi', 'error');
+        }
+    }
+
+    // ============================================
+    // UI HELPERS
+    // ============================================
+
+    showModal() {
+        const modal = document.getElementById('crud-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    closeModal() {
+        const modal = document.getElementById('crud-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }
+
+    toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) {
+            sidebar.classList.toggle('active');
+        }
+    }
+
+    showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const icons = {
+            success: 'fa-check-circle',
+            error: 'fa-exclamation-circle',
+            warning: 'fa-exclamation-triangle',
+            info: 'fa-info-circle'
+        };
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+            <i class="fas ${icons[type] || icons.info}"></i>
+            <span>${message}</span>
+        `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+    }
+
+    showFormError(element, message) {
+        if (element) {
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+    }
+
+    setButtonLoading(button, isLoading) {
+        if (!button) return;
+        if (isLoading) {
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+        } else {
+            button.disabled = false;
+            button.innerHTML = button.getAttribute('data-original-text') || button.innerHTML;
+        }
     }
 
     formatDate(dateString) {
         if (!dateString) return '-';
         try {
             return new Date(dateString).toLocaleDateString('id-ID', {
-                day: 'numeric', month: 'long', year: 'numeric'
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
             });
         } catch (e) {
             return dateString;
         }
     }
 
-    getStatusClass(status) {
-        const classes = { 'baru': 'info', 'diproses': 'warning', 'selesai': 'success', 'diterima': 'info' };
-        return classes[status] || 'secondary';
-    }
-
-    showModal() {
-        const modal = document.getElementById('crud-modal');
-        if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
-    }
-
-    closeModal() {
-        const modal = document.getElementById('crud-modal');
-        if (modal) { modal.style.display = 'none'; document.body.style.overflow = ''; }
-    }
-
-    showToast(message, type = 'info') {
-        const container = document.getElementById('toast-container');
-        if (!container) return;
-        
-        const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
-        
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.innerHTML = `<i class="fas ${icons[type]}"></i><span>${message}</span>`;
-        container.appendChild(toast);
-        
-        setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300); }, 5000);
+    formatDateTime(dateString) {
+        if (!dateString) return '-';
+        try {
+            return new Date(dateString).toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (e) {
+            return dateString;
+        }
     }
 
     hideSpinner() {
         const spinner = document.getElementById('app-spinner');
-        if (spinner) { spinner.classList.add('hidden'); setTimeout(() => { spinner.style.display = 'none'; }, 300); }
-    }
-
-    show404() {
-        const container = document.getElementById('app-container');
-        if (container) {
-            container.innerHTML = `<div style="text-align:center;padding:100px;"><h1>404</h1><h3>Halaman Tidak Ditemukan</h3><button class="btn btn-primary" onclick="window.app.navigateTo('dashboard')">Kembali ke Dashboard</button></div>`;
+        if (spinner) {
+            spinner.classList.add('hidden');
+            setTimeout(() => {
+                spinner.style.display = 'none';
+            }, 300);
         }
     }
 }
 
-// Initialize
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded, creating app instance...');
     window.app = new App();
     window.app.init();
 });
 
-function closeModal() { if (window.app) window.app.closeModal(); }
-function refreshDashboard() { if (window.app) window.app.refreshDashboard(); }
+// Global functions for backward compatibility
+function closeModal() {
+    if (window.app) window.app.closeModal();
+}
 
-console.log('App script loaded - Full CRUD PWA Ready');
+function refreshDashboard() {
+    if (window.app) window.app.refreshDashboard();
+}
+
+console.log('App script loaded');
