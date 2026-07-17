@@ -1,16 +1,17 @@
-// Service Worker for PWA
-const CACHE_NAME = 'asde-cache-v2026';
-const urlsToCache = [
+// Service Worker untuk PWA
+const CACHE_NAME = 'asde-cache-v2026.1';
+const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
     '/offline.html',
+    '/manifest.json',
     '/assets/css/app.css',
     '/assets/css/dashboard.css',
     '/assets/css/surat.css',
     '/assets/js/config.js',
-    '/assets/js/database.js',
     '/assets/js/api.js',
     '/assets/js/auth.js',
+    '/assets/js/database.js',
     '/assets/js/app.js',
     '/assets/js/dashboard.js',
     '/assets/js/surat.js',
@@ -20,115 +21,152 @@ const urlsToCache = [
 ];
 
 // Install Service Worker
-self.addEventListener('install', event => {
+self.addEventListener('install', (event) => {
+    console.log('Service Worker: Installing...');
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('Opened cache');
-                return cache.addAll(urlsToCache);
+                console.log('Service Worker: Caching files');
+                return cache.addAll(ASSETS_TO_CACHE);
+            })
+            .then(() => {
+                console.log('Service Worker: Installed');
+                return self.skipWaiting();
             })
     );
 });
 
 // Activate Service Worker
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
+    console.log('Service Worker: Activating...');
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
                     if (cacheName !== CACHE_NAME) {
+                        console.log('Service Worker: Removing old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
             );
+        }).then(() => {
+            console.log('Service Worker: Activated');
+            return self.clients.claim();
         })
     );
 });
 
-// Fetch Strategy: Cache First, then Network
-self.addEventListener('fetch', event => {
+// Fetch Strategy: Network First, fallback to Cache, then Offline Page
+self.addEventListener('fetch', (event) => {
     event.respondWith(
-        caches.match(event.request)
+        fetch(event.request)
             .then(response => {
-                // Return cached response if found
-                if (response) {
-                    return response;
+                // Cache successful responses
+                if (response && response.status === 200 && response.type === 'basic') {
+                    const responseClone = response.clone();
+                    caches.open(CACHE_NAME)
+                        .then(cache => {
+                            cache.put(event.request, responseClone);
+                        });
                 }
-
-                // Clone the request
-                const fetchRequest = event.request.clone();
-
-                return fetch(fetchRequest)
-                    .then(response => {
-                        // Check if valid response
-                        if (!response || response.status !== 200 || response.type !== 'basic') {
-                            return response;
-                        }
-
-                        // Clone the response
-                        const responseToCache = response.clone();
-
-                        caches.open(CACHE_NAME)
-                            .then(cache => {
-                                cache.put(event.request, responseToCache);
-                            });
-
-                        return response;
-                    })
-                    .catch(() => {
-                        // Return offline page for navigation requests
-                        if (event.request.mode === 'navigate') {
-                            return caches.match('/offline.html');
-                        }
-                    });
+                return response;
+            })
+            .catch(async () => {
+                // Try cache first
+                const cachedResponse = await caches.match(event.request);
+                if (cachedResponse) {
+                    return cachedResponse;
+                }
+                
+                // Return offline page for navigation requests
+                if (event.request.mode === 'navigate') {
+                    const offlinePage = await caches.match('/offline.html');
+                    if (offlinePage) return offlinePage;
+                }
+                
+                // Return empty response for other requests
+                return new Response('', {
+                    status: 408,
+                    statusText: 'Request timeout'
+                });
             })
     );
 });
 
 // Background Sync
-self.addEventListener('sync', event => {
-    if (event.tag === 'sync-offline-data') {
+self.addEventListener('sync', (event) => {
+    if (event.tag === 'sync-queue') {
+        console.log('Service Worker: Background sync triggered');
         event.waitUntil(syncOfflineData());
     }
 });
 
 async function syncOfflineData() {
     try {
-        // Open IndexedDB
-        const db = await openDatabase();
-        const transaction = db.transaction(['syncQueue'], 'readwrite');
-        const store = transaction.objectStore('syncQueue');
-        const queue = await store.getAll();
-
-        // Sync each item
-        for (const item of queue) {
-            if (!item.synced) {
-                try {
-                    // Send to API
-                    const response = await fetch(APP_CONFIG.api.baseUrl, {
-                        method: 'POST',
-                        body: JSON.stringify(item.action)
-                    });
-
-                    if (response.ok) {
-                        item.synced = true;
-                        item.syncedAt = new Date().toISOString();
-                        await store.put(item);
-                    }
-                } catch (error) {
-                    console.error('Sync error for item:', item, error);
-                }
-            }
-        }
+        // Get all clients
+        const clients = await self.clients.matchAll();
+        
+        // Send message to main thread to process sync
+        clients.forEach(client => {
+            client.postMessage({
+                type: 'SYNC_QUEUE',
+                timestamp: Date.now()
+            });
+        });
+        
+        console.log('Service Worker: Sync message sent to clients');
     } catch (error) {
-        console.error('Background sync error:', error);
+        console.error('Service Worker: Sync error:', error);
     }
 }
 
-function openDatabase() {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open('ArsipSuratDigitalDB', 1);
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
-}
+// Push Notifications
+self.addEventListener('push', (event) => {
+    if (event.data) {
+        const data = event.data.json();
+        
+        const options = {
+            body: data.body || 'Notifikasi baru',
+            icon: '/assets/images/icon-192x192.png',
+            badge: '/assets/images/badge.png',
+            vibrate: [200, 100, 200],
+            data: {
+                url: data.url || '/'
+            }
+        };
+
+        event.waitUntil(
+            self.registration.showNotification(
+                data.title || 'Arsip Surat Digital',
+                options
+            )
+        );
+    }
+});
+
+// Notification Click
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    
+    event.waitUntil(
+        clients.matchAll({ type: 'window' })
+            .then(clientList => {
+                // Open URL from notification data
+                const url = event.notification.data?.url || '/';
+                
+                // Check if there's already a window open
+                for (const client of clientList) {
+                    if (client.url === url && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+                
+                // Open new window
+                if (clients.openWindow) {
+                    return clients.openWindow(url);
+                }
+            })
+    );
+});
+
+console.log('Service Worker: Loaded');
