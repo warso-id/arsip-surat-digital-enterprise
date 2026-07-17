@@ -1,38 +1,25 @@
-// api.js - API Service untuk komunikasi dengan Google Apps Script
+// api.js - API Service dengan Base64 Encoding
 class ApiService {
     constructor() {
         this.baseUrl = CONFIG.API.BASE_URL;
         this.token = localStorage.getItem(CONFIG.AUTH.TOKEN_KEY);
     }
 
-    // Encode data ke Base64
     encodeBase64(data) {
         try {
             const jsonStr = JSON.stringify(data);
-            const encoder = new TextEncoder();
-            const bytes = encoder.encode(jsonStr);
-            let binary = '';
-            bytes.forEach(byte => binary += String.fromCharCode(byte));
-            return btoa(binary);
+            return btoa(unescape(encodeURIComponent(jsonStr)));
         } catch (error) {
             console.error('Base64 encode error:', error);
             return btoa(JSON.stringify(data));
         }
     }
 
-    // Decode Base64 ke data
     decodeBase64(base64Str) {
         try {
-            const binary = atob(base64Str);
-            const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) {
-                bytes[i] = binary.charCodeAt(i);
-            }
-            const decoder = new TextDecoder();
-            const jsonStr = decoder.decode(bytes);
+            const jsonStr = decodeURIComponent(escape(atob(base64Str)));
             return JSON.parse(jsonStr);
         } catch (error) {
-            console.error('Base64 decode error:', error);
             try {
                 return JSON.parse(atob(base64Str));
             } catch (e) {
@@ -41,40 +28,39 @@ class ApiService {
         }
     }
 
-    // Helper untuk membuat request ke Google Apps Script
     async makeRequest(action, data = {}) {
         console.log(`API Request: ${action}`, data);
-        
-        // Cek koneksi
+
         if (!navigator.onLine) {
             return {
                 success: false,
-                message: 'Tidak ada koneksi internet'
+                message: 'Tidak ada koneksi internet. Data akan disimpan lokal.'
             };
         }
 
         try {
-            // Siapkan FormData (Google Apps Script menerima POST dengan FormData atau URL encoded)
-            const formData = new URLSearchParams();
-            formData.append('action', action);
-            formData.append('data', this.encodeBase64(data));
+            // Encode data ke base64
+            const encodedData = this.encodeBase64(data);
+            
+            // Buat URL dengan parameter
+            const params = new URLSearchParams();
+            params.append('action', action);
+            params.append('data', encodedData);
             
             if (this.token) {
-                formData.append('token', this.token);
+                params.append('token', this.token);
             }
 
-            console.log('Sending request to:', this.baseUrl);
-            console.log('FormData:', formData.toString());
+            console.log('Sending to:', this.baseUrl);
+            console.log('Params:', params.toString());
 
             const response = await fetch(this.baseUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: formData.toString()
+                body: params.toString()
             });
-
-            console.log('Response status:', response.status);
 
             if (!response.ok) {
                 throw new Error(`HTTP Error: ${response.status}`);
@@ -82,15 +68,6 @@ class ApiService {
 
             const result = await response.json();
             console.log('API Response:', result);
-
-            // Decode response data jika perlu
-            if (result.data && typeof result.data === 'string') {
-                try {
-                    result.data = this.decodeBase64(result.data);
-                } catch (e) {
-                    console.log('Data is not base64 encoded');
-                }
-            }
 
             return result;
         } catch (error) {
@@ -102,26 +79,16 @@ class ApiService {
         }
     }
 
-    // Auth Methods
-    async login(email, password, remember = false) {
-        console.log('Login attempt:', email);
-        
-        const result = await this.makeRequest('login', {
-            email: email,
-            password: password,
-            remember: remember
-        });
-        
-        console.log('Login result:', result);
+    // Auth
+    async login(username, password, remember = false) {
+        const result = await this.makeRequest('login', { username, password, remember });
         
         if (result.success && result.token) {
             this.token = result.token;
             localStorage.setItem(CONFIG.AUTH.TOKEN_KEY, result.token);
-            
             if (result.user) {
                 localStorage.setItem(CONFIG.AUTH.USER_KEY, JSON.stringify(result.user));
             }
-            
             if (remember) {
                 localStorage.setItem(CONFIG.AUTH.REMEMBER_KEY, 'true');
             }
@@ -131,24 +98,19 @@ class ApiService {
     }
 
     async register(userData) {
-        console.log('Register attempt:', userData.email);
-        
-        const result = await this.makeRequest('register', {
-            fullname: userData.fullname,
+        return await this.makeRequest('publicRegister', {
+            username: userData.username,
             email: userData.email,
-            password: userData.password
+            password: userData.password,
+            fullName: userData.fullName || userData.fullname
         });
-        
-        console.log('Register result:', result);
-        
-        return result;
     }
 
     async logout() {
         try {
             await this.makeRequest('logout');
         } catch (error) {
-            console.error('Logout API error:', error);
+            console.error('Logout error:', error);
         } finally {
             this.token = null;
             localStorage.removeItem(CONFIG.AUTH.TOKEN_KEY);
@@ -209,9 +171,25 @@ class ApiService {
         return await this.makeRequest('updateDisposisi', { id, ...data });
     }
 
+    async deleteDisposisi(id) {
+        return await this.makeRequest('deleteDisposisi', { id });
+    }
+
     // Kategori
     async getKategori() {
         return await this.makeRequest('getKategori');
+    }
+
+    async createKategori(data) {
+        return await this.makeRequest('createKategori', data);
+    }
+
+    async updateKategori(id, data) {
+        return await this.makeRequest('updateKategori', { id, ...data });
+    }
+
+    async deleteKategori(id) {
+        return await this.makeRequest('deleteKategori', { id });
     }
 
     // Instansi
@@ -219,14 +197,42 @@ class ApiService {
         return await this.makeRequest('getInstansi');
     }
 
+    async createInstansi(data) {
+        return await this.makeRequest('createInstansi', data);
+    }
+
+    async updateInstansi(id, data) {
+        return await this.makeRequest('updateInstansi', { id, ...data });
+    }
+
+    async deleteInstansi(id) {
+        return await this.makeRequest('deleteInstansi', { id });
+    }
+
     // Pengguna
     async getPengguna() {
         return await this.makeRequest('getPengguna');
     }
 
+    async createPengguna(data) {
+        return await this.makeRequest('createPengguna', data);
+    }
+
+    async updatePengguna(id, data) {
+        return await this.makeRequest('updatePengguna', { id, ...data });
+    }
+
+    async deletePengguna(id) {
+        return await this.makeRequest('deletePengguna', { id });
+    }
+
     // Laporan
     async generateReport(type, params = {}) {
         return await this.makeRequest('generateReport', { type, ...params });
+    }
+
+    async getLaporan(params = {}) {
+        return await this.makeRequest('getLaporan', params);
     }
 
     // Search
@@ -243,34 +249,19 @@ class ApiService {
         return await this.makeRequest('markNotificationRead', { id });
     }
 
-    // Process sync queue
-    async processSyncQueue() {
-        const queue = JSON.parse(localStorage.getItem('sync_queue') || '[]');
-        if (queue.length === 0) return;
+    // Profile
+    async getProfile() {
+        return await this.makeRequest('getProfile');
+    }
 
-        console.log(`Processing sync queue: ${queue.length} items`);
-        
-        const newQueue = [];
-        for (const item of queue) {
-            try {
-                const result = await this.makeRequest(item.action, item.data);
-                if (!result.success && item.retryCount < 3) {
-                    item.retryCount = (item.retryCount || 0) + 1;
-                    newQueue.push(item);
-                }
-            } catch (error) {
-                console.error('Sync error:', error);
-                if (item.retryCount < 3) {
-                    item.retryCount = (item.retryCount || 0) + 1;
-                    newQueue.push(item);
-                }
-            }
-        }
-        
-        localStorage.setItem('sync_queue', JSON.stringify(newQueue));
+    async updateProfile(data) {
+        return await this.makeRequest('updateProfile', data);
+    }
+
+    async changePassword(oldPassword, newPassword) {
+        return await this.makeRequest('changePassword', { oldPassword, newPassword });
     }
 }
 
-// Create global instance
 const api = new ApiService();
 console.log('API Service initialized');
