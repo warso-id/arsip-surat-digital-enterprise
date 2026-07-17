@@ -27,6 +27,22 @@ const ASSETS_TO_CACHE = [
     '/arsip-surat-digital-enterprise/assets/images/default-avatar.svg'
 ];
 
+// Tambahkan di service-worker.js untuk handle clean URLs
+self.addEventListener('fetch', (event) => {
+    const url = new URL(event.request.url);
+    
+    // Jika request adalah navigation (HTML page)
+    if (event.request.mode === 'navigate') {
+        // Redirect semua navigation ke index.html
+        event.respondWith(
+            fetch('/arsip-surat-digital-enterprise/index.html')
+        );
+        return;
+    }
+    
+    // ... existing fetch handler
+});
+
 self.addEventListener('install', (event) => {
     console.log('Service Worker: Installing...');
     
