@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" manifest="manifest.json">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
@@ -14,47 +14,205 @@
     <meta name="keywords" content="arsip surat, surat masuk, surat keluar, disposisi, enterprise, pwa, crud">
     <meta name="author" content="Arsip Surat Digital Team">
     
+    <!-- REMOVED: X-Frame-Options from meta (harus di server) -->
+    <!-- REMOVED: Content-Security-Policy from meta (gunakan server headers) -->
+    
     <title>Arsip Surat Digital Enterprise 2026 - Full Stack CRUD PWA</title>
     
-    <!-- PWA Meta -->
+    <!-- PWA Meta dengan path yang benar -->
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" sizes="180x180" href="src/public/images/logo.png">
-    <link rel="icon" type="image/x-icon" href="src/public/images/favicon.ico">
-    <link rel="shortcut icon" href="src/public/images/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/logo.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
+    <link rel="shortcut icon" href="assets/images/favicon.png">
     
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="src/public/css/app.css">
-    <link rel="stylesheet" href="src/public/css/dashboard.css">
-    <link rel="stylesheet" href="src/public/css/surat.css">
-    <link rel="stylesheet" href="src/public/css/print.css" media="print">
+    <link rel="stylesheet" href="assets/css/app.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="assets/css/surat.css">
+    <link rel="stylesheet" href="assets/css/print.css" media="print">
     
     <!-- Font Awesome untuk ikon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
-    <!-- Security Headers via Meta -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://script.google.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://script.google.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https://script.google.com;">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-    
     <!-- Preload Critical Resources -->
-    <link rel="preload" href="src/public/css/app.css" as="style">
-    <link rel="preload" href="src/public/js/app.js" as="script">
+    <link rel="preload" href="assets/css/app.css" as="style">
+    <link rel="preload" href="assets/js/app.js" as="script">
     <link rel="preconnect" href="https://script.google.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     
+    <!-- SVG Placeholder untuk gambar yang hilang -->
+    <script>
+        // Auto-generate placeholder images jika file tidak ditemukan
+        window.addEventListener('error', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.target.src = generatePlaceholder(e.target.alt || 'Image');
+            }
+        }, true);
+        
+        function generatePlaceholder(text) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 200;
+            canvas.height = 200;
+            const ctx = canvas.getContext('2d');
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 200, 200);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 200, 200);
+            
+            // Text
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 60px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text.substring(0, 2).toUpperCase(), 100, 100);
+            
+            return canvas.toDataURL();
+        }
+    </script>
+    
     <style>
-        /* Landing Page Specific Styles */
+        /* Critical CSS untuk mencegah FOUC */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Spinner Styles */
+        .spinner-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+        
+        .spinner-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .spinner-enterprise {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .spinner-text {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* Offline Banner */
+        .offline-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ff9800;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            z-index: 10000;
+            display: none;
+        }
+        
+        .offline-banner.show {
+            display: block;
+        }
+        
+        .offline-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10001;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .toast {
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideInRight 0.3s ease;
+            max-width: 350px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toast.success { background: #4caf50; }
+        .toast.error { background: #f44336; }
+        .toast.warning { background: #ff9800; }
+        .toast.info { background: #2196f3; }
+        
+        .toast.fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        /* Landing Page Styles */
         .landing-page {
             min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .landing-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 40px 20px;
+            width: 100%;
         }
         
         .landing-header {
@@ -63,12 +221,19 @@
             color: white;
         }
         
-        .landing-header .logo {
+        .landing-header .logo-placeholder {
             width: 120px;
             height: 120px;
             border-radius: 30px;
-            margin-bottom: 20px;
+            margin: 0 auto 20px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: bold;
         }
         
         .landing-header h1 {
@@ -104,6 +269,8 @@
             text-decoration: none;
             transition: all 0.3s ease;
             margin: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .btn-login {
@@ -181,6 +348,136 @@
             text-decoration: underline;
         }
         
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-dialog {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: #1a73e8;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1557b0;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
         @media (max-width: 768px) {
             .landing-header h1 {
                 font-size: 32px;
@@ -204,325 +501,31 @@
 </head>
 <body>
     <!-- Loading Spinner -->
-    <div id="app-spinner" class="spinner-overlay" style="display: flex;">
-        <div class="spinner-container">
+    <div id="app-spinner" class="spinner-overlay">
+        <div style="text-align: center;">
             <div class="spinner-enterprise"></div>
             <p class="spinner-text">Memuat Sistem Enterprise 2026...</p>
         </div>
     </div>
 
     <!-- Offline Indicator -->
-    <div id="offline-indicator" class="offline-banner" style="display: none;">
+    <div id="offline-indicator" class="offline-banner">
         <div class="offline-content">
-            <span class="offline-icon"><i class="fas fa-wifi"></i></span>
+            <span class="offline-icon"><i class="fas fa-wifi-slash"></i></span>
             <span>Anda sedang offline. Data akan disinkronkan saat koneksi tersedia.</span>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div id="app-container">
-        <!-- Landing Page untuk user yang belum login -->
-        <div id="landing-page" class="landing-page" style="display: none;">
-            <div class="landing-container">
-                <div class="landing-header">
-                    <img src="src/public/images/logo.png" alt="Logo" class="logo">
-                    <h1>Arsip Surat Digital</h1>
-                    <p class="subtitle">Sistem Manajemen Arsip Surat Enterprise 2026</p>
-                    <span class="version">🚀 Version 2026.1 Enterprise</span>
-                    <br><br>
-                    <a href="login" class="btn-landing btn-login" onclick="showLoginForm()">
-                        <i class="fas fa-sign-in-alt"></i> Masuk
-                    </a>
-                    <a href="register" class="btn-landing btn-register" onclick="showRegisterForm()">
-                        <i class="fas fa-user-plus"></i> Daftar
-                    </a>
-                </div>
-                
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">📥</div>
-                        <h3>Manajemen Surat Masuk</h3>
-                        <p>Kelola surat masuk dengan mudah, lengkap dengan tracking status dan disposisi otomatis.</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon">📤</div>
-                        <h3>Manajemen Surat Keluar</h3>
-                        <p>Buat dan kelola surat keluar dengan template dinamis dan export ke berbagai format.</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon">📋</div>
-                        <h3>Sistem Disposisi</h3>
-                        <p>Disposisi multi-level dengan notifikasi real-time dan tracking status lengkap.</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon">📊</div>
-                        <h3>Dashboard & Laporan</h3>
-                        <p>Dashboard interaktif dengan grafik dan laporan yang dapat diexport ke Excel/PDF.</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon">📱</div>
-                        <h3>PWA Support</h3>
-                        <p>Aplikasi dapat diinstall di mobile dan digunakan secara offline dengan sinkronisasi otomatis.</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon">🔒</div>
-                        <h3>Keamanan Enterprise</h3>
-                        <p>Enkripsi Base64, JWT authentication, role-based access, dan audit logging lengkap.</p>
-                    </div>
-                </div>
-                
-                <div class="footer-landing">
-                    <p>&copy; 2026 Arsip Surat Digital Enterprise v2026.1 | 
-                       <a href="#"><i class="fab fa-github"></i> GitHub</a> | 
-                       <a href="#"><i class="fas fa-envelope"></i> Contact</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Header untuk user yang sudah login -->
-        <header id="main-header" class="header-enterprise" style="display: none;">
-            <div class="header-container">
-                <div class="header-left">
-                    <button id="menu-toggle" class="btn-icon" aria-label="Toggle Menu">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="logo-section">
-                        <img src="src/public/images/logo.png" alt="Logo" class="logo-img" width="40" height="40">
-                        <div class="logo-text">
-                            <h1 class="app-title">Arsip Surat Digital</h1>
-                            <span class="version-badge">Enterprise 2026.1</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="header-center">
-                    <div class="search-global">
-                        <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="global-search" placeholder="Cari surat..." class="search-input">
-                    </div>
-                </div>
-                
-                <div class="header-right">
-                    <div class="notification-bell">
-                        <button id="notification-btn" class="btn-icon" aria-label="Notifikasi">
-                            <i class="fas fa-bell"></i>
-                            <span id="notification-badge" class="badge" style="display: none;">0</span>
-                        </button>
-                        <div id="notification-dropdown" class="dropdown-menu" style="display: none;">
-                            <div class="dropdown-header">
-                                <strong>Notifikasi</strong>
-                                <button onclick="markAllNotificationsRead()" class="btn btn-sm">Tandai Dibaca</button>
-                            </div>
-                            <div id="notification-list" class="dropdown-body">
-                                <p class="empty-text">Tidak ada notifikasi</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="user-profile">
-                        <button id="user-menu-btn" class="btn-user">
-                            <img src="src/public/images/default-avatar.png" alt="User" class="user-avatar" width="32" height="32">
-                            <span id="user-name-display">Admin</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div id="user-dropdown" class="dropdown-menu" style="display: none;">
-                            <a href="#" onclick="navigateTo('profile')"><i class="fas fa-user"></i> Profil</a>
-                            <a href="#" onclick="navigateTo('pengaturan')"><i class="fas fa-cog"></i> Pengaturan</a>
-                            <hr>
-                            <a href="#" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <div class="main-layout">
-            <!-- Sidebar -->
-            <aside id="sidebar" class="sidebar-enterprise" style="display: none;">
-                <nav class="nav-container">
-                    <ul class="nav-menu">
-                        <li class="nav-item">
-                            <a href="#dashboard" onclick="navigateTo('dashboard')" class="nav-link active" data-section="dashboard">
-                                <i class="fas fa-chart-pie nav-icon"></i>
-                                <span class="nav-text">Dashboard</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#surat-masuk" onclick="navigateTo('surat-masuk')" class="nav-link" data-section="surat-masuk">
-                                <i class="fas fa-inbox nav-icon"></i>
-                                <span class="nav-text">Surat Masuk</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#surat-keluar" onclick="navigateTo('surat-keluar')" class="nav-link" data-section="surat-keluar">
-                                <i class="fas fa-paper-plane nav-icon"></i>
-                                <span class="nav-text">Surat Keluar</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#disposisi" onclick="navigateTo('disposisi')" class="nav-link" data-section="disposisi">
-                                <i class="fas fa-clipboard-list nav-icon"></i>
-                                <span class="nav-text">Disposisi</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#laporan" onclick="navigateTo('laporan')" class="nav-link" data-section="laporan">
-                                <i class="fas fa-chart-bar nav-icon"></i>
-                                <span class="nav-text">Laporan</span>
-                            </a>
-                        </li>
-                        <li class="nav-separator"></li>
-                        <li class="nav-item">
-                            <a href="#pengguna" onclick="navigateTo('pengguna')" class="nav-link" data-section="pengguna">
-                                <i class="fas fa-users nav-icon"></i>
-                                <span class="nav-text">Pengguna</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#instansi" onclick="navigateTo('instansi')" class="nav-link" data-section="instansi">
-                                <i class="fas fa-building nav-icon"></i>
-                                <span class="nav-text">Instansi</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#pengaturan" onclick="navigateTo('pengaturan')" class="nav-link" data-section="pengaturan">
-                                <i class="fas fa-cog nav-icon"></i>
-                                <span class="nav-text">Pengaturan</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                
-                <div class="sidebar-footer">
-                    <div class="sync-status" id="sync-status">
-                        <i class="fas fa-sync-alt sync-icon"></i>
-                        <span class="sync-text">Tersinkronisasi</span>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Main Content Area -->
-            <main id="main-content" class="main-content">
-                <div class="content-wrapper">
-                    <!-- Dashboard Section -->
-                    <section id="dashboard-section" class="content-section active">
-                        <div class="section-container">
-                            <div class="section-header">
-                                <h2><i class="fas fa-chart-pie"></i> Dashboard</h2>
-                                <div class="header-actions">
-                                    <span class="date-display" id="current-date"></span>
-                                    <button onclick="refreshDashboard()" class="btn btn-sm btn-secondary">
-                                        <i class="fas fa-sync-alt"></i> Refresh
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="stats-grid" id="dashboard-stats">
-                                <!-- Loaded dynamically -->
-                            </div>
-                            <div class="dashboard-grid">
-                                <div class="chart-container">
-                                    <h3>Tren Surat</h3>
-                                    <canvas id="surat-chart" width="400" height="200"></canvas>
-                                </div>
-                                <div class="chart-container">
-                                    <h3>Status Disposisi</h3>
-                                    <canvas id="disposisi-chart" width="400" height="200"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Surat Masuk Section -->
-                    <section id="surat-masuk-section" class="content-section">
-                        <div class="section-container">
-                            <div class="section-header">
-                                <h2><i class="fas fa-inbox"></i> Manajemen Surat Masuk</h2>
-                                <div class="header-actions">
-                                    <button onclick="exportData('surat-masuk')" class="btn btn-sm btn-secondary">
-                                        <i class="fas fa-download"></i> Export
-                                    </button>
-                                    <button onclick="showCRUDForm('surat-masuk', 'create')" class="btn btn-primary">
-                                        <i class="fas fa-plus"></i> Tambah Surat Masuk
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="filter-bar">
-                                <div class="filter-row">
-                                    <div class="search-box">
-                                        <i class="fas fa-search search-icon-input"></i>
-                                        <input type="text" id="search-surat-masuk" placeholder="Cari surat masuk..." 
-                                               class="form-control" oninput="debounceSearch('surat-masuk')">
-                                    </div>
-                                    <select id="filter-kategori-masuk" class="form-control" onchange="applyFilters('surat-masuk')">
-                                        <option value="">Semua Kategori</option>
-                                    </select>
-                                    <input type="date" id="filter-tanggal-dari-masuk" class="form-control" 
-                                           onchange="applyFilters('surat-masuk')">
-                                    <input type="date" id="filter-tanggal-sampai-masuk" class="form-control" 
-                                           onchange="applyFilters('surat-masuk')">
-                                    <button onclick="resetFilters('surat-masuk')" class="btn btn-sm btn-secondary">
-                                        <i class="fas fa-undo"></i> Reset
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="table-container">
-                                <table id="tabel-surat-masuk" class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th><input type="checkbox" id="select-all-masuk" onchange="toggleSelectAll('masuk')"></th>
-                                            <th>No. Agenda</th>
-                                            <th>Tanggal Terima</th>
-                                            <th>Pengirim</th>
-                                            <th>Perihal</th>
-                                            <th>Kategori</th>
-                                            <th>Status</th>
-                                            <th>Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="body-surat-masuk">
-                                        <tr>
-                                            <td colspan="8" class="text-center">Memuat data...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <div class="table-footer">
-                                <div class="bulk-actions" id="bulk-actions-masuk" style="display: none;">
-                                    <span id="selected-count-masuk">0 dipilih</span>
-                                    <button onclick="bulkDelete('surat-masuk')" class="btn btn-danger btn-sm">
-                                        <i class="fas fa-trash"></i> Hapus Terpilih
-                                    </button>
-                                </div>
-                                <div class="pagination" id="pagination-surat-masuk"></div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </main>
-        </div>
-
-        <!-- Footer -->
-        <footer id="main-footer" class="footer-enterprise" style="display: none;">
-            <p>&copy; 2026 Arsip Surat Digital Enterprise v2026.1 | Full Stack CRUD PWA</p>
-        </footer>
-    </div>
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
 
     <!-- CRUD Modal -->
-    <div id="crud-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-dialog modal-lg">
+    <div id="crud-modal" class="modal-overlay">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 id="modal-title">Form</h3>
-                    <button type="button" class="modal-close" onclick="closeCRUDModal()">
+                    <button type="button" class="modal-close" onclick="closeModal()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -530,10 +533,10 @@
                     <!-- Dynamic form content -->
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeCRUDModal()">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
                         <i class="fas fa-times"></i> Batal
                     </button>
-                    <button type="button" class="btn btn-primary" id="modal-save-btn" onclick="saveCRUD()">
+                    <button type="button" class="btn btn-primary" id="modal-save-btn">
                         <i class="fas fa-save"></i> Simpan
                     </button>
                 </div>
@@ -541,132 +544,38 @@
         </div>
     </div>
 
-    <!-- Toast Notifications -->
-    <div id="toast-container" class="toast-container"></div>
+    <!-- Main Application Container -->
+    <div id="app-container">
+        <!-- Content will be rendered by JavaScript -->
+    </div>
 
-    <!-- Scripts -->
-    <script src="src/public/js/components/SpinnerComponent.js"></script>
-    <script src="src/public/js/app.js"></script>
-    <script src="src/public/js/dashboard.js"></script>
-    <script src="src/public/js/surat.js"></script>
-    <script src="src/public/js/disposisi.js"></script>
-    <script src="src/public/js/laporan.js"></script>
+    <!-- Scripts - Load in correct order -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/database.js"></script>
+    <script src="assets/js/components/spinner.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+    <script src="assets/js/surat.js"></script>
+    <script src="assets/js/disposisi.js"></script>
+    <script src="assets/js/laporan.js"></script>
+    <script src="assets/js/app.js"></script>
     
     <!-- Initialize Application -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize Enterprise App
-            window.enterpriseApp = new EnterpriseCRUDApp();
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing application...');
             
-            // Check if user is logged in
-            const token = localStorage.getItem('auth_token');
-            if (token) {
-                // User is logged in, show dashboard
-                showAppInterface();
-                window.enterpriseApp.checkAuth().then(isValid => {
-                    if (isValid) {
-                        window.enterpriseApp.navigateTo('dashboard');
-                    } else {
-                        showLandingPage();
-                    }
-                });
-            } else {
-                // Show landing page
-                showLandingPage();
-            }
+            // Hide spinner after initialization
+            setTimeout(function() {
+                document.getElementById('app-spinner').classList.add('hidden');
+            }, 500);
+            
+            // Create global app instance
+            window.app = new App();
+            window.app.init();
         });
-        
-        function showLandingPage() {
-            document.getElementById('landing-page').style.display = 'block';
-            document.getElementById('main-header').style.display = 'none';
-            document.getElementById('sidebar').style.display = 'none';
-            document.getElementById('main-footer').style.display = 'none';
-            document.getElementById('app-spinner').style.display = 'none';
-        }
-        
-        function showAppInterface() {
-            document.getElementById('landing-page').style.display = 'none';
-            document.getElementById('main-header').style.display = 'block';
-            document.getElementById('sidebar').style.display = 'block';
-            document.getElementById('main-footer').style.display = 'block';
-            document.getElementById('app-spinner').style.display = 'none';
-        }
-        
-        function showLoginForm() {
-            const modalBody = document.getElementById('modal-body');
-            modalBody.innerHTML = `
-                <form id="login-form" onsubmit="event.preventDefault(); handleLoginSubmit()">
-                    <div class="form-group">
-                        <label for="login-email"><i class="fas fa-envelope"></i> Email</label>
-                        <input type="email" id="login-email" class="form-control" placeholder="Masukkan email" required autofocus>
-                    </div>
-                    <div class="form-group">
-                        <label for="login-password"><i class="fas fa-lock"></i> Password</label>
-                        <input type="password" id="login-password" class="form-control" placeholder="Masukkan password" required>
-                    </div>
-                    <div class="form-group">
-                        <label style="display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" id="login-remember">
-                            <span>Ingat Saya</span>
-                        </label>
-                    </div>
-                    <div id="login-error" class="alert alert-error" style="display: none;"></div>
-                </form>
-            `;
-            
-            document.getElementById('modal-title').textContent = 'Masuk ke Sistem';
-            document.getElementById('modal-save-btn').textContent = 'Masuk';
-            document.getElementById('modal-save-btn').onclick = handleLoginSubmit;
-            document.getElementById('crud-modal').style.display = 'flex';
-        }
-        
-        async function handleLoginSubmit() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            const remember = document.getElementById('login-remember').checked;
-            const errorDiv = document.getElementById('login-error');
-            
-            if (!email || !password) {
-                errorDiv.textContent = 'Email dan password wajib diisi';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            const btn = document.getElementById('modal-save-btn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-            btn.disabled = true;
-            
-            try {
-                const authService = new AuthService();
-                const result = await authService.login(email, password, remember);
-                
-                if (result.success) {
-                    closeCRUDModal();
-                    showAppInterface();
-                    window.enterpriseApp.showToast('Login berhasil! Selamat datang.', 'success');
-                    window.enterpriseApp.navigateTo('dashboard');
-                } else {
-                    errorDiv.textContent = result.message || 'Login gagal. Periksa email dan password.';
-                    errorDiv.style.display = 'block';
-                }
-            } catch (error) {
-                errorDiv.textContent = 'Gagal terhubung ke server. Periksa koneksi internet.';
-                errorDiv.style.display = 'block';
-            } finally {
-                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Masuk';
-                btn.disabled = false;
-            }
-        }
-        
-        function handleLogout() {
-            if (confirm('Apakah Anda yakin ingin keluar?')) {
-                localStorage.removeItem('auth_token');
-                localStorage.removeItem('user_data');
-                localStorage.removeItem('remember_me');
-                showLandingPage();
-                window.enterpriseApp.showToast('Anda telah logout', 'info');
-            }
-        }
     </script>
 </body>
 </html>
