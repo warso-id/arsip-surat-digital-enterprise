@@ -1,82 +1,119 @@
-// database.js - Google Apps Script Database Connector
-class DatabaseConnector {
-    constructor() {
-        this.baseUrl = 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec';
-        this.retryAttempts = 3;
-        this.retryDelay = 1000;
-    }
+// database.js - Database Configuration
+const DatabaseConfig = {
+    // Google Apps Script Database Connection
+    connection: {
+        url: 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec',
+        type: 'google-apps-script',
+        encoding: 'base64',
+        timeout: 30000,
+        retryAttempts: 3,
+        retryDelay: 1000
+    },
 
-    async executeQuery(query, params = {}) {
-        let attempts = 0;
-        
-        while (attempts < this.retryAttempts) {
-            try {
-                const encodedQuery = btoa(JSON.stringify({
-                    query: query,
-                    params: params,
-                    timestamp: Date.now()
-                }));
+    // Cache Configuration
+    cache: {
+        enabled: true,
+        driver: 'localstorage',
+        prefix: 'db_cache_',
+        ttl: 300, // 5 minutes in seconds
+        maxSize: 100 // Maximum number of cached items
+    },
 
-                const response = await fetch(this.baseUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Database-Operation': 'query'
-                    },
-                    body: JSON.stringify({
-                        action: 'database_query',
-                        data: encodedQuery
-                    })
-                });
+    // Query Configuration
+    query: {
+        defaultLimit: 10,
+        maxLimit: 100,
+        defaultOrderBy: 'created_at',
+        defaultOrder: 'DESC'
+    },
 
-                if (!response.ok) {
-                    throw new Error(`Database error: ${response.status}`);
-                }
-
-                const result = await response.json();
-                return this.decodeResponse(result);
-                
-            } catch (error) {
-                attempts++;
-                if (attempts === this.retryAttempts) {
-                    throw new Error(`Database connection failed after ${this.retryAttempts} attempts`);
-                }
-                await this.sleep(this.retryDelay * attempts);
-            }
+    // Table Configurations
+    tables: {
+        roles: {
+            name: 'roles',
+            primaryKey: 'id',
+            timestamps: true,
+            softDeletes: false
+        },
+        pengguna: {
+            name: 'pengguna',
+            primaryKey: 'id',
+            timestamps: true,
+            softDeletes: true,
+            hidden: ['password']
+        },
+        kategori: {
+            name: 'kategori',
+            primaryKey: 'id',
+            timestamps: true,
+            softDeletes: false
+        },
+        instansi: {
+            name: 'instansi',
+            primaryKey: 'id',
+            timestamps: true,
+            softDeletes: false
+        },
+        surat_masuk: {
+            name: 'surat_masuk',
+            primaryKey: 'id',
+            timestamps: true,
+            softDeletes: false,
+            searchable: ['no_agenda', 'pengirim', 'perihal']
+        },
+        surat_keluar: {
+            name: 'surat_keluar',
+            primaryKey: 'id',
+            timestamps: true,
+            softDeletes: false,
+            searchable: ['no_surat', 'tujuan', 'perihal']
+        },
+        disposisi: {
+            name: 'disposisi',
+            primaryKey: 'id',
+            timestamps: true,
+            softDeletes: false
+        },
+        lampiran: {
+            name: 'lampiran',
+            primaryKey: 'id',
+            timestamps: true,
+            softDeletes: false
+        },
+        notifikasi: {
+            name: 'notifikasi',
+            primaryKey: 'id',
+            timestamps: true,
+            softDeletes: false
+        },
+        log_aktivitas: {
+            name: 'log_aktivitas',
+            primaryKey: 'id',
+            timestamps: true,
+            softDeletes: false
+        },
+        pengaturan: {
+            name: 'pengaturan',
+            primaryKey: 'id',
+            timestamps: true,
+            softDeletes: false
         }
-    }
+    },
 
-    decodeResponse(response) {
-        if (response.data) {
-            try {
-                response.data = JSON.parse(atob(response.data));
-            } catch (e) {
-                console.warn('Failed to decode response data');
-            }
-        }
-        return response;
-    }
+    // Migration settings
+    migrations: {
+        table: 'migrations',
+        path: 'src/database/migrations/',
+        enabled: true
+    },
 
-    sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    // Seeder settings
+    seeders: {
+        path: 'src/database/seeders/',
+        enabled: true
     }
+};
 
-    // CRUD Operations
-    async create(table, data) {
-        return this.executeQuery('INSERT', { table, data });
-    }
-
-    async read(table, conditions = {}) {
-        return this.executeQuery('SELECT', { table, conditions });
-    }
-
-    async update(table, data, conditions) {
-        return this.executeQuery('UPDATE', { table, data, conditions });
-    }
-
-    async delete(table, conditions) {
-        return this.executeQuery('DELETE', { table, conditions });
-    }
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = DatabaseConfig;
 }
-
-window.db = new DatabaseConnector();
