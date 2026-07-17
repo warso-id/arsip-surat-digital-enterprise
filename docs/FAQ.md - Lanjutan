@@ -1,0 +1,109 @@
+## Fitur Lanjutan
+
+### Bagaimana cara export data?
+1. Buka halaman yang ingin diexport
+2. Klik tombol "Export"
+3. Pilih format (Excel/PDF)
+4. File akan otomatis terdownload
+
+### Bagaimana cara import data?
+1. Buka halaman yang ingin diimport
+2. Klik tombol "Import"
+3. Pilih file Excel (.xlsx)
+4. Data akan otomatis terimport
+
+### Bagaimana cara backup database?
+1. Buka menu "Pengaturan"
+2. Klik "Backup Database"
+3. File backup akan terdownload
+4. Simpan di tempat aman
+
+### Bagaimana cara restore database?
+1. Buka menu "Pengaturan"
+2. Klik "Restore Database"
+3. Pilih file backup
+4. Konfirmasi restore
+
+### Apakah bisa multiple user?
+Ya. Sistem mendukung multiple user dengan role:
+- **Super Admin:** Akses penuh
+- **Admin:** Mengelola surat dan pengguna
+- **Operator:** Membuat surat dan disposisi
+- **Viewer:** Melihat data saja
+
+### Bagaimana cara menambah user baru?
+1. Buka menu "Pengguna"
+2. Klik "+ Tambah Pengguna"
+3. Isi data pengguna
+4. Pilih role
+5. Simpan
+
+### Apakah ada notifikasi?
+Ya. Sistem memiliki notifikasi untuk:
+- Disposisi baru
+- Update status disposisi
+- Batas waktu disposisi
+- Surat masuk baru
+
+### Bagaimana cara mengaktifkan notifikasi browser?
+1. Buka aplikasi
+2. Klik "Allow" saat muncul permintaan notifikasi
+3. Notifikasi akan muncul di browser
+
+## Mobile
+
+### Apakah bisa digunakan di mobile?
+Ya. Sistem ini adalah PWA yang bisa:
+- Dibuka di browser mobile
+- Diinstall di home screen
+- Digunakan offline
+- Mengirim notifikasi push
+
+### Bagaimana cara install di mobile?
+**Android:**
+1. Buka aplikasi di Chrome
+2. Klik menu (3 titik)
+3. Pilih "Add to Home Screen"
+
+**iOS:**
+1. Buka aplikasi di Safari
+2. Klik tombol Share
+3. Pilih "Add to Home Screen"
+
+### Apakah ada aplikasi native?
+Saat ini belum tersedia. PWA sudah memberikan pengalaman seperti aplikasi native.
+
+## Performance
+
+### Kenapa aplikasi lambat?
+1. Periksa koneksi internet
+2. Clear cache browser
+3. Tutup tab yang tidak digunakan
+4. Restart browser
+
+### Berapa ukuran aplikasi?
+- Aplikasi web: ~500KB
+- Cache offline: ~2MB
+- Data tersimpan di Google Sheets
+
+### Apakah ada batasan data?
+- Upload file: Max 10MB per file
+- Data surat: Tidak terbatas
+- Pengguna: Tidak terbatas
+
+## Bantuan
+
+### Bagaimana cara mendapatkan bantuan?
+- Email: support@arsip-surat.example.com
+- GitHub Issues: https://github.com/your-username/arsip-surat-digital-enterprise/issues
+- Dokumentasi: https://github.com/your-username/arsip-surat-digital-enterprise/docs
+
+### Apakah ada pelatihan?
+Hubungi tim support untuk menjadwalkan pelatihan.
+
+### Apakah ada garansi?
+Sistem ini dilisensikan di bawah MIT License. Lihat [LICENSE](../LICENSE) untuk detail.
+
+---
+
+© 2026 Arsip Surat Digital Enterprise. All rights reserved.
