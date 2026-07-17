@@ -1,27 +1,27 @@
 {
     "name": "Arsip Surat Digital Enterprise",
-    "short_name": "ArsipSurat",
-    "description": "Sistem Manajemen Arsip Surat Digital Enterprise 2026",
+    "short_name": "Arsip Surat",
+    "description": "Sistem Manajemen Arsip Surat Digital Enterprise",
     "start_url": "/index.html",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#1a73e8",
-    "orientation": "landscape-primary",
+    "orientation": "portrait-primary",
     "icons": [
         {
-            "src": "src/public/images/logo.png",
+            "src": "assets/images/logo.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "src/public/images/logo.png",
+            "src": "assets/images/logo.png",
             "sizes": "512x512",
             "type": "image/png"
         }
     ],
     "categories": ["business", "productivity"],
     "lang": "id-ID",
+    "dir": "ltr",
     "scope": "/",
-    "prefer_related_applications": false,
-    "related_applications": []
+    "prefer_related_applications": false
 }
