@@ -670,5 +670,24 @@
             window.app.init();
         });
     </script>
+
+<!-- Router Script -->
+<script src="assets/js/router.js"></script>
+
+<!-- Update script initialization -->
+<script>
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing application...');
+        
+        // Hide spinner after initialization
+        setTimeout(function() {
+            document.getElementById('app-spinner').classList.add('hidden');
+        }, 500);
+        
+        // App will be initialized by router
+    });
+</script>
+  
 </body>
 </html>
