@@ -19,12 +19,12 @@
     
     <title>Arsip Surat Digital Enterprise 2026 - Full Stack CRUD PWA</title>
     
-    <!-- PWA Meta dengan path yang benar -->
+    <!-- PWA Meta dengan SVG fallback -->
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/logo.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
-    <link rel="shortcut icon" href="assets/images/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/icon-192x192.svg">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="alternate icon" type="image/png" href="assets/images/favicon.png">
+    <link rel="shortcut icon" href="assets/images/favicon.svg">
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="assets/css/app.css">
@@ -43,36 +43,129 @@
     
     <!-- SVG Placeholder untuk gambar yang hilang -->
     <script>
-        // Auto-generate placeholder images jika file tidak ditemukan
-        window.addEventListener('error', function(e) {
-            if (e.target.tagName === 'IMG') {
-                e.target.src = generatePlaceholder(e.target.alt || 'Image');
-            }
-        }, true);
+    // Auto-generate placeholder images jika file tidak ditemukan
+    window.addEventListener('error', function(e) {
+        if (e.target.tagName === 'IMG') {
+            e.target.src = generatePlaceholder(e.target.alt || 'Image');
+        }
+    }, true);
+    
+    function generatePlaceholder(text) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 200;
+        const ctx = canvas.getContext('2d');
         
-        function generatePlaceholder(text) {
+        // Background gradient
+        const gradient = ctx.createLinearGradient(0, 0, 200, 200);
+        gradient.addColorStop(0, '#667eea');
+        gradient.addColorStop(1, '#764ba2');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 200, 200);
+        
+        // Text
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 60px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text.substring(0, 2).toUpperCase(), 100, 100);
+        
+        return canvas.toDataURL();
+    }
+
+    // Auto-generate favicon dan PWA icons
+    (function() {
+        // Create favicon dynamically
+        function createFavicon() {
             const canvas = document.createElement('canvas');
-            canvas.width = 200;
-            canvas.height = 200;
+            canvas.width = 32;
+            canvas.height = 32;
             const ctx = canvas.getContext('2d');
             
-            // Background gradient
-            const gradient = ctx.createLinearGradient(0, 0, 200, 200);
+            // Background
+            const gradient = ctx.createLinearGradient(0, 0, 32, 32);
             gradient.addColorStop(0, '#667eea');
             gradient.addColorStop(1, '#764ba2');
             ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 200, 200);
+            
+            // Rounded rect
+            ctx.beginPath();
+            ctx.moveTo(6, 0);
+            ctx.lineTo(26, 0);
+            ctx.quadraticCurveTo(32, 0, 32, 6);
+            ctx.lineTo(32, 26);
+            ctx.quadraticCurveTo(32, 32, 26, 32);
+            ctx.lineTo(6, 32);
+            ctx.quadraticCurveTo(0, 32, 0, 26);
+            ctx.lineTo(0, 6);
+            ctx.quadraticCurveTo(0, 0, 6, 0);
+            ctx.closePath();
+            ctx.fill();
             
             // Text
             ctx.fillStyle = 'white';
-            ctx.font = 'bold 60px Arial';
+            ctx.font = 'bold 20px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(text.substring(0, 2).toUpperCase(), 100, 100);
+            ctx.fillText('A', 16, 17);
             
-            return canvas.toDataURL();
+            // Set as favicon
+            const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+            link.type = 'image/png';
+            link.rel = 'icon';
+            link.href = canvas.toDataURL();
+            document.head.appendChild(link);
         }
-    </script>
+        
+        // Generate PWA icons
+        function generatePWAIcons() {
+            const sizes = [192, 512];
+            sizes.forEach(size => {
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                
+                // Background
+                const gradient = ctx.createLinearGradient(0, 0, size, size);
+                gradient.addColorStop(0, '#667eea');
+                gradient.addColorStop(1, '#764ba2');
+                ctx.fillStyle = gradient;
+                
+                // Rounded rect
+                const radius = size * 0.2;
+                ctx.beginPath();
+                ctx.moveTo(radius, 0);
+                ctx.lineTo(size - radius, 0);
+                ctx.quadraticCurveTo(size, 0, size, radius);
+                ctx.lineTo(size, size - radius);
+                ctx.quadraticCurveTo(size, size, size - radius, size);
+                ctx.lineTo(radius, size);
+                ctx.quadraticCurveTo(0, size, 0, size - radius);
+                ctx.lineTo(0, radius);
+                ctx.quadraticCurveTo(0, 0, radius, 0);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Text
+                ctx.fillStyle = 'white';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = `bold ${size * 0.35}px Arial`;
+                ctx.fillText('AS', size/2, size/2);
+                
+                // Store in localStorage as base64
+                localStorage.setItem(`icon-${size}x${size}`, canvas.toDataURL());
+            });
+        }
+        
+        // Run on load
+        createFavicon();
+        generatePWAIcons();
+        
+        console.log('✅ Icons auto-generated successfully');
+    })();
+</script>
     
     <style>
         /* Critical CSS untuk mencegah FOUC */
