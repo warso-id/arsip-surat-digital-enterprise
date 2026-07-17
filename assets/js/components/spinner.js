@@ -1,38 +1,31 @@
-// Spinner Component
+// spinner.js - Spinner Component
 class SpinnerComponent {
-    static show(containerId = 'mainContent') {
+    static show(containerId = 'main-content') {
         const container = document.getElementById(containerId);
         if (container) {
             container.innerHTML = `
-                <div class="spinner-container">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <p class="mt-2">Memuat data...</p>
+                <div style="text-align: center; padding: 50px;">
+                    <div class="spinner-enterprise"></div>
+                    <p class="spinner-text">Memuat data...</p>
                 </div>
             `;
         }
     }
 
-    static hide() {
-        // This is handled by page rendering
-    }
-
     static showOverlay() {
         const overlay = document.createElement('div');
         overlay.className = 'spinner-overlay';
-        overlay.id = 'spinnerOverlay';
         overlay.innerHTML = `
-            <div class="spinner-content">
-                <i class="fas fa-spinner fa-spin fa-3x"></i>
-                <p>Mohon tunggu...</p>
+            <div style="text-align: center;">
+                <div class="spinner-enterprise"></div>
+                <p class="spinner-text">Mohon tunggu...</p>
             </div>
         `;
         document.body.appendChild(overlay);
     }
 
     static hideOverlay() {
-        const overlay = document.getElementById('spinnerOverlay');
+        const overlay = document.querySelector('.spinner-overlay');
         if (overlay) {
             overlay.remove();
         }
