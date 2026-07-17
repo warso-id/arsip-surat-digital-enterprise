@@ -2,7 +2,7 @@
     "name": "Arsip Surat Digital Enterprise 2026",
     "short_name": "Arsip Surat",
     "description": "Sistem Manajemen Arsip Surat Digital Enterprise 2026 - Full Stack CRUD PWA",
-    "start_url": "/index.html",
+    "start_url": "/arsip-surat-digital-enterprise/index.html",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#1a73e8",
@@ -24,6 +24,6 @@
     "categories": ["business", "productivity", "utilities"],
     "lang": "id-ID",
     "dir": "ltr",
-    "scope": "/",
+    "scope": "/arsip-surat-digital-enterprise/",
     "prefer_related_applications": false
 }
