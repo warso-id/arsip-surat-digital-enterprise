@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="id" manifest="manifest.json">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Arsip Surat Digital Enterprise - Sistem Manajemen Surat Terintegrasi">
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Arsip Surat">
+    
+    <title>Arsip Surat Digital Enterprise 2026</title>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="src/public/images/logo.png">
+    <link rel="icon" type="image/x-icon" href="src/public/images/favicon.ico">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="src/public/css/app.css">
+    <link rel="stylesheet" href="src/public/css/dashboard.css">
+    <link rel="stylesheet" href="src/public/css/surat.css">
+    <link rel="stylesheet" href="src/public/css/print.css" media="print">
+    
+    <!-- Security Headers via Meta -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://script.google.com; script-src 'self' 'unsafe-inline' https://script.google.com; style-src 'self' 'unsafe-inline';">
+</head>
+<body class="enterprise-theme">
+    <!-- Loading Spinner -->
+    <div id="spinner" class="spinner-overlay">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <p>Memuat Sistem Enterprise...</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header id="main-header">
+        <div class="header-container">
+            <div class="logo-section">
+                <img src="src/public/images/logo.png" alt="Logo" class="logo">
+                <h1>Arsip Surat Digital Enterprise</h1>
+                <span class="version-badge">v2026.1 Enterprise</span>
+            </div>
+            <div class="user-section" id="user-section">
+                <!-- Dinamis dari JS -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#dashboard" onclick="navigateTo('dashboard')" class="nav-link active">
+                    <i class="icon-dashboard"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#surat-masuk" onclick="navigateTo('surat-masuk')" class="nav-link">
+                    <i class="icon-inbox"></i> Surat Masuk
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#surat-keluar" onclick="navigateTo('surat-keluar')" class="nav-link">
+                    <i class="icon-outbox"></i> Surat Keluar
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#disposisi" onclick="navigateTo('disposisi')" class="nav-link">
+                    <i class="icon-disposition"></i> Disposisi
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#laporan" onclick="navigateTo('laporan')" class="nav-link">
+                    <i class="icon-report"></i> Laporan
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#pengguna" onclick="navigateTo('pengguna')" class="nav-link">
+                    <i class="icon-users"></i> Pengguna
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#pengaturan" onclick="navigateTo('pengaturan')" class="nav-link">
+                    <i class="icon-settings"></i> Pengaturan
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <div class="content-container">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section active">
+                <div class="section-header">
+                    <h2>Dashboard</h2>
+                    <div class="date-display" id="current-date"></div>
+                </div>
+                <div class="stats-grid" id="dashboard-stats">
+                    <!-- Statistik dari Database -->
+                </div>
+                <div class="recent-activities">
+                    <h3>Aktivitas Terbaru</h3>
+                    <div class="activity-list" id="recent-activities"></div>
+                </div>
+            </section>
+
+            <!-- Surat Masuk Section -->
+            <section id="surat-masuk-section" class="content-section">
+                <div class="section-header">
+                    <h2>Manajemen Surat Masuk</h2>
+                    <button onclick="showCreateForm('surat-masuk')" class="btn btn-primary">
+                        + Tambah Surat Masuk
+                    </button>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="search-surat-masuk" placeholder="Cari surat masuk..." onkeyup="searchSurat('masuk')">
+                    <select id="filter-kategori-masuk" onchange="filterSurat('masuk')">
+                        <option value="">Semua Kategori</option>
+                    </select>
+                    <input type="date" id="filter-tanggal-masuk" onchange="filterSurat('masuk')">
+                </div>
+                <div class="table-container">
+                    <table id="tabel-surat-masuk" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>No. Agenda</th>
+                                <th>Tanggal Terima</th>
+                                <th>Pengirim</th>
+                                <th>Perihal</th>
+                                <th>Kategori</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="body-surat-masuk"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="pagination-surat-masuk"></div>
+            </section>
+
+            <!-- Surat Keluar Section -->
+            <section id="surat-keluar-section" class="content-section">
+                <div class="section-header">
+                    <h2>Manajemen Surat Keluar</h2>
+                    <button onclick="showCreateForm('surat-keluar')" class="btn btn-primary">
+                        + Tambah Surat Keluar
+                    </button>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="search-surat-keluar" placeholder="Cari surat keluar..." onkeyup="searchSurat('keluar')">
+                    <select id="filter-kategori-keluar" onchange="filterSurat('keluar')">
+                        <option value="">Semua Kategori</option>
+                    </select>
+                    <input type="date" id="filter-tanggal-keluar" onchange="filterSurat('keluar')">
+                </div>
+                <div class="table-container">
+                    <table id="tabel-surat-keluar" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>No. Surat</th>
+                                <th>Tanggal Kirim</th>
+                                <th>Tujuan</th>
+                                <th>Perihal</th>
+                                <th>Kategori</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="body-surat-keluar"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="pagination-surat-keluar"></div>
+            </section>
+
+            <!-- Disposisi Section -->
+            <section id="disposisi-section" class="content-section">
+                <div class="section-header">
+                    <h2>Manajemen Disposisi</h2>
+                </div>
+                <div class="table-container">
+                    <table id="tabel-disposisi" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>No. Disposisi</th>
+                                <th>Surat Masuk</th>
+                                <th>Dari</th>
+                                <th>Kepada</th>
+                                <th>Instruksi</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="body-disposisi"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Laporan Section -->
+            <section id="laporan-section" class="content-section">
+                <div class="section-header">
+                    <h2>Laporan</h2>
+                </div>
+                <div class="report-options">
+                    <button onclick="generateReport('surat-masuk')" class="btn btn-secondary">
+                        Laporan Surat Masuk
+                    </button>
+                    <button onclick="generateReport('surat-keluar')" class="btn btn-secondary">
+                        Laporan Surat Keluar
+                    </button>
+                    <button onclick="generateReport('disposisi')" class="btn btn-secondary">
+                        Laporan Disposisi
+                    </button>
+                </div>
+                <div id="report-result"></div>
+            </section>
+
+            <!-- Pengguna Section -->
+            <section id="pengguna-section" class="content-section">
+                <div class="section-header">
+                    <h2>Manajemen Pengguna</h2>
+                    <button onclick="showCreateForm('pengguna')" class="btn btn-primary">
+                        + Tambah Pengguna
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table id="tabel-pengguna" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Instansi</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="body-pengguna"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Pengaturan Section -->
+            <section id="pengaturan-section" class="content-section">
+                <div class="section-header">
+                    <h2>Pengaturan Sistem</h2>
+                </div>
+                <form id="pengaturan-form" onsubmit="saveSettings(event)">
+                    <div class="form-group">
+                        <label>Nama Instansi</label>
+                        <input type="text" id="instansi-name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat</label>
+                        <textarea id="instansi-address" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Admin</label>
+                        <input type="email" id="admin-email" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal Forms -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="main-footer">
+        <p>&copy; 2026 Arsip Surat Digital Enterprise. Version 2026.1</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="src/public/js/app.js"></script>
+    <script src="src/public/js/dashboard.js"></script>
+    <script src="src/public/js/surat.js"></script>
+    <script src="src/public/js/disposisi.js"></script>
+    <script src="src/public/js/laporan.js"></script>
+    <script src="src/public/js/components/SpinnerComponent.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
