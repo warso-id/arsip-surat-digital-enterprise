@@ -3,45 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offline - Arsip Surat Digital</title>
+    <meta name="theme-color" content="#1a73e8">
+    <title>Offline - Arsip Surat Digital Enterprise</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: #f5f5f5;
+            color: white;
         }
+        
         .offline-container {
             text-align: center;
-            padding: 2rem;
+            padding: 40px;
+            max-width: 500px;
         }
+        
         .offline-icon {
-            font-size: 4rem;
-            color: #ff9800;
-            margin-bottom: 1rem;
+            font-size: 120px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
         }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
         h1 {
-            color: #333;
-            margin-bottom: 0.5rem;
+            font-size: 36px;
+            margin-bottom: 15px;
+            font-weight: 700;
         }
+        
         p {
-            color: #666;
-            margin-bottom: 1.5rem;
-        }
-        .btn-retry {
-            background: #1a73e8;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
             font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            line-height: 1.6;
         }
+        
+        .btn-retry {
+            display: inline-block;
+            padding: 15px 30px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
         .btn-retry:hover {
-            background: #1557b0;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #ff9800;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .app-info {
+            margin-top: 30px;
+            font-size: 14px;
+            opacity: 0.7;
         }
     </style>
 </head>
@@ -49,11 +98,32 @@
     <div class="offline-container">
         <div class="offline-icon">📡</div>
         <h1>Anda Sedang Offline</h1>
-        <p>Maaf, saat ini Anda tidak terhubung ke internet.<br>
-        Silakan periksa koneksi Anda dan coba lagi.</p>
+        <p>
+            <span class="status-dot"></span>
+            Maaf, saat ini Anda tidak terhubung ke internet.<br>
+            Silakan periksa koneksi Anda dan coba lagi.
+        </p>
         <button class="btn-retry" onclick="window.location.reload()">
-            Coba Lagi
+            <i class="fas fa-redo"></i> Coba Lagi
         </button>
+        <div class="app-info">
+            Arsip Surat Digital Enterprise v2026.1<br>
+            Full Stack CRUD PWA
+        </div>
     </div>
+    
+    <script>
+        // Auto-check connection every 10 seconds
+        setInterval(() => {
+            if (navigator.onLine) {
+                window.location.reload();
+            }
+        }, 10000);
+        
+        // Listen for online event
+        window.addEventListener('online', () => {
+            window.location.reload();
+        });
+    </script>
 </body>
 </html>
