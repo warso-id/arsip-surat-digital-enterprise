@@ -1,0 +1,29 @@
+{
+    "watch": [
+        "src/",
+        "index.html",
+        "package.json"
+    ],
+    "ignore": [
+        "src/public/uploads/**",
+        "src/storage/**",
+        "node_modules/**",
+        "dist/**",
+        "coverage/**",
+        ".git/**"
+    ],
+    "ext": "js,json,html,css,ejs",
+    "exec": "node server.js",
+    "delay": "1000",
+    "env": {
+        "NODE_ENV": "development",
+        "APP_ENV": "development"
+    },
+    "events": {
+        "restart": "echo '🔄 Server restarting...'",
+        "crash": "echo '💥 Server crashed!'"
+    },
+    "legacyWatch": false,
+    "pollingInterval": 1000,
+    "signal": "SIGTERM"
+}
