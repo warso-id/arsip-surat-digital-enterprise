@@ -1,0 +1,53 @@
+<!-- generate-images.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Placeholder Images</title>
+</head>
+<body>
+    <canvas id="canvas" width="200" height="200"></canvas>
+    <script>
+        function generateIcon(size, text, bgColor) {
+            const canvas = document.getElementById('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Border radius for larger sizes
+            if (size >= 192) {
+                ctx.fillStyle = 'white';
+                ctx.font = `bold ${size/3}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('AS', size/2, size/2);
+            } else {
+                // Simple icon
+                ctx.fillStyle = 'white';
+                ctx.font = `bold ${size/2}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('AS', size/2, size/2);
+            }
+            
+            // Download link
+            const link = document.createElement('a');
+            link.download = `icon-${size}x${size}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        // Generate various sizes
+        setTimeout(() => generateIcon(192, 'AS', '#667eea'), 1000);
+        setTimeout(() => generateIcon(512, 'AS', '#667eea'), 2000);
+        setTimeout(() => generateIcon(32, 'AS', '#667eea'), 3000);
+        setTimeout(() => generateIcon(180, 'AS', '#667eea'), 4000);
+    </script>
+</body>
+</html>
