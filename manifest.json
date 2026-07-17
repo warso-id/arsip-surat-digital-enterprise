@@ -1,7 +1,7 @@
 {
-    "name": "Arsip Surat Digital Enterprise",
+    "name": "Arsip Surat Digital Enterprise 2026",
     "short_name": "Arsip Surat",
-    "description": "Sistem Manajemen Arsip Surat Digital Enterprise",
+    "description": "Sistem Manajemen Arsip Surat Digital Enterprise 2026 - Full Stack CRUD PWA",
     "start_url": "/index.html",
     "display": "standalone",
     "background_color": "#ffffff",
@@ -9,17 +9,19 @@
     "orientation": "portrait-primary",
     "icons": [
         {
-            "src": "assets/images/logo.png",
+            "src": "assets/images/icon-192x192.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         },
         {
-            "src": "assets/images/logo.png",
+            "src": "assets/images/icon-512x512.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ],
-    "categories": ["business", "productivity"],
+    "categories": ["business", "productivity", "utilities"],
     "lang": "id-ID",
     "dir": "ltr",
     "scope": "/",
