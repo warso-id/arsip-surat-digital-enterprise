@@ -8,9 +8,9 @@ const CONFIG = {
     // API Configuration
     API: {
         BASE_URL: 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec',
-        TIMEOUT: 30000, // 30 detik
+        TIMEOUT: 30000,
         RETRY_ATTEMPTS: 3,
-        RETRY_DELAY: 1000 // 1 detik
+        RETRY_DELAY: 1000
     },
     
     // Authentication
@@ -18,7 +18,7 @@ const CONFIG = {
         TOKEN_KEY: 'asde_auth_token',
         USER_KEY: 'asde_user_data',
         REMEMBER_KEY: 'asde_remember_me',
-        TOKEN_EXPIRY: 86400000 // 24 jam dalam milliseconds
+        TOKEN_EXPIRY: 86400000
     },
     
     // PWA Configuration
@@ -43,7 +43,7 @@ const CONFIG = {
     
     // File Upload
     UPLOAD: {
-        MAX_FILE_SIZE: 5242880, // 5MB dalam bytes
+        MAX_FILE_SIZE: 5242880,
         ALLOWED_TYPES: ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'xlsx', 'xls'],
         MAX_FILES: 5
     },
@@ -59,36 +59,12 @@ const CONFIG = {
         INSTANSI: 'instansi',
         PENGATURAN: 'pengaturan',
         PROFILE: 'profile'
-    },
-    
-    // User Roles
-    ROLES: {
-        ADMIN: 'admin',
-        USER: 'user',
-        VIEWER: 'viewer'
-    },
-    
-    // Status Surat
-    STATUS_SURAT: {
-        BARU: 'Baru',
-        PROSES: 'Proses',
-        SELESAI: 'Selesai',
-        ARSIP: 'Arsip'
-    },
-    
-    // Status Disposisi
-    STATUS_DISPOSISI: {
-        PENDING: 'Pending',
-        DITERUSKAN: 'Diteruskan',
-        SELESAI: 'Selesai',
-        DITOLAK: 'Ditolak'
     }
 };
 
-// Freeze config agar tidak bisa diubah
+// Freeze config
 Object.freeze(CONFIG);
 
-// Export untuk module system
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = CONFIG;
 }
