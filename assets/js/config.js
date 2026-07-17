@@ -1,49 +1,96 @@
-// Konfigurasi Aplikasi Enterprise
-const APP_CONFIG = {
-    name: 'Arsip Surat Digital Enterprise',
-    version: '2026.1.0',
-    api: {
-        baseUrl: 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec',
-        timeout: 30000,
-        retryAttempts: 3
+// config.js - Konfigurasi Aplikasi Enterprise 2026
+const CONFIG = {
+    // Informasi Aplikasi
+    APP_NAME: 'Arsip Surat Digital Enterprise',
+    APP_VERSION: '2026.1.0',
+    APP_DESCRIPTION: 'Sistem Manajemen Arsip Surat Terintegrasi',
+    
+    // API Configuration
+    API: {
+        BASE_URL: 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec',
+        TIMEOUT: 30000, // 30 detik
+        RETRY_ATTEMPTS: 3,
+        RETRY_DELAY: 1000 // 1 detik
     },
-    auth: {
-        tokenKey: 'asde_token',
-        userKey: 'asde_user',
-        expiryTime: 86400000 // 24 jam
+    
+    // Authentication
+    AUTH: {
+        TOKEN_KEY: 'asde_auth_token',
+        USER_KEY: 'asde_user_data',
+        REMEMBER_KEY: 'asde_remember_me',
+        TOKEN_EXPIRY: 86400000 // 24 jam dalam milliseconds
     },
-    pwa: {
-        cacheName: 'asde-cache-v2026',
-        cacheFiles: [
-            '/',
-            '/index.html',
-            '/offline.html',
-            '/assets/css/app.css',
-            '/assets/css/dashboard.css',
-            '/assets/css/surat.css',
-            '/assets/js/config.js',
-            '/assets/js/database.js',
-            '/assets/js/api.js',
-            '/assets/js/auth.js',
-            '/assets/js/app.js',
-            '/assets/js/dashboard.js',
-            '/assets/js/surat.js',
-            '/assets/js/disposisi.js',
-            '/assets/js/laporan.js'
-        ]
+    
+    // PWA Configuration
+    PWA: {
+        CACHE_NAME: 'asde-cache-v2026',
+        CACHE_VERSION: '2026.1.0',
+        OFFLINE_PAGE: '/offline.html'
     },
-    pagination: {
-        perPage: 10,
-        maxPages: 5
+    
+    // Pagination
+    PAGINATION: {
+        PER_PAGE: 10,
+        MAX_PAGES_DISPLAY: 5
     },
-    dateFormat: 'DD/MM/YYYY HH:mm',
-    storage: {
-        maxFileSize: 5 * 1024 * 1024, // 5MB
-        allowedTypes: ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png']
+    
+    // Date Format
+    DATE_FORMAT: {
+        DISPLAY: 'DD/MM/YYYY',
+        DATETIME: 'DD/MM/YYYY HH:mm',
+        INPUT: 'YYYY-MM-DD'
+    },
+    
+    // File Upload
+    UPLOAD: {
+        MAX_FILE_SIZE: 5242880, // 5MB dalam bytes
+        ALLOWED_TYPES: ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'xlsx', 'xls'],
+        MAX_FILES: 5
+    },
+    
+    // Routes
+    ROUTES: {
+        DASHBOARD: 'dashboard',
+        SURAT_MASUK: 'surat-masuk',
+        SURAT_KELUAR: 'surat-keluar',
+        DISPOSISI: 'disposisi',
+        LAPORAN: 'laporan',
+        PENGGUNA: 'pengguna',
+        INSTANSI: 'instansi',
+        PENGATURAN: 'pengaturan',
+        PROFILE: 'profile'
+    },
+    
+    // User Roles
+    ROLES: {
+        ADMIN: 'admin',
+        USER: 'user',
+        VIEWER: 'viewer'
+    },
+    
+    // Status Surat
+    STATUS_SURAT: {
+        BARU: 'Baru',
+        PROSES: 'Proses',
+        SELESAI: 'Selesai',
+        ARSIP: 'Arsip'
+    },
+    
+    // Status Disposisi
+    STATUS_DISPOSISI: {
+        PENDING: 'Pending',
+        DITERUSKAN: 'Diteruskan',
+        SELESAI: 'Selesai',
+        DITOLAK: 'Ditolak'
     }
 };
 
-// Export untuk digunakan di module lain
+// Freeze config agar tidak bisa diubah
+Object.freeze(CONFIG);
+
+// Export untuk module system
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = APP_CONFIG;
+    module.exports = CONFIG;
 }
+
+console.log('Config loaded:', CONFIG.APP_NAME, 'v' + CONFIG.APP_VERSION);
