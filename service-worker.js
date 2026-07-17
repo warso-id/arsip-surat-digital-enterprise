@@ -18,10 +18,15 @@ const ASSETS_TO_CACHE = [
     '/arsip-surat-digital-enterprise/assets/js/surat.js',
     '/arsip-surat-digital-enterprise/assets/js/disposisi.js',
     '/arsip-surat-digital-enterprise/assets/js/laporan.js',
-    '/arsip-surat-digital-enterprise/assets/js/components/spinner.js'
+    '/arsip-surat-digital-enterprise/assets/js/components/spinner.js',
+    // SVG icons (lebih ringan dan selalu tersedia)
+    '/arsip-surat-digital-enterprise/assets/images/icon-192x192.svg',
+    '/arsip-surat-digital-enterprise/assets/images/icon-512x512.svg',
+    '/arsip-surat-digital-enterprise/assets/images/favicon.svg',
+    '/arsip-surat-digital-enterprise/assets/images/logo.svg',
+    '/arsip-surat-digital-enterprise/assets/images/default-avatar.svg'
 ];
 
-// Install Service Worker
 self.addEventListener('install', (event) => {
     console.log('Service Worker: Installing...');
     
@@ -29,18 +34,18 @@ self.addEventListener('install', (event) => {
         caches.open(CACHE_NAME)
             .then(cache => {
                 console.log('Service Worker: Caching files');
-                // Cache files individually to avoid failing all if one fails
+                // Gunakan Promise.allSettled agar tidak gagal total
                 return Promise.allSettled(
                     ASSETS_TO_CACHE.map(url => {
                         return cache.add(url).catch(error => {
-                            console.warn(`Failed to cache: ${url}`, error);
-                            // Don't throw, just skip this file
+                            console.warn(`Gagal cache: ${url}`, error);
+                            // Skip file yang tidak ada
                         });
                     })
                 );
             })
             .then(() => {
-                console.log('Service Worker: Install completed');
+                console.log('Service Worker: Install selesai');
                 return self.skipWaiting();
             })
     );
