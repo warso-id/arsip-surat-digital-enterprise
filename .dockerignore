@@ -1,0 +1,64 @@
+# Dependencies
+node_modules/
+vendor/
+.git/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+src/storage/logs/*
+
+# Uploads
+src/public/uploads/*
+src/storage/app/surat/*
+
+# Backup
+src/storage/backup/*
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Build
+dist/
+build/
+
+# Docker
+docker-compose.override.yml
+Dockerfile
+Dockerfile.*
+
+# Tests
+tests/
+__tests__/
+*.test.js
+*.spec.js
+
+# Documentation
+docs/
+README.md
+CHANGELOG.md
+
+# CI/CD
+.github/
+
+# Temporary
+tmp/
+temp/
+*.tmp
+.cache/
