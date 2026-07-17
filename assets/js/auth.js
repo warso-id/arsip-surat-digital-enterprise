@@ -1,4 +1,4 @@
-// auth.js - Authentication Service
+// auth.js - Authentication Service (FIXED)
 class AuthService {
     constructor() {
         this.token = localStorage.getItem(CONFIG.AUTH.TOKEN_KEY);
@@ -10,7 +10,8 @@ class AuthService {
         try {
             const userData = localStorage.getItem(CONFIG.AUTH.USER_KEY);
             return userData ? JSON.parse(userData) : null;
-        } catch {
+        } catch (e) {
+            console.error('Error parsing user data:', e);
             return null;
         }
     }
@@ -19,7 +20,7 @@ class AuthService {
         if (!this.token) return false;
         
         try {
-            // Simple token validation (bisa diperluas dengan JWT decode)
+            // Simple token validation
             const tokenParts = this.token.split('.');
             if (tokenParts.length === 3) {
                 const payload = JSON.parse(atob(tokenParts[1]));
@@ -97,20 +98,74 @@ class AuthService {
         return this.user;
     }
 
-    hasRole(role) {
-        return this.user && this.user.role === role;
+    checkAuth() {
+        if (!this.isAuthenticated) {
+            // Tampilkan landing page, bukan error
+            if (window.app) {
+                window.app.showLandingPage();
+            }
+            return false;
+        }
+        return true;
     }
 
-    hasPermission(permission) {
-        return this.user && this.user.permissions && 
-               this.user.permissions.includes(permission);
-    }
+    showLoginForm() {
+        // Cek apakah modal tersedia
+        const modalBody = document.getElementById('modal-body');
+        if (!modalBody) {
+            console.error('Modal body not found');
+            return;
+        }
 
-    refreshUserData() {
-        this.user = this.getUserData();
+        const modalTitle = document.getElementById('modal-title');
+        const saveBtn = document.getElementById('modal-save-btn');
+        
+        if (modalTitle) {
+            modalTitle.textContent = 'Masuk ke Sistem';
+        }
+        
+        modalBody.innerHTML = `
+            <form id="login-form" onsubmit="event.preventDefault(); window.app.handleLogin()">
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="login-email" class="form-control" 
+                           placeholder="Masukkan email" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="login-password" class="form-control" 
+                           placeholder="Masukkan password" required autocomplete="current-password">
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="login-remember">
+                        <span>Ingat Saya</span>
+                    </label>
+                </div>
+                <div id="login-error" class="alert alert-error" style="display: none;"></div>
+            </form>
+        `;
+        
+        if (saveBtn) {
+            saveBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Masuk';
+            saveBtn.onclick = () => {
+                if (window.app) window.app.handleLogin();
+            };
+        }
+        
+        // Tampilkan modal
+        if (window.app) {
+            window.app.showModal();
+        }
+        
+        // Focus pada input email
+        setTimeout(() => {
+            const emailInput = document.getElementById('login-email');
+            if (emailInput) emailInput.focus();
+        }, 100);
     }
 }
 
 // Create global instance
 const auth = new AuthService();
-console.log('Auth Service initialized, authenticated:', auth.isAuthenticated);
+console.log('Auth Service initialized');
