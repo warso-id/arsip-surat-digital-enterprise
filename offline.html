@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Arsip Surat Digital</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .offline-container {
+            text-align: center;
+            padding: 2rem;
+        }
+        .offline-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+        .retry-button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .retry-button:hover {
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">📡</div>
+        <h1>Anda Sedang Offline</h1>
+        <p>Maaf, tidak dapat terhubung ke server. Silakan periksa koneksi internet Anda.</p>
+        <p>Beberapa fitur mungkin tidak tersedia dalam mode offline.</p>
+        <button class="retry-button" onclick="window.location.reload()">
+            Coba Lagi
+        </button>
+    </div>
+</body>
+</html>
