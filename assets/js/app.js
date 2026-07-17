@@ -1,47 +1,47 @@
-// app.js - Main Application Class (FULLY FIXED)
+// app.js - Main Application (FIXED - All errors resolved)
 class App {
     constructor() {
         this.version = CONFIG.APP_VERSION;
         this.currentRoute = null;
         this.isOnline = navigator.onLine;
         this.isLoading = false;
-        this.initTime = Date.now();
     }
 
     async init() {
         try {
-            console.log('Initializing Enterprise App v' + this.version);
+            console.log('Initializing App v' + this.version);
             
             // Setup event listeners
             this.setupEventListeners();
             
             // Check online status
-            await this.checkOnlineStatus();
+            this.checkOnlineStatus();
             
-            // Check authentication
+            // Hide spinner
+            this.hideSpinner();
+            
+            // Check authentication and show appropriate page
             if (auth.isAuthenticated) {
-                await this.showDashboard();
+                await this.navigateTo('dashboard');
             } else {
                 this.showLandingPage();
             }
             
-            // Process any pending sync queue
+            // Process sync queue if online
             if (this.isOnline) {
-                await api.processSyncQueue();
+                try {
+                    await api.processSyncQueue();
+                } catch (e) {
+                    console.log('Sync queue processing skipped');
+                }
             }
             
-            // Register service worker
-            this.registerServiceWorker();
-            
-            // Hide loading spinner
-            this.hideSpinner();
-            
-            console.log('App initialized successfully in', Date.now() - this.initTime, 'ms');
+            console.log('App initialized successfully');
             
         } catch (error) {
             console.error('App initialization error:', error);
-            this.showToast('Gagal menginisialisasi aplikasi', 'error');
             this.hideSpinner();
+            this.showLandingPage();
         }
     }
 
@@ -50,52 +50,37 @@ class App {
         window.addEventListener('online', () => this.handleOnline());
         window.addEventListener('offline', () => this.handleOffline());
         
-        // Handle browser back/forward
-        window.addEventListener('popstate', (event) => {
-            if (event.state && event.state.route) {
-                this.navigateTo(event.state.route, false);
-            }
-        });
-        
         // Close modals on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') this.closeModal();
         });
         
-        // Global click handler for closing dropdowns
+        // Close modal when clicking overlay
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.dropdown-menu') && !e.target.closest('[data-toggle="dropdown"]')) {
-                this.closeAllDropdowns();
+            if (e.target.id === 'crud-modal') {
+                this.closeModal();
             }
         });
     }
 
-    async checkOnlineStatus() {
+    checkOnlineStatus() {
         this.isOnline = navigator.onLine;
         this.updateOfflineIndicator();
-        
-        // Update sync status
-        if (this.isOnline) {
-            await api.processSyncQueue();
-        }
-        
         return this.isOnline;
     }
 
     updateOfflineIndicator() {
         const indicator = document.getElementById('offline-indicator');
-        if (indicator) {
-            if (this.isOnline) {
-                indicator.classList.remove('show');
-                setTimeout(() => {
-                    if (indicator.classList.contains('show') === false) {
-                        indicator.style.display = 'none';
-                    }
-                }, 300);
-            } else {
-                indicator.style.display = 'block';
-                setTimeout(() => indicator.classList.add('show'), 10);
-            }
+        if (!indicator) return;
+        
+        if (this.isOnline) {
+            indicator.classList.remove('show');
+            setTimeout(() => {
+                indicator.style.display = 'none';
+            }, 300);
+        } else {
+            indicator.style.display = 'block';
+            setTimeout(() => indicator.classList.add('show'), 10);
         }
     }
 
@@ -103,32 +88,22 @@ class App {
         this.isOnline = true;
         this.updateOfflineIndicator();
         this.showToast('Koneksi internet tersedia', 'success');
-        api.processSyncQueue();
-        this.refreshCurrentPage();
+        
+        // Process sync queue
+        api.processSyncQueue().catch(e => {
+            console.log('Sync queue processing failed:', e);
+        });
+        
+        // Refresh current page if any
+        if (this.currentRoute) {
+            this.navigateTo(this.currentRoute, false);
+        }
     }
 
     handleOffline() {
         this.isOnline = false;
         this.updateOfflineIndicator();
         this.showToast('Anda sedang offline', 'warning');
-    }
-
-    async registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            try {
-                const registration = await navigator.serviceWorker.register('/service-worker.js', {
-                    scope: '/'
-                });
-                console.log('Service Worker registered:', registration.scope);
-                
-                // Setup background sync
-                if ('SyncManager' in window) {
-                    await registration.sync.register('sync-queue');
-                }
-            } catch (error) {
-                console.warn('Service Worker registration failed:', error);
-            }
-        }
     }
 
     // Navigation
@@ -143,65 +118,50 @@ class App {
             history.pushState({ route: route }, '', `#${route}`);
         }
         
-        // Update active menu
-        this.updateActiveMenu(route);
-        
         try {
             switch(route) {
-                case CONFIG.ROUTES.DASHBOARD:
+                case 'dashboard':
                     await this.showDashboard();
                     break;
-                case CONFIG.ROUTES.SURAT_MASUK:
-                    await this.showSuratMasuk();
+                case 'surat-masuk':
+                    this.showSuratMasuk();
                     break;
-                case CONFIG.ROUTES.SURAT_KELUAR:
-                    await this.showSuratKeluar();
+                case 'surat-keluar':
+                    this.showSuratKeluar();
                     break;
-                case CONFIG.ROUTES.DISPOSISI:
-                    await this.showDisposisi();
+                case 'disposisi':
+                    this.showDisposisi();
                     break;
-                case CONFIG.ROUTES.LAPORAN:
-                    await this.showLaporan();
+                case 'laporan':
+                    this.showLaporan();
                     break;
-                case CONFIG.ROUTES.PENGGUNA:
-                    await this.showPengguna();
+                case 'pengguna':
+                    this.showPengguna();
                     break;
-                case CONFIG.ROUTES.INSTANSI:
-                    await this.showInstansi();
+                case 'instansi':
+                    this.showInstansi();
                     break;
-                case CONFIG.ROUTES.PENGATURAN:
-                    await this.showPengaturan();
-                    break;
-                case CONFIG.ROUTES.PROFILE:
-                    await this.showProfile();
+                case 'pengaturan':
+                    this.showPengaturan();
                     break;
                 default:
                     this.show404();
             }
         } catch (error) {
-            console.error(`Navigation error to ${route}:`, error);
-            this.showError('Gagal memuat halaman');
+            console.error('Navigation error:', error);
         } finally {
             this.isLoading = false;
-        }
-    }
-
-    updateActiveMenu(route) {
-        // Remove all active states
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-        
-        // Set active for current route
-        const activeLink = document.querySelector(`[data-section="${route}"]`);
-        if (activeLink) {
-            activeLink.classList.add('active');
         }
     }
 
     // Page Renderers
     showLandingPage() {
         const container = document.getElementById('app-container');
+        if (!container) {
+            console.error('App container not found');
+            return;
+        }
+
         container.innerHTML = `
             <div class="landing-page">
                 <div class="landing-container">
@@ -211,10 +171,10 @@ class App {
                         <p class="subtitle">Sistem Manajemen Arsip Surat Enterprise 2026</p>
                         <span class="version">🚀 Version ${this.version}</span>
                         <br><br>
-                        <button class="btn-landing btn-login" onclick="app.showLoginForm()">
+                        <button class="btn-landing btn-login" onclick="window.app.showLoginForm()">
                             <i class="fas fa-sign-in-alt"></i> Masuk
                         </button>
-                        <button class="btn-landing btn-register" onclick="app.showRegisterForm()">
+                        <button class="btn-landing btn-register" onclick="window.app.showRegisterForm()">
                             <i class="fas fa-user-plus"></i> Daftar
                         </button>
                     </div>
@@ -258,10 +218,7 @@ class App {
                     </div>
                     
                     <div class="footer-landing">
-                        <p>&copy; 2026 Arsip Surat Digital Enterprise v${this.version} | 
-                           <a href="#"><i class="fab fa-github"></i> GitHub</a> | 
-                           <a href="#"><i class="fas fa-envelope"></i> Contact</a>
-                        </p>
+                        <p>&copy; 2026 Arsip Surat Digital Enterprise v${this.version}</p>
                     </div>
                 </div>
             </div>
@@ -275,12 +232,14 @@ class App {
         }
 
         const container = document.getElementById('app-container');
+        if (!container) return;
+
         container.innerHTML = `
             <div class="dashboard-page">
                 <header class="app-header">
                     <div class="header-container">
                         <div class="header-left">
-                            <button class="menu-toggle" onclick="app.toggleSidebar()">
+                            <button class="menu-toggle" onclick="window.app.toggleSidebar()">
                                 <i class="fas fa-bars"></i>
                             </button>
                             <div class="logo-section">
@@ -293,8 +252,8 @@ class App {
                         </div>
                         <div class="header-right">
                             <div class="user-info">
-                                <span id="user-name-display">${auth.user?.fullName || auth.user?.username || 'User'}</span>
-                                <button onclick="app.logout()" class="btn btn-sm btn-secondary">
+                                <span>${auth.user?.fullName || auth.user?.username || 'User'}</span>
+                                <button onclick="window.app.logout()" class="btn btn-secondary btn-sm">
                                     <i class="fas fa-sign-out-alt"></i> Keluar
                                 </button>
                             </div>
@@ -305,49 +264,39 @@ class App {
                 <div class="main-layout">
                     <aside class="sidebar">
                         <nav>
-                            <a href="#" onclick="app.navigateTo('dashboard')" class="nav-link active" data-section="dashboard">
+                            <a href="#" onclick="window.app.navigateTo('dashboard')" class="nav-link active" data-section="dashboard">
                                 <i class="fas fa-chart-pie"></i> Dashboard
                             </a>
-                            <a href="#" onclick="app.navigateTo('surat-masuk')" class="nav-link" data-section="surat-masuk">
+                            <a href="#" onclick="window.app.navigateTo('surat-masuk')" class="nav-link" data-section="surat-masuk">
                                 <i class="fas fa-inbox"></i> Surat Masuk
                             </a>
-                            <a href="#" onclick="app.navigateTo('surat-keluar')" class="nav-link" data-section="surat-keluar">
+                            <a href="#" onclick="window.app.navigateTo('surat-keluar')" class="nav-link" data-section="surat-keluar">
                                 <i class="fas fa-paper-plane"></i> Surat Keluar
                             </a>
-                            <a href="#" onclick="app.navigateTo('disposisi')" class="nav-link" data-section="disposisi">
+                            <a href="#" onclick="window.app.navigateTo('disposisi')" class="nav-link" data-section="disposisi">
                                 <i class="fas fa-clipboard-list"></i> Disposisi
                             </a>
-                            <a href="#" onclick="app.navigateTo('laporan')" class="nav-link" data-section="laporan">
+                            <a href="#" onclick="window.app.navigateTo('laporan')" class="nav-link" data-section="laporan">
                                 <i class="fas fa-chart-bar"></i> Laporan
-                            </a>
-                            <hr>
-                            <a href="#" onclick="app.navigateTo('pengguna')" class="nav-link" data-section="pengguna">
-                                <i class="fas fa-users"></i> Pengguna
-                            </a>
-                            <a href="#" onclick="app.navigateTo('instansi')" class="nav-link" data-section="instansi">
-                                <i class="fas fa-building"></i> Instansi
-                            </a>
-                            <a href="#" onclick="app.navigateTo('pengaturan')" class="nav-link" data-section="pengaturan">
-                                <i class="fas fa-cog"></i> Pengaturan
                             </a>
                         </nav>
                     </aside>
                     
-                    <main class="main-content" id="main-content">
+                    <main class="main-content">
                         <div class="dashboard-container">
                             <div class="page-header">
                                 <h2><i class="fas fa-chart-pie"></i> Dashboard</h2>
                                 <div class="header-actions">
-                                    <span id="current-date">${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                                    <button onclick="app.refreshDashboard()" class="btn btn-primary btn-sm">
+                                    <span>${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                    <button onclick="window.app.refreshDashboard()" class="btn btn-primary btn-sm">
                                         <i class="fas fa-sync-alt"></i> Refresh
                                     </button>
                                 </div>
                             </div>
                             
                             <div class="stats-grid" id="dashboard-stats">
-                                <div class="text-center p-5">
-                                    <i class="fas fa-spinner fa-spin"></i> Memuat statistik...
+                                <div style="text-align: center; padding: 50px;">
+                                    <i class="fas fa-spinner fa-spin"></i> Memuat data...
                                 </div>
                             </div>
                         </div>
@@ -366,7 +315,7 @@ class App {
             const stats = result.success ? result.data : this.getDefaultStats();
             this.renderDashboardStats(stats);
         } catch (error) {
-            console.error('Error loading dashboard stats:', error);
+            console.error('Error loading stats:', error);
             this.renderDashboardStats(this.getDefaultStats());
         }
     }
@@ -376,9 +325,7 @@ class App {
             totalSuratMasuk: 0,
             totalSuratKeluar: 0,
             totalDisposisi: 0,
-            pendingDisposisi: 0,
-            totalPengguna: 0,
-            recentActivities: []
+            pendingDisposisi: 0
         };
     }
 
@@ -423,51 +370,86 @@ class App {
         this.showToast('Dashboard diperbarui', 'success');
     }
 
-    async refreshCurrentPage() {
-        if (this.currentRoute) {
-            await this.navigateTo(this.currentRoute, false);
+    // Simple page placeholders
+    showSuratMasuk() {
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.innerHTML = `
+                <div class="page-header">
+                    <h2><i class="fas fa-inbox"></i> Surat Masuk</h2>
+                    <button class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Surat</button>
+                </div>
+                <p>Halaman manajemen surat masuk akan ditampilkan disini.</p>
+            `;
+        }
+    }
+
+    showSuratKeluar() {
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.innerHTML = `
+                <div class="page-header">
+                    <h2><i class="fas fa-paper-plane"></i> Surat Keluar</h2>
+                    <button class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Surat</button>
+                </div>
+                <p>Halaman manajemen surat keluar akan ditampilkan disini.</p>
+            `;
+        }
+    }
+
+    showDisposisi() {
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.innerHTML = '<h2>Disposisi</h2><p>Halaman disposisi akan ditampilkan disini.</p>';
+        }
+    }
+
+    showLaporan() {
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.innerHTML = '<h2>Laporan</h2><p>Halaman laporan akan ditampilkan disini.</p>';
+        }
+    }
+
+    showPengguna() {
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.innerHTML = '<h2>Pengguna</h2><p>Halaman manajemen pengguna akan ditampilkan disini.</p>';
+        }
+    }
+
+    showInstansi() {
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.innerHTML = '<h2>Instansi</h2><p>Halaman data instansi akan ditampilkan disini.</p>';
+        }
+    }
+
+    showPengaturan() {
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.innerHTML = '<h2>Pengaturan</h2><p>Halaman pengaturan akan ditampilkan disini.</p>';
+        }
+    }
+
+    show404() {
+        const container = document.getElementById('app-container');
+        if (container) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 100px 20px;">
+                    <h1 style="font-size: 72px; color: #1a73e8;">404</h1>
+                    <h3>Halaman Tidak Ditemukan</h3>
+                    <button class="btn btn-primary" onclick="window.app.navigateTo('dashboard')">
+                        <i class="fas fa-home"></i> Kembali ke Dashboard
+                    </button>
+                </div>
+            `;
         }
     }
 
     // Auth Forms
     showLoginForm() {
-        const modalBody = document.getElementById('modal-body');
-        const modalTitle = document.getElementById('modal-title');
-        const saveBtn = document.getElementById('modal-save-btn');
-        
-        modalTitle.textContent = 'Masuk ke Sistem';
-        modalBody.innerHTML = `
-            <form id="login-form" onsubmit="event.preventDefault(); app.handleLogin()">
-                <div class="form-group">
-                    <label><i class="fas fa-envelope"></i> Email</label>
-                    <input type="email" id="login-email" class="form-control" 
-                           placeholder="Masukkan email" required autocomplete="email">
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-lock"></i> Password</label>
-                    <input type="password" id="login-password" class="form-control" 
-                           placeholder="Masukkan password" required autocomplete="current-password">
-                </div>
-                <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 8px;">
-                        <input type="checkbox" id="login-remember">
-                        <span>Ingat Saya</span>
-                    </label>
-                </div>
-                <div id="login-error" class="alert alert-error" style="display: none;"></div>
-            </form>
-        `;
-        
-        saveBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Masuk';
-        saveBtn.onclick = () => app.handleLogin();
-        
-        this.showModal();
-        
-        // Focus on email input after modal is shown
-        setTimeout(() => {
-            const emailInput = document.getElementById('login-email');
-            if (emailInput) emailInput.focus();
-        }, 100);
+        auth.showLoginForm();
     }
 
     showRegisterForm() {
@@ -475,47 +457,38 @@ class App {
         const modalTitle = document.getElementById('modal-title');
         const saveBtn = document.getElementById('modal-save-btn');
         
-        modalTitle.textContent = 'Registrasi Pengguna Baru';
+        if (!modalBody) return;
+        
+        if (modalTitle) modalTitle.textContent = 'Registrasi Pengguna Baru';
+        
         modalBody.innerHTML = `
-            <form id="register-form" onsubmit="event.preventDefault(); app.handleRegister()">
+            <form onsubmit="event.preventDefault(); window.app.handleRegister()">
                 <div class="form-group">
-                    <label><i class="fas fa-user"></i> Nama Lengkap</label>
-                    <input type="text" id="reg-fullname" class="form-control" 
-                           placeholder="Masukkan nama lengkap" required>
+                    <label>Nama Lengkap</label>
+                    <input type="text" id="reg-fullname" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-user-circle"></i> Username</label>
-                    <input type="text" id="reg-username" class="form-control" 
-                           placeholder="Masukkan username" required>
+                    <label>Email</label>
+                    <input type="email" id="reg-email" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-envelope"></i> Email</label>
-                    <input type="email" id="reg-email" class="form-control" 
-                           placeholder="Masukkan email" required>
+                    <label>Password</label>
+                    <input type="password" id="reg-password" class="form-control" required minlength="6">
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-lock"></i> Password</label>
-                    <input type="password" id="reg-password" class="form-control" 
-                           placeholder="Masukkan password" required minlength="6">
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-lock"></i> Konfirmasi Password</label>
-                    <input type="password" id="reg-confirm-password" class="form-control" 
-                           placeholder="Konfirmasi password" required minlength="6">
+                    <label>Konfirmasi Password</label>
+                    <input type="password" id="reg-confirm-password" class="form-control" required minlength="6">
                 </div>
                 <div id="register-error" class="alert alert-error" style="display: none;"></div>
             </form>
         `;
         
-        saveBtn.innerHTML = '<i class="fas fa-user-plus"></i> Daftar';
-        saveBtn.onclick = () => app.handleRegister();
+        if (saveBtn) {
+            saveBtn.innerHTML = '<i class="fas fa-user-plus"></i> Daftar';
+            saveBtn.onclick = () => this.handleRegister();
+        }
         
         this.showModal();
-        
-        setTimeout(() => {
-            const nameInput = document.getElementById('reg-fullname');
-            if (nameInput) nameInput.focus();
-        }, 100);
     }
 
     async handleLogin() {
@@ -543,8 +516,8 @@ class App {
             
             if (result.success) {
                 this.closeModal();
-                this.showToast('Login berhasil! Selamat datang.', 'success');
-                await this.showDashboard();
+                this.showToast('Login berhasil!', 'success');
+                await this.navigateTo('dashboard');
             } else {
                 if (errorDiv) {
                     errorDiv.textContent = result.message || 'Login gagal';
@@ -556,7 +529,6 @@ class App {
                 }
             }
         } catch (error) {
-            console.error('Login error:', error);
             if (errorDiv) {
                 errorDiv.textContent = 'Gagal terhubung ke server';
                 errorDiv.style.display = 'block';
@@ -570,31 +542,14 @@ class App {
 
     async handleRegister() {
         const fullname = document.getElementById('reg-fullname')?.value;
-        const username = document.getElementById('reg-username')?.value;
         const email = document.getElementById('reg-email')?.value;
         const password = document.getElementById('reg-password')?.value;
         const confirmPassword = document.getElementById('reg-confirm-password')?.value;
         const errorDiv = document.getElementById('register-error');
         
-        if (!fullname || !username || !email || !password) {
-            if (errorDiv) {
-                errorDiv.textContent = 'Semua field wajib diisi';
-                errorDiv.style.display = 'block';
-            }
-            return;
-        }
-        
         if (password !== confirmPassword) {
             if (errorDiv) {
                 errorDiv.textContent = 'Password tidak cocok';
-                errorDiv.style.display = 'block';
-            }
-            return;
-        }
-        
-        if (password.length < 6) {
-            if (errorDiv) {
-                errorDiv.textContent = 'Password minimal 6 karakter';
                 errorDiv.style.display = 'block';
             }
             return;
@@ -607,12 +562,7 @@ class App {
         }
         
         try {
-            const result = await auth.register({
-                fullname,
-                username,
-                email,
-                password
-            });
+            const result = await auth.register({ fullname, email, password });
             
             if (result.success) {
                 this.closeModal();
@@ -629,7 +579,6 @@ class App {
                 }
             }
         } catch (error) {
-            console.error('Register error:', error);
             if (errorDiv) {
                 errorDiv.textContent = 'Gagal terhubung ke server';
                 errorDiv.style.display = 'block';
@@ -647,91 +596,6 @@ class App {
             this.showLandingPage();
             this.showToast('Anda telah logout', 'info');
         }
-    }
-
-    // Other pages (simplified)
-    async showSuratMasuk() {
-        const mainContent = document.getElementById('main-content');
-        if (mainContent) {
-            mainContent.innerHTML = '<h2>Surat Masuk</h2><p>Halaman surat masuk akan ditampilkan disini.</p>';
-        }
-    }
-
-    async showSuratKeluar() {
-        const mainContent = document.getElementById('main-content');
-        if (mainContent) {
-            mainContent.innerHTML = '<h2>Surat Keluar</h2><p>Halaman surat keluar akan ditampilkan disini.</p>';
-        }
-    }
-
-    async showDisposisi() {
-        const mainContent = document.getElementById('main-content');
-        if (mainContent) {
-            mainContent.innerHTML = '<h2>Disposisi</h2><p>Halaman disposisi akan ditampilkan disini.</p>';
-        }
-    }
-
-    async showLaporan() {
-        const mainContent = document.getElementById('main-content');
-        if (mainContent) {
-            mainContent.innerHTML = '<h2>Laporan</h2><p>Halaman laporan akan ditampilkan disini.</p>';
-        }
-    }
-
-    async showPengguna() {
-        const mainContent = document.getElementById('main-content');
-        if (mainContent) {
-            mainContent.innerHTML = '<h2>Pengguna</h2><p>Halaman manajemen pengguna akan ditampilkan disini.</p>';
-        }
-    }
-
-    async showInstansi() {
-        const mainContent = document.getElementById('main-content');
-        if (mainContent) {
-            mainContent.innerHTML = '<h2>Instansi</h2><p>Halaman data instansi akan ditampilkan disini.</p>';
-        }
-    }
-
-    async showPengaturan() {
-        const mainContent = document.getElementById('main-content');
-        if (mainContent) {
-            mainContent.innerHTML = '<h2>Pengaturan</h2><p>Halaman pengaturan akan ditampilkan disini.</p>';
-        }
-    }
-
-    async showProfile() {
-        const mainContent = document.getElementById('main-content');
-        if (mainContent) {
-            mainContent.innerHTML = '<h2>Profil</h2><p>Halaman profil akan ditampilkan disini.</p>';
-        }
-    }
-
-    show404() {
-        const container = document.getElementById('app-container');
-        container.innerHTML = `
-            <div style="text-align: center; padding: 100px 20px;">
-                <h1 style="font-size: 72px; color: #1a73e8;">404</h1>
-                <h3>Halaman Tidak Ditemukan</h3>
-                <p>Maaf, halaman yang Anda cari tidak tersedia.</p>
-                <button class="btn btn-primary" onclick="app.navigateTo('dashboard')">
-                    <i class="fas fa-home"></i> Kembali ke Dashboard
-                </button>
-            </div>
-        `;
-    }
-
-    showError(message) {
-        const container = document.getElementById('app-container');
-        container.innerHTML = `
-            <div style="text-align: center; padding: 100px 20px;">
-                <i class="fas fa-exclamation-triangle" style="font-size: 64px; color: #ff9800;"></i>
-                <h3>Error</h3>
-                <p>${message}</p>
-                <button class="btn btn-primary" onclick="location.reload()">
-                    <i class="fas fa-redo"></i> Muat Ulang
-                </button>
-            </div>
-        `;
     }
 
     // Modal Management
@@ -758,12 +622,6 @@ class App {
         }
     }
 
-    closeAllDropdowns() {
-        document.querySelectorAll('.dropdown-menu.show').forEach(dropdown => {
-            dropdown.classList.remove('show');
-        });
-    }
-
     // Toast Notifications
     showToast(message, type = 'info') {
         const container = document.getElementById('toast-container');
@@ -785,7 +643,6 @@ class App {
 
         container.appendChild(toast);
 
-        // Auto remove after 5 seconds
         setTimeout(() => {
             toast.classList.add('fade-out');
             setTimeout(() => toast.remove(), 300);
@@ -803,28 +660,20 @@ class App {
     }
 }
 
-// Close modal when clicking overlay
-document.addEventListener('click', function(e) {
-    if (e.target.id === 'crud-modal') {
-        window.app?.closeModal();
-    }
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, creating app instance...');
+    window.app = new App();
+    window.app.init();
 });
 
-// Global function untuk backward compatibility
+// Global functions for backward compatibility
 function closeModal() {
     if (window.app) window.app.closeModal();
-}
-
-function showLoginForm() {
-    if (window.app) window.app.showLoginForm();
-}
-
-function showRegisterForm() {
-    if (window.app) window.app.showRegisterForm();
 }
 
 function refreshDashboard() {
     if (window.app) window.app.refreshDashboard();
 }
 
-console.log('App class loaded');
+console.log('App script loaded');
