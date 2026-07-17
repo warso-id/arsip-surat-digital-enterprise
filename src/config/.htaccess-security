@@ -1,0 +1,75 @@
+# ============================================================
+# ARSIP SURAT DIGITAL ENTERPRISE v3.0.0
+# Advanced Security Configuration
+# ============================================================
+
+# ==================== BLOCK BAD BOTS ====================
+RewriteEngine On
+RewriteCond %{HTTP_USER_AGENT} (ahrefs|mj12bot|semrush|dotbot|rogerbot|spbot|seznambot|blexbot|exabot) [NC]
+RewriteRule .* - [F,L]
+
+# ==================== BLOCK SUSPICIOUS REQUESTS ====================
+RewriteCond %{REQUEST_URI} (\<|%3C|%3E|\>|%60|%27|%22|%7B|%7D|%5B|%5D|%7C) [NC,OR]
+RewriteCond %{QUERY_STRING} (\<|%3C|%3E|\>|%60|%27|%22|%7B|%7D|%5B|%5D|%7C|union|select|insert|delete|update|drop) [NC]
+RewriteRule .* - [F,L]
+
+# ==================== PREVENT HOTLINKING ====================
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?arsip-surat\. [NC]
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?google\. [NC]
+RewriteRule \.(jpg|jpeg|png|gif|svg|css|js)$ - [F,L]
+
+# ==================== BLOCK ACCESS TO SENSITIVE FILES ====================
+<FilesMatch "^(\.env|\.env\.|composer\.json|composer\.lock|package\.json|package-lock\.json|yarn\.lock|webpack\.config|gulpfile|Gruntfile|\.gitignore|\.gitattributes|README|CHANGELOG|LICENSE|\.editorconfig|\.eslintrc|\.stylelintrc|\.prettierrc|\.babelrc)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ==================== BLOCK ACCESS TO DIRECTORIES ====================
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
+
+# ==================== PREVENT MIME-TYPE SNIFFING ====================
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# ==================== CLICKJACKING PROTECTION ====================
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# ==================== XSS PROTECTION ====================
+<IfModule mod_headers.c>
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# ==================== REFERRER POLICY ====================
+<IfModule mod_headers.c>
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# ==================== PERMISSIONS POLICY ====================
+<IfModule mod_headers.c>
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+</IfModule>
+
+# ==================== LIMIT REQUEST METHODS ====================
+<LimitExcept GET POST HEAD>
+    Order allow,deny
+    Deny from all
+</LimitExcept>
+
+# ==================== PROTECT AGAINST SLOW LORIS ====================
+<IfModule mod_reqtimeout.c>
+    RequestReadTimeout header=20-40,MinRate=500 body=20-40,MinRate=500
+</IfModule>
+
+# ==================== PHP PROTECTION (if PHP is installed) ====================
+<IfModule mod_php.c>
+    php_flag expose_php Off
+    php_flag display_errors Off
+    php_flag log_errors On
+    php_value error_log /var/log/php_errors.log
+</IfModule>
