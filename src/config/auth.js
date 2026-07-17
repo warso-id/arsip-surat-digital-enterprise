@@ -121,4 +121,14 @@ const AuthConfig = {
                 '/forgot-password',
                 '/reset-password'
             ]
-       
+        },
+        role: {
+            enabled: true,
+            defaultRole: 'viewer'
+        }
+    }
+};
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = AuthConfig;
+}
