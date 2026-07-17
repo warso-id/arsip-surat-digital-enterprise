@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  nginx:
+    ports:
+      - "8080:80"
+    environment:
+      - NGINX_HOST=localhost
+
+  app:
+    environment:
+      - APP_DEBUG=true
+      - APP_ENV=development
+    volumes:
+      - ./src:/app/src
+    command: sh -c "npm install && npm run dev"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  mysql:
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: development_password
+      MYSQL_USER: dev_user
+      MYSQL_PASSWORD: dev_password
+
+  # phpMyAdmin for development
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: arsip-surat-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 100M
+    ports:
+      - "8081:80"
+    networks:
+      - arsip-network
