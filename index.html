@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <!-- ============================================ -->
+    <!-- META TAGS -->
+    <!-- ============================================ -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,134 +19,200 @@
     
     <title>Arsip Surat Digital Enterprise 2026 - Full Stack CRUD PWA</title>
     
-    <!-- PWA Meta -->
+    <!-- ============================================ -->
+    <!-- PWA MANIFEST & ICONS -->
+    <!-- ============================================ -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/images/icon-192x192.svg">
     <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
     <link rel="alternate icon" type="image/png" href="assets/images/favicon.png">
     <link rel="shortcut icon" href="assets/images/favicon.svg">
     
-    <!-- Stylesheets -->
+    <!-- ============================================ -->
+    <!-- STYLESHEETS -->
+    <!-- ============================================ -->
     <link rel="stylesheet" href="assets/css/app.css">
     <link rel="stylesheet" href="assets/css/dashboard.css">
     <link rel="stylesheet" href="assets/css/surat.css">
     <link rel="stylesheet" href="assets/css/print.css" media="print">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
-    <!-- Preload Critical Resources -->
+    <!-- ============================================ -->
+    <!-- PRELOAD CRITICAL RESOURCES -->
+    <!-- ============================================ -->
     <link rel="preload" href="assets/css/app.css" as="style">
     <link rel="preload" href="assets/js/app.js" as="script">
     <link rel="preconnect" href="https://script.google.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     
-    <!-- Auto-generate Icons & Placeholders -->
+    <!-- ============================================ -->
+    <!-- AUTO-GENERATE PLACEHOLDER IMAGES & ICONS -->
+    <!-- ============================================ -->
     <script>
-        // Placeholder generator untuk gambar yang hilang
-        window.addEventListener('error', function(e) {
-            if (e.target.tagName === 'IMG') {
-                e.target.src = generatePlaceholder(e.target.alt || 'Image');
-            }
-        }, true);
+    /**
+     * Auto-generate placeholder images jika file tidak ditemukan
+     */
+    window.addEventListener('error', function(e) {
+        if (e.target.tagName === 'IMG') {
+            e.target.src = generatePlaceholder(e.target.alt || 'Image');
+        }
+    }, true);
+    
+    /**
+     * Generate placeholder image dengan canvas
+     * @param {string} text - Teks untuk ditampilkan
+     * @returns {string} Data URL PNG
+     */
+    function generatePlaceholder(text) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 200;
+        const ctx = canvas.getContext('2d');
         
-        function generatePlaceholder(text) {
+        // Background gradient
+        const gradient = ctx.createLinearGradient(0, 0, 200, 200);
+        gradient.addColorStop(0, '#667eea');
+        gradient.addColorStop(1, '#764ba2');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 200, 200);
+        
+        // Text
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 60px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text.substring(0, 2).toUpperCase(), 100, 100);
+        
+        return canvas.toDataURL();
+    }
+
+    /**
+     * Auto-generate favicon dan PWA icons secara dinamis
+     */
+    (function() {
+        /**
+         * Membuat favicon 32x32
+         */
+        function createFavicon() {
             const canvas = document.createElement('canvas');
-            canvas.width = 200;
-            canvas.height = 200;
+            canvas.width = 32;
+            canvas.height = 32;
             const ctx = canvas.getContext('2d');
             
-            const gradient = ctx.createLinearGradient(0, 0, 200, 200);
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 32, 32);
             gradient.addColorStop(0, '#667eea');
             gradient.addColorStop(1, '#764ba2');
             ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 200, 200);
             
+            // Rounded rectangle
+            ctx.beginPath();
+            ctx.moveTo(6, 0);
+            ctx.lineTo(26, 0);
+            ctx.quadraticCurveTo(32, 0, 32, 6);
+            ctx.lineTo(32, 26);
+            ctx.quadraticCurveTo(32, 32, 26, 32);
+            ctx.lineTo(6, 32);
+            ctx.quadraticCurveTo(0, 32, 0, 26);
+            ctx.lineTo(0, 6);
+            ctx.quadraticCurveTo(0, 0, 6, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Text
             ctx.fillStyle = 'white';
-            ctx.font = 'bold 60px Arial';
+            ctx.font = 'bold 20px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(text.substring(0, 2).toUpperCase(), 100, 100);
+            ctx.fillText('A', 16, 17);
             
-            return canvas.toDataURL();
+            // Set as favicon
+            const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+            link.type = 'image/png';
+            link.rel = 'icon';
+            link.href = canvas.toDataURL();
+            document.head.appendChild(link);
         }
-
-        // Auto-generate favicon & PWA icons
-        (function() {
-            function createIcon(size, text, isRounded = true) {
+        
+        /**
+         * Generate PWA icons berbagai ukuran
+         */
+        function generatePWAIcons() {
+            const sizes = [192, 512];
+            sizes.forEach(function(size) {
                 const canvas = document.createElement('canvas');
                 canvas.width = size;
                 canvas.height = size;
                 const ctx = canvas.getContext('2d');
                 
+                // Background gradient
                 const gradient = ctx.createLinearGradient(0, 0, size, size);
                 gradient.addColorStop(0, '#667eea');
                 gradient.addColorStop(1, '#764ba2');
                 ctx.fillStyle = gradient;
                 
-                if (isRounded) {
-                    const radius = size * 0.2;
-                    ctx.beginPath();
-                    ctx.moveTo(radius, 0);
-                    ctx.lineTo(size - radius, 0);
-                    ctx.quadraticCurveTo(size, 0, size, radius);
-                    ctx.lineTo(size, size - radius);
-                    ctx.quadraticCurveTo(size, size, size - radius, size);
-                    ctx.lineTo(radius, size);
-                    ctx.quadraticCurveTo(0, size, 0, size - radius);
-                    ctx.lineTo(0, radius);
-                    ctx.quadraticCurveTo(0, 0, radius, 0);
-                    ctx.closePath();
-                    ctx.fill();
-                } else {
-                    ctx.fillRect(0, 0, size, size);
-                }
+                // Rounded rectangle
+                const radius = size * 0.2;
+                ctx.beginPath();
+                ctx.moveTo(radius, 0);
+                ctx.lineTo(size - radius, 0);
+                ctx.quadraticCurveTo(size, 0, size, radius);
+                ctx.lineTo(size, size - radius);
+                ctx.quadraticCurveTo(size, size, size - radius, size);
+                ctx.lineTo(radius, size);
+                ctx.quadraticCurveTo(0, size, 0, size - radius);
+                ctx.lineTo(0, radius);
+                ctx.quadraticCurveTo(0, 0, radius, 0);
+                ctx.closePath();
+                ctx.fill();
                 
+                // Text
                 ctx.fillStyle = 'white';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.font = `bold ${size * 0.5}px Arial`;
-                ctx.fillText(text, size / 2, size / 2);
+                ctx.font = 'bold ' + (size * 0.35) + 'px Arial';
+                ctx.fillText('AS', size / 2, size / 2);
                 
-                return canvas.toDataURL();
-            }
-
-            // Create favicon
-            const faviconDataUrl = createIcon(32, 'A');
-            const faviconLink = document.querySelector("link[rel*='icon']") || document.createElement('link');
-            faviconLink.type = 'image/png';
-            faviconLink.rel = 'icon';
-            faviconLink.href = faviconDataUrl;
-            document.head.appendChild(faviconLink);
-
-            // Generate PWA icons & store
-            [192, 512].forEach(size => {
-                const dataUrl = createIcon(size, 'AS');
-                localStorage.setItem(`icon-${size}x${size}`, dataUrl);
+                // Cache di localStorage
+                localStorage.setItem('icon-' + size + 'x' + size, canvas.toDataURL());
             });
-
-            console.log('✅ Icons auto-generated successfully');
-        })();
+        }
+        
+        // Jalankan saat load
+        createFavicon();
+        generatePWAIcons();
+        console.log('✅ Icons auto-generated successfully');
+    })();
     </script>
     
-    <!-- Critical CSS -->
+    <!-- ============================================ -->
+    <!-- CRITICAL INLINE CSS -->
+    <!-- ============================================ -->
     <style>
+        /* Reset */
         *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         
+        /* Base */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: #f5f5f5;
             color: #333;
             line-height: 1.6;
             overflow-x: hidden;
+            min-height: 100vh;
         }
         
-        /* Spinner */
+        /* ===== SPINNER ===== */
         .spinner-overlay {
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(255, 255, 255, 0.95);
             display: flex;
             justify-content: center;
@@ -159,13 +228,14 @@
             width: 60px;
             height: 60px;
             border: 4px solid #e0e0e0;
-            border-top-color: #1a73e8;
+            border-top: 4px solid #1a73e8;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
             margin: 0 auto 20px;
         }
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         .spinner-text {
             text-align: center;
@@ -173,7 +243,7 @@
             font-size: 14px;
         }
         
-        /* Offline Banner */
+        /* ===== OFFLINE BANNER ===== */
         .offline-banner {
             position: fixed;
             top: 0;
@@ -188,7 +258,6 @@
         }
         .offline-banner.show {
             display: block;
-            animation: slideDown 0.3s ease;
         }
         .offline-content {
             display: flex;
@@ -196,12 +265,8 @@
             align-items: center;
             gap: 10px;
         }
-        @keyframes slideDown {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
         
-        /* Toast Notifications */
+        /* ===== TOAST NOTIFICATIONS ===== */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -232,13 +297,14 @@
         }
         @keyframes slideInRight {
             from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            to   { transform: translateX(0); opacity: 1; }
         }
         @keyframes fadeOut {
-            to { opacity: 0; }
+            from { opacity: 1; }
+            to   { opacity: 0; }
         }
         
-        /* Landing Page */
+        /* ===== LANDING PAGE ===== */
         .landing-page {
             min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -290,6 +356,8 @@
             font-size: 14px;
             backdrop-filter: blur(10px);
         }
+        
+        /* Landing Buttons */
         .btn-landing {
             display: inline-block;
             padding: 15px 40px;
@@ -322,6 +390,8 @@
             color: #667eea;
             transform: translateY(-3px);
         }
+        
+        /* ===== FEATURES GRID ===== */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -340,22 +410,43 @@
             transform: translateY(-10px);
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
         }
-        .feature-icon { font-size: 60px; margin-bottom: 20px; }
-        .feature-card h3 { font-size: 22px; color: #333; margin-bottom: 15px; }
-        .feature-card p { color: #666; line-height: 1.6; font-size: 15px; }
+        .feature-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        .feature-card h3 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+        
+        /* ===== FOOTER ===== */
         .footer-landing {
             text-align: center;
             padding: 40px 20px;
             color: rgba(255,255,255,0.8);
         }
-        .footer-landing a { color: white; text-decoration: none; }
-        .footer-landing a:hover { text-decoration: underline; }
+        .footer-landing a {
+            color: white;
+            text-decoration: none;
+        }
+        .footer-landing a:hover {
+            text-decoration: underline;
+        }
         
-        /* Modal */
+        /* ===== MODAL ===== */
         .modal-overlay {
             display: none;
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0,0,0,0.5);
             z-index: 10000;
             justify-content: center;
@@ -370,16 +461,18 @@
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .modal-header, .modal-body, .modal-footer {
-            padding: 20px;
-        }
         .modal-header {
+            padding: 20px;
             border-bottom: 1px solid #e0e0e0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+        .modal-body {
+            padding: 20px;
+        }
         .modal-footer {
+            padding: 20px;
             border-top: 1px solid #e0e0e0;
             display: flex;
             justify-content: flex-end;
@@ -393,8 +486,10 @@
             color: #666;
         }
         
-        /* Form */
-        .form-group { margin-bottom: 20px; }
+        /* ===== FORMS ===== */
+        .form-group {
+            margin-bottom: 20px;
+        }
         .form-group label {
             display: block;
             margin-bottom: 8px;
@@ -415,7 +510,7 @@
             box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
         }
         
-        /* Buttons */
+        /* ===== BUTTONS ===== */
         .btn {
             padding: 10px 20px;
             border: none;
@@ -427,13 +522,13 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .btn-primary { background: #1a73e8; color: white; }
+        .btn-primary   { background: #1a73e8; color: white; }
         .btn-primary:hover { background: #1557b0; }
         .btn-secondary { background: #6c757d; color: white; }
-        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger    { background: #dc3545; color: white; }
         .btn-sm { padding: 5px 10px; font-size: 12px; }
         
-        /* Alert */
+        /* ===== ALERTS ===== */
         .alert {
             padding: 12px;
             border-radius: 8px;
@@ -445,10 +540,10 @@
             border: 1px solid #ffcdd2;
         }
         
-        /* Utility */
+        /* ===== UTILITIES ===== */
         .text-center { text-align: center; }
         
-        /* Responsive */
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .landing-header h1 { font-size: 32px; }
             .landing-header .subtitle { font-size: 16px; }
@@ -462,7 +557,9 @@
     </style>
 </head>
 <body>
-    <!-- Loading Spinner -->
+    <!-- ============================================ -->
+    <!-- LOADING SPINNER -->
+    <!-- ============================================ -->
     <div id="app-spinner" class="spinner-overlay">
         <div style="text-align: center;">
             <div class="spinner-enterprise"></div>
@@ -470,18 +567,24 @@
         </div>
     </div>
 
-    <!-- Offline Indicator -->
+    <!-- ============================================ -->
+    <!-- OFFLINE INDICATOR -->
+    <!-- ============================================ -->
     <div id="offline-indicator" class="offline-banner">
         <div class="offline-content">
-            <span><i class="fas fa-wifi-slash"></i></span>
+            <span class="offline-icon"><i class="fas fa-wifi-slash"></i></span>
             <span>Anda sedang offline. Data akan disinkronkan saat koneksi tersedia.</span>
         </div>
     </div>
 
-    <!-- Toast Container -->
+    <!-- ============================================ -->
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
+    <!-- ============================================ -->
     <div id="toast-container" class="toast-container"></div>
 
-    <!-- CRUD Modal -->
+    <!-- ============================================ -->
+    <!-- CRUD MODAL -->
+    <!-- ============================================ -->
     <div id="crud-modal" class="modal-overlay">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -491,7 +594,9 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body" id="modal-body"></div>
+                <div class="modal-body" id="modal-body">
+                    <!-- Dynamic form content rendered by JavaScript -->
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeModal()">
                         <i class="fas fa-times"></i> Batal
@@ -504,10 +609,16 @@
         </div>
     </div>
 
-    <!-- Main App Container -->
-    <div id="app-container"></div>
+    <!-- ============================================ -->
+    <!-- MAIN APPLICATION CONTAINER -->
+    <!-- ============================================ -->
+    <div id="app-container">
+        <!-- Content rendered dynamically by JavaScript -->
+    </div>
 
-    <!-- Scripts -->
+    <!-- ============================================ -->
+    <!-- JAVASCRIPT FILES (Load in correct order) -->
+    <!-- ============================================ -->
     <script src="assets/js/config.js"></script>
     <script src="assets/js/api.js"></script>
     <script src="assets/js/auth.js"></script>
@@ -520,16 +631,25 @@
     <script src="assets/js/laporan.js"></script>
     <script src="assets/js/app.js"></script>
     
-    <!-- Initialize -->
+    <!-- ============================================ -->
+    <!-- APPLICATION INITIALIZATION -->
+    <!-- ============================================ -->
     <script>
+        /**
+         * Initialize application when DOM is fully loaded
+         */
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Initializing Arsip Surat Digital Enterprise...');
+            console.log('🚀 DOM loaded, initializing Arsip Surat Digital Enterprise...');
             
+            // Hide loading spinner after short delay
             setTimeout(function() {
-                const spinner = document.getElementById('app-spinner');
-                if (spinner) spinner.classList.add('hidden');
+                var spinner = document.getElementById('app-spinner');
+                if (spinner) {
+                    spinner.classList.add('hidden');
+                }
             }, 500);
             
+            // Create global app instance and initialize
             window.app = new App();
             window.app.init();
         });
