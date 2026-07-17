@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Koneksi Google Apps Script</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        button {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1557b0;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .info {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test Koneksi Google Apps Script</h1>
+        
+        <div class="test-section">
+            <h3>1. Test Basic Connection</h3>
+            <button onclick="testBasicConnection()">Test Connection</button>
+            <div id="result-basic" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Test Login</h3>
+            <input type="email" id="test-email" placeholder="Email" value="admin@example.com">
+            <input type="password" id="test-password" placeholder="Password" value="admin123">
+            <button onclick="testLogin()">Test Login</button>
+            <div id="result-login" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Test Register</h3>
+            <input type="text" id="reg-name" placeholder="Nama Lengkap" value="Test User">
+            <input type="email" id="reg-email" placeholder="Email" value="test@example.com">
+            <input type="password" id="reg-password" placeholder="Password" value="test123">
+            <button onclick="testRegister()">Test Register</button>
+            <div id="result-register" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Test Dashboard Stats</h3>
+            <button onclick="testDashboard()">Get Dashboard Stats</button>
+            <div id="result-dashboard" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec';
+
+        function encodeBase64(data) {
+            try {
+                return btoa(JSON.stringify(data));
+            } catch (e) {
+                return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+            }
+        }
+
+        async function makeRequest(action, data = {}) {
+            const formData = new URLSearchParams();
+            formData.append('action', action);
+            formData.append('data', encodeBase64(data));
+            
+            const token = localStorage.getItem('asde_auth_token');
+            if (token) {
+                formData.append('token', token);
+            }
+
+            console.log('Request:', action, data);
+            console.log('URL:', BASE_URL);
+
+            try {
+                const response = await fetch(BASE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+
+                console.log('Response status:', response.status);
+                
+                const text = await response.text();
+                console.log('Raw response:', text);
+
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    return { success: false, message: 'Invalid JSON response: ' + text };
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                return { success: false, message: error.message };
+            }
+        }
+
+        function showResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.className = 'result ' + (isError ? 'error' : 'success');
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function testBasicConnection() {
+            const resultDiv = document.getElementById('result-basic');
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Testing connection...';
+
+            try {
+                const result = await makeRequest('test', { message: 'Hello' });
+                showResult('result-basic', result, !result.success);
+            } catch (error) {
+                showResult('result-basic', { error: error.message }, true);
+            }
+        }
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('result-login');
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Attempting login...';
+
+            const email = document.getElementById('test-email').value;
+            const password = document.getElementById('test-password').value;
+
+            try {
+                const result = await makeRequest('login', { email, password });
+                showResult('result-login', result, !result.success);
+                
+                if (result.success && result.token) {
+                    localStorage.setItem('asde_auth_token', result.token);
+                }
+            } catch (error) {
+                showResult('result-login', { error: error.message }, true);
+            }
+        }
+
+        async function testRegister() {
+            const resultDiv = document.getElementById('result-register');
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Attempting registration...';
+
+            const fullname = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+
+            try {
+                const result = await makeRequest('register', { fullname, email, password });
+                showResult('result-register', result, !result.success);
+            } catch (error) {
+                showResult('result-register', { error: error.message }, true);
+            }
+        }
+
+        async function testDashboard() {
+            const resultDiv = document.getElementById('result-dashboard');
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Fetching dashboard stats...';
+
+            try {
+                const result = await makeRequest('getDashboardStats');
+                showResult('result-dashboard', result, !result.success);
+            } catch (error) {
+                showResult('result-dashboard', { error: error.message }, true);
+            }
+        }
+    </script>
+</body>
+</html>
