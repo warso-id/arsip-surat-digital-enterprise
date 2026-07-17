@@ -1,18 +1,32 @@
 {
     "name": "arsip-surat-digital-enterprise",
     "version": "2026.1.0",
-    "description": "Sistem Manajemen Arsip Surat Digital Enterprise 2026",
+    "description": "Sistem Manajemen Arsip Surat Digital Enterprise 2026 - Full Stack CRUD PWA",
     "main": "index.html",
     "scripts": {
-        "dev": "live-server --port=3000 --host=localhost",
+        "dev": "live-server --port=3000 --host=localhost --no-browser",
         "build": "webpack --mode production",
-        "test": "jest",
-        "lint": "eslint src/**/*.js",
-        "format": "prettier --write src/**/*.{js,css,html}",
+        "start": "live-server --port=3000 --host=localhost dist/",
+        "test": "jest --coverage",
+        "test:watch": "jest --watch",
+        "test:unit": "jest tests/Unit",
+        "test:feature": "jest tests/Feature",
+        "lint": "eslint src/**/*.js --fix",
+        "lint:check": "eslint src/**/*.js",
+        "format": "prettier --write \"src/**/*.{js,css,html,json,ejs}\"",
+        "format:check": "prettier --check \"src/**/*.{js,css,html,json,ejs}\"",
         "deploy:staging": "bash tools/deploy.sh staging",
         "deploy:production": "bash tools/deploy.sh production",
         "backup": "bash tools/backup.sh",
-        "seed": "bash tools/seed-demo-data.sh"
+        "seed": "bash tools/seed-demo-data.sh",
+        "migrate": "node src/database/migrations/run-all.js",
+        "migrate:rollback": "node src/database/migrations/run-all.js rollback",
+        "migrate:refresh": "node src/database/migrations/run-all.js refresh",
+        "setup": "bash tools/setup.sh",
+        "docker:dev": "docker-compose up -d",
+        "docker:prod": "docker-compose -f docker-compose.production.yml up -d",
+        "docker:down": "docker-compose down",
+        "clean": "rm -rf dist/ node_modules/ coverage/"
     },
     "dependencies": {
         "chart.js": "^4.4.0",
@@ -26,24 +40,56 @@
         "babel-loader": "^9.1.0",
         "@babel/core": "^7.22.0",
         "@babel/preset-env": "^7.22.0",
+        "@babel/plugin-transform-runtime": "^7.22.0",
+        "@babel/plugin-proposal-class-properties": "^7.18.0",
+        "@babel/plugin-proposal-optional-chaining": "^7.21.0",
         "css-loader": "^6.8.0",
         "style-loader": "^3.3.0",
+        "mini-css-extract-plugin": "^2.7.0",
+        "cssnano": "^6.0.0",
+        "autoprefixer": "^10.4.0",
+        "postcss-loader": "^7.3.0",
+        "html-webpack-plugin": "^5.5.0",
+        "clean-webpack-plugin": "^4.0.0",
+        "workbox-webpack-plugin": "^7.0.0",
         "jest": "^29.6.0",
+        "babel-jest": "^29.6.0",
         "eslint": "^8.45.0",
         "prettier": "^3.0.0",
-        "live-server": "^1.2.0"
+        "live-server": "^1.2.0",
+        "terser-webpack-plugin": "^5.3.0",
+        "copy-webpack-plugin": "^11.0.0"
     },
     "repository": {
         "type": "git",
-        "url": "https://warso-id.github.io/arsip-surat-digital-enterprise.git"
+        "url": "https://github.com/your-username/arsip-surat-digital-enterprise.git"
     },
     "keywords": [
         "arsip",
         "surat",
+        "digital",
         "enterprise",
         "pwa",
-        "crud"
+        "crud",
+        "management",
+        "disposisi",
+        "google-apps-script",
+        "full-stack"
     ],
-    "author": "Your Name",
-    "license": "MIT"
+    "author": "Arsip Surat Digital Team",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/your-username/arsip-surat-digital-enterprise/issues"
+    },
+    "homepage": "https://github.com/your-username/arsip-surat-digital-enterprise#readme",
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=9.0.0"
+    },
+    "browserslist": [
+        "last 2 versions",
+        "> 1%",
+        "not dead",
+        "not ie 11"
+    ]
 }
