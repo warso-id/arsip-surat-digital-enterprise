@@ -1,0 +1,58 @@
+# ============================================================
+# ARSIP SURAT DIGITAL ENTERPRISE v3.0.0
+# Gitleaks Configuration - Secret Scanning
+# ============================================================
+
+title = "Arsip Surat Digital Enterprise - Gitleaks Config"
+
+[allowlist]
+    description = "Global allowlist"
+    
+    # Allow demo/test credentials
+    regexes = [
+        "admin@arsipsurat\\.id",
+        "password123",
+        "admin123",
+        "demo-token",
+        "test-secret",
+    ]
+    
+    # Allow specific files
+    paths = [
+        ".env.example",
+        ".env.development",
+        "tests/",
+        "docs/",
+        "CHANGELOG.md",
+        "PROJECT-COMPLETE.md",
+    ]
+
+[[rules]]
+    description = "Google Apps Script URL"
+    id = "gas-url"
+    regex = '''https://script\.google\.com/macros/s/[A-Za-z0-9_-]+/exec'''
+    tags = ["google", "api"]
+
+[[rules]]
+    description = "AWS Access Key"
+    id = "aws-access-key"
+    regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+    tags = ["aws", "key"]
+
+[[rules]]
+    description = "Generic API Key"
+    id = "generic-api-key"
+    regex = '''(?i)(api[_-]?key|api[_-]?secret|access[_-]?key|secret[_-]?key)["']?\s*[:=]\s*["'][A-Za-z0-9+/=]{20,}["']'''
+    tags = ["api", "key"]
+
+[[rules]]
+    description = "JWT Token"
+    id = "jwt-token"
+    regex = '''eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}'''
+    tags = ["jwt", "token"]
+
+[[rules]]
+    description = "Private Key"
+    id = "private-key"
+    regex = '''-----BEGIN (RSA|EC|DSA|OPENSSH) PRIVATE KEY-----'''
+    tags = ["key", "private"]
