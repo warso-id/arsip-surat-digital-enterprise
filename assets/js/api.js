@@ -3,14 +3,12 @@ class ApiService {
     constructor() {
         this.baseUrl = CONFIG.API.BASE_URL;
         this.token = localStorage.getItem(CONFIG.AUTH.TOKEN_KEY);
-        this.pendingRequests = new Map();
     }
 
     // Encode data ke Base64
     encodeBase64(data) {
         try {
             const jsonStr = JSON.stringify(data);
-            // Gunakan TextEncoder untuk handling UTF-8 yang benar
             const encoder = new TextEncoder();
             const bytes = encoder.encode(jsonStr);
             let binary = '';
@@ -18,7 +16,7 @@ class ApiService {
             return btoa(binary);
         } catch (error) {
             console.error('Base64 encode error:', error);
-            throw new Error('Gagal mengenkripsi data');
+            return btoa(JSON.stringify(data));
         }
     }
 
@@ -35,130 +33,86 @@ class ApiService {
             return JSON.parse(jsonStr);
         } catch (error) {
             console.error('Base64 decode error:', error);
-            throw new Error('Gagal mendekripsi data');
+            try {
+                return JSON.parse(atob(base64Str));
+            } catch (e) {
+                return base64Str;
+            }
         }
     }
 
-    // Helper untuk membuat request dengan retry
-    async makeRequest(action, data = {}, method = 'POST') {
-        const requestId = Date.now().toString();
+    // Helper untuk membuat request ke Google Apps Script
+    async makeRequest(action, data = {}) {
+        console.log(`API Request: ${action}`, data);
         
         // Cek koneksi
         if (!navigator.onLine) {
-            // Simpan ke queue untuk sync nanti
-            await this.addToSyncQueue(action, data);
             return {
-                success: true,
-                offline: true,
-                message: 'Data akan disimpan saat online'
+                success: false,
+                message: 'Tidak ada koneksi internet'
             };
         }
 
-        // Siapkan FormData
-        const formData = new FormData();
-        formData.append('action', action);
-        formData.append('data', this.encodeBase64(data));
-        formData.append('timestamp', new Date().toISOString());
-        formData.append('requestId', requestId);
-        
-        if (this.token) {
-            formData.append('token', this.token);
-        }
+        try {
+            // Siapkan FormData (Google Apps Script menerima POST dengan FormData atau URL encoded)
+            const formData = new URLSearchParams();
+            formData.append('action', action);
+            formData.append('data', this.encodeBase64(data));
+            
+            if (this.token) {
+                formData.append('token', this.token);
+            }
 
-        // Retry logic
-        let lastError = null;
-        for (let attempt = 1; attempt <= CONFIG.API.RETRY_ATTEMPTS; attempt++) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), CONFIG.API.TIMEOUT);
+            console.log('Sending request to:', this.baseUrl);
+            console.log('FormData:', formData.toString());
 
-                const response = await fetch(this.baseUrl, {
-                    method: method,
-                    body: formData,
-                    signal: controller.signal
-                });
+            const response = await fetch(this.baseUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString()
+            });
 
-                clearTimeout(timeoutId);
+            console.log('Response status:', response.status);
 
-                if (!response.ok) {
-                    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-                }
+            if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status}`);
+            }
 
-                const result = await response.json();
+            const result = await response.json();
+            console.log('API Response:', result);
 
-                // Decode response data jika ada
-                if (result.data && typeof result.data === 'string') {
-                    try {
-                        result.data = this.decodeBase64(result.data);
-                    } catch (e) {
-                        // Biarkan sebagai string jika bukan base64
-                    }
-                }
-
-                return result;
-            } catch (error) {
-                lastError = error;
-                console.error(`API Request attempt ${attempt} failed:`, error);
-                
-                if (attempt < CONFIG.API.RETRY_ATTEMPTS) {
-                    await new Promise(resolve => setTimeout(resolve, CONFIG.API.RETRY_DELAY * attempt));
+            // Decode response data jika perlu
+            if (result.data && typeof result.data === 'string') {
+                try {
+                    result.data = this.decodeBase64(result.data);
+                } catch (e) {
+                    console.log('Data is not base64 encoded');
                 }
             }
+
+            return result;
+        } catch (error) {
+            console.error('API Error:', error);
+            return {
+                success: false,
+                message: 'Gagal terhubung ke server: ' + error.message
+            };
         }
-
-        throw lastError || new Error('Gagal menghubungi server');
-    }
-
-    // Sync Queue Management
-    async addToSyncQueue(action, data) {
-        const queue = JSON.parse(localStorage.getItem('sync_queue') || '[]');
-        queue.push({
-            id: Date.now(),
-            action: action,
-            data: data,
-            timestamp: new Date().toISOString(),
-            retryCount: 0
-        });
-        localStorage.setItem('sync_queue', JSON.stringify(queue));
-        
-        // Register background sync jika tersedia
-        if ('serviceWorker' in navigator && 'SyncManager' in window) {
-            const registration = await navigator.serviceWorker.ready;
-            await registration.sync.register('sync-queue');
-        }
-    }
-
-    async processSyncQueue() {
-        const queue = JSON.parse(localStorage.getItem('sync_queue') || '[]');
-        if (queue.length === 0) return;
-
-        console.log(`Processing sync queue: ${queue.length} items`);
-        
-        const newQueue = [];
-        for (const item of queue) {
-            try {
-                const result = await this.makeRequest(item.action, item.data);
-                if (result.success) {
-                    console.log(`Synced: ${item.action} (ID: ${item.id})`);
-                } else if (item.retryCount < 3) {
-                    item.retryCount++;
-                    newQueue.push(item);
-                }
-            } catch (error) {
-                console.error(`Sync failed for item ${item.id}:`, error);
-                if (item.retryCount < 3) {
-                    item.retryCount++;
-                    newQueue.push(item);
-                }
-            }
-        }
-        
-        localStorage.setItem('sync_queue', JSON.stringify(newQueue));
     }
 
     // Auth Methods
     async login(email, password, remember = false) {
-        const result = await this.makeRequest('login', { email, password, remember });
+        console.log('Login attempt:', email);
+        
+        const result = await this.makeRequest('login', {
+            email: email,
+            password: password,
+            remember: remember
+        });
+        
+        console.log('Login result:', result);
         
         if (result.success && result.token) {
             this.token = result.token;
@@ -177,7 +131,17 @@ class ApiService {
     }
 
     async register(userData) {
-        return await this.makeRequest('register', userData);
+        console.log('Register attempt:', userData.email);
+        
+        const result = await this.makeRequest('register', {
+            fullname: userData.fullname,
+            email: userData.email,
+            password: userData.password
+        });
+        
+        console.log('Register result:', result);
+        
+        return result;
     }
 
     async logout() {
@@ -265,25 +229,6 @@ class ApiService {
         return await this.makeRequest('generateReport', { type, ...params });
     }
 
-    // Upload File
-    async uploadFile(file, type) {
-        const formData = new FormData();
-        formData.append('action', 'uploadFile');
-        formData.append('file', file);
-        formData.append('type', type);
-        
-        if (this.token) {
-            formData.append('token', this.token);
-        }
-
-        const response = await fetch(this.baseUrl, {
-            method: 'POST',
-            body: formData
-        });
-
-        return await response.json();
-    }
-
     // Search
     async searchSurat(query, type = 'all') {
         return await this.makeRequest('searchSurat', { query, type });
@@ -296,6 +241,33 @@ class ApiService {
 
     async markNotificationRead(id) {
         return await this.makeRequest('markNotificationRead', { id });
+    }
+
+    // Process sync queue
+    async processSyncQueue() {
+        const queue = JSON.parse(localStorage.getItem('sync_queue') || '[]');
+        if (queue.length === 0) return;
+
+        console.log(`Processing sync queue: ${queue.length} items`);
+        
+        const newQueue = [];
+        for (const item of queue) {
+            try {
+                const result = await this.makeRequest(item.action, item.data);
+                if (!result.success && item.retryCount < 3) {
+                    item.retryCount = (item.retryCount || 0) + 1;
+                    newQueue.push(item);
+                }
+            } catch (error) {
+                console.error('Sync error:', error);
+                if (item.retryCount < 3) {
+                    item.retryCount = (item.retryCount || 0) + 1;
+                    newQueue.push(item);
+                }
+            }
+        }
+        
+        localStorage.setItem('sync_queue', JSON.stringify(newQueue));
     }
 }
 
