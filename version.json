@@ -1,24 +1,68 @@
 {
+    "name": "Arsip Surat Digital Enterprise",
     "version": "2026.1.0",
     "build": "enterprise",
     "release_date": "2026-07-17",
+    "description": "Sistem Manajemen Arsip Surat Digital Enterprise",
     "features": [
+        "Full CRUD operations",
+        "PWA support with offline capability",
+        "JWT authentication with RBAC",
         "Full Base64 encoding untuk keamanan data",
         "Integrasi Google Apps Script",
-        "PWA Support",
-        "Offline capabilities",
-        "Enterprise-grade security",
-        "Role-based access control",
-        "Real-time notifications",
-        "Advanced search & filtering"
+        "Advanced search & filtering",
+        "Dashboard with real-time statistics",
+        "Email notifications",
+        "PDF generation",
+        "Backup & restore system",
+        "Multi-language support (ID & EN)",
+        "Docker containerization",
+        "CI/CD pipelines",
+        "Audit logging",
+        "Bulk operations",
+        "Responsive design",
+        "Print support",
+        "File upload management"
     ],
     "compatibility": {
         "browsers": ["Chrome 90+", "Firefox 88+", "Edge 90+", "Safari 14+"],
-        "node": ">=18.0.0"
+        "node": ">=18.0.0",
+        "npm": ">=9.0.0"
     },
     "dependencies": {
-        "google-apps-script": "latest",
-        "express": "^4.18.0",
-        "crypto-js": "^4.1.0"
-    }
+        "chart.js": "^4.4.0",
+        "xlsx": "^0.18.0",
+        "jspdf": "^2.5.0",
+        "jspdf-autotable": "^3.5.0"
+    },
+    "devDependencies": {
+        "webpack": "^5.88.0",
+        "webpack-cli": "^5.1.0",
+        "babel-loader": "^9.1.0",
+        "@babel/core": "^7.22.0",
+        "@babel/preset-env": "^7.22.0",
+        "css-loader": "^6.8.0",
+        "style-loader": "^3.3.0",
+        "jest": "^29.6.0",
+        "eslint": "^8.45.0",
+        "prettier": "^3.0.0",
+        "live-server": "^1.2.0"
+    },
+    "author": "Arsip Surat Digital Team",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/your-username/arsip-surat-digital-enterprise.git"
+    },
+    "keywords": [
+        "arsip",
+        "surat",
+        "digital",
+        "enterprise",
+        "pwa",
+        "crud",
+        "management",
+        "disposisi",
+        "google-apps-script"
+    ]
 }
