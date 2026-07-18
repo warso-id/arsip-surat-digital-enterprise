@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troubleshooting - Arsip Surat Digital Enterprise</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --success: #4caf50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --info: #2196f3;
+            --dark: #333;
+            --light: #f5f5f5;
+            --white: #fff;
+            --border: #e0e0e0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .header .version {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-info { background: var(--info); color: white; }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            font-size: 18px;
+            color: var(--dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 i {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .card h3 i.api { background: #e3f2fd; color: var(--primary); }
+        .card h3 i.files { background: #e8f5e9; color: var(--success); }
+        .card h3 i.errors { background: #ffebee; color: var(--danger); }
+        .card h3 i.suggest { background: #fff3e0; color: var(--warning); }
+        .card h3 i.generate { background: #f3e5f5; color: #9c27b0; }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-online { background: var(--success); }
+        .status-offline { background: var(--danger); }
+        .status-warning { background: var(--warning); }
+        .status-checking { background: var(--info); animation: pulse 1s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .log-container {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #d4d4d4;
+        }
+
+        .log-line { padding: 2px 0; }
+        .log-line.success { color: #4ec9b0; }
+        .log-line.error { color: #f44747; }
+        .log-line.warning { color: #cca700; }
+        .log-line.info { color: #569cd6; }
+        .log-line.header { color: #dcdcaa; font-weight: bold; }
+
+        .file-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .file-item .file-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-item .file-status {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .file-exists { background: #e8f5e9; color: #2e7d32; }
+        .file-missing { background: #ffebee; color: #c62828; }
+        .file-unused { background: #fff3e0; color: #e65100; }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .code-preview {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            color: #d4d4d4;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .stat-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .stat-badge.ok { background: #e8f5e9; color: #2e7d32; }
+        .stat-badge.error { background: #ffebee; color: #c62828; }
+        .stat-badge.warn { background: #fff3e0; color: #e65100; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body { padding: 20px; }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .header h1 { font-size: 24px; }
+            .controls { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔧 Troubleshooting System</h1>
+            <p class="subtitle">Arsip Surat Digital Enterprise 2026 - Diagnostic & Auto-Fix Tool</p>
+            <span class="version">Version 2026.1.0</span>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="btn btn-primary" onclick="runAllChecks()">
+                <i class="fas fa-play"></i> Run All Checks
+            </button>
+            <button class="btn btn-success" onclick="checkAPIConnection()">
+                <i class="fas fa-plug"></i> Cek API
+            </button>
+            <button class="btn btn-info" onclick="checkAllFiles()">
+                <i class="fas fa-folder"></i> Cek Files
+            </button>
+            <button class="btn btn-warning" onclick="detectErrors()">
+                <i class="fas fa-bug"></i> Deteksi Error
+            </button>
+            <button class="btn btn-danger" onclick="generateFixes()">
+                <i class="fas fa-magic"></i> Auto Fix
+            </button>
+            <button class="btn btn-primary" onclick="generateMissingFiles()">
+                <i class="fas fa-file-code"></i> Generate Files
+            </button>
+            <button class="btn btn-success" onclick="exportReport()">
+                <i class="fas fa-download"></i> Export Report
+            </button>
+        </div>
+
+        <!-- Status Summary -->
+        <div class="card" style="margin-bottom: 20px;">
+            <h3><i class="fas fa-chart-line" style="color: var(--primary);"></i> Status Summary</h3>
+            <div class="stats-row" id="status-summary">
+                <span class="stat-badge ok">✅ Ready: 0</span>
+                <span class="stat-badge error">❌ Errors: 0</span>
+                <span class="stat-badge warn">⚠️ Warnings: 0</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+            </div>
+            <p id="progress-text" style="text-align: center; color: #666;">Siap untuk memulai pengecekan...</p>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid">
+            <!-- 1. API Connection -->
+            <div class="card">
+                <h3><i class="fas fa-plug api"></i> 1. Koneksi API</h3>
+                <div id="api-status">
+                    <p><span class="status-indicator status-checking"></span> Menunggu pengecekan...</p>
+                </div>
+                <div class="log-container" id="api-log" style="max-height: 200px;"></div>
+            </div>
+
+            <!-- 2. File Check -->
+            <div class="card">
+                <h3><i class="fas fa-folder files"></i> 2. Pengecekan File</h3>
+                <div class="file-list" id="file-list">
+                    <p>Menunggu pengecekan...</p>
+                </div>
+            </div>
+
+            <!-- 3. Error Detection -->
+            <div class="card">
+                <h3><i class="fas fa-bug errors"></i> 3. Deteksi Error</h3>
+                <div class="log-container" id="error-log" style="max-height: 250px;">
+                    <p>Menunggu pengecekan...</p>
+                </div>
+            </div>
+
+            <!-- 4. Suggestions -->
+            <div class="card">
+                <h3><i class="fas fa-lightbulb suggest"></i> 4. Saran Perbaikan</h3>
+                <div class="log-container" id="suggestions-log" style="max-height: 250px;">
+                    <p>Menunggu analisis...</p>
+                </div>
+            </div>
+
+            <!-- 5. Generate Missing Files -->
+            <div class="card">
+                <h3><i class="fas fa-file-code generate"></i> 5. Generate Missing Files</h3>
+                <div id="generate-status">
+                    <p>Menunggu...</p>
+                </div>
+                <div class="code-preview" id="generated-code" style="max-height: 300px;">
+                    <p>Kode akan muncul disini...</p>
+                </div>
+            </div>
+
+            <!-- 6. Full Report -->
+            <div class="card">
+                <h3><i class="fas fa-clipboard-list" style="color: #9c27b0;"></i> 6. Report Lengkap</h3>
+                <div class="log-container" id="full-report" style="max-height: 300px;">
+                    <p>Report akan muncul setelah semua pengecekan selesai...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Preview Modal -->
+    <div class="modal-overlay" id="code-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-file-title">File Preview</h3>
+                <button class="modal-close" onclick="closeCodeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="code-preview" id="modal-code-content" style="max-height: 500px;"></div>
+                <button class="btn btn-primary" style="margin-top: 15px;" onclick="downloadCurrentFile()">
+                    <i class="fas fa-download"></i> Download File
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const CONFIG = {
+            API_URL: 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec',
+            APP_NAME: 'Arsip Surat Digital Enterprise',
+            APP_VERSION: '2026.1.0',
+            BASE_PATH: '/arsip-surat-digital-enterprise/',
+            GITHUB_REPO: 'https://github.com/warso-id/arsip-surat-digital-enterprise'
+        };
+
+        // ============================================
+        // REQUIRED FILES LIST
+        // ============================================
+        const REQUIRED_FILES = [
+            // Core
+            { path: 'index.html', type: 'html', critical: true, desc: 'Main PWA Entry Point' },
+            { path: 'manifest.json', type: 'json', critical: true, desc: 'PWA Manifest' },
+            { path: 'service-worker.js', type: 'js', critical: true, desc: 'Service Worker' },
+            { path: 'offline.html', type: 'html', critical: true, desc: 'Offline Page' },
+            { path: '404.html', type: 'html', critical: true, desc: '404 Redirect Handler' },
+            
+            // CSS
+            { path: 'assets/css/app.css', type: 'css', critical: true, desc: 'Main Styles' },
+            { path: 'assets/css/dashboard.css', type: 'css', critical: true, desc: 'Dashboard Styles' },
+            { path: 'assets/css/surat.css', type: 'css', critical: true, desc: 'Surat Styles' },
+            { path: 'assets/css/print.css', type: 'css', critical: false, desc: 'Print Styles' },
+            
+            // JS Core
+            { path: 'assets/js/config.js', type: 'js', critical: true, desc: 'Configuration' },
+            { path: 'assets/js/api.js', type: 'js', critical: true, desc: 'API Service' },
+            { path: 'assets/js/auth.js', type: 'js', critical: true, desc: 'Authentication' },
+            { path: 'assets/js/database.js', type: 'js', critical: true, desc: 'IndexedDB Service' },
+            { path: 'assets/js/router.js', type: 'js', critical: true, desc: 'Router System' },
+            { path: 'assets/js/app.js', type: 'js', critical: true, desc: 'Main Application' },
+            
+            // JS Modules
+            { path: 'assets/js/dashboard.js', type: 'js', critical: true, desc: 'Dashboard Module' },
+            { path: 'assets/js/surat.js', type: 'js', critical: true, desc: 'Surat Management' },
+            { path: 'assets/js/disposisi.js', type: 'js', critical: true, desc: 'Disposisi Module' },
+            { path: 'assets/js/laporan.js', type: 'js', critical: true, desc: 'Laporan Module' },
+            
+            // Components
+            { path: 'assets/js/components/spinner.js', type: 'js', critical: false, desc: 'Spinner Component' },
+            
+            // Images
+            { path: 'assets/images/icon-192x192.svg', type: 'image', critical: true, desc: 'PWA Icon 192' },
+            { path: 'assets/images/icon-512x512.svg', type: 'image', critical: true, desc: 'PWA Icon 512' },
+            { path: 'assets/images/favicon.svg', type: 'image', critical: true, desc: 'Favicon' },
+            { path: 'assets/images/logo.svg', type: 'image', critical: false, desc: 'Logo' },
+            { path: 'assets/images/default-avatar.svg', type: 'image', critical: false, desc: 'Default Avatar' },
+            
+            // Docs
+            { path: 'README.md', type: 'md', critical: false, desc: 'Documentation' },
+            { path: 'LICENSE', type: 'text', critical: false, desc: 'License' },
+            { path: '.gitignore', type: 'text', critical: true, desc: 'Git Ignore' },
+            
+            // GitHub
+            { path: '.github/workflows/ci.yml', type: 'yml', critical: false, desc: 'CI Pipeline' }
+        ];
+
+        // ============================================
+        // STATE
+        // ============================================
+        const state = {
+            apiConnected: false,
+            apiResponse: null,
+            filesChecked: [],
+            filesMissing: [],
+            filesUnused: [],
+            errorsFound: [],
+            suggestions: [],
+            generatedFiles: [],
+            totalChecks: 0,
+            completedChecks: 0,
+            currentFilePreview: null
+        };
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function encodeBase64(str) {
+            try {
+                return btoa(unescape(encodeURIComponent(str)));
+            } catch (e) {
+                return btoa(str);
+            }
+        }
+
+        function decodeBase64(str) {
+            try {
+                return decodeURIComponent(escape(atob(str)));
+            } catch (e) {
+                return atob(str);
+            }
+        }
+
+        function log(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const line = document.createElement('div');
+            line.className = `log-line ${type}`;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            container.appendChild(line);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function updateProgress() {
+            state.completedChecks++;
+            const total = state.totalChecks || 10;
+            const percent = Math.round((state.completedChecks / total) * 100);
+            
+            document.getElementById('progress-bar').style.width = percent + '%';
+            document.getElementById('progress-text').textContent = 
+                `Progress: ${state.completedChecks}/${total} (${percent}%)`;
+            
+            updateStatusSummary();
+        }
+
+        function updateStatusSummary() {
+            const ready = state.filesChecked.filter(f => f.exists).length;
+            const errors = state.errorsFound.length;
+            const warnings = state.filesMissing.length + state.filesUnused.length;
+            
+            document.getElementById('status-summary').innerHTML = `
+                <span class="stat-badge ok">✅ Ready: ${ready}</span>
+                <span class="stat-badge error">❌ Errors: ${errors}</span>
+                <span class="stat-badge warn">⚠️ Warnings: ${warnings}</span>
+            `;
+        }
+
+        // ============================================
+        // 1. API CONNECTION CHECK
+        // ============================================
+        async function checkAPIConnection() {
+            const statusDiv = document.getElementById('api-status');
+            const logContainer = document.getElementById('api-log');
+            logContainer.innerHTML = '';
+            
+            statusDiv.innerHTML = '<p><span class="status-indicator status-checking"></span> Mengecek koneksi API...</p>';
+            
+            log('api-log', '═══ MEMULAI PENGECEKAN KONEKSI API ═══', 'header');
+            log('api-log', `URL: ${CONFIG.API_URL}`, 'info');
+            
+            try {
+                // Test 1: Basic ping
+                log('api-log', 'Test 1: Mengirim ping ke API...', 'info');
+                
+                const formData = new URLSearchParams();
+                formData.append('action', 'ping');
+                
+                const response = await fetch(CONFIG.API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString()
+                });
+                
+                log('api-log', `Status: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+                
+                const data = await response.json();
+                log('api-log', `Response: ${JSON.stringify(data).substring(0, 200)}`, 'success');
+                
+                // Test 2: Check setup
+                log('api-log', 'Test 2: Mengecek status setup...', 'info');
+                
+                const setupFormData = new URLSearchParams();
+                setupFormData.append('action', 'checkSetup');
+                
+                const setupResponse = await fetch(CONFIG.API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: setupFormData.toString()
+                });
+                
+                const setupData = await setupResponse.json();
+                log('api-log', `Setup Status: ${JSON.stringify(setupData)}`, setupData.success ? 'success' : 'warning');
+                
+                // Test 3: Login test
+                log('api-log', 'Test 3: Mencoba login test...', 'info');
+                
+                const loginData = encodeBase64(JSON.stringify({
+                    username: 'admin',
+                    password: 'Admin123!'
+                }));
+                
+                const loginFormData = new URLSearchParams();
+                loginFormData.append('action', 'login');
+                loginFormData.append('data', loginData);
+                
+                const loginResponse = await fetch(CONFIG.API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: loginFormData.toString()
+                });
+                
+                const loginResult = await loginResponse.json();
+                
+                if (loginResult.success) {
+                    log('api-log', '✅ Login test BERHASIL', 'success');
+                    state.apiConnected = true;
+                    state.apiResponse = loginResult;
+                    
+                    statusDiv.innerHTML = `
+                        <p><span class="status-indicator status-online"></span> 
+                        <strong>✅ API Terhubung!</strong></p>
+                        <p>Version: ${loginResult.version || 'N/A'}</p>
+                        <p>User: ${loginResult.user?.username || 'N/A'}</p>
+                        <p>Role: ${loginResult.user?.role || 'N/A'}</p>
+                    `;
+                } else if (loginResult.message && loginResult.message.includes('salah')) {
+                    log('api-log', '⚠️ API berfungsi tapi kredensial salah (normal jika password berbeda)', 'warning');
+                    state.apiConnected = true;
+                    
+                    statusDiv.innerHTML = `
+                        <p><span class="status-indicator status-online"></span> 
+                        <strong>✅ API Terhubung!</strong> (Kredensial default perlu disesuaikan)</p>
+                    `;
+                } else {
+                    log('api-log', '⚠️ API merespon tapi login gagal: ' + loginResult.message, 'warning');
+                    state.apiConnected = true;
+                    
+                    statusDiv.innerHTML = `
+                        <p><span class="status-indicator status-warning"></span> 
+                        <strong>⚠️ API Terhubung tapi perlu setup</strong></p>
+                    `;
+                }
+                
+            } catch (error) {
+                log('api-log', `❌ GAGAL: ${error.message}`, 'error');
+                state.apiConnected = false;
+                
+                statusDiv.innerHTML = `
+                    <p><span class="status-indicator status-offline"></span> 
+                    <strong>❌ API Tidak Terhubung!</strong></p>
+                    <p>Error: ${error.message}</p>
+                    <p>Saran: Periksa URL API dan pastikan Google Apps Script sudah di-deploy.</p>
+                `;
+            }
+            
+            updateProgress();
+            return state.apiConnected;
+        }
+
+        // ============================================
+        // 2. FILE CHECK
+        // ============================================
+        async function checkAllFiles() {
+            const fileListDiv = document.getElementById('file-list');
+            fileListDiv.innerHTML = '';
+            
+            log('api-log', '═══ MEMULAI PENGECEKAN FILE ═══', 'header');
+            
+            state.filesChecked = [];
+            state.filesMissing = [];
+            state.filesUnused = [];
+            
+            for (const file of REQUIRED_FILES) {
+                const fullPath = CONFIG.BASE_PATH + file.path;
+                
+                try {
+                    const response = await fetch(fullPath, { method: 'HEAD' });
+                    
+                    const exists = response.ok;
+                    const fileInfo = {
+                        ...file,
+                        exists: exists,
+                        status: response.status,
+                        fullPath: fullPath
+                    };
+                    
+                    state.filesChecked.push(fileInfo);
+                    
+                    if (!exists) {
+                        state.filesMissing.push(fileInfo);
+                    }
+                    
+                    // Render file item
+                    const item = document.createElement('div');
+                    item.className = 'file-item';
+                    item.innerHTML = `
+                        <div class="file-name">
+                            <i class="fas fa-${exists ? 'check-circle' : 'times-circle'}" 
+                               style="color: ${exists ? 'var(--success)' : 'var(--danger)'};"></i>
+                            <span>${file.path}</span>
+                            ${file.critical ? '<span style="color:red;font-size:10px;">[KRITIS]</span>' : ''}
+                        </div>
+                        <span class="file-status ${exists ? 'file-exists' : 'file-missing'}">
+                            ${exists ? 'ADA' : 'MISSING'}
+                        </span>
+                    `;
+                    
+                    if (!exists) {
+                        item.style.background = '#fff5f5';
+                    }
+                    
+                    fileListDiv.appendChild(item);
+                    
+                    log('api-log', 
+                        `${exists ? '✅' : '❌'} ${file.path} - ${exists ? 'OK' : 'MISSING'} (${file.desc})`,
+                        exists ? 'success' : 'error'
+                    );
+                    
+                } catch (error) {
+                    const fileInfo = {
+                        ...file,
+                        exists: false,
+                        status: 0,
+                        fullPath: fullPath,
+                        error: error.message
+                    };
+                    
+                    state.filesChecked.push(fileInfo);
+                    state.filesMissing.push(fileInfo);
+                    
+                    log('api-log', `❌ ${file.path} - ERROR: ${error.message}`, 'error');
+                }
+            }
+            
+            // Detect unused files (files that exist but not in required list)
+            log('api-log', 'Mendeteksi file yang tidak diperlukan...', 'info');
+            
+            // Summary
+            const total = state.filesChecked.length;
+            const exists = state.filesChecked.filter(f => f.exists).length;
+            const missing = state.filesMissing.length;
+            
+            log('api-log', `═══ HASIL: ${exists}/${total} file ada, ${missing} file missing ═══`, 'header');
+            
+            updateProgress();
+            
+            return {
+                total: total,
+                exists: exists,
+                missing: missing,
+                files: state.filesChecked
+            };
+        }
+
+        // ============================================
+        // 3. ERROR DETECTION
+        // ============================================
+        async function detectErrors() {
+            const errorLog = document.getElementById('error-log');
+            errorLog.innerHTML = '';
+            
+            log('error-log', '═══ MEMULAI DETEKSI ERROR ═══', 'header');
+            
+            state.errorsFound = [];
+            
+            // Check each critical JS file for syntax errors
+            const jsFiles = REQUIRED_FILES.filter(f => f.type === 'js' && f.critical);
+            
+            for (const file of jsFiles) {
+                const fullPath = CONFIG.BASE_PATH + file.path;
+                
+                log('error-log', `Menganalisis: ${file.path}...`, 'info');
+                
+                try {
+                    const response = await fetch(fullPath);
+                    
+                    if (!response.ok) {
+                        state.errorsFound.push({
+                            file: file.path,
+                            type: 'MISSING',
+                            message: `File tidak ditemukan (HTTP ${response.status})`,
+                            severity: 'critical'
+                        });
+                        
+                        log('error-log', `❌ ${file.path}: FILE TIDAK DITEMUKAN`, 'error');
+                        continue;
+                    }
+                    
+                    const content = await response.text();
+                    
+                    // Check for common errors
+                    const checks = [
+                        {
+                            name: 'Missing CONFIG',
+                            pattern: /CONFIG\s*=\s*\{/,
+                            message: 'Konfigurasi CONFIG tidak ditemukan'
+                        },
+                        {
+                            name: 'Missing class definition',
+                            pattern: /class\s+\w+/,
+                            message: 'Class definition tidak ditemukan'
+                        },
+                        {
+                            name: 'Missing export/global',
+                            pattern: /(window\.\w+\s*=|const\s+\w+\s*=\s*new)/,
+                            message: 'Global variable assignment tidak ditemukan'
+                        },
+                        {
+                            name: 'Syntax error check',
+                            pattern: null,
+                            message: null,
+                            customCheck: () => {
+                                try {
+                                    new Function(content);
+                                    return null;
+                                } catch (e) {
+                                    return `Syntax Error: ${e.message}`;
+                                }
+                            }
+                        }
+                    ];
+                    
+                    for (const check of checks) {
+                        let error = null;
+                        
+                        if (check.customCheck) {
+                            error = check.customCheck();
+                        } else if (check.pattern && !check.pattern.test(content)) {
+                            error = check.message;
+                        }
+                        
+                        if (error) {
+                            state.errorsFound.push({
+                                file: file.path,
+                                type: check.name,
+                                message: error,
+                                severity: 'warning'
+                            });
+                            
+                            log('error-log', `⚠️ ${file.path}: ${error}`, 'warning');
+                        }
+                    }
+                    
+                    if (!state.errorsFound.some(e => e.file === file.path)) {
+                        log('error-log', `✅ ${file.path}: OK`, 'success');
+                    }
+                    
+                } catch (error) {
+                    state.errorsFound.push({
+                        file: file.path,
+                        type: 'FETCH_ERROR',
+                        message: error.message,
+                        severity: 'critical'
+                    });
+                    
+                    log('error-log', `❌ ${file.path}: ${error.message}`, 'error');
+                }
+            }
+            
+            // Check API response for errors
+            if (state.apiResponse) {
+                if (!state.apiResponse.success) {
+                    state.errorsFound.push({
+                        file: 'API',
+                        type: 'API_ERROR',
+                        message: state.apiResponse.message || 'Unknown API error',
+                        severity: 'critical'
+                    });
+                }
+            }
+            
+            const errorCount = state.errorsFound.filter(e => e.severity === 'critical').length;
+            const warningCount = state.errorsFound.filter(e => e.severity === 'warning').length;
+            
+            log('error-log', `═══ HASIL: ${errorCount} critical errors, ${warningCount} warnings ═══`, 'header');
+            
+            updateProgress();
+            
+            return state.errorsFound;
+        }
+
+        // ============================================
+        // 4. SUGGESTIONS
+        // ============================================
+        function generateFixes() {
+            const suggestionsLog = document.getElementById('suggestions-log');
+            suggestionsLog.innerHTML = '';
+            
+            log('suggestions-log', '═══ SARAN PERBAIKAN ═══', 'header');
+            
+            state.suggestions = [];
+            
+            // API suggestions
+            if (!state.apiConnected) {
+                state.suggestions.push({
+                    category: 'API',
+                    priority: 'HIGH',
+                    suggestion: 'Deploy ulang Google Apps Script. Buka script.google.com, Deploy > New Deployment > Web App. Copy URL baru ke config.js.'
+                });
+                log('suggestions-log', '🔴 [API] Deploy ulang Google Apps Script', 'error');
+            } else {
+                log('suggestions-log', '✅ [API] Koneksi API OK', 'success');
+            }
+            
+            // Missing files suggestions
+            for (const file of state.filesMissing) {
+                if (file.critical) {
+                    state.suggestions.push({
+                        category: 'FILE',
+                        priority: 'HIGH',
+                        file: file.path,
+                        suggestion: `Buat file ${file.path} (${file.desc}). Gunakan tombol "Generate Files" untuk membuat otomatis.`
+                    });
+                    log('suggestions-log', `🔴 [FILE] Buat: ${file.path}`, 'error');
+                }
+            }
+            
+            // Error suggestions
+            for (const error of state.errorsFound) {
+                let suggestion = '';
+                
+                switch (error.type) {
+                    case 'MISSING':
+                        suggestion = `Buat file ${error.file} yang hilang.`;
+                        break;
+                    case 'Missing CONFIG':
+                        suggestion = `Tambahkan object CONFIG di ${error.file}. Contoh: const CONFIG = { ... };`;
+                        break;
+                    case 'Syntax error check':
+                        suggestion = `Perbaiki syntax error di ${error.file}. Cek tanda kurung, koma, dan titik koma.`;
+                        break;
+                    default:
+                        suggestion = `Periksa ${error.file} untuk error: ${error.message}`;
+                }
+                
+                state.suggestions.push({
+                    category: 'ERROR',
+                    priority: error.severity === 'critical' ? 'HIGH' : 'MEDIUM',
+                    file: error.file,
+                    suggestion: suggestion
+                });
+                
+                log('suggestions-log', `⚠️ [${error.file}] ${suggestion}`, 'warning');
+            }
+            
+            // Router check
+            const hasRouter = state.filesChecked.some(f => f.path === 'assets/js/router.js' && f.exists);
+            if (!hasRouter) {
+                state.suggestions.push({
+                    category: 'ROUTING',
+                    priority: 'HIGH',
+                    suggestion: 'File router.js tidak ditemukan. Ini diperlukan untuk clean URL dan navigasi.'
+                });
+                log('suggestions-log', '🔴 [ROUTING] Buat assets/js/router.js', 'error');
+            }
+            
+            // Service Worker check
+            if ('serviceWorker' in navigator) {
+                log('suggestions-log', '✅ [PWA] Service Worker API tersedia', 'success');
+            } else {
+                state.suggestions.push({
+                    category: 'PWA',
+                    priority: 'MEDIUM',
+                    suggestion: 'Browser tidak mendukung Service Worker. PWA tidak akan berfungsi optimal.'
+                });
+                log('suggestions-log', '⚠️ [PWA] Service Worker tidak didukung', 'warning');
+            }
+            
+            // HTTPS check
+            if (window.location.protocol !== 'https:') {
+                state.suggestions.push({
+                    category: 'SECURITY',
+                    priority: 'HIGH',
+                    suggestion: 'Gunakan HTTPS. PWA dan Service Worker memerlukan HTTPS.'
+                });
+                log('suggestions-log', '🔴 [SECURITY] Harus menggunakan HTTPS', 'error');
+            }
+            
+            updateProgress();
+            
+            return state.suggestions;
+        }
+
+        // ============================================
+        // 5. GENERATE MISSING FILES
+        // ============================================
+        function generateMissingFiles() {
+            const generateStatus = document.getElementById('generate-status');
+            const generatedCode = document.getElementById('generated-code');
+            
+            generateStatus.innerHTML = '<p><span class="status-indicator status-checking"></span> Generating missing files...</p>';
+            
+            state.generatedFiles = [];
+            let allCode = '';
+            
+            // Generate code for each missing critical file
+            for (const file of state.filesMissing) {
+                if (!file.critical) continue;
+                
+                const code = generateFileContent(file.path);
+                
+                if (code) {
+                    state.generatedFiles.push({
+                        path: file.path,
+                        content: code,
+                        base64: encodeBase64(code)
+                    });
+                    
+                    allCode += `\n// ====== ${file.path} ======\n${code}\n`;
+                    
+                    log('api-log', `✅ Generated: ${file.path}`, 'success');
+                }
+            }
+            
+            // Generate code.gs if API not connected
+            if (!state.apiConnected) {
+                const codeGS = generateCodeGS();
+                state.generatedFiles.push({
+                    path: 'code.gs',
+                    content: codeGS,
+                    base64: encodeBase64(codeGS)
+                });
+                allCode += `\n// ====== code.gs (Google Apps Script) ======\n${codeGS}\n`;
+            }
+            
+            // Generate router.js if missing
+            if (state.filesMissing.some(f => f.path === 'assets/js/router.js')) {
+                const routerCode = generateRouterJS();
+                state.generatedFiles.push({
+                    path: 'assets/js/router.js',
+                    content: routerCode,
+                    base64: encodeBase64(routerCode)
+                });
+                allCode += `\n// ====== assets/js/router.js ======\n${routerCode}\n`;
+            }
+            
+            // Generate config.js if missing
+            if (state.filesMissing.some(f => f.path === 'assets/js/config.js')) {
+                const configCode = generateConfigJS();
+                state.generatedFiles.push({
+                    path: 'assets/js/config.js',
+                    content: configCode,
+                    base64: encodeBase64(configCode)
+                });
+                allCode += `\n// ====== assets/js/config.js ======\n${configCode}\n`;
+            }
+            
+            generatedCode.textContent = allCode || 'Semua file sudah lengkap!';
+            
+            generateStatus.innerHTML = `
+                <p><strong>✅ Generated ${state.generatedFiles.length} files</strong></p>
+                ${state.generatedFiles.map(f => `<p>📄 ${f.path}</p>`).join('')}
+            `;
+            
+            // Enable download all button
+            if (state.generatedFiles.length > 0) {
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'btn btn-success';
+                downloadBtn.style.marginTop = '10px';
+                downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download All Generated Files';
+                downloadBtn.onclick = downloadAllGeneratedFiles;
+                generateStatus.appendChild(downloadBtn);
+            }
+            
+            updateProgress();
+            
+            return state.generatedFiles;
+        }
+
+        // ============================================
+        // FILE CONTENT GENERATORS
+        // ============================================
+        function generateFileContent(path) {
+            const generators = {
+                'manifest.json': generateManifestJSON,
+                'service-worker.js': generateServiceWorkerJS,
+                'offline.html': generateOfflineHTML,
+                '404.html': generate404HTML,
+                'assets/js/config.js': generateConfigJS,
+                'assets/js/router.js': generateRouterJS,
+                'assets/js/app.js': generateAppJS,
+                'assets/js/api.js': generateApiJS,
+                'assets/js/auth.js': generateAuthJS,
+                'assets/js/database.js': generateDatabaseJS,
+                'assets/js/dashboard.js': generateDashboardJS,
+                'assets/js/surat.js': generateSuratJS,
+                'assets/js/disposisi.js': generateDisposisiJS,
+                'assets/js/laporan.js': generateLaporanJS,
+                'assets/js/components/spinner.js': generateSpinnerJS,
+                'assets/css/app.css': generateAppCSS,
+                'assets/css/dashboard.css': generateDashboardCSS,
+                'assets/css/surat.css': generateSuratCSS,
+                'assets/css/print.css': generatePrintCSS,
+                '.gitignore': generateGitignore,
+                'README.md': generateReadmeMD
+            };
+            
+            return generators[path] ? generators[path]() : null;
+        }
+
+        function generateConfigJS() {
+            return `// config.js - Konfigurasi Aplikasi Enterprise 2026
+const CONFIG = {
+    APP_NAME: 'Arsip Surat Digital Enterprise',
+    APP_VERSION: '2026.1.0',
+    
+    API: {
+        BASE_URL: '${CONFIG.API_URL}',
+        TIMEOUT: 30000,
+        RETRY_ATTEMPTS: 3
+    },
+    
+    AUTH: {
+        TOKEN_KEY: 'asde_auth_token',
+        USER_KEY: 'asde_user_data',
+        REMEMBER_KEY: 'asde_remember_me'
+    },
+    
+    PAGINATION: {
+        PER_PAGE: 10
+    }
+};
+
+Object.freeze(CONFIG);
+console.log('Config loaded:', CONFIG.APP_NAME, 'v' + CONFIG.APP_VERSION);`;
+        }
+
+        function generateRouterJS() {
+            return `// router.js - Router System
+class Router {
+    constructor() {
+        this.routes = {
+            '/': 'dashboard',
+            '/dashboard': 'dashboard',
+            '/surat-masuk': 'surat-masuk',
+            '/surat-keluar': 'surat-keluar',
+            '/disposisi': 'disposisi',
+            '/laporan': 'laporan',
+            '/pengguna': 'pengguna',
+            '/instansi': 'instansi',
+            '/kategori': 'kategori',
+            '/pengaturan': 'pengaturan',
+            '/login': 'login',
+            '/register': 'register'
+        };
+        this.currentRoute = null;
+        this.guards = [];
+    }
+
+    init() {
+        this.handleRoute();
+        window.addEventListener('popstate', () => this.handleRoute());
+        
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('[data-route]');
+            if (link) {
+                e.preventDefault();
+                this.navigate(link.getAttribute('data-route'));
+            }
+        });
+    }
+
+    handleRoute() {
+        const path = window.location.pathname;
+        const basePath = '/arsip-surat-digital-enterprise';
+        let route = path.replace(basePath, '') || '/';
+        route = route.replace(/\\/+$/, '') || '/';
+        
+        const mappedRoute = this.routes[route] || 'dashboard';
+        this.currentRoute = mappedRoute;
+        
+        window.dispatchEvent(new CustomEvent('route-change', {
+            detail: { route: mappedRoute }
+        }));
+    }
+
+    navigate(route) {
+        const basePath = '/arsip-surat-digital-enterprise';
+        let url = basePath + (route && route !== '/' ? '/' + route : '');
+        window.history.pushState({ route }, '', url);
+        this.handleRoute();
+    }
+
+    getCurrentRoute() { return this.currentRoute; }
+    addGuard(fn) { this.guards.push(fn); }
+}
+
+const router = new Router();
+router.addGuard(async (route) => {
+    const publicRoutes = ['login', 'register'];
+    if (publicRoutes.includes(route)) return true;
+    
+    const token = localStorage.getItem('asde_auth_token');
+    if (!token) { router.redirect('login'); return false; }
+    return true;
+});
+
+console.log('✅ Router loaded');`;
+        }
+
+        function generateAppJS() {
+            return `// app.js - Main Application
+class App {
+    constructor() {
+        this.version = '2026.1.0';
+        this.isOnline = navigator.onLine;
+        this.initialized = false;
+    }
+
+    async init() {
+        if (this.initialized) return;
+        
+        try {
+            this.setupEventListeners();
+            this.checkOnlineStatus();
+            this.hideSpinner();
+            
+            if (typeof router !== 'undefined') router.init();
+            
+            if (typeof auth !== 'undefined' && auth.isAuthenticated) {
+                await this.showDashboard();
+            } else {
+                this.showLoginPage();
+            }
+            
+            this.initialized = true;
+            console.log('App initialized');
+        } catch (error) {
+            console.error('Init error:', error);
+            this.hideSpinner();
+            this.showLoginPage();
+        }
+    }
+
+    setupEventListeners() {
+        window.addEventListener('online', () => this.handleOnline());
+        window.addEventListener('offline', () => this.handleOffline());
+        window.addEventListener('route-change', (e) => this.navigateTo(e.detail.route));
+    }
+
+    checkOnlineStatus() {
+        this.isOnline = navigator.onLine;
+    }
+
+    handleOnline() {
+        this.isOnline = true;
+        this.showToast('Koneksi tersedia', 'success');
+    }
+
+    handleOffline() {
+        this.isOnline = false;
+        this.showToast('Anda offline', 'warning');
+    }
+
+    async navigateTo(route) {
+        switch(route) {
+            case 'dashboard': await this.showDashboard(); break;
+            case 'login': this.showLoginPage(); break;
+            case 'register': this.showRegisterPage(); break;
+            default: this.showDashboard();
+        }
+    }
+
+    showLoginPage() {
+        document.getElementById('app-container').innerHTML = \`
+            <div class="auth-page">
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <div class="auth-logo">AS</div>
+                            <h2>Arsip Surat Digital</h2>
+                        </div>
+                        <form onsubmit="event.preventDefault(); app.handleLogin()">
+                            <div class="form-group">
+                                <input type="text" id="login-identifier" class="form-control" placeholder="Username atau Email" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" id="login-password" class="form-control" placeholder="Password" required>
+                            </div>
+                            <div id="login-error" class="alert alert-error" style="display:none;"></div>
+                            <button type="submit" class="btn btn-primary btn-block">Masuk</button>
+                        </form>
+                    </div>
+                </div>
+            </div>\`;
+    }
+
+    async handleLogin() {
+        const identifier = document.getElementById('login-identifier').value;
+        const password = document.getElementById('login-password').value;
+        
+        try {
+            const result = await api.login(identifier, password);
+            if (result.success) {
+                this.showToast('Login berhasil!', 'success');
+                await this.showDashboard();
+            } else {
+                document.getElementById('login-error').textContent = result.message;
+                document.getElementById('login-error').style.display = 'block';
+            }
+        } catch (error) {
+            this.showToast('Gagal terhubung', 'error');
+        }
+    }
+
+    async showDashboard() {
+        document.getElementById('app-container').innerHTML = '<h1>Dashboard</h1>';
+    }
+
+    showToast(message, type) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = \\\`toast \\\${type}\\\`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 5000);
+    }
+
+    hideSpinner() {
+        const spinner = document.getElementById('app-spinner');
+        if (spinner) spinner.classList.add('hidden');
+    }
+
+    async logout() {
+        if (typeof auth !== 'undefined') await auth.logout();
+        this.showLoginPage();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (!window.app) {
+        window.app = new App();
+        window.app.init();
+    }
+});
+
+console.log('✅ App loaded');`;
+        }
+
+        function generateCodeGS() {
+            return `// code.gs - Google Apps Script Backend
+const CONFIG = {
+  APP_NAME: 'Arsip Surat Digital Enterprise',
+  APP_VERSION: '2026.1.0',
+  get SPREADSHEET_ID() {
+    return PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID') || 'YOUR_SPREADSHEET_ID';
+  },
+  get JWT_SECRET() {
+    return PropertiesService.getScriptProperties().getProperty('JWT_SECRET') || 'your-secret-key';
+  }
+};
+
+function doPost(e) {
+  return handleRequest(e);
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({
+    success: true,
+    message: 'API is running'
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function handleRequest(e) {
+  try {
+    const params = e.parameter || {};
+    const body = parseBody(e);
+    const action = params.action || body.action || 'ping';
+    const token = params.token || body.token || '';
+    
+    let user = null;
+    const publicActions = ['ping', 'login', 'publicRegister', 'setup', 'checkSetup', 'debugInfo'];
+    
+    if (publicActions.indexOf(action) === -1) {
+      if (!token) return response({ success: false, message: 'Token required' });
+      user = verifyToken(token);
+      if (!user) return response({ success: false, message: 'Invalid token' });
+    }
+    
+    switch(action) {
+      case 'ping': return ping();
+      case 'login': return login(body);
+      case 'publicRegister': return register(body);
+      case 'setup': return setup(body);
+      case 'checkSetup': return checkSetup();
+      case 'getDashboardStats': return getDashboardStats(user);
+      case 'getSuratMasuk': return getSuratMasuk(user, body);
+      case 'getSuratKeluar': return getSuratKeluar(user, body);
+      case 'getDisposisi': return getDisposisi(user, body);
+      case 'getPengguna': return getPengguna(user);
+      default: return response({ success: false, message: 'Unknown action: ' + action });
+    }
+  } catch(e) {
+    return response({ success: false, message: e.message });
+  }
+}
+
+function response(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function ping() {
+  return { success: true, message: 'API OK', version: CONFIG.APP_VERSION };
+}
+
+function login(body) {
+  const username = (body.username || '').trim();
+  const password = (body.password || '').trim();
+  
+  if (!username || !password) {
+    return { success: false, message: 'Username dan password diperlukan' };
+  }
+  
+  const sheet = getSheet('Users');
+  const data = sheet.getDataRange().getValues();
+  
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][1]) === username && String(data[i][3]) === hashPassword(password)) {
+      const userData = {
+        id: String(data[i][0]),
+        username: String(data[i][1]),
+        fullName: String(data[i][4]),
+        role: String(data[i][8] || 'staff')
+      };
+      const token = generateToken(userData.id);
+      return { success: true, message: 'Login berhasil', token: token, user: userData };
+    }
+  }
+  
+  return { success: false, message: 'Username atau password salah' };
+}
+
+function register(body) {
+  const username = (body.username || '').trim();
+  const email = (body.email || '').trim();
+  const password = (body.password || '').trim();
+  const fullName = (body.fullName || body.fullname || '').trim();
+  
+  if (!username || !email || !password || !fullName) {
+    return { success: false, message: 'Semua field harus diisi' };
+  }
+  
+  const sheet = getSheet('Users');
+  const id = Utilities.getUuid();
+  sheet.appendRow([id, username, email, hashPassword(password), fullName, '', '', '', 'staff', true, new Date(), new Date(), new Date()]);
+  
+  return { success: true, message: 'Registrasi berhasil' };
+}
+
+function setup(body) {
+  const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+  const sheets = ['Users', 'SuratMasuk', 'SuratKeluar', 'Disposisi', 'Kategori', 'Instansi', 'Notifikasi'];
+  
+  sheets.forEach(name => {
+    if (!ss.getSheetByName(name)) ss.insertSheet(name);
+  });
+  
+  const usersSheet = ss.getSheetByName('Users');
+  if (usersSheet.getLastRow() <= 1) {
+    usersSheet.appendRow(['id', 'username', 'email', 'passwordHash', 'fullName', 'nip', 'jabatan', 'unitKerja', 'role', 'isActive', 'lastLogin', 'createdAt', 'updatedAt']);
+    usersSheet.appendRow([Utilities.getUuid(), 'admin', 'admin@instansi.id', hashPassword('Admin123!'), 'Administrator', '', '', '', 'admin', true, new Date(), new Date(), new Date()]);
+  }
+  
+  return { success: true, message: 'Setup berhasil', data: { adminUsername: 'admin', adminPassword: 'Admin123!' } };
+}
+
+function getDashboardStats(user) {
+  const smSheet = getSheet('SuratMasuk');
+  const skSheet = getSheet('SuratKeluar');
+  const dispSheet = getSheet('Disposisi');
+  
+  return {
+    success: true,
+    data: {
+      totalSuratMasuk: Math.max(0, smSheet.getLastRow() - 1),
+      totalSuratKeluar: Math.max(0, skSheet.getLastRow() - 1),
+      totalDisposisi: Math.max(0, dispSheet.getLastRow() - 1),
+      pendingDisposisi: 0,
+      totalPengguna: Math.max(0, getSheet('Users').getLastRow() - 1)
+    }
+  };
+}
+
+function getSuratMasuk(user, params) {
+  const sheet = getSheet('SuratMasuk');
+  const data = sheet.getLastRow() > 1 ? sheet.getDataRange().getValues().slice(1) : [];
+  
+  const items = data.map(row => ({
+    id: String(row[0]),
+    nomor_surat: String(row[1] || '-'),
+    tanggal_surat: row[2] instanceof Date ? row[2].toISOString() : String(row[2] || ''),
+    pengirim: String(row[3] || '-'),
+    perihal: String(row[4] || '-'),
+    status: String(row[5] || 'baru')
+  }));
+  
+  return { success: true, data: items };
+}
+
+function getSuratKeluar(user, params) {
+  const sheet = getSheet('SuratKeluar');
+  const data = sheet.getLastRow() > 1 ? sheet.getDataRange().getValues().slice(1) : [];
+  
+  const items = data.map(row => ({
+    id: String(row[0]),
+    nomor_surat: String(row[1] || '-'),
+    tanggal_surat: row[2] instanceof Date ? row[2].toISOString() : String(row[2] || ''),
+    tujuan: String(row[3] || '-'),
+    perihal: String(row[4] || '-'),
+    status: String(row[5] || 'draft')
+  }));
+  
+  return { success: true, data: items };
+}
+
+function getDisposisi(user, params) {
+  const sheet = getSheet('Disposisi');
+  const data = sheet.getLastRow() > 1 ? sheet.getDataRange().getValues().slice(1) : [];
+  
+  const items = data.map(row => ({
+    id: String(row[0]),
+    instruksi: String(row[1] || ''),
+    status: String(row[2] || 'pending')
+  }));
+  
+  return { success: true, data: items };
+}
+
+function getPengguna(user) {
+  const sheet = getSheet('Users');
+  const data = sheet.getLastRow() > 1 ? sheet.getDataRange().getValues().slice(1) : [];
+  
+  const items = data.map(row => ({
+    id: String(row[0]),
+    username: String(row[1]),
+    email: String(row[2] || ''),
+    fullName: String(row[4] || ''),
+    role: String(row[8] || 'staff'),
+    isActive: row[9] !== false
+  }));
+  
+  return { success: true, data: items };
+}
+
+function getSheet(name) {
+  const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+  let sheet = ss.getSheetByName(name);
+  if (!sheet) sheet = ss.insertSheet(name);
+  return sheet;
+}
+
+function hashPassword(password) {
+  const salt = CONFIG.JWT_SECRET.substring(0, 16);
+  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, password + salt)
+    .map(b => ('0' + (b & 0xFF).toString(16)).slice(-2)).join('');
+}
+
+function generateToken(userId) {
+  const header = Utilities.base64Encode(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const now = Math.floor(Date.now() / 1000);
+  const payload = Utilities.base64Encode(JSON.stringify({
+    sub: userId, iat: now, exp: now + 86400
+  }));
+  const signature = Utilities.base64Encode(
+    Utilities.computeHmacSha256Signature(header + '.' + payload, CONFIG.JWT_SECRET)
+  );
+  return header + '.' + payload + '.' + signature;
+}
+
+function verifyToken(token) {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    
+    const expectedSig = Utilities.base64Encode(
+      Utilities.computeHmacSha256Signature(parts[0] + '.' + parts[1], CONFIG.JWT_SECRET)
+    );
+    if (parts[2] !== expectedSig) return null;
+    
+    const payload = JSON.parse(Utilities.newBlob(Utilities.base64Decode(parts[1])).getDataAsString());
+    if (payload.exp < Math.floor(Date.now() / 1000)) return null;
+    
+    const sheet = getSheet('Users');
+    const data = sheet.getDataRange().getValues();
+    
+    for (let i = 1; i < data.length; i++) {
+      if (String(data[i][0]) === payload.sub) {
+        return {
+          id: String(data[i][0]),
+          username: String(data[i][1]),
+          role: String(data[i][8] || 'staff')
+        };
+      }
+    }
+    return null;
+  } catch(e) {
+    return null;
+  }
+}
+
+function parseBody(e) {
+  if (e.postData && e.postData.contents) {
+    try { return JSON.parse(e.postData.contents); } catch(err) {
+      const body = {};
+      e.postData.contents.split('&').forEach(pair => {
+        const [key, value] = pair.split('=');
+        if (key) body[decodeURIComponent(key)] = decodeURIComponent(value || '');
+      });
+      return body;
+    }
+  }
+  return {};
+}
+
+console.log('✅ code.gs ready');`;
+        }
+
+        function generateManifestJSON() {
+            return JSON.stringify({
+                name: "Arsip Surat Digital Enterprise 2026",
+                short_name: "Arsip Surat",
+                start_url: "/arsip-surat-digital-enterprise/index.html",
+                display: "standalone",
+                background_color: "#ffffff",
+                theme_color: "#1a73e8",
+                icons: [
+                    { src: "assets/images/icon-192x192.svg", sizes: "192x192", type: "image/svg+xml" },
+                    { src: "assets/images/icon-512x512.svg", sizes: "512x512", type: "image/svg+xml" }
+                ]
+            }, null, 2);
+        }
+
+        function generateServiceWorkerJS() {
+            return `// service-worker.js
+const CACHE_NAME = 'asde-cache-v2026.1';
+const ASSETS = ['/', '/index.html', '/offline.html', '/manifest.json'];
+
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    fetch(e.request).then(res => {
+      if (res.ok) {
+        const clone = res.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+      }
+      return res;
+    }).catch(() => caches.match(e.request).then(res => res || caches.match('/offline.html')))
+  );
+});`;
+        }
+
+        function generateOfflineHTML() {
+            return `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Offline</title><style>body{font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;background:#f5f5f5;text-align:center}h1{color:#333}</style></head><body><div><h1>📡 Anda Sedang Offline</h1><p>Silakan periksa koneksi internet Anda.</p><button onclick="location.reload()" style="padding:10px 20px;background:#1a73e8;color:white;border:none;border-radius:8px;cursor:pointer;">Coba Lagi</button></div></body></html>`;
+        }
+
+        function generate404HTML() {
+            return `<!DOCTYPE html><html><head><meta charset="UTF-8"><script>window.location.href='/arsip-surat-digital-enterprise/'+window.location.hash;</script></head><body><p>Redirecting...</p></body></html>`;
+        }
+
+        function generateAppCSS() {
+            return `/* app.css - Main Styles */:root{--primary:#1a73e8;--success:#4caf50;--danger:#f44336;--warning:#ff9800;--dark:#333;--light:#f5f5f5;--white:#fff}*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;background:var(--light);color:var(--dark)}.app-header{background:var(--white);box-shadow:0 2px 4px rgba(0,0,0,0.1)}.header-container{max-width:1400px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:64px}.main-layout{display:flex;min-height:calc(100vh - 64px)}.sidebar{width:250px;background:var(--white);border-right:1px solid #e0e0e0;padding:20px 0}.nav-link{display:flex;align-items:center;gap:10px;padding:12px 20px;color:var(--dark);text-decoration:none;transition:all 0.3s}.nav-link:hover,.nav-link.active{background:var(--primary);color:var(--white)}.main-content{flex:1;padding:20px}.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}.stat-card{background:var(--white);border-radius:12px;padding:20px;display:flex;align-items:center;gap:15px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}.stat-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--white)}.stat-card:nth-child(1) .stat-icon{background:linear-gradient(135deg,#667eea,#764ba2)}.stat-card:nth-child(2) .stat-icon{background:linear-gradient(135deg,#f093fb,#f5576c)}.stat-card:nth-child(3) .stat-icon{background:linear-gradient(135deg,#4facfe,#00f2fe)}.stat-card:nth-child(4) .stat-icon{background:linear-gradient(135deg,#43e97b,#38f9d7)}.stat-info h3{font-size:24px}.btn{padding:10px 20px;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.3s}.btn-primary{background:var(--primary);color:var(--white)}.btn-primary:hover{background:#1557b0}.btn-secondary{background:#6c757d;color:var(--white)}.btn-danger{background:var(--danger);color:var(--white)}.btn-sm{padding:5px 10px;font-size:12px}@media(max-width:768px){.main-layout{flex-direction:column}.sidebar{width:100%;position:fixed;bottom:0;z-index:100;display:flex;overflow-x:auto}.sidebar nav{display:flex}.nav-link{flex-direction:column;font-size:11px;padding:10px;text-align:center}.main-content{padding-bottom:70px}}`;
+        }
+
+        function generateDashboardCSS() {
+            return `/* dashboard.css */`;
+        }
+
+        function generateSuratCSS() {
+            return `/* surat.css */`;
+        }
+
+        function generatePrintCSS() {
+            return `/* print.css */@media print{body{background:white}.app-header,.sidebar,.btn{display:none!important}}`;
+        }
+
+        function generateApiJS() {
+            return `// api.js\nclass ApiService{constructor(){this.baseUrl=CONFIG.API.BASE_URL;this.token=localStorage.getItem(CONFIG.AUTH.TOKEN_KEY)}async makeRequest(action,data={}){const fd=new URLSearchParams();fd.append('action',action);fd.append('data',btoa(JSON.stringify(data)));if(this.token)fd.append('token',this.token);const res=await fetch(this.baseUrl,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:fd.toString()});return await res.json()}async login(u,p,r){const r=await this.makeRequest('login',{username:u,password:p});if(r.success&&r.token){this.token=r.token;localStorage.setItem(CONFIG.AUTH.TOKEN_KEY,r.token);if(r.user)localStorage.setItem(CONFIG.AUTH.USER_KEY,JSON.stringify(r.user))}return r}async getDashboardStats(){return await this.makeRequest('getDashboardStats')}async getSuratMasuk(){return await this.makeRequest('getSuratMasuk')}async getSuratKeluar(){return await this.makeRequest('getSuratKeluar')}async getDisposisi(){return await this.makeRequest('getDisposisi')}async getPengguna(){return await this.makeRequest('getPengguna')}async processSyncQueue(){}}const api=new ApiService();console.log('API Service initialized');`;
+        }
+
+        function generateAuthJS() {
+            return `// auth.js\nclass AuthService{constructor(){this.token=localStorage.getItem(CONFIG.AUTH.TOKEN_KEY);this.user=JSON.parse(localStorage.getItem(CONFIG.AUTH.USER_KEY)||'null');this.isAuthenticated=!!this.token}async login(u,p,r){const r=await api.login(u,p,r);if(r.success){this.token=r.token;this.user=r.user;this.isAuthenticated=true}return r}async register(d){return await api.makeRequest('publicRegister',d)}async logout(){this.token=null;this.user=null;this.isAuthenticated=false;localStorage.removeItem(CONFIG.AUTH.TOKEN_KEY);localStorage.removeItem(CONFIG.AUTH.USER_KEY)}getUser(){return this.user}}const auth=new AuthService();console.log('Auth Service initialized');`;
+        }
+
+        function generateDatabaseJS() {
+            return `// database.js\nclass DatabaseService{constructor(){this.dbName='ArsipSuratDB';this.db=null;this.initDB()}initDB(){const r=indexedDB.open(this.dbName,1);r.onsuccess=e=>{this.db=e.target.result;console.log('DB ready')};r.onupgradeneeded=e=>{const db=e.target.result;['suratMasuk','suratKeluar','disposisi','cache'].forEach(n=>{if(!db.objectStoreNames.contains(n))db.createObjectStore(n,{keyPath:'id'})})}}}const dbService=new DatabaseService();`;
+        }
+
+        function generateDashboardJS() { return '// dashboard.js\nconsole.log("Dashboard module loaded");'; }
+        function generateSuratJS() { return '// surat.js\nconsole.log("Surat module loaded");'; }
+        function generateDisposisiJS() { return '// disposisi.js\nconsole.log("Disposisi module loaded");'; }
+        function generateLaporanJS() { return '// laporan.js\nconsole.log("Laporan module loaded");'; }
+        function generateSpinnerJS() { return '// spinner.js\nclass SpinnerComponent{static show(id){const el=document.getElementById(id);if(el)el.innerHTML=\\'<div style="text-align:center;padding:50px"><div class="spinner-enterprise"></div><p>Loading...</p></div>\\'}static hide(){}}'; }
+        function generateGitignore() { return 'node_modules/\n.DS_Store\n*.log\n.env\n'; }
+        function generateReadmeMD() { return '# Arsip Surat Digital Enterprise 2026\n\nSistem Manajemen Arsip Surat Digital Enterprise - Full Stack CRUD PWA\n\n## Setup\n1. Deploy code.gs ke Google Apps Script\n2. Update CONFIG.API.BASE_URL di assets/js/config.js\n3. Buka index.html di browser\n'; }
+
+        // ============================================
+        // 6. EXPORT REPORT
+        // ============================================
+        function exportReport() {
+            const report = {
+                timestamp: new Date().toISOString(),
+                app: CONFIG.APP_NAME + ' v' + CONFIG.APP_VERSION,
+                api: {
+                    connected: state.apiConnected,
+                    url: CONFIG.API_URL
+                },
+                files: {
+                    total: state.filesChecked.length,
+                    exists: state.filesChecked.filter(f => f.exists).length,
+                    missing: state.filesMissing.length,
+                    details: state.filesChecked.map(f => ({
+                        path: f.path,
+                        exists: f.exists,
+                        critical: f.critical,
+                        desc: f.desc
+                    }))
+                },
+                errors: state.errorsFound,
+                suggestions: state.suggestions,
+                generatedFiles: state.generatedFiles.map(f => ({
+                    path: f.path,
+                    base64: f.base64
+                }))
+            };
+            
+            // Display report
+            const reportDiv = document.getElementById('full-report');
+            reportDiv.innerHTML = '';
+            
+            log('full-report', '═══ FULL TROUBLESHOOTING REPORT ═══', 'header');
+            log('full-report', `Generated: ${report.timestamp}`, 'info');
+            log('full-report', `API: ${report.api.connected ? 'CONNECTED' : 'DISCONNECTED'}`, report.api.connected ? 'success' : 'error');
+            log('full-report', `Files: ${report.files.exists}/${report.files.total} exist`, report.files.missing === 0 ? 'success' : 'warning');
+            log('full-report', `Errors: ${report.errors.length}`, report.errors.length === 0 ? 'success' : 'error');
+            log('full-report', `Suggestions: ${report.suggestions.length}`, 'info');
+            log('full-report', `Generated Files: ${report.generatedFiles.length}`, 'success');
+            
+            // Download report as JSON
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `troubleshooting-report-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            log('full-report', '✅ Report berhasil di-download', 'success');
+        }
+
+        // ============================================
+        // DOWNLOAD HELPERS
+        // ============================================
+        function downloadAllGeneratedFiles() {
+            state.generatedFiles.forEach(file => {
+                const blob = new Blob([file.content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = file.path.split('/').pop();
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+            
+            alert(`Downloading ${state.generatedFiles.length} files...`);
+        }
+
+        function downloadCurrentFile() {
+            if (!state.currentFilePreview) return;
+            
+            const blob = new Blob([state.currentFilePreview.content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = state.currentFilePreview.path.split('/').pop();
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function closeCodeModal() {
+            document.getElementById('code-modal').style.display = 'none';
+        }
+
+        // ============================================
+        // RUN ALL CHECKS
+        // ============================================
+        async function runAllChecks() {
+            console.log('Running all checks...');
+            
+            state.totalChecks = 6;
+            state.completedChecks = 0;
+            
+            document.getElementById('progress-bar').style.width = '0%';
+            
+            await checkAPIConnection();
+            await checkAllFiles();
+            await detectErrors();
+            generateFixes();
+            generateMissingFiles();
+            exportReport();
+            
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('progress-text').textContent = '✅ Semua pengecekan selesai!';
+            
+            alert('✅ Semua pengecekan selesai!\n\nSilakan lihat hasil di masing-masing section.\nReport lengkap telah di-download.');
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🔧 Troubleshooting System Ready');
+            console.log(`App: ${CONFIG.APP_NAME} v${CONFIG.APP_VERSION}`);
+            console.log(`API: ${CONFIG.API_URL}`);
+            
+            // Auto-run checks on load
+            setTimeout(runAllChecks, 1000);
+        });
+    </script>
+</body>
+</html>
