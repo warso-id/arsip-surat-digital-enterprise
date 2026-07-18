@@ -1,2 +1,128 @@
-// app.js - Base64 encoded
-Ly8gRW50ZXJwcmlzZSBBcHAgLSBGaXggdjIwMjYuNy4xOA0KY2xhc3MgRW50ZXJwcmlzZUFwcCB7DQogICAgY29uc3RydWN0b3IoKSB7DQogICAgICAgIHRoaXMubW9kdWxlcyA9IHt9Ow0KICAgICAgICB0aGlzLmlzSW5pdGlhbGl6ZWQgPSBmYWxzZTsNCiAgICAgICAgdGhpcy5jb25maWcgPSB3aW5kb3cuRU5URVJQUklTRV9DT05GSUcgfHwge307DQogICAgfQ0KDQogICAgYXN5bmMgaW5pdCgpIHsNCiAgICAgICAgaWYgKHRoaXMuaXNJbml0aWFsaXplZCkgew0KICAgICAgICAgICAgY29uc29sZS53YXJuKCdBcHAgYWxyZWFkeSBpbml0aWFsaXplZCcpOw0KICAgICAgICAgICAgcmV0dXJuOw0KICAgICAgICB9DQoNCiAgICAgICAgdHJ5IHsNCiAgICAgICAgICAgIGNvbnNvbGUubG9nKCdJbml0aWFsaXppbmcgRW50ZXJwcmlzZSBBcHAuLi4nKTsNCiAgICAgICAgICAgIA0KICAgICAgICAgICAgLy8gSW5pdGlhbGl6ZSBjb3JlIHNlcnZpY2VzDQogICAgICAgICAgICBhd2FpdCB0aGlzLmluaXRDb3JlU2VydmljZXMoKTsNCiAgICAgICAgICAgIA0KICAgICAgICAgICAgLy8gTG9hZCBtb2R1bGVzDQogICAgICAgICAgICBhd2FpdCB0aGlzLmxvYWRNb2R1bGVzKCk7DQogICAgICAgICAgICANCiAgICAgICAgICAgIC8vIEluaXRpYWxpemUgcm91dGVyDQogICAgICAgICAgICB0aGlzLmluaXRSb3V0ZXIoKTsNCiAgICAgICAgICAgIA0KICAgICAgICAgICAgdGhpcy5pc0luaXRpYWxpemVkID0gdHJ1ZTsNCiAgICAgICAgICAgIGNvbnNvbGUubG9nKCdFbnRlcnByaXNlIEFwcCBpbml0aWFsaXplZCBzdWNjZXNzZnVsbHknKTsNCiAgICAgICAgICAgIA0KICAgICAgICAgICAgLy8gTm90aWZ5IGFsbCBsaXN0ZW5lcnMNCiAgICAgICAgICAgIGRvY3VtZW50LmRpc3BhdGNoRXZlbnQobmV3IEN1c3RvbUV2ZW50KCdhcHA6cmVhZHknLCB7IGRldGFpbDogdGhpcyB9KSk7DQogICAgICAgIH0gY2F0Y2ggKGVycm9yKSB7DQogICAgICAgICAgICBjb25zb2xlLmVycm9yKCdBcHAgaW5pdGlhbGl6YXRpb24gZmFpbGVkOicsIGVycm9yKTsNCiAgICAgICAgICAgIHRoaXMuc2hvd0luaXRFcnJvcihlcnJvcik7DQogICAgICAgIH0NCiAgICB9DQoNCiAgICBhc3luYyBpbml0Q29yZVNlcnZpY2VzKCkgew0KICAgICAgICAvLyBJbml0aWFsaXplIGRhdGFiYXNlDQogICAgICAgIGlmICh3aW5kb3cuZW50ZXJwcmlzZURiKSB7DQogICAgICAgICAgICB0cnkgew0KICAgICAgICAgICAgICAgIGF3YWl0IHdpbmRvdy5lbnRlcnByaXNlRGIuaW5pdCgpOw0KICAgICAgICAgICAgICAgIGNvbnNvbGUubG9nKCdEYXRhYmFzZSBpbml0aWFsaXplZCcpOw0KICAgICAgICAgICAgfSBjYXRjaCAoZXJyb3IpIHsNCiAgICAgICAgICAgICAgICBjb25zb2xlLndhcm4oJ0RhdGFiYXNlIGluaXRpYWxpemF0aW9uIGZhaWxlZDo6JywgZXJyb3IpOw0KICAgICAgICAgICAgfQ0KICAgICAgICB9DQoNCiAgICAgICAgLy8gSW5pdGlhbGl6ZSBhdXRoDQogICAgICAgIGlmICh3aW5kb3cuZW50ZXJwcmlzZUF1dGgpIHsNCiAgICAgICAgICAgIHRyeSB7DQogICAgICAgICAgICAgICAgYXdhaXQgd2luZG93LmVudGVycHJpc2VBdXRoLmluaXQoKTsNCiAgICAgICAgICAgICAgICBjb25zb2xlLmxvZygnQXV0aCBpbml0aWFsaXplZCcpOw0KICAgICAgICAgICAgfSBjYXRjaCAoZXJyb3IpIHsNCiAgICAgICAgICAgICAgICBjb25zb2xlLndhcm4oJ0F1dGggaW5pdGlhbGl6YXRpb24gZmFpbGVkOicsIGVycm9yKTsNCiAgICAgICAgICAgIH0NCiAgICAgICAgfQ0KDQogICAgICAgIC8vIFByb2Nlc3MgcGVuZGluZyBzeW5jIGlmIGF2YWlsYWJsZQ0KICAgICAgICBpZiAod2luZG93LmVudGVycHJpc2VEYiAmJiB0eXBlb2Ygd2luZG93LmVudGVycHJpc2VEYi5wcm9jZXNzUGVuZGluZ1N5bmMgPT09ICdmdW5jdGlvbicpIHsNCiAgICAgICAgICAgIHRyeSB7DQogICAgICAgICAgICAgICAgYXdhaXQgd2luZG93LmVudGVycHJpc2VEYi5wcm9jZXNzUGVuZGluZ1N5bmMoKTsNCiAgICAgICAgICAgIH0gY2F0Y2ggKGVycm9yKSB7DQogICAgICAgICAgICAgICAgY29uc29sZS53YXJuKCdQZW5kaW5nIHN5bmMgcHJvY2Vzc2luZyBmYWlsZWQ6JywgZXJyb3IpOw0KICAgICAgICAgICAgfQ0KICAgICAgICB9DQogICAgfQ0KDQogICAgYXN5bmMgbG9hZE1vZHVsZXMoKSB7DQogICAgICAgIGNvbnN0IG1vZHVsZU5hbWVzID0gWydkYXNoYm9hcmQnLCAnc3VyYXQnLCAnZGlzcG9zaXNpJywgJ2xhcG9yYW4nXTsNCiAgICAgICAgDQogICAgICAgIGZvciAoY29uc3QgbmFtZSBvZiBtb2R1bGVOYW1lcykgew0KICAgICAgICAgICAgdHJ5IHsNCiAgICAgICAgICAgICAgICBjb25zdCBtb2R1bGVOYW1lID0gYEVudGVycHJpc2Uke25hbWUuY2hhckF0KDApLnRvVXBwZXJDYXNlKCkgKyBuYW1lLnNsaWNlKDEpfWA7DQogICAgICAgICAgICAgICAgaWYgKHdpbmRvd1ttb2R1bGVOYW1lXSkgew0KICAgICAgICAgICAgICAgICAgICB0aGlzLm1vZHVsZXNbbmFtZV0gPSBuZXcgd2luZG93W21vZHVsZU5hbWVdKCk7DQogICAgICAgICAgICAgICAgICAgIGlmICh0eXBlb2YgdGhpcy5tb2R1bGVzW25hbWVdLmluaXQgPT09ICdmdW5jdGlvbicpIHsNCiAgICAgICAgICAgICAgICAgICAgICAgIGF3YWl0IHRoaXMubW9kdWxlc1tuYW1lXS5pbml0KCk7DQogICAgICAgICAgICAgICAgICAgIH0NCiAgICAgICAgICAgICAgICAgICAgY29uc29sZS5sb2coYE1vZHVsZSAke25hbWV9IGxvYWRlZGApOw0KICAgICAgICAgICAgICAgIH0NCiAgICAgICAgICAgIH0gY2F0Y2ggKGVycm9yKSB7DQogICAgICAgICAgICAgICAgY29uc29sZS53YXJuKGBNb2R1bGUgJHtuYW1lfSBsb2FkaW5nIGZhaWxlZDo6YCwgZXJyb3IpOw0KICAgICAgICAgICAgfQ0KICAgICAgICB9DQogICAgfQ0KDQogICAgaW5pdFJvdXRlcigpIHsNCiAgICAgICAgaWYgKCF3aW5kb3cuZW50ZXJwcmlzZVJvdXRlcikgew0KICAgICAgICAgICAgaWYgKHR5cGVvZiBFbnRlcnByaXNlUm91dGVyICE9PSAndW5kZWZpbmVkJykgew0KICAgICAgICAgICAgICAgIHdpbmRvdy5lbnRlcnByaXNlUm91dGVyID0gbmV3IEVudGVycHJpc2VSb3V0ZXIoKTsNCiAgICAgICAgICAgICAgICBjb25zb2xlLmxvZygnUm91dGVyIGluaXRpYWxpemVkJyk7DQogICAgICAgICAgICB9DQogICAgICAgIH0NCiAgICB9DQoNCiAgICBzaG93SW5pdEVycm9yKGVycm9yKSB7DQogICAgICAgIGNvbnN0IGNvbnRhaW5lciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdhcHAnKSB8fCBkb2N1bWVudC5ib2R5Ow0KICAgICAgICBpZiAoY29udGFpbmVyKSB7DQogICAgICAgICAgICBjb250YWluZXIuaW5uZXJIVE1MID0gYA0KICAgICAgICAgICAgICAgIDxkaXYgc3R5bGU9InBhZGRpbmc6IDIwcHg7IHRleHQtYWxpZ246IGNlbnRlcjsiPg0KICAgICAgICAgICAgICAgICAgICA8aDI+R2FnYWwgbWVtdWxhaWthbiBhcGxpa2FzaTwvaDI+DQogICAgICAgICAgICAgICAgICAgIDxwPiR7ZXJyb3IubWVzc2FnZSB8fCAnVGVyamFkaSBrZXNhbGFoYW4gdGFrIHRlcmR1Z2EnfTwvcD4NCiAgICAgICAgICAgICAgICAgICAgPGJ1dHRvbiBvbmNsaWNrPSJ3aW5kb3cubG9jYXRpb24ucmVsb2FkKCkiPk11YXQgVWxhbmc8L2J1dHRvbj4NCiAgICAgICAgICAgICAgICA8L2Rpdj4NCiAgICAgICAgICAgIGA7DQogICAgICAgIH0NCiAgICB9DQoNCiAgICBnZXRNb2R1bGUobmFtZSkgew0KICAgICAgICByZXR1cm4gdGhpcy5tb2R1bGVzW25hbWVdIHx8IG51bGw7DQogICAgfQ0KfQ0KDQovLyBDcmVhdGUgYW5kIGV4cG9zZSBhcHAgaW5zdGFuY2UNCndpbmRvdy5BcHAgPSBFbnRlcnByaXNlQXBwOw0KDQovLyBJbml0aWFsaXplIGFwcCB3aGVuIERPQ1R5cGUgaXMgcmVhZHkNCmRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ0RPTUNvbnRlbnRMb2FkZWQnLCBhc3luYyAoKSA9PiB7DQogICAgdHJ5IHsNCiAgICAgICAgY29uc29sZS5sb2coJ0RPTSBsb2FkZWQsIGluaXRpYWxpemluZyBhcHBsaWNhdGlvbi4uLicpOw0KICAgICAgICBjb25zdCBhcHAgPSBuZXcgRW50ZXJwcmlzZUFwcCgpOw0KICAgICAgICB3aW5kb3cuZW50ZXJwcmlzZUFwcCA9IGFwcDsNCiAgICAgICAgYXdhaXQgYXBwLmluaXQoKTsNCiAgICB9IGNhdGNoIChlcnJvcikgew0KICAgICAgICBjb25zb2xlLmVycm9yKCdGYXRhbCBlcnJvciBkdXJpbmcgYXBwIGluaXRpYWxpemF0aW9uOicsIGVycm9yKTsNCiAgICB9DQp9KTs=
+// Enterprise App - Fix v2026.7.18
+class EnterpriseApp {
+    constructor() {
+        this.modules = {};
+        this.isInitialized = false;
+        this.config = window.ENTERPRISE_CONFIG || {};
+    }
+
+    async init() {
+        if (this.isInitialized) {
+            console.warn('App already initialized');
+            return;
+        }
+
+        try {
+            console.log('Initializing Enterprise App...');
+            
+            // Initialize core services
+            await this.initCoreServices();
+            
+            // Load modules
+            await this.loadModules();
+            
+            // Initialize router
+            this.initRouter();
+            
+            this.isInitialized = true;
+            console.log('Enterprise App initialized successfully');
+            
+            // Notify all listeners
+            document.dispatchEvent(new CustomEvent('app:ready', { detail: this }));
+        } catch (error) {
+            console.error('App initialization failed:', error);
+            this.showInitError(error);
+        }
+    }
+
+    async initCoreServices() {
+        // Initialize database
+        if (window.enterpriseDb) {
+            try {
+                await window.enterpriseDb.init();
+                console.log('Database initialized');
+            } catch (error) {
+                console.warn('Database initialization failed:', error);
+            }
+        }
+
+        // Initialize auth
+        if (window.enterpriseAuth) {
+            try {
+                await window.enterpriseAuth.init();
+                console.log('Auth initialized');
+            } catch (error) {
+                console.warn('Auth initialization failed:', error);
+            }
+        }
+
+        // Process pending sync if available
+        if (window.enterpriseDb && typeof window.enterpriseDb.processPendingSync === 'function') {
+            try {
+                await window.enterpriseDb.processPendingSync();
+            } catch (error) {
+                console.warn('Pending sync processing failed:', error);
+            }
+        }
+    }
+
+    async loadModules() {
+        const moduleNames = ['dashboard', 'surat', 'disposisi', 'laporan'];
+        
+        for (const name of moduleNames) {
+            try {
+                const moduleName = `Enterprise${name.charAt(0).toUpperCase() + name.slice(1)}`;
+                if (window[moduleName]) {
+                    this.modules[name] = new window[moduleName]();
+                    if (typeof this.modules[name].init === 'function') {
+                        await this.modules[name].init();
+                    }
+                    console.log(`Module ${name} loaded`);
+                }
+            } catch (error) {
+                console.warn(`Module ${name} loading failed:`, error);
+            }
+        }
+    }
+
+    initRouter() {
+        if (!window.enterpriseRouter) {
+            if (typeof EnterpriseRouter !== 'undefined') {
+                window.enterpriseRouter = new EnterpriseRouter();
+                console.log('Router initialized');
+            }
+        }
+    }
+
+    showInitError(error) {
+        const container = document.getElementById('app') || document.body;
+        if (container) {
+            container.innerHTML = `
+                <div style="padding: 20px; text-align: center;">
+                    <h2>Gagal memulai aplikasi</h2>
+                    <p>${error.message || 'Terjadi kesalahan tak terduga'}</p>
+                    <button onclick="window.location.reload()">Muat Ulang</button>
+                </div>
+            `;
+        }
+    }
+
+    getModule(name) {
+        return this.modules[name] || null;
+    }
+}
+
+// Create and expose app instance
+window.App = EnterpriseApp;
+
+// Initialize app when DOCType is ready
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        console.log('DOM loaded, initializing application...');
+        const app = new EnterpriseApp();
+        window.enterpriseApp = app;
+        await app.init();
+    } catch (error) {
+        console.error('Fatal error during app initialization:', error);
+    }
+});
