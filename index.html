@@ -9,51 +9,21 @@
     <meta name="description" content="Arsip Surat Digital Enterprise adalah sistem manajemen arsip surat profesional untuk perusahaan dan instansi pemerintah. Dilengkapi fitur surat masuk, surat keluar, disposisi, dan laporan lengkap.">
     <meta name="keywords" content="arsip surat, surat digital, manajemen surat, disposisi, surat masuk, surat keluar, sistem arsip, digitalisasi surat, aplikasi surat, PWA">
     <meta name="author" content="Arsip Surat Digital Enterprise">
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-    <meta name="googlebot" content="index, follow">
-    <meta name="bingbot" content="index, follow">
+    <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://warso-id.github.io/arsip-surat-digital-enterprise/">
     
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://warso-id.github.io/arsip-surat-digital-enterprise/">
     <meta property="og:title" content="Arsip Surat Digital Enterprise - Sistem Manajemen Arsip Surat Profesional">
-    <meta property="og:description" content="Sistem manajemen arsip surat profesional dengan fitur lengkap untuk perusahaan dan instansi pemerintah. Kelola surat masuk, surat keluar, dan disposisi dengan mudah.">
+    <meta property="og:description" content="Sistem manajemen arsip surat profesional dengan fitur lengkap untuk perusahaan dan instansi pemerintah.">
     <meta property="og:image" content="https://warso-id.github.io/arsip-surat-digital-enterprise/public/assets/images/og-image.svg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="Arsip Surat Digital Enterprise">
-    <meta property="og:locale" content="id_ID">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://warso-id.github.io/arsip-surat-digital-enterprise/">
-    <meta name="twitter:title" content="Arsip Surat Digital Enterprise - Sistem Manajemen Arsip Surat Profesional">
-    <meta name="twitter:description" content="Sistem manajemen arsip surat profesional dengan fitur lengkap. Kelola surat masuk, surat keluar, dan disposisi dengan mudah.">
-    <meta name="twitter:image" content="https://warso-id.github.io/arsip-surat-digital-enterprise/public/assets/images/og-image.svg">
-    
-    <!-- Schema.org Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Arsip Surat Digital Enterprise",
-        "url": "https://warso-id.github.io/arsip-surat-digital-enterprise/",
-        "description": "Sistem manajemen arsip surat profesional untuk perusahaan dan instansi pemerintah",
-        "applicationCategory": "BusinessApplication",
-        "operatingSystem": "All",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "IDR"
-        },
-        "author": {
-            "@type": "Organization",
-            "name": "Arsip Surat Digital Enterprise",
-            "url": "https://warso-id.github.io/arsip-surat-digital-enterprise/"
-        }
-    }
-    </script>
+    <meta name="twitter:title" content="Arsip Surat Digital Enterprise">
+    <meta name="twitter:description" content="Sistem manajemen arsip surat profesional. Kelola surat masuk, surat keluar, dan disposisi dengan mudah.">
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#007bff">
@@ -62,13 +32,6 @@
     <meta name="apple-mobile-web-app-title" content="Arsip Surat">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Arsip Surat Digital">
-    
-    <!-- Security Headers (via meta) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="public/assets/images/favicon.svg">
@@ -79,7 +42,6 @@
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style">
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" as="style">
     <link rel="preload" href="public/css/landing.css" as="style">
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" as="script">
     
     <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -87,13 +49,59 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" rel="stylesheet">
     <link href="public/css/landing.css" rel="stylesheet">
+    
+    <style>
+        /* Loading Screen */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #loadingScreen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loading-content {
+            text-align: center;
+        }
+        .loading-logo {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        /* Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -100px;
+            left: 0;
+            background: #007bff;
+            color: white;
+            padding: 8px 16px;
+            z-index: 99999;
+            text-decoration: none;
+            transition: top 0.3s;
+        }
+        .skip-link:focus {
+            top: 0;
+        }
+    </style>
 </head>
 <body>
-    <!-- Skip to Content (Accessibility) -->
+    <!-- Skip to Content -->
     <a href="#main-content" class="skip-link">Lewati ke konten utama</a>
     
     <!-- Loading Screen -->
-    <div id="loadingScreen" class="loading-screen">
+    <div id="loadingScreen">
         <div class="loading-content">
             <img src="public/assets/images/logo.svg" alt="Logo" width="80" height="80" class="loading-logo">
             <div class="spinner-border text-primary mt-3" role="status">
@@ -104,65 +112,50 @@
     </div>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg fixed-top navbar-transparent" id="mainNav" role="navigation" aria-label="Navigasi utama">
+    <nav class="navbar navbar-expand-lg fixed-top navbar-transparent" id="mainNav">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="/arsip-surat-digital-enterprise/" aria-label="Arsip Surat Digital Enterprise Home">
-                <img src="public/assets/images/logo.svg" alt="Arsip Surat Digital Logo" width="40" height="40" class="me-2" loading="eager">
+            <a class="navbar-brand d-flex align-items-center" href="/arsip-surat-digital-enterprise/">
+                <img src="public/assets/images/logo.svg" alt="Logo" width="40" height="40" class="me-2">
                 <div>
                     <span class="fw-bold text-primary">Arsip Surat</span>
                     <small class="d-block text-muted" style="font-size: 0.65rem;">Digital Enterprise</small>
                 </div>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigasi">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center" role="menubar">
-                    <li class="nav-item" role="none">
-                        <a class="nav-link" href="#features" role="menuitem" aria-label="Fitur">Fitur</a>
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="#features">Fitur</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#how-it-works">Cara Kerja</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#pricing">Harga</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#testimonials">Testimoni</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Kontak</a></li>
+                    <li class="nav-item ms-lg-3">
+                        <a href="views/auth/login.html" class="btn btn-outline-primary btn-sm me-2">Login</a>
                     </li>
-                    <li class="nav-item" role="none">
-                        <a class="nav-link" href="#how-it-works" role="menuitem" aria-label="Cara Kerja">Cara Kerja</a>
-                    </li>
-                    <li class="nav-item" role="none">
-                        <a class="nav-link" href="#pricing" role="menuitem" aria-label="Harga">Harga</a>
-                    </li>
-                    <li class="nav-item" role="none">
-                        <a class="nav-link" href="#testimonials" role="menuitem" aria-label="Testimoni">Testimoni</a>
-                    </li>
-                    <li class="nav-item" role="none">
-                        <a class="nav-link" href="#faq" role="menuitem" aria-label="FAQ">FAQ</a>
-                    </li>
-                    <li class="nav-item" role="none">
-                        <a class="nav-link" href="#contact" role="menuitem" aria-label="Kontak">Kontak</a>
-                    </li>
-                    <li class="nav-item ms-lg-3" role="none">
-                        <a href="views/auth/login.html" class="btn btn-outline-primary btn-sm me-2" aria-label="Login">Login</a>
-                    </li>
-                    <li class="nav-item" role="none">
-                        <a href="views/auth/register.html" class="btn btn-primary btn-sm" aria-label="Daftar Gratis">Daftar Gratis</a>
+                    <li class="nav-item">
+                        <a href="views/auth/register.html" class="btn btn-primary btn-sm">Daftar Gratis</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main id="main-content">
         <!-- Hero Section -->
-        <section class="hero-section" id="home" aria-label="Hero Section">
-            <div class="hero-background" aria-hidden="true">
+        <section class="hero-section" id="home">
+            <div class="hero-background">
                 <div class="hero-shape hero-shape-1"></div>
                 <div class="hero-shape hero-shape-2"></div>
                 <div class="hero-shape hero-shape-3"></div>
-                <div class="hero-dots"></div>
             </div>
             <div class="container">
                 <div class="row align-items-center min-vh-100">
-                    <div class="col-lg-6" data-aos="fade-right" data-aos-duration="1000">
+                    <div class="col-lg-6" data-aos="fade-right">
                         <div class="hero-content">
                             <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
                                 <i class="bi bi-stars me-1"></i> Platform Enterprise Terpercaya
@@ -175,100 +168,33 @@
                                 Digitalisasi pengelolaan surat masuk, surat keluar, dan disposisi untuk meningkatkan produktivitas dan efisiensi organisasi Anda. Dilengkapi dengan keamanan tingkat enterprise dan dukungan PWA.
                             </p>
                             <div class="hero-buttons">
-                                <a href="views/auth/register.html" class="btn btn-primary btn-lg me-3 pulse-animation">
+                                <a href="views/auth/register.html" class="btn btn-primary btn-lg me-3">
                                     <i class="bi bi-rocket-takeoff me-2"></i>Mulai Gratis
                                 </a>
                                 <a href="#how-it-works" class="btn btn-outline-primary btn-lg">
-                                    <i class="bi bi-play-circle me-2"></i>Lihat Cara Kerja
+                                    <i class="bi bi-play-circle me-2"></i>Cara Kerja
                                 </a>
                             </div>
                             <div class="hero-stats mt-4">
                                 <div class="row g-3">
-                                    <div class="col-4">
-                                        <div class="stat-item">
-                                            <h3 class="stat-number" data-count="1000">0</h3>
-                                            <span>Instansi</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="stat-item">
-                                            <h3 class="stat-number" data-count="50000">0</h3>
-                                            <span>Surat Terkelola</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="stat-item">
-                                            <h3 class="stat-number" data-count="99">0</h3>
-                                            <span>% Kepuasan</span>
-                                        </div>
-                                    </div>
+                                    <div class="col-4"><div class="stat-item"><h3 class="stat-number" data-count="1000">0</h3><span>Instansi</span></div></div>
+                                    <div class="col-4"><div class="stat-item"><h3 class="stat-number" data-count="50000">0</h3><span>Surat Terkelola</span></div></div>
+                                    <div class="col-4"><div class="stat-item"><h3 class="stat-number" data-count="99">0</h3><span>% Kepuasan</span></div></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6" data-aos="fade-left" data-aos-duration="1000">
+                    <div class="col-lg-6" data-aos="fade-left">
                         <div class="hero-image">
-                            <img src="public/assets/images/hero-dashboard.svg" alt="Dashboard Arsip Surat Digital" class="img-fluid" loading="eager" width="600" height="400">
-                            <div class="floating-card card-1" aria-hidden="true">
-                                <i class="bi bi-inbox text-primary"></i>
-                                <span>Surat Masuk</span>
-                                <strong>125</strong>
-                            </div>
-                            <div class="floating-card card-2" aria-hidden="true">
-                                <i class="bi bi-outbox text-success"></i>
-                                <span>Surat Keluar</span>
-                                <strong>89</strong>
-                            </div>
-                            <div class="floating-card card-3" aria-hidden="true">
-                                <i class="bi bi-send text-warning"></i>
-                                <span>Disposisi</span>
-                                <strong>42</strong>
-                            </div>
+                            <img src="public/assets/images/hero-dashboard.svg" alt="Dashboard Preview" class="img-fluid" width="600" height="400">
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="scroll-indicator" aria-hidden="true">
-                <span>Scroll</span>
-                <i class="bi bi-chevron-down"></i>
-            </div>
-        </section>
-
-        <!-- Trusted By Section -->
-        <section class="trusted-section py-4 bg-light" aria-label="Dipercaya Oleh">
-            <div class="container">
-                <p class="text-center text-muted mb-4">Dipercaya oleh berbagai instansi</p>
-                <div class="row align-items-center justify-content-center g-4">
-                    <div class="col-4 col-md-2 text-center">
-                        <div class="trust-logo">🏛️</div>
-                        <small>Kemendagri</small>
-                    </div>
-                    <div class="col-4 col-md-2 text-center">
-                        <div class="trust-logo">🏢</div>
-                        <small>Pemprov DKI</small>
-                    </div>
-                    <div class="col-4 col-md-2 text-center">
-                        <div class="trust-logo">🏗️</div>
-                        <small>BPKP</small>
-                    </div>
-                    <div class="col-4 col-md-2 text-center">
-                        <div class="trust-logo">🏥</div>
-                        <small>RS Umum</small>
-                    </div>
-                    <div class="col-4 col-md-2 text-center">
-                        <div class="trust-logo">🎓</div>
-                        <small>Universitas</small>
-                    </div>
-                    <div class="col-4 col-md-2 text-center">
-                        <div class="trust-logo">🏭</div>
-                        <small>BUMN</small>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Features Section -->
-        <section class="features-section py-5" id="features" aria-label="Fitur Unggulan">
+        <section class="features-section py-5" id="features">
             <div class="container">
                 <div class="section-header text-center mb-5" data-aos="fade-up">
                     <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">Fitur Unggulan</span>
@@ -279,96 +205,73 @@
                 <div class="row g-4">
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                         <div class="feature-card">
-                            <div class="feature-icon bg-primary bg-opacity-10 text-primary">
-                                <i class="bi bi-inbox"></i>
-                            </div>
+                            <div class="feature-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-inbox"></i></div>
                             <h5>Surat Masuk</h5>
                             <p>Pencatatan surat masuk dengan nomor agenda otomatis, upload file, dan tracking status real-time.</p>
                             <ul class="feature-list">
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Nomor agenda otomatis</li>
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Upload multi file</li>
-                                <li><i class="bi bi-check-circle-fill text-success"></i> Kategori & sifat surat</li>
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Tracking status realtime</li>
                             </ul>
                         </div>
                     </div>
-                    
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
                         <div class="feature-card">
-                            <div class="feature-icon bg-success bg-opacity-10 text-success">
-                                <i class="bi bi-outbox"></i>
-                            </div>
+                            <div class="feature-icon bg-success bg-opacity-10 text-success"><i class="bi bi-outbox"></i></div>
                             <h5>Surat Keluar</h5>
                             <p>Pembuatan surat keluar dengan template, nomor otomatis, dan sistem persetujuan.</p>
                             <ul class="feature-list">
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Template surat siap pakai</li>
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Generate nomor otomatis</li>
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Export PDF & print</li>
-                                <li><i class="bi bi-check-circle-fill text-success"></i> Tracking pengiriman</li>
                             </ul>
                         </div>
                     </div>
-                    
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
                         <div class="feature-card">
-                            <div class="feature-icon bg-warning bg-opacity-10 text-warning">
-                                <i class="bi bi-send"></i>
-                            </div>
+                            <div class="feature-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-send"></i></div>
                             <h5>Disposisi</h5>
                             <p>Sistem disposisi berjenjang dengan notifikasi realtime dan tracking progres.</p>
                             <ul class="feature-list">
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Disposisi berjenjang</li>
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Notifikasi email & push</li>
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Batas waktu & reminder</li>
-                                <li><i class="bi bi-check-circle-fill text-success"></i> Laporan progres</li>
                             </ul>
                         </div>
                     </div>
-                    
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
                         <div class="feature-card">
-                            <div class="feature-icon bg-info bg-opacity-10 text-info">
-                                <i class="bi bi-graph-up"></i>
-                            </div>
+                            <div class="feature-icon bg-info bg-opacity-10 text-info"><i class="bi bi-graph-up"></i></div>
                             <h5>Dashboard & Laporan</h5>
                             <p>Visualisasi data dan laporan komprehensif untuk monitoring dan evaluasi.</p>
                             <ul class="feature-list">
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Dashboard interaktif</li>
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Grafik & chart realtime</li>
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Export PDF & Excel</li>
-                                <li><i class="bi bi-check-circle-fill text-success"></i> Filter laporan lengkap</li>
                             </ul>
                         </div>
                     </div>
-                    
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
                         <div class="feature-card">
-                            <div class="feature-icon bg-danger bg-opacity-10 text-danger">
-                                <i class="bi bi-shield-check"></i>
-                            </div>
+                            <div class="feature-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-shield-check"></i></div>
                             <h5>Keamanan Enterprise</h5>
                             <p>Sistem keamanan berlapis untuk melindungi data dan dokumen penting Anda.</p>
                             <ul class="feature-list">
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Enkripsi AES-256</li>
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Multi-role access control</li>
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Audit trail lengkap</li>
-                                <li><i class="bi bi-check-circle-fill text-success"></i> Backup otomatis</li>
                             </ul>
                         </div>
                     </div>
-                    
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
                         <div class="feature-card">
-                            <div class="feature-icon bg-purple bg-opacity-10 text-purple">
-                                <i class="bi bi-phone"></i>
-                            </div>
+                            <div class="feature-icon bg-purple bg-opacity-10 text-purple"><i class="bi bi-phone"></i></div>
                             <h5>PWA Mobile Ready</h5>
                             <p>Akses dari mana saja dengan Progressive Web App yang dapat diinstall.</p>
                             <ul class="feature-list">
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Responsive design</li>
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Install as native app</li>
                                 <li><i class="bi bi-check-circle-fill text-success"></i> Offline mode</li>
-                                <li><i class="bi bi-check-circle-fill text-success"></i> Push notification</li>
                             </ul>
                         </div>
                     </div>
@@ -376,82 +279,49 @@
             </div>
         </section>
 
-        <!-- How It Works Section -->
-        <section class="how-it-works-section py-5 bg-light" id="how-it-works" aria-label="Cara Kerja">
+        <!-- How It Works -->
+        <section class="how-it-works-section py-5 bg-light" id="how-it-works">
             <div class="container">
                 <div class="section-header text-center mb-5" data-aos="fade-up">
                     <span class="badge bg-info bg-opacity-10 text-info mb-3 px-3 py-2 rounded-pill">Cara Kerja</span>
                     <h2>Mulai dalam 3 Langkah Mudah</h2>
-                    <p class="text-muted">Proses sederhana untuk digitalisasi arsip surat Anda</p>
                 </div>
-                
                 <div class="row g-4">
                     <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
                         <div class="step-card text-center">
                             <div class="step-number">1</div>
-                            <div class="step-icon">
-                                <i class="bi bi-person-plus"></i>
-                            </div>
+                            <div class="step-icon"><i class="bi bi-person-plus"></i></div>
                             <h5>Daftar Akun</h5>
-                            <p>Buat akun gratis dalam 1 menit. Tidak perlu kartu kredit.</p>
+                            <p>Buat akun gratis dalam 1 menit.</p>
                         </div>
                     </div>
                     <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
                         <div class="step-card text-center">
                             <div class="step-number">2</div>
-                            <div class="step-icon">
-                                <i class="bi bi-cloud-upload"></i>
-                            </div>
+                            <div class="step-icon"><i class="bi bi-cloud-upload"></i></div>
                             <h5>Input Surat</h5>
-                            <p>Input surat masuk/keluar dengan mudah. Upload file pendukung.</p>
+                            <p>Input surat masuk/keluar dengan mudah.</p>
                         </div>
                     </div>
                     <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
                         <div class="step-card text-center">
                             <div class="step-number">3</div>
-                            <div class="step-icon">
-                                <i class="bi bi-check-circle"></i>
-                            </div>
+                            <div class="step-icon"><i class="bi bi-check-circle"></i></div>
                             <h5>Kelola & Pantau</h5>
-                            <p>Kelola disposisi, pantau progres, dan generate laporan.</p>
+                            <p>Kelola disposisi, pantau progres.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Screenshots Slider -->
-        <section class="screenshots-section py-5" aria-label="Tampilan Aplikasi">
-            <div class="container">
-                <div class="section-header text-center mb-5" data-aos="fade-up">
-                    <span class="badge bg-success bg-opacity-10 text-success mb-3 px-3 py-2 rounded-pill">Tampilan</span>
-                    <h2>Antarmuka Modern & Intuitif</h2>
-                    <p class="text-muted">Desain profesional yang mudah digunakan</p>
-                </div>
-                
-                <div class="swiper screenshots-swiper" data-aos="fade-up">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <div class="screenshot-card">
-                                <img src="public/assets/images/hero-dashboard.svg" alt="Dashboard Utama" loading="lazy">
-                                <div class="screenshot-caption">Dashboard Interaktif</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="swiper-pagination"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Pricing Section -->
-        <section class="pricing-section py-5 bg-light" id="pricing" aria-label="Harga">
+        <!-- Pricing -->
+        <section class="pricing-section py-5 bg-light" id="pricing">
             <div class="container">
                 <div class="section-header text-center mb-5" data-aos="fade-up">
                     <span class="badge bg-warning bg-opacity-10 text-warning mb-3 px-3 py-2 rounded-pill">Harga</span>
                     <h2>Pilih Paket yang Sesuai</h2>
-                    <p class="text-muted">Dari gratis hingga enterprise, kami punya solusi untuk setiap kebutuhan</p>
                 </div>
-                
                 <div class="row g-4 justify-content-center">
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                         <div class="pricing-card">
@@ -464,9 +334,7 @@
                                 <ul class="pricing-features">
                                     <li><i class="bi bi-check-circle text-success"></i> 5 Pengguna</li>
                                     <li><i class="bi bi-check-circle text-success"></i> 100 Surat/bulan</li>
-                                    <li><i class="bi bi-check-circle text-success"></i> Surat Masuk & Keluar</li>
-                                    <li><i class="bi bi-check-circle text-success"></i> Disposisi Dasar</li>
-                                    <li><i class="bi bi-check-circle text-success"></i> Dashboard Sederhana</li>
+                                    <li><i class="bi bi-check-circle text-success"></i> Fitur Dasar</li>
                                 </ul>
                             </div>
                             <div class="pricing-footer">
@@ -474,7 +342,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
                         <div class="pricing-card popular">
                             <div class="pricing-popular-badge">Paling Populer</div>
@@ -487,8 +354,7 @@
                                 <ul class="pricing-features">
                                     <li><i class="bi bi-check-circle text-success"></i> 50 Pengguna</li>
                                     <li><i class="bi bi-check-circle text-success"></i> Surat Tidak Terbatas</li>
-                                    <li><i class="bi bi-check-circle text-success"></i> Semua Fitur Starter</li>
-                                    <li><i class="bi bi-check-circle text-success"></i> Disposisi Berjenjang</li>
+                                    <li><i class="bi bi-check-circle text-success"></i> Semua Fitur</li>
                                     <li><i class="bi bi-check-circle text-success"></i> Export PDF & Excel</li>
                                     <li><i class="bi bi-check-circle text-success"></i> Notifikasi Email</li>
                                 </ul>
@@ -498,21 +364,17 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
                         <div class="pricing-card">
                             <div class="pricing-header">
                                 <span class="pricing-badge">Enterprise</span>
                                 <h3 class="pricing-amount">Custom</h3>
-                                <span class="pricing-period">harga khusus</span>
                             </div>
                             <div class="pricing-body">
                                 <ul class="pricing-features">
                                     <li><i class="bi bi-check-circle text-success"></i> Pengguna Tidak Terbatas</li>
-                                    <li><i class="bi bi-check-circle text-success"></i> Semua Fitur Professional</li>
                                     <li><i class="bi bi-check-circle text-success"></i> Custom Development</li>
                                     <li><i class="bi bi-check-circle text-success"></i> API Access</li>
-                                    <li><i class="bi bi-check-circle text-success"></i> Dedicated Server</li>
                                     <li><i class="bi bi-check-circle text-success"></i> Support 24/7</li>
                                 </ul>
                             </div>
@@ -526,51 +388,40 @@
         </section>
 
         <!-- Testimonials -->
-        <section class="testimonials-section py-5" id="testimonials" aria-label="Testimoni">
+        <section class="testimonials-section py-5" id="testimonials">
             <div class="container">
                 <div class="section-header text-center mb-5" data-aos="fade-up">
                     <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">Testimoni</span>
                     <h2>Apa Kata Mereka?</h2>
-                    <p class="text-muted">Pengalaman pengguna dalam menggunakan sistem kami</p>
                 </div>
-                
                 <div class="row g-4">
-                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up">
                         <div class="testimonial-card">
                             <div class="testimonial-rating">★★★★★</div>
-                            <p class="testimonial-text">"Sistem ini sangat membantu dalam mengelola ribuan surat. Proses disposisi menjadi lebih cepat dan terpantau."</p>
-                            <div class="testimonial-author">
-                                <div class="testimonial-avatar">AS</div>
-                                <div><strong>Andi Susanto</strong><small>Kepala Bagian Umum</small></div>
-                            </div>
+                            <p>"Sistem ini sangat membantu dalam mengelola ribuan surat. Proses disposisi menjadi lebih cepat."</p>
+                            <div class="testimonial-author"><div class="testimonial-avatar">AS</div><div><strong>Andi Susanto</strong><small>Kepala Bagian Umum</small></div></div>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
                         <div class="testimonial-card">
                             <div class="testimonial-rating">★★★★★</div>
-                            <p class="testimonial-text">"Dashboard informatif memudahkan monitoring. Fitur export laporan sangat membantu pekerjaan kami."</p>
-                            <div class="testimonial-author">
-                                <div class="testimonial-avatar">BR</div>
-                                <div><strong>Budi Raharjo</strong><small>Admin Arsip</small></div>
-                            </div>
+                            <p>"Dashboard informatif memudahkan monitoring. Fitur export laporan sangat membantu."</p>
+                            <div class="testimonial-author"><div class="testimonial-avatar">BR</div><div><strong>Budi Raharjo</strong><small>Admin Arsip</small></div></div>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
                         <div class="testimonial-card">
                             <div class="testimonial-rating">★★★★★</div>
-                            <p class="testimonial-text">"Aplikasi user-friendly dan mudah dipelajari. Tim support sangat responsif membantu kami."</p>
-                            <div class="testimonial-author">
-                                <div class="testimonial-avatar">CD</div>
-                                <div><strong>Citra Dewi</strong><small>Staff Administrasi</small></div>
-                            </div>
+                            <p>"Aplikasi user-friendly dan mudah dipelajari. Tim support sangat responsif."</p>
+                            <div class="testimonial-author"><div class="testimonial-avatar">CD</div><div><strong>Citra Dewi</strong><small>Staff Administrasi</small></div></div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- FAQ Section -->
-        <section class="faq-section py-5 bg-light" id="faq" aria-label="Pertanyaan Umum">
+        <!-- FAQ -->
+        <section class="faq-section py-5 bg-light" id="faq">
             <div class="container">
                 <div class="section-header text-center mb-5" data-aos="fade-up">
                     <span class="badge bg-danger bg-opacity-10 text-danger mb-3 px-3 py-2 rounded-pill">FAQ</span>
@@ -580,28 +431,12 @@
                     <div class="col-lg-8">
                         <div class="accordion" id="faqAccordion">
                             <div class="accordion-item">
-                                <h3 class="accordion-header">
-                                    <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#faq1">Apa itu Arsip Surat Digital?</button>
-                                </h3>
-                                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body">Sistem manajemen arsip surat berbasis web yang membantu organisasi mengelola surat masuk, surat keluar, dan disposisi secara digital dengan keamanan enterprise.</div>
-                                </div>
+                                <h3 class="accordion-header"><button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#faq1">Apa itu Arsip Surat Digital?</button></h3>
+                                <div id="faq1" class="accordion-collapse collapse show"><div class="accordion-body">Sistem manajemen arsip surat berbasis web untuk mengelola surat masuk, surat keluar, dan disposisi secara digital.</div></div>
                             </div>
                             <div class="accordion-item">
-                                <h3 class="accordion-header">
-                                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">Apakah bisa diakses dari mobile?</button>
-                                </h3>
-                                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body">Ya! Sistem kami mendukung PWA sehingga bisa diakses dari smartphone dan diinstall sebagai aplikasi native.</div>
-                                </div>
-                            </div>
-                            <div class="accordion-item">
-                                <h3 class="accordion-header">
-                                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq3">Bagaimana keamanan data?</button>
-                                </h3>
-                                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body">Kami menggunakan enkripsi AES-256, multi-role access control, audit trail, backup otomatis, dan HTTPS untuk keamanan data Anda.</div>
-                                </div>
+                                <h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">Apakah bisa diakses dari mobile?</button></h3>
+                                <div id="faq2" class="accordion-collapse collapse"><div class="accordion-body">Ya! Sistem mendukung PWA sehingga bisa diakses dari smartphone dan diinstall sebagai aplikasi.</div></div>
                             </div>
                         </div>
                     </div>
@@ -609,50 +444,33 @@
             </div>
         </section>
 
-        <!-- CTA Section -->
-        <section class="cta-section py-5" aria-label="Call to Action">
+        <!-- CTA -->
+        <section class="cta-section py-5">
             <div class="container">
-                <div class="cta-wrapper" data-aos="zoom-in">
-                    <div class="row align-items-center">
-                        <div class="col-lg-8">
-                            <h2>Siap Digitalisasi Arsip Surat Anda?</h2>
-                            <p class="mb-lg-0">Mulai sekarang dan rasakan kemudahan mengelola surat secara digital. Gratis!</p>
-                        </div>
-                        <div class="col-lg-4 text-lg-end">
-                            <a href="views/auth/register.html" class="btn btn-light btn-lg">
-                                <i class="bi bi-rocket-takeoff me-2"></i>Daftar Gratis Sekarang
-                            </a>
-                        </div>
-                    </div>
+                <div class="cta-wrapper text-center" data-aos="zoom-in">
+                    <h2 class="text-white">Siap Digitalisasi Arsip Surat Anda?</h2>
+                    <p class="text-white mb-4">Mulai sekarang dan rasakan kemudahan mengelola surat secara digital. Gratis!</p>
+                    <a href="views/auth/register.html" class="btn btn-light btn-lg"><i class="bi bi-rocket-takeoff me-2"></i>Daftar Gratis Sekarang</a>
                 </div>
             </div>
         </section>
 
-        <!-- Contact Section -->
-        <section class="contact-section py-5 bg-light" id="contact" aria-label="Kontak">
+        <!-- Contact -->
+        <section class="contact-section py-5 bg-light" id="contact">
             <div class="container">
                 <div class="section-header text-center mb-5" data-aos="fade-up">
                     <span class="badge bg-success bg-opacity-10 text-success mb-3 px-3 py-2 rounded-pill">Kontak</span>
                     <h2>Hubungi Kami</h2>
                 </div>
-                <div class="row g-4">
-                    <div class="col-lg-5" data-aos="fade-right">
-                        <div class="contact-info">
-                            <div class="contact-item"><i class="bi bi-geo-alt"></i><div><h6>Alamat</h6><p>Jl. Teknologi No. 123, Jakarta Pusat</p></div></div>
-                            <div class="contact-item"><i class="bi bi-telephone"></i><div><h6>Telepon</h6><p>+62 21 1234 5678</p></div></div>
-                            <div class="contact-item"><i class="bi bi-envelope"></i><div><h6>Email</h6><p>info@arsipsurat.com</p></div></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-7" data-aos="fade-left">
-                        <div class="contact-form-wrapper">
+                <div class="row g-4 justify-content-center">
+                    <div class="col-lg-6">
+                        <div class="contact-form-wrapper p-4 bg-white rounded shadow-sm">
                             <form id="contactForm" onsubmit="return submitContactForm(event)">
-                                <div class="row g-3">
-                                    <div class="col-md-6"><input type="text" class="form-control" placeholder="Nama Lengkap" required></div>
-                                    <div class="col-md-6"><input type="email" class="form-control" placeholder="Email" required></div>
-                                    <div class="col-12"><input type="text" class="form-control" placeholder="Subjek" required></div>
-                                    <div class="col-12"><textarea class="form-control" rows="4" placeholder="Pesan Anda" required></textarea></div>
-                                    <div class="col-12"><button type="submit" class="btn btn-primary"><i class="bi bi-send me-2"></i>Kirim Pesan</button></div>
-                                </div>
+                                <div class="mb-3"><input type="text" class="form-control" placeholder="Nama Lengkap" required></div>
+                                <div class="mb-3"><input type="email" class="form-control" placeholder="Email" required></div>
+                                <div class="mb-3"><input type="text" class="form-control" placeholder="Subjek" required></div>
+                                <div class="mb-3"><textarea class="form-control" rows="4" placeholder="Pesan" required></textarea></div>
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-send me-2"></i>Kirim Pesan</button>
                             </form>
                         </div>
                     </div>
@@ -662,82 +480,34 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer-section" role="contentinfo">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="footer-brand">
-                        <div class="d-flex align-items-center mb-3">
-                            <img src="public/assets/images/logo.svg" alt="Logo" width="40" class="me-2">
-                            <h5 class="text-white mb-0">Arsip Surat Digital</h5>
-                        </div>
-                        <p class="text-muted">Sistem Manajemen Arsip Surat Modern untuk Perusahaan dan Instansi Pemerintah.</p>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-4">
-                    <h6 class="text-white mb-3">Produk</h6>
-                    <ul class="footer-links">
-                        <li><a href="#features">Fitur</a></li>
-                        <li><a href="#pricing">Harga</a></li>
-                        <li><a href="#faq">FAQ</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-4">
-                    <h6 class="text-white mb-3">Legal</h6>
-                    <ul class="footer-links">
-                        <li><a href="#">Privasi</a></li>
-                        <li><a href="#">Syarat</a></li>
-                        <li><a href="#">Keamanan</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-4">
-                    <h6 class="text-white mb-3">Kontak</h6>
-                    <ul class="footer-links">
-                        <li><a href="#contact">Hubungi</a></li>
-                        <li><a href="views/auth/login.html">Login</a></li>
-                        <li><a href="views/auth/register.html">Daftar</a></li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="footer-divider">
-            <p class="text-muted text-center mb-0">&copy; 2024 Arsip Surat Digital Enterprise. All rights reserved.</p>
+    <footer class="footer-section py-4 bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 Arsip Surat Digital Enterprise. All rights reserved.</p>
+            <small class="text-muted">Made with ❤️ in Indonesia</small>
         </div>
     </footer>
 
     <!-- Back to Top -->
-    <button id="backToTop" class="btn btn-primary back-to-top" aria-label="Kembali ke atas"><i class="bi bi-arrow-up"></i></button>
-
-    <!-- Install PWA Prompt -->
-    <div id="pwaInstallPrompt" class="pwa-install-prompt" style="display:none;">
-        <div class="d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center">
-                <img src="public/assets/images/icon-72x72.svg" alt="App Icon" width="40" class="me-3">
-                <div>
-                    <strong>Install Aplikasi</strong>
-                    <small class="d-block text-muted">Akses cepat dari homescreen</small>
-                </div>
-            </div>
-            <div>
-                <button class="btn btn-primary btn-sm me-2" id="btnInstallPWA">Install</button>
-                <button class="btn btn-outline-secondary btn-sm" id="btnDismissPWA">Nanti</button>
-            </div>
-        </div>
-    </div>
+    <button id="backToTop" class="btn btn-primary back-to-top" style="display:none; position:fixed; bottom:30px; right:30px; z-index:999;"><i class="bi bi-arrow-up"></i></button>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js" defer></script>
-    <script src="public/js/landing.js" defer></script>
-    <script src="public/js/api.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script src="public/js/landing.js"></script>
     
-    <!-- Service Worker Registration -->
+    <!-- Service Worker - Fixed Path -->
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/arsip-surat-digital-enterprise/public/sw.js')
-                    .then(reg => console.log('SW registered:', reg.scope))
-                    .catch(err => console.log('SW failed:', err));
+            window.addEventListener('load', function() {
+                const swPath = '/arsip-surat-digital-enterprise/public/sw.js';
+                navigator.serviceWorker.register(swPath, { scope: '/arsip-surat-digital-enterprise/' })
+                    .then(function(registration) {
+                        console.log('SW registered:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('SW registration failed:', error);
+                    });
             });
         }
     </script>
