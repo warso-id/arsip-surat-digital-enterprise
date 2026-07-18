@@ -1,0 +1,239 @@
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4><i class="bi bi-outbox me-2"></i>Surat Keluar</h4>
+            <a href="/surat-keluar/create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Tambah Surat
+            </a>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-3">
+    <div class="col-md-3 mb-2">
+        <input type="text" id="searchSurat" class="form-control" placeholder="Cari surat...">
+    </div>
+    <div class="col-md-2 mb-2">
+        <select id="filterStatus" class="form-select filter-surat" name="status">
+            <option value="">Semua Status</option>
+            <option value="draft">Draft</option>
+            <option value="dikirim">Dikirim</option>
+            <option value="selesai">Selesai</option>
+            <option value="arsip">Arsip</option>
+        </select>
+    </div>
+    <div class="col-md-2 mb-2">
+        <select id="filterSifat" class="form-select filter-surat" name="sifat">
+            <option value="">Semua Sifat</option>
+            <option value="biasa">Biasa</option>
+            <option value="segera">Segera</option>
+            <option value="penting">Penting</option>
+            <option value="rahasia">Rahasia</option>
+        </select>
+    </div>
+    <div class="col-md-2 mb-2">
+        <input type="date" id="filterTanggalMulai" class="form-control filter-surat" name="tanggal_mulai">
+    </div>
+    <div class="col-md-2 mb-2">
+        <input type="date" id="filterTanggalSelesai" class="form-control filter-surat" name="tanggal_selesai">
+    </div>
+    <div class="col-md-1 mb-2">
+        <button id="resetFilter" class="btn btn-outline-secondary w-100">
+            <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="suratKeluarTable" class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>No</th>
+                        <th>Nomor Surat</th>
+                        <th>Tanggal</th>
+                        <th>Tujuan</th>
+                        <th>Perihal</th>
+                        <th>Sifat</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Memuat data surat keluar...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="pagination" class="mt-3"></div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSuratKeluar();
+        
+        // Search
+        let debounceTimer;
+        document.getElementById('searchSurat')?.addEventListener('input', function(e) {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => loadSuratKeluar(), 500);
+        });
+        
+        // Filters
+        document.querySelectorAll('.filter-surat').forEach(filter => {
+            filter.addEventListener('change', () => loadSuratKeluar());
+        });
+        
+        // Reset
+        document.getElementById('resetFilter')?.addEventListener('click', function() {
+            document.querySelectorAll('.filter-surat').forEach(el => el.value = '');
+            document.getElementById('searchSurat').value = '';
+            loadSuratKeluar();
+        });
+    });
+    
+    async function loadSuratKeluar(page = 1) {
+        try {
+            showLoading();
+            
+            const params = {
+                page: page,
+                perPage: 20,
+                search: document.getElementById('searchSurat')?.value || '',
+                status: document.getElementById('filterStatus')?.value || '',
+                sifat: document.getElementById('filterSifat')?.value || '',
+                tanggal_mulai: document.getElementById('filterTanggalMulai')?.value || '',
+                tanggal_selesai: document.getElementById('filterTanggalSelesai')?.value || ''
+            };
+            
+            const response = await axios.get('/api/surat-keluar', { params });
+            const data = response.data.data;
+            
+            renderTable(data.data);
+            renderPagination(data.pagination, loadSuratKeluar);
+            
+            hideLoading();
+        } catch (error) {
+            hideLoading();
+            console.error('Error loading surat keluar:', error);
+        }
+    }
+    
+    function renderTable(data) {
+        const tbody = document.querySelector('#suratKeluarTable tbody');
+        
+        if (!data || data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center py-5">
+                        <i class="bi bi-inbox fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">Tidak ada data surat keluar</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        tbody.innerHTML = data.map((surat, index) => `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${surat.nomor_surat}</td>
+                <td>${app.formatDate(surat.tanggal_surat)}</td>
+                <td>${surat.tujuan}</td>
+                <td>${surat.perihal}</td>
+                <td><span class="badge bg-${getSifatColor(surat.sifat)}">${surat.sifat.toUpperCase()}</span></td>
+                <td><span class="badge bg-${getStatusColor(surat.status)}">${surat.status.toUpperCase()}</span></td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <a href="/surat-keluar/${surat.id}" class="btn btn-info" title="Detail">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="/surat-keluar/${surat.id}/edit" class="btn btn-warning" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <button class="btn btn-danger" onclick="deleteSurat(${surat.id})" title="Hapus">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+    
+    function renderPagination(pagination, callback) {
+        const container = document.getElementById('pagination');
+        if (!container || pagination.totalPages <= 1) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        let html = '<nav><ul class="pagination justify-content-center">';
+        
+        html += `
+            <li class="page-item ${pagination.currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="event.preventDefault(); ${callback.name}(${pagination.currentPage - 1})">Previous</a>
+            </li>
+        `;
+        
+        for (let i = 1; i <= pagination.totalPages; i++) {
+            html += `
+                <li class="page-item ${i === pagination.currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="event.preventDefault(); ${callback.name}(${i})">${i}</a>
+                </li>
+            `;
+        }
+        
+        html += `
+            <li class="page-item ${pagination.currentPage === pagination.totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="event.preventDefault(); ${callback.name}(${pagination.currentPage + 1})">Next</a>
+            </li>
+        `;
+        
+        html += '</ul></nav>';
+        container.innerHTML = html;
+    }
+    
+    async function deleteSurat(id) {
+        const confirmed = await app.confirm('Hapus surat keluar ini?');
+        if (!confirmed) return;
+        
+        try {
+            await axios.delete(`/api/surat-keluar/${id}`);
+            alert('Surat berhasil dihapus');
+            loadSuratKeluar();
+        } catch (error) {
+            alert('Gagal menghapus surat');
+        }
+    }
+    
+    function getStatusColor(status) {
+        const colors = {
+            'draft': 'secondary',
+            'dikirim': 'primary',
+            'selesai': 'success',
+            'arsip': 'dark'
+        };
+        return colors[status] || 'secondary';
+    }
+    
+    function getSifatColor(sifat) {
+        const colors = {
+            'biasa': 'secondary',
+            'segera': 'warning',
+            'penting': 'danger',
+            'rahasia': 'dark'
+        };
+        return colors[sifat] || 'secondary';
+    }
+</script>
