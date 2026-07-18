@@ -1,35 +1,61 @@
-# Arsip Surat Digital Enterprise 2026
+# 📄 Arsip Surat Digital Enterprise
 
-![Version](https://img.shields.io/badge/version-2026.1-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![PWA](https://img.shields.io/badge/PWA-ready-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-2026.1.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![PWA](https://img.shields.io/badge/PWA-ready-purple)
 
-Sistem Manajemen Arsip Surat Digital Enterprise 2026 - Full Stack CRUD PWA
+**Sistem Manajemen Arsip Surat Digital Enterprise** dengan dukungan **Google Spreadsheet** dan **Base64 Encoding** untuk keamanan data.
 
-## 🚀 Fitur Utama
+---
 
-- 📥 Manajemen Surat Masuk
-- 📤 Manajemen Surat Keluar
-- 📋 Sistem Disposisi Multi-level
-- 📊 Dashboard & Laporan Interaktif
-- 📱 Progressive Web App (PWA)
-- 🔒 Keamanan Enterprise (Base64 Encryption)
-- 🔄 Offline Support dengan Auto Sync
-- 👥 Role-based Access Control
-- 📧 Notifikasi Real-time
+## ✨ Fitur Utama
 
-## 🛠️ Teknologi
+### 🔐 Keamanan Enterprise
+- **Base64 Encoding** untuk data sensitif
+- Enkripsi data sebelum penyimpanan
+- Session management dengan timeout
+- Rate limiting untuk login attempts
+- Role-based access control
 
-- Frontend: HTML5, CSS3, JavaScript (ES6+)
-- Backend: Google Apps Script
-- Database: Google Sheets (via Apps Script)
-- PWA: Service Worker, IndexedDB
-- Security: Base64 Encryption, JWT
-- CI/CD: GitHub Actions
+### 📱 Progressive Web App (PWA)
+- **Offline-first** architecture
+- Installable di desktop & mobile
+- Background sync saat online
+- Push notifications
+- Cache management otomatis
 
-## 📦 Instalasi
+### 📊 Integrasi Google Spreadsheet
+- CRUD operations via Google Apps Script
+- Real-time sync dengan spreadsheet
+- Batch processing untuk bulk operations
+- Auto-retry untuk failed requests
 
-1. Clone repository:
+### 💾 Local Database
+- **IndexedDB** untuk penyimpanan lokal
+- Sync queue untuk offline operations
+- Data export/import (backup & restore)
+- Automatic conflict resolution
+
+### 🎨 User Interface
+- Material Design 3
+- Responsive (mobile, tablet, desktop)
+- Dark mode support
+- Print-friendly layouts
+- Keyboard shortcuts
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Web server (Apache/Nginx)
+- HTTPS (required for PWA)
+- Google Account (untuk Google Sheets)
+- Browser modern (Chrome 90+, Firefox 90+, Safari 14+)
+
+### Instalasi
+
+1. **Clone repository:**
 ```bash
 git clone https://github.com/warso-id/arsip-surat-digital-enterprise.git
 cd arsip-surat-digital-enterprise
