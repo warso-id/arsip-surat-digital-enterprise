@@ -36,13 +36,20 @@ class EnterpriseApp {
     }
 
     async initCoreServices() {
-        // Initialize database
+        // Initialize database with retry
         if (window.enterpriseDb) {
             try {
                 await window.enterpriseDb.init();
                 console.log('Database initialized');
             } catch (error) {
                 console.warn('Database initialization failed:', error);
+                // Retry with clean database
+                try {
+                    await window.enterpriseDb.deleteAndRecreate();
+                    console.log('Database recreated successfully');
+                } catch (retryError) {
+                    console.error('Database recreation failed:', retryError);
+                }
             }
         }
 
@@ -115,7 +122,7 @@ class EnterpriseApp {
 // Create and expose app instance
 window.App = EnterpriseApp;
 
-// Initialize app when DOCType is ready
+// Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         console.log('DOM loaded, initializing application...');
