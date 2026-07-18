@@ -1,84 +1,343 @@
-/* surat.css - Surat Management Styles */
-.surat-container {
-    padding: 20px;
+/* ============================================
+   SURAT CSS - Surat Module Styles
+   ============================================ */
+
+/* Surat List */
+.surat-list-container {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
 }
 
-.filter-bar {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.filter-row {
+/* Table Actions */
+.action-buttons {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.action-buttons .btn-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.action-buttons .btn-view:hover {
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+.action-buttons .btn-edit:hover {
+    color: var(--warning);
+    background: var(--warning-light);
+}
+
+.action-buttons .btn-delete:hover {
+    color: var(--danger);
+    background: var(--danger-light);
+}
+
+/* Surat Detail */
+.detail-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.detail-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
     align-items: center;
-}
-
-.search-box {
-    position: relative;
-    flex: 1;
-    min-width: 200px;
-}
-
-.search-box .search-icon-input {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #999;
-}
-
-.search-box .form-control {
-    padding-left: 35px;
-}
-
-.filter-row .form-control {
-    min-width: 150px;
-}
-
-.table-footer {
-    display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background: white;
-    border-top: 1px solid #e0e0e0;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
 }
 
+.detail-header h3 {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0;
+}
+
+.detail-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.detail-body {
+    padding: var(--spacing-xl);
+}
+
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.detail-table tr {
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.detail-table tr:last-child {
+    border-bottom: none;
+}
+
+.detail-table td {
+    padding: 12px 0;
+    font-size: var(--font-size-sm);
+    color: var(--gray-800);
+    vertical-align: top;
+}
+
+.detail-table .label {
+    font-weight: 600;
+    color: var(--gray-700);
+    width: 180px;
+    white-space: nowrap;
+    padding-right: var(--spacing-md);
+}
+
+/* File Preview */
+.file-preview {
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 2px solid var(--gray-200);
+}
+
+.file-preview h4 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-md);
+}
+
+.file-preview .btn {
+    display: inline-flex;
+}
+
+/* Surat Form */
+.surat-form-container {
+    max-width: 800px;
+}
+
+.form-section {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-section h4 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--primary-light);
+}
+
+/* File Upload */
+.file-upload {
+    position: relative;
+}
+
+.file-upload input[type="file"] {
+    width: 100%;
+    padding: var(--spacing-lg);
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background: var(--gray-50);
+}
+
+.file-upload input[type="file"]:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.file-upload small {
+    display: block;
+    margin-top: var(--spacing-sm);
+    color: var(--gray-500);
+    font-size: var(--font-size-xs);
+}
+
+/* Bulk Actions */
 .bulk-actions {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gray-900);
+    color: var(--white);
+    padding: 12px 24px;
+    border-radius: var(--radius-full);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--spacing-md);
+    box-shadow: var(--shadow-xl);
+    z-index: 998;
+    animation: slideUp 0.3s ease;
 }
 
-.selected-count {
-    font-size: 14px;
-    color: #666;
+@keyframes slideUp {
+    from {
+        transform: translateX(-50%) translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
 }
 
-.badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
+#selected-count {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+}
+
+.bulk-actions .btn {
+    background: var(--danger);
+    color: var(--white);
+    border: none;
+    padding: 6px 16px;
+}
+
+.bulk-actions .btn:hover {
+    background: #d93025;
+}
+
+/* Search Highlight */
+.highlight {
+    background: var(--warning-light);
+    padding: 1px 2px;
+    border-radius: 2px;
+}
+
+/* Status Timeline */
+.status-timeline {
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+}
+
+.status-timeline h4 {
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-base);
     font-weight: 600;
-    text-transform: uppercase;
 }
 
-.badge-info { background: #e3f2fd; color: #0d47a1; }
-.badge-success { background: #e8f5e9; color: #2e7d32; }
-.badge-warning { background: #fff3e0; color: #e65100; }
-.badge-danger { background: #ffebee; color: #c62828; }
+.timeline-item {
+    display: flex;
+    gap: var(--spacing-md);
+    padding-bottom: var(--spacing-lg);
+    position: relative;
+}
 
-@media (max-width: 768px) {
-    .filter-row {
-        flex-direction: column;
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 32px;
+    bottom: 0;
+    width: 2px;
+    background: var(--gray-300);
+}
+
+.timeline-item:last-child::before {
+    display: none;
+}
+
+.timeline-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.timeline-dot.completed {
+    background: var(--success-light);
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.timeline-content .title {
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    color: var(--gray-800);
+}
+
+.timeline-content .time {
+    font-size: var(--font-size-xs);
+    color: var(--gray-500);
+    margin-top: 2px;
+}
+
+/* Print Styles for Surat */
+@media print {
+    .action-buttons,
+    .detail-actions,
+    .bulk-actions,
+    .toolbar,
+    .pagination {
+        display: none !important;
     }
     
-    .filter-row .form-control {
-        width: 100%;
+    .detail-card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+    
+    .detail-body {
+        padding: 0;
+    }
+    
+    .file-preview {
+        page-break-before: always;
+    }
+}
+
+/* Responsive Surat */
+@media (max-width: 768px) {
+    .detail-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .detail-table .label {
+        width: 120px;
+        font-size: var(--font-size-xs);
+    }
+    
+    .detail-table td {
+        font-size: var(--font-size-xs);
+    }
+    
+    .bulk-actions {
+        bottom: 16px;
+        left: 16px;
+        right: 16px;
+        transform: none;
+        border-radius: var(--radius-lg);
+        justify-content: center;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
     }
 }
