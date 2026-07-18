@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="375" height="812" viewBox="0 0 375 812">
+  <!-- Phone Frame -->
+  <rect width="375" height="812" rx="40" fill="#1a1a1a"/>
+  <rect x="10" y="10" width="355" height="792" rx="32" fill="#f5f5f5"/>
+  
+  <!-- Notch -->
+  <rect x="120" y="10" width="135" height="25" rx="12" fill="#1a1a1a"/>
+  
+  <!-- Status Bar -->
+  <rect x="10" y="45" width="355" height="30" fill="#1a73e8"/>
+  
+  <!-- Header -->
+  <rect x="10" y="75" width="355" height="50" fill="#ffffff"/>
+  <text x="30" y="106" font-family="Arial" font-size="16" font-weight="bold" fill="#1a1a1a">Dashboard</text>
+  
+  <!-- Mobile Cards (Stacked) -->
+  <rect x="20" y="140" width="335" height="100" rx="8" fill="#ffffff" stroke="#e0e0e0"/>
+  <rect x="20" y="255" width="335" height="100" rx="8" fill="#ffffff" stroke="#e0e0e0"/>
+  <rect x="20" y="370" width="335" height="100" rx="8" fill="#ffffff" stroke="#e0e0e0"/>
+  <rect x="20" y="485" width="335" height="100" rx="8" fill="#ffffff" stroke="#e0e0e0"/>
+  
+  <!-- Bottom Navigation -->
+  <rect x="10" y="720" width="355" height="60" fill="#ffffff" stroke="#e0e0e0"/>
+  
+  <!-- Home Indicator -->
+  <rect x="140" y="790" width="95" height="5" rx="2.5" fill="#1a1a1a"/>
+</svg>
