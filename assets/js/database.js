@@ -2,7 +2,7 @@
 class EnterpriseDB {
     constructor() {
         this.dbName = 'ArsipSuratEnterprise';
-        this.dbVersion = 1;
+        this.dbVersion = 3; // Updated to match existing version
         this.db = null;
         this.stores = {
             surat: 'surat',
@@ -13,6 +13,7 @@ class EnterpriseDB {
             users: 'users'
         };
         this.isInitialized = false;
+        this.sheetsApiUrl = 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec';
     }
 
     async init() {
@@ -23,7 +24,14 @@ class EnterpriseDB {
 
             request.onerror = () => {
                 console.error('Database open error:', request.error);
-                reject(request.error);
+                // Try to delete and recreate if version mismatch
+                if (request.error.name === 'VersionError') {
+                    this.deleteAndRecreate().then(() => {
+                        resolve(this.db);
+                    }).catch(reject);
+                } else {
+                    reject(request.error);
+                }
             };
 
             request.onsuccess = (event) => {
@@ -34,37 +42,64 @@ class EnterpriseDB {
             };
 
             request.onupgradeneeded = (event) => {
-                console.log('Database upgrade needed');
+                console.log('Database upgrade needed from version', event.oldVersion, 'to', event.newVersion);
                 const db = event.target.result;
 
-                // Create all required object stores
-                if (!db.objectStoreNames.contains(this.stores.surat)) {
-                    const suratStore = db.createObjectStore(this.stores.surat, { keyPath: 'id', autoIncrement: true });
-                    suratStore.createIndex('type', 'type', { unique: false });
-                    suratStore.createIndex('status', 'status', { unique: false });
-                    suratStore.createIndex('tanggal', 'tanggal', { unique: false });
+                // Version 1 upgrades
+                if (event.oldVersion < 1) {
+                    if (!db.objectStoreNames.contains(this.stores.surat)) {
+                        const suratStore = db.createObjectStore(this.stores.surat, { keyPath: 'id', autoIncrement: true });
+                        suratStore.createIndex('type', 'type', { unique: false });
+                        suratStore.createIndex('status', 'status', { unique: false });
+                        suratStore.createIndex('tanggal', 'tanggal', { unique: false });
+                    }
                 }
 
-                if (!db.objectStoreNames.contains(this.stores.disposisi)) {
-                    const disposisiStore = db.createObjectStore(this.stores.disposisi, { keyPath: 'id', autoIncrement: true });
-                    disposisiStore.createIndex('suratId', 'suratId', { unique: false });
+                // Version 2 upgrades
+                if (event.oldVersion < 2) {
+                    if (!db.objectStoreNames.contains(this.stores.disposisi)) {
+                        const disposisiStore = db.createObjectStore(this.stores.disposisi, { keyPath: 'id', autoIncrement: true });
+                        disposisiStore.createIndex('suratId', 'suratId', { unique: false });
+                    }
+                    
+                    if (!db.objectStoreNames.contains(this.stores.laporan)) {
+                        db.createObjectStore(this.stores.laporan, { keyPath: 'id', autoIncrement: true });
+                    }
                 }
 
-                if (!db.objectStoreNames.contains(this.stores.laporan)) {
-                    db.createObjectStore(this.stores.laporan, { keyPath: 'id', autoIncrement: true });
-                }
+                // Version 3 upgrades
+                if (event.oldVersion < 3) {
+                    if (!db.objectStoreNames.contains(this.stores.settings)) {
+                        db.createObjectStore(this.stores.settings, { keyPath: 'id', autoIncrement: true });
+                    }
 
-                if (!db.objectStoreNames.contains(this.stores.settings)) {
-                    db.createObjectStore(this.stores.settings, { keyPath: '', autoIncrement: true });
-                }
+                    if (!db.objectStoreNames.contains(this.stores.syncQueue)) {
+                        const syncStore = db.createObjectStore(this.stores.syncQueue, { keyPath: 'id', autoIncrement: true });
+                        syncStore.createIndex('status', 'status', { unique: false });
+                    }
 
-                if (!db.objectStoreNames.contains(this.stores.syncQueue)) {
-                    db.createObjectStore(this.stores.syncQueue, { keyPath: 'id', autoIncrement: true });
+                    if (!db.objectStoreNames.contains(this.stores.users)) {
+                        const userStore = db.createObjectStore(this.stores.users, { keyPath: 'id', autoIncrement: true });
+                        userStore.createIndex('email', 'email', { unique: true });
+                    }
                 }
+            };
+        });
+    }
 
-                if (!db.objectStoreNames.contains(this.stores.users)) {
-                    db.createObjectStore(this.stores.users, { keyPath: 'id', autoIncrement: true });
-                }
+    async deleteAndRecreate() {
+        return new Promise((resolve, reject) => {
+            const deleteRequest = indexedDB.deleteDatabase(this.dbName);
+            
+            deleteRequest.onsuccess = () => {
+                console.log('Old database deleted, recreating...');
+                this.db = null;
+                this.isInitialized = false;
+                this.init().then(resolve).catch(reject);
+            };
+            
+            deleteRequest.onerror = () => {
+                reject(deleteRequest.error);
             };
         });
     }
@@ -72,6 +107,11 @@ class EnterpriseDB {
     async getAll(storeName, query = null) {
         if (!this.isInitialized) {
             await this.init();
+        }
+
+        if (!this.db) {
+            console.warn('Database not available');
+            return [];
         }
 
         // Check if store exists
@@ -97,7 +137,7 @@ class EnterpriseDB {
                 };
             } catch (error) {
                 console.error(`Transaction error for ${storeName}`, error);
-                resolve([]); // Return empty array instead of throwing
+                resolve([]);
             }
         });
     }
@@ -105,6 +145,10 @@ class EnterpriseDB {
     async add(storeName, data) {
         if (!this.isInitialized) {
             await this.init();
+        }
+
+        if (!this.db) {
+            throw new Error('Database not available');
         }
 
         return new Promise((resolve, reject) => {
@@ -138,6 +182,10 @@ class EnterpriseDB {
             await this.init();
         }
 
+        if (!this.db) {
+            throw new Error('Database not available');
+        }
+
         return new Promise((resolve, reject) => {
             try {
                 const transaction = this.db.transaction(storeName, 'readwrite');
@@ -165,6 +213,10 @@ class EnterpriseDB {
             await this.init();
         }
 
+        if (!this.db) {
+            throw new Error('Database not available');
+        }
+
         return new Promise((resolve, reject) => {
             try {
                 const transaction = this.db.transaction(storeName, 'readwrite');
@@ -186,10 +238,55 @@ class EnterpriseDB {
         });
     }
 
+    // Google Sheets Integration
+    async syncWithSheets() {
+        try {
+            console.log('Starting Google Sheets sync...');
+            const response = await fetch(this.sheetsApiUrl);
+            const data = await response.json();
+            
+            if (data.status === 'success' && data.data) {
+                // Process surat data from sheets
+                if (data.data.surat) {
+                    for (const surat of data.data.surat) {
+                        await this.add('surat', surat);
+                    }
+                }
+                
+                // Process disposisi data
+                if (data.data.disposisi) {
+                    for (const disposisi of data.data.disposisi) {
+                        await this.add('disposisi', disposisi);
+                    }
+                }
+                
+                console.log('Google Sheets sync completed');
+                return true;
+            }
+        } catch (error) {
+            console.error('Google Sheets sync failed:', error);
+            return false;
+        }
+    }
+
+    async getSheetsData() {
+        try {
+            const response = await fetch(this.sheetsApiUrl);
+            return await response.json();
+        } catch (error) {
+            console.error('Failed to fetch sheets data:', error);
+            return null;
+        }
+    }
+
     async processPendingSync() {
-        // Check if syncQueue store exists
         if (!this.isInitialized) {
             await this.init();
+        }
+
+        if (!this.db) {
+            console.warn('Database not available for sync');
+            return;
         }
 
         const stores = Array.from(this.db.objectStoreNames);
@@ -199,6 +296,10 @@ class EnterpriseDB {
         }
 
         try {
+            // First sync with Google Sheets
+            await this.syncWithSheets();
+            
+            // Process local pending items
             const pendingItems = await this.getAll(this.stores.syncQueue);
             if (pendingItems.length === 0) {
                 console.log('No pending sync items');
@@ -208,11 +309,7 @@ class EnterpriseDB {
             console.log(`Processing ${pendingItems.length} pending sync items`);
             
             for (const item of pendingItems) {
-                // Process each pending item
-                // This would typically sync with a remote server
                 console.log(`Syncing item: ${item.id}`, item);
-                
-                // Remove from sync queue after processing
                 await this.delete(this.stores.syncQueue, item.id);
             }
         } catch (error) {
@@ -225,7 +322,7 @@ class EnterpriseDB {
     }
 
     isReady() {
-        return this.isInitialized;
+        return this.isInitialized && this.db !== null;
     }
 }
 
@@ -237,6 +334,10 @@ window.enterpriseDb = new EnterpriseDB();
     try {
         window.enterpriseDb.init().then(() => {
             console.log('['+new Date().toISOString()+'] Database ready');
+            // Auto sync with sheets on init
+            window.enterpriseDb.syncWithSheets().then(() => {
+                console.log('['+new Date().toISOString()+'] Initial sheets sync completed');
+            });
         }).catch(error => {
             console.warn('Database initialization failed:', error);
         });
