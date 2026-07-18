@@ -2,692 +2,137 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="Arsip Surat Digital Enterprise 2026 - Sistem Manajemen Surat Terintegrasi Full Stack CRUD PWA">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1a73e8">
+    <meta name="description" content="Arsip Surat Digital Enterprise - Sistem Manajemen Persuratan Terintegrasi Google Spreadsheet">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Arsip Surat">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Arsip Surat Enterprise">
-    <meta name="keywords" content="arsip surat, surat masuk, surat keluar, disposisi, enterprise, pwa, crud">
-    <meta name="author" content="Arsip Surat Digital Team">
-    
-    <!-- REMOVED: X-Frame-Options from meta (harus di server) -->
-    <!-- REMOVED: Content-Security-Policy from meta (gunakan server headers) -->
-    
-    <title>Arsip Surat Digital Enterprise 2026 - Full Stack CRUD PWA</title>
-    
-    <!-- PWA Meta dengan SVG fallback -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/icon-192x192.svg">
+    <link rel="manifest" href="/arsip-surat-digital-enterprise/manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
-    <link rel="alternate icon" type="image/png" href="assets/images/favicon.png">
-    <link rel="shortcut icon" href="assets/images/favicon.svg">
-    
-    <!-- Stylesheets -->
+    <link rel="apple-touch-icon" href="assets/images/icon-192x192.svg">
     <link rel="stylesheet" href="assets/css/app.css">
     <link rel="stylesheet" href="assets/css/dashboard.css">
-    <link rel="stylesheet" href="assets/css/surat.css">
-    <link rel="stylesheet" href="assets/css/print.css" media="print">
+    <title>Arsip Surat Digital Enterprise</title>
     
-    <!-- Font Awesome untuk ikon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    <!-- Preload Critical Resources -->
-    <link rel="preload" href="assets/css/app.css" as="style">
-    <link rel="preload" href="assets/js/app.js" as="script">
-    <link rel="preconnect" href="https://script.google.com">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    
-    <!-- SVG Placeholder untuk gambar yang hilang -->
-    <script>
-    // Auto-generate placeholder images jika file tidak ditemukan
-    window.addEventListener('error', function(e) {
-        if (e.target.tagName === 'IMG') {
-            e.target.src = generatePlaceholder(e.target.alt || 'Image');
-        }
-    }, true);
-    
-    function generatePlaceholder(text) {
-        const canvas = document.createElement('canvas');
-        canvas.width = 200;
-        canvas.height = 200;
-        const ctx = canvas.getContext('2d');
-        
-        // Background gradient
-        const gradient = ctx.createLinearGradient(0, 0, 200, 200);
-        gradient.addColorStop(0, '#667eea');
-        gradient.addColorStop(1, '#764ba2');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, 200, 200);
-        
-        // Text
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 60px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(text.substring(0, 2).toUpperCase(), 100, 100);
-        
-        return canvas.toDataURL();
-    }
-
-    // Auto-generate favicon dan PWA icons
-    (function() {
-        // Create favicon dynamically
-        function createFavicon() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 32;
-            canvas.height = 32;
-            const ctx = canvas.getContext('2d');
-            
-            // Background
-            const gradient = ctx.createLinearGradient(0, 0, 32, 32);
-            gradient.addColorStop(0, '#667eea');
-            gradient.addColorStop(1, '#764ba2');
-            ctx.fillStyle = gradient;
-            
-            // Rounded rect
-            ctx.beginPath();
-            ctx.moveTo(6, 0);
-            ctx.lineTo(26, 0);
-            ctx.quadraticCurveTo(32, 0, 32, 6);
-            ctx.lineTo(32, 26);
-            ctx.quadraticCurveTo(32, 32, 26, 32);
-            ctx.lineTo(6, 32);
-            ctx.quadraticCurveTo(0, 32, 0, 26);
-            ctx.lineTo(0, 6);
-            ctx.quadraticCurveTo(0, 0, 6, 0);
-            ctx.closePath();
-            ctx.fill();
-            
-            // Text
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 20px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('A', 16, 17);
-            
-            // Set as favicon
-            const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-            link.type = 'image/png';
-            link.rel = 'icon';
-            link.href = canvas.toDataURL();
-            document.head.appendChild(link);
-        }
-        
-        // Generate PWA icons
-        function generatePWAIcons() {
-            const sizes = [192, 512];
-            sizes.forEach(size => {
-                const canvas = document.createElement('canvas');
-                canvas.width = size;
-                canvas.height = size;
-                const ctx = canvas.getContext('2d');
-                
-                // Background
-                const gradient = ctx.createLinearGradient(0, 0, size, size);
-                gradient.addColorStop(0, '#667eea');
-                gradient.addColorStop(1, '#764ba2');
-                ctx.fillStyle = gradient;
-                
-                // Rounded rect
-                const radius = size * 0.2;
-                ctx.beginPath();
-                ctx.moveTo(radius, 0);
-                ctx.lineTo(size - radius, 0);
-                ctx.quadraticCurveTo(size, 0, size, radius);
-                ctx.lineTo(size, size - radius);
-                ctx.quadraticCurveTo(size, size, size - radius, size);
-                ctx.lineTo(radius, size);
-                ctx.quadraticCurveTo(0, size, 0, size - radius);
-                ctx.lineTo(0, radius);
-                ctx.quadraticCurveTo(0, 0, radius, 0);
-                ctx.closePath();
-                ctx.fill();
-                
-                // Text
-                ctx.fillStyle = 'white';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.font = `bold ${size * 0.35}px Arial`;
-                ctx.fillText('AS', size/2, size/2);
-                
-                // Store in localStorage as base64
-                localStorage.setItem(`icon-${size}x${size}`, canvas.toDataURL());
-            });
-        }
-        
-        // Run on load
-        createFavicon();
-        generatePWAIcons();
-        
-        console.log('✅ Icons auto-generated successfully');
-    })();
-</script>
-    
-    <style>
-        /* Critical CSS untuk mencegah FOUC */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-        
-        /* Spinner Styles */
-        .spinner-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
-        }
-        
-        .spinner-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .spinner-enterprise {
-            width: 60px;
-            height: 60px;
-            border: 4px solid #e0e0e0;
-            border-top: 4px solid #1a73e8;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .spinner-text {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-        }
-        
-        /* Offline Banner */
-        .offline-banner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: #ff9800;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            z-index: 10000;
-            display: none;
-        }
-        
-        .offline-banner.show {
-            display: block;
-        }
-        
-        .offline-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        /* Toast Notifications */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10001;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .toast {
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: white;
-            font-size: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: slideInRight 0.3s ease;
-            max-width: 350px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .toast.success { background: #4caf50; }
-        .toast.error { background: #f44336; }
-        .toast.warning { background: #ff9800; }
-        .toast.info { background: #2196f3; }
-        
-        .toast.fade-out {
-            animation: fadeOut 0.3s ease forwards;
-        }
-        
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        
-        /* Landing Page Styles */
-        .landing-page {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .landing-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            width: 100%;
-        }
-        
-        .landing-header {
-            text-align: center;
-            padding: 60px 20px;
-            color: white;
-        }
-        
-        .landing-header .logo-placeholder {
-            width: 120px;
-            height: 120px;
-            border-radius: 30px;
-            margin: 0 auto 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            font-weight: bold;
-        }
-        
-        .landing-header h1 {
-            font-size: 48px;
-            font-weight: 800;
-            margin: 20px 0 10px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        
-        .landing-header .subtitle {
-            font-size: 20px;
-            opacity: 0.9;
-            margin-bottom: 30px;
-        }
-        
-        .landing-header .version {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 14px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .btn-landing {
-            display: inline-block;
-            padding: 15px 40px;
-            font-size: 18px;
-            font-weight: 600;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            margin: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .btn-login {
-            background: white;
-            color: #667eea;
-        }
-        
-        .btn-login:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        
-        .btn-register {
-            background: transparent;
-            color: white;
-            border: 2px solid white;
-        }
-        
-        .btn-register:hover {
-            background: white;
-            color: #667eea;
-            transform: translateY(-3px);
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            padding: 40px 0;
-        }
-        
-        .feature-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px 30px;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-        }
-        
-        .feature-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-        }
-        
-        .feature-card h3 {
-            font-size: 22px;
-            color: #333;
-            margin-bottom: 15px;
-        }
-        
-        .feature-card p {
-            color: #666;
-            line-height: 1.6;
-            font-size: 15px;
-        }
-        
-        .footer-landing {
-            text-align: center;
-            padding: 40px 20px;
-            color: rgba(255,255,255,0.8);
-        }
-        
-        .footer-landing a {
-            color: white;
-            text-decoration: none;
-        }
-        
-        .footer-landing a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Modal Styles */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-dialog {
-            background: white;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .modal-body {
-            padding: 20px;
-        }
-        
-        .modal-footer {
-            padding: 20px;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: #1a73e8;
-            box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .btn-primary {
-            background: #1a73e8;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #1557b0;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-        
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 12px;
-        }
-        
-        .alert {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .alert-error {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        @media (max-width: 768px) {
-            .landing-header h1 {
-                font-size: 32px;
-            }
-            
-            .landing-header .subtitle {
-                font-size: 16px;
-            }
-            
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .btn-landing {
-                display: block;
-                margin: 10px auto;
-                max-width: 300px;
-            }
-        }
-    </style>
+    <!-- Base64 Support Library -->
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.5/base64.min.js"></script>
 </head>
 <body>
-    <!-- Loading Spinner -->
-    <div id="app-spinner" class="spinner-overlay">
-        <div style="text-align: center;">
-            <div class="spinner-enterprise"></div>
-            <p class="spinner-text">Memuat Sistem Enterprise 2026...</p>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="spinner-enterprise">
+            <div class="spinner-ring"></div>
+            <div class="spinner-text">Memuat Sistem Enterprise...</div>
         </div>
     </div>
 
-    <!-- Offline Indicator -->
-    <div id="offline-indicator" class="offline-banner">
-        <div class="offline-content">
-            <span class="offline-icon"><i class="fas fa-wifi-slash"></i></span>
-            <span>Anda sedang offline. Data akan disinkronkan saat koneksi tersedia.</span>
+    <!-- Header -->
+    <header id="main-header" class="enterprise-header">
+        <div class="header-left">
+            <button id="menu-toggle" class="btn-icon" aria-label="Toggle Menu">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" fill="currentColor"/>
+                </svg>
+            </button>
+            <div class="logo-container">
+                <img src="assets/images/logo.svg" alt="Logo" class="logo-img" width="40" height="40">
+                <h1 class="app-title">Arsip Surat Digital</h1>
+                <span class="version-badge">Enterprise v2026.1.0</span>
+            </div>
         </div>
-    </div>
-
-    <!-- Toast Notifications Container -->
-    <div id="toast-container" class="toast-container"></div>
-
-    <!-- CRUD Modal -->
-    <div id="crud-modal" class="modal-overlay">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 id="modal-title">Form</h3>
-                    <button type="button" class="modal-close" onclick="closeModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body" id="modal-body">
-                    <!-- Dynamic form content -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
-                        <i class="fas fa-times"></i> Batal
-                    </button>
-                    <button type="button" class="btn btn-primary" id="modal-save-btn">
-                        <i class="fas fa-save"></i> Simpan
+        <div class="header-right">
+            <div class="connection-status" id="connection-status">
+                <span class="status-dot offline"></span>
+                <span class="status-text">Offline</span>
+            </div>
+            <div class="user-info" id="user-info">
+                <img src="assets/images/default-avatar.svg" alt="User" class="user-avatar" width="32" height="32">
+                <span class="user-name" id="user-name">Administrator</span>
+                <div class="user-dropdown">
+                    <button class="btn-icon" id="user-menu-btn" aria-label="User Menu">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path d="M7 10l5 5 5-5z" fill="currentColor"/>
+                        </svg>
                     </button>
                 </div>
             </div>
         </div>
-    </div>
+    </header>
 
-    <!-- Main Application Container -->
-    <div id="app-container">
-        <!-- Content will be rendered by JavaScript -->
-    </div>
+    <!-- Sidebar -->
+    <nav id="sidebar" class="enterprise-sidebar">
+        <div class="sidebar-menu">
+            <a href="#/" class="nav-item active" data-route="/">
+                <svg viewBox="0 0 24 24" width="20" height="20"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="#/surat-masuk" class="nav-item" data-route="/surat-masuk">
+                <svg viewBox="0 0 24 24" width="20" height="20"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/></svg>
+                <span>Surat Masuk</span>
+            </a>
+            <a href="#/surat-keluar" class="nav-item" data-route="/surat-keluar">
+                <svg viewBox="0 0 24 24" width="20" height="20"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/></svg>
+                <span>Surat Keluar</span>
+            </a>
+            <a href="#/disposisi" class="nav-item" data-route="/disposisi">
+                <svg viewBox="0 0 24 24" width="20" height="20"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" fill="currentColor"/></svg>
+                <span>Disposisi</span>
+            </a>
+            <a href="#/laporan" class="nav-item" data-route="/laporan">
+                <svg viewBox="0 0 24 24" width="20" height="20"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" fill="currentColor"/></svg>
+                <span>Laporan</span>
+            </a>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#/pengaturan" class="nav-item" data-route="/pengaturan">
+                <svg viewBox="0 0 24 24" width="20" height="20"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" fill="currentColor"/></svg>
+                <span>Pengaturan</span>
+            </a>
+            <button id="logout-btn" class="nav-item logout-btn">
+                <svg viewBox="0 0 24 24" width="20" height="20"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" fill="currentColor"/></svg>
+                <span>Keluar</span>
+            </button>
+        </div>
+    </nav>
 
-    <!-- Scripts - Load in correct order -->
+    <!-- Main Content -->
+    <main id="main-content" class="enterprise-content">
+        <!-- Dynamic content loaded here -->
+    </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Modal Container -->
+    <div id="modal-container" class="modal-container"></div>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/arsip-surat-digital-enterprise/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
+
+    <!-- Core Scripts -->
     <script src="assets/js/config.js"></script>
+    <script src="assets/js/database.js"></script>
     <script src="assets/js/api.js"></script>
     <script src="assets/js/auth.js"></script>
-    <script src="assets/js/database.js"></script>
+    <script src="assets/js/router.js"></script>
     <script src="assets/js/components/spinner.js"></script>
     <script src="assets/js/dashboard.js"></script>
     <script src="assets/js/surat.js"></script>
     <script src="assets/js/disposisi.js"></script>
     <script src="assets/js/laporan.js"></script>
     <script src="assets/js/app.js"></script>
-    
-    <!-- Initialize Application -->
-    <script>
-        // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing application...');
-            
-            // Hide spinner after initialization
-            setTimeout(function() {
-                document.getElementById('app-spinner').classList.add('hidden');
-            }, 500);
-            
-            // Create global app instance
-            window.app = new App();
-            window.app.init();
-        });
-    </script>
-
-<!-- Router Script -->
-<script src="assets/js/router.js"></script>
-
-<!-- Update script initialization -->
-<script>
-    // Initialize when DOM is ready
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM loaded, initializing application...');
-        
-        // Hide spinner after initialization
-        setTimeout(function() {
-            document.getElementById('app-spinner').classList.add('hidden');
-        }, 500);
-        
-        // App will be initialized by router
-    });
-</script>
-  
 </body>
 </html>
