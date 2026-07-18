@@ -27,7 +27,27 @@
             this.addRoute('/login', this.loginRoute.bind(this));
             
             // Add auth guard
-            this.addGuard(this.authGuard.bind(this));
+            async authGuard(path) {
+    // Allow login page without authentication
+    if (path === '/login') return true;
+    
+    // Check session in localStorage
+    const savedSession = localStorage.getItem('auth_session');
+    if (savedSession) {
+        try {
+            const session = JSON.parse(atob(savedSession));
+            if (session.token && session.expiry > Date.now()) {
+                return true; // Valid session
+            }
+        } catch(e) {
+            localStorage.removeItem('auth_session');
+        }
+    }
+    
+    // No valid session - redirect to login page
+    window.location.href = APP_CONFIG.BASE_PATH + '/login.html';
+    return false;
+}
 
             // Listen for hash changes
             window.addEventListener('hashchange', () => this.handleRoute());
