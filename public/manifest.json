@@ -74,6 +74,13 @@
             "sizes": "72x72",
             "type": "image/png"
         },
+
+{
+            "src": "assets/images/icon-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png"
+        },
+
         {
             "src": "assets/images/icon-192x192.png",
             "sizes": "192x192",
