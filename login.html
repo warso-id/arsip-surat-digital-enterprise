@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="description" content="Login - Arsip Surat Digital Enterprise">
+    <title>Login - Arsip Surat Digital Enterprise</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --danger: #ea4335;
+            --danger-light: #fce8e6;
+            --success: #34a853;
+            --white: #ffffff;
+            --gray-50: #f8f9fa;
+            --gray-100: #f1f3f4;
+            --gray-200: #e8eaed;
+            --gray-300: #dadce0;
+            --gray-500: #9aa0a6;
+            --gray-600: #80868b;
+            --gray-700: #5f6368;
+            --gray-800: #3c4043;
+            --gray-900: #202124;
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.3);
+            --shadow-xl: 0 25px 70px rgba(0,0,0,0.4);
+            --radius-lg: 16px;
+            --radius-md: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a73e8 0%, #4285f4 25%, #667eea 50%, #764ba2 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Login Container */
+        .login-wrapper {
+            width: 100%;
+            max-width: 440px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-box {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 48px 40px;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Login Header */
+        .login-header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .login-logo {
+            width: 88px;
+            height: 88px;
+            margin: 0 auto 20px;
+            display: block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .login-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0 0 6px;
+        }
+
+        .login-header .subtitle {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        .login-header .version {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 3px 12px;
+            background: linear-gradient(135deg, var(--primary), #4285f4);
+            color: white;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-500);
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--gray-900);
+            background: var(--white);
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.1);
+        }
+
+        .form-control:focus + .input-icon,
+        .form-control:focus ~ .input-icon {
+            color: var(--primary);
+        }
+
+        .form-control::placeholder {
+            color: var(--gray-500);
+        }
+
+        /* Password Toggle */
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray-500);
+            cursor: pointer;
+            padding: 4px;
+            transition: var(--transition);
+        }
+
+        .password-toggle:hover {
+            color: var(--gray-700);
+        }
+
+        /* Remember Me & Forgot Password */
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray-600);
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .forgot-password:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* Error Message */
+        .login-error {
+            background: var(--danger-light);
+            color: var(--danger);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            animation: shake 0.5s ease;
+        }
+
+        .login-error.show {
+            display: flex;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        /* Login Button */
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+        }
+
+        .btn-login:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Loading Spinner on Button */
+        .btn-login .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        .btn-login.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-login.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Login Footer */
+        .login-footer {
+            text-align: center;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .login-footer .hint {
+            font-size: 12px;
+            color: var(--gray-600);
+            margin-bottom: 8px;
+        }
+
+        .login-footer .hint code {
+            background: var(--gray-100);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .login-footer .copyright {
+            font-size: 11px;
+            color: var(--gray-500);
+            margin: 0;
+        }
+
+        .login-footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .login-footer .links a {
+            font-size: 11px;
+            color: var(--gray-500);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .login-footer .links a:hover {
+            color: var(--primary);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .status-dot.offline {
+            background: var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 32px 24px;
+            }
+
+            .login-header h1 {
+                font-size: 22px;
+            }
+
+            .login-logo {
+                width: 64px;
+                height: 64px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+        }
+
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            .login-box {
+                background: #2d2d2d;
+            }
+
+            .login-header h1 {
+                color: #e0e0e0;
+            }
+
+            .login-header .subtitle {
+                color: #aaaaaa;
+            }
+
+            .form-group label {
+                color: #cccccc;
+            }
+
+            .form-control {
+                background: #333333;
+                border-color: #555555;
+                color: #e0e0e0;
+            }
+
+            .form-control:focus {
+                border-color: #4285f4;
+                box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.2);
+            }
+
+            .form-options {
+                color: #aaaaaa;
+            }
+
+            .login-footer {
+                border-top-color: #404040;
+            }
+
+            .login-footer .hint code {
+                background: #333333;
+                color: #e0e0e0;
+            }
+
+            .login-error {
+                background: rgba(234, 67, 53, 0.15);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles Background -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Login Container -->
+    <div class="login-wrapper">
+        <div class="login-box">
+            <!-- Header -->
+            <div class="login-header">
+                <svg class="login-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1a73e8"/>
+                            <stop offset="100%" style="stop-color:#4285f4"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="100" height="100" rx="20" fill="url(#logoGrad)"/>
+                    <g transform="translate(24,22)" fill="white">
+                        <rect x="0" y="0" width="52" height="10" rx="4" opacity="0.9"/>
+                        <rect x="0" y="18" width="40" height="6" rx="3" opacity="0.6"/>
+                        <rect x="0" y="30" width="46" height="6" rx="3" opacity="0.6"/>
+                        <rect x="0" y="42" width="34" height="6" rx="3" opacity="0.6"/>
+                        <rect x="0" y="54" width="52" height="6" rx="3" opacity="0.4"/>
+                    </g>
+                </svg>
+                <h1>Arsip Surat Digital</h1>
+                <p class="subtitle">Sistem Manajemen Persuratan</p>
+                <span class="version">Enterprise v2026.1.0</span>
+            </div>
+
+            <!-- Error Message -->
+            <div class="login-error" id="login-error">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+                <span id="error-message"></span>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" autocomplete="off">
+                <!-- Username -->
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <input type="text" id="username" class="form-control" 
+                               placeholder="Masukkan username" required autocomplete="username">
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                        </svg>
+                        <input type="password" id="password" class="form-control" 
+                               placeholder="Masukkan password" required autocomplete="current-password">
+                        <button type="button" class="password-toggle" id="toggle-password" tabindex="-1">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" id="eye-icon">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember & Forgot -->
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember-me">
+                        <span>Ingat saya</span>
+                    </label>
+                    <a href="#" class="forgot-password" onclick="alert('Hubungi administrator untuk reset password.')">
+                        Lupa password?
+                    </a>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-login" id="btn-login">
+                    <span class="spinner"></span>
+                    <span class="btn-text">Masuk ke Sistem</span>
+                </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p class="hint">
+                    Default login: <code>admin</code> / <code>admin123</code>
+                </p>
+                <p class="copyright">&copy; 2026 Warso.ID - All Rights Reserved</p>
+                <div class="links">
+                    <a href="https://github.com/warso-id/arsip-surat-digital-enterprise" target="_blank">GitHub</a>
+                    <a href="troubleshooting.html">Bantuan</a>
+                    <a href="README.md">Dokumentasi</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-text">Memeriksa koneksi...</span>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const CONFIG = {
+            // Default credentials
+            DEFAULT_USER: {
+                username: 'admin',
+                password: 'admin123',
+                name: 'Administrator',
+                role: 'admin'
+            },
+            // Additional users (optional)
+            USERS: [
+                { username: 'sekretaris', password: 'surat2026', name: 'Sekretaris', role: 'user' },
+                { username: 'kepala', password: 'kepala2026', name: 'Kepala Bagian', role: 'admin' }
+            ],
+            // App path
+            APP_PATH: '/arsip-surat-digital-enterprise/',
+            // Session duration (24 hours)
+            SESSION_DURATION: 24 * 60 * 60 * 1000,
+            // Max login attempts
+            MAX_ATTEMPTS: 5,
+            // Lockout duration (15 minutes)
+            LOCKOUT_DURATION: 15 * 60 * 1000
+        };
+
+        // ============================================
+        // PARTICLES BACKGROUND
+        // ============================================
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const count = 20;
+            
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 6 + 2;
+                const left = Math.random() * 100;
+                const delay = Math.random() * 6;
+                const duration = Math.random() * 4 + 4;
+                
+                particle.style.cssText = `
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${left}%;
+                    bottom: -10px;
+                    animation-delay: ${delay}s;
+                    animation-duration: ${duration}s;
+                `;
+                
+                container.appendChild(particle);
+            }
+        }
+
+        // ============================================
+        // STATUS CHECK
+        // ============================================
+        function updateStatus() {
+            const dot = document.getElementById('status-dot');
+            const text = document.getElementById('status-text');
+            
+            if (navigator.onLine) {
+                dot.className = 'status-dot';
+                text.textContent = 'Terhubung ke server';
+            } else {
+                dot.className = 'status-dot offline';
+                text.textContent = 'Offline - Mode lokal tersedia';
+            }
+        }
+
+        window.addEventListener('online', updateStatus);
+        window.addEventListener('offline', updateStatus);
+
+        // ============================================
+        // PASSWORD TOGGLE
+        // ============================================
+        document.getElementById('toggle-password').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
+            }
+        });
+
+        // ============================================
+        // LOGIN HANDLER
+        // ============================================
+        let loginAttempts = 0;
+        let lockoutUntil = null;
+
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Check lockout
+            if (lockoutUntil && Date.now() < lockoutUntil) {
+                const remaining = Math.ceil((lockoutUntil - Date.now()) / 60000);
+                showError(`Akun terkunci. Coba lagi dalam ${remaining} menit.`);
+                return;
+            }
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const rememberMe = document.getElementById('remember-me').checked;
+            
+            // Validate input
+            if (!username || !password) {
+                showError('Username dan password harus diisi!');
+                shakeElement(document.getElementById(username ? 'password' : 'username'));
+                return;
+            }
+            
+            // Show loading
+            const btnLogin = document.getElementById('btn-login');
+            btnLogin.classList.add('loading');
+            btnLogin.disabled = true;
+            
+            // Simulate network delay
+            setTimeout(() => {
+                // Authenticate
+                const user = authenticate(username, password);
+                
+                if (user) {
+                    // Reset attempts
+                    loginAttempts = 0;
+                    lockoutUntil = null;
+                    
+                    // Login success
+                    loginSuccess(user, rememberMe);
+                } else {
+                    // Login failed
+                    loginAttempts++;
+                    
+                    // Check max attempts
+                    if (loginAttempts >= CONFIG.MAX_ATTEMPTS) {
+                        lockoutUntil = Date.now() + CONFIG.LOCKOUT_DURATION;
+                        showError(`Terlalu banyak percobaan. Akun terkunci selama 15 menit.`);
+                    } else {
+                        const remaining = CONFIG.MAX_ATTEMPTS - loginAttempts;
+                        showError(`Username atau password salah! (${remaining} percobaan tersisa)`);
+                    }
+                    
+                    // Shake form
+                    shakeElement(document.querySelector('.login-box'));
+                    
+                    // Reset button
+                    btnLogin.classList.remove('loading');
+                    btnLogin.disabled = false;
+                    
+                    // Clear password
+                    document.getElementById('password').value = '';
+                    document.getElementById('password').focus();
+                }
+            }, 800); // Simulate network delay
+        });
+
+        // ============================================
+        // AUTHENTICATION
+        // ============================================
+        function authenticate(username, password) {
+            // Check default user
+            if (username === CONFIG.DEFAULT_USER.username && 
+                password === CONFIG.DEFAULT_USER.password) {
+                return CONFIG.DEFAULT_USER;
+            }
+            
+            // Check additional users
+            const user = CONFIG.USERS.find(u => 
+                u.username === username && u.password === password
+            );
+            
+            return user || null;
+        }
+
+        // ============================================
+        // LOGIN SUCCESS
+        // ============================================
+        function loginSuccess(user, rememberMe) {
+            // Create session
+            const session = {
+                user: {
+                    username: user.username,
+                    nama: user.name,
+                    role: user.role
+                },
+                token: generateToken(user.username),
+                expiry: Date.now() + CONFIG.SESSION_DURATION
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('auth_session', btoa(JSON.stringify(session)));
+            
+            // Save credentials if remember me
+            if (rememberMe) {
+                localStorage.setItem('remembered_user', btoa(JSON.stringify({
+                    username: user.username
+                })));
+            } else {
+                localStorage.removeItem('remembered_user');
+            }
+            
+            // Show success
+            const btnLogin = document.getElementById('btn-login');
+            btnLogin.classList.remove('loading');
+            btnLogin.style.background = '#34a853';
+            btnLogin.querySelector('.btn-text').textContent = 'Login Berhasil!';
+            
+            // Redirect after delay
+            setTimeout(() => {
+                window.location.href = CONFIG.APP_PATH;
+            }, 500);
+        }
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function generateToken(username) {
+            const payload = {
+                user: username,
+                timestamp: Date.now(),
+                random: Math.random().toString(36).substring(2, 15)
+            };
+            return btoa(JSON.stringify(payload));
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('login-error');
+            const errorMsg = document.getElementById('error-message');
+            
+            errorMsg.textContent = message;
+            errorDiv.classList.add('show');
+            
+            // Auto hide after 8 seconds
+            clearTimeout(errorDiv._timeout);
+            errorDiv._timeout = setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 8000);
+        }
+
+        function shakeElement(element) {
+            element.style.animation = 'none';
+            element.offsetHeight; // Trigger reflow
+            element.style.animation = 'shake 0.5s ease';
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        function init() {
+            // Create particles
+            createParticles();
+            
+            // Update status
+            updateStatus();
+            
+            // Check for remembered user
+            const remembered = localStorage.getItem('remembered_user');
+            if (remembered) {
+                try {
+                    const data = JSON.parse(atob(remembered));
+                    document.getElementById('username').value = data.username || '';
+                    document.getElementById('remember-me').checked = true;
+                    document.getElementById('password').focus();
+                } catch(e) {
+                    localStorage.removeItem('remembered_user');
+                }
+            }
+            
+            // Check if already logged in
+            const savedSession = localStorage.getItem('auth_session');
+            if (savedSession) {
+                try {
+                    const session = JSON.parse(atob(savedSession));
+                    if (session.token && session.expiry > Date.now()) {
+                        // Already logged in, redirect to main app
+                        window.location.href = CONFIG.APP_PATH;
+                        return;
+                    }
+                } catch(e) {
+                    localStorage.removeItem('auth_session');
+                }
+            }
+            
+            // Focus username field
+            document.getElementById('username').focus();
+        }
+
+        // Start app
+        init();
+    </script>
+</body>
+</html>
