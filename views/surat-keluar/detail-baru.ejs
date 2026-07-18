@@ -1,0 +1,112 @@
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="/surat-keluar">Surat Keluar</a></li>
+                <li class="breadcrumb-item active">Detail Surat</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center">
+            <h4><i class="bi bi-eye me-2"></i>Detail Surat Keluar</h4>
+            <div>
+                <a href="/surat-keluar/<%= id %>/edit" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <button class="btn btn-danger" onclick="deleteSurat()">
+                    <i class="bi bi-trash"></i> Hapus
+                </button>
+                <button class="btn btn-secondary" onclick="exportPDF()">
+                    <i class="bi bi-file-pdf"></i> Export PDF
+                </button>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">Informasi Surat</h5>
+            </div>
+            <div class="card-body" id="suratDetail">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2">Memuat data...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const suratId = '<%= id %>';
+    
+    document.addEventListener('DOMContentLoaded', async function() {
+        await loadSuratDetail();
+    });
+    
+    async function loadSuratDetail() {
+        try {
+            const response = await axios.get(`/api/surat-keluar/${suratId}`);
+            const surat = response.data.data;
+            
+            document.getElementById('suratDetail').innerHTML = `
+                <table class="table table-bordered">
+                    <tr><td class="fw-bold" width="200">Nomor Surat</td><td>${surat.nomor_surat}</td></tr>
+                    <tr><td class="fw-bold">Tanggal Surat</td><td>${app.formatDate(surat.tanggal_surat)}</td></tr>
+                    <tr><td class="fw-bold">Tujuan</td><td>${surat.tujuan}</td></tr>
+                    <tr><td class="fw-bold">Instansi</td><td>${surat.instansi?.nama_instansi || '-'}</td></tr>
+                    <tr><td class="fw-bold">Perihal</td><td>${surat.perihal}</td></tr>
+                    <tr><td class="fw-bold">Kategori</td><td>${surat.kategori?.nama_kategori || '-'}</td></tr>
+                    <tr><td class="fw-bold">Sifat</td><td><span class="badge bg-${getSifatColor(surat.sifat)}">${surat.sifat.toUpperCase()}</span></td></tr>
+                    <tr><td class="fw-bold">Status</td><td><span class="badge bg-${getStatusColor(surat.status)}">${surat.status.toUpperCase()}</span></td></tr>
+                    <tr><td class="fw-bold">Penandatangan</td><td>${surat.penandatangan || '-'}</td></tr>
+                    ${surat.isi_ringkas ? `<tr><td class="fw-bold">Isi Ringkas</td><td>${surat.isi_ringkas}</td></tr>` : ''}
+                    ${surat.file_path ? `
+                    <tr>
+                        <td class="fw-bold">File</td>
+                        <td><a href="/${surat.file_path}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-download"></i> Download</a></td>
+                    </tr>` : ''}
+                </table>
+            `;
+        } catch (error) {
+            document.getElementById('suratDetail').innerHTML = `
+                <div class="alert alert-danger">Gagal memuat data surat</div>
+            `;
+        }
+    }
+    
+    async function deleteSurat() {
+        const confirmed = await app.confirm('Hapus surat keluar ini?');
+        if (!confirmed) return;
+        
+        try {
+            await axios.delete(`/api/surat-keluar/${suratId}`);
+            alert('Surat berhasil dihapus');
+            window.location.href = '/surat-keluar';
+        } catch (error) {
+            alert('Gagal menghapus surat');
+        }
+    }
+    
+    async function exportPDF() {
+        try {
+            const response = await axios.get(`/api/surat-keluar/${suratId}/export-pdf`, {
+                responseType: 'blob'
+            });
+            
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `surat-keluar-${suratId}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            alert('Gagal export PDF');
+        }
+    }
+</script>
