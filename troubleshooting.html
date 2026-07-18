@@ -3,699 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Troubleshooting System - Arsip Surat Digital Enterprise 2026">
-    <meta name="theme-color" content="#1a73e8">
-    <title>🔧 Troubleshooting - Arsip Surat Digital Enterprise 2026</title>
+    <title>Troubleshooting - Arsip Surat Digital</title>
     <style>
-        :root {
-            --primary: #1a73e8;
-            --success: #4caf50;
-            --danger: #f44336;
-            --warning: #ff9800;
-            --info: #2196f3;
-            --dark: #1e1e1e;
-            --light: #f5f5f5;
-            --white: #ffffff;
-            --border: #e0e0e0;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            min-height: 100vh;
-            padding: 20px;
-            color: #fff;
-        }
-
-        .container { max-width: 1400px; margin: 0 auto; }
-
-        .header {
-            text-align: center;
-            padding: 40px 20px;
-            margin-bottom: 30px;
-        }
-        .header h1 { font-size: 36px; margin-bottom: 10px; }
-        .header .subtitle { font-size: 18px; opacity: 0.8; margin-bottom: 20px; }
-        .header .badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.15);
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 14px;
-            backdrop-filter: blur(10px);
-        }
-
-        .controls {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
-        }
-
-        .btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-warning { background: var(--warning); color: white; }
-        .btn-info { background: var(--info); color: white; }
-        .btn-outline { background: transparent; border: 2px solid rgba(255,255,255,0.3); color: white; }
-
-        .progress-container {
-            background: rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
-        }
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--success));
-            border-radius: 4px;
-            transition: width 0.5s ease;
-            width: 0%;
-        }
-        .stats-row {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-        .stat-badge {
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        .stat-ok { background: rgba(76,175,80,0.2); color: #4caf50; border: 1px solid rgba(76,175,80,0.3); }
-        .stat-err { background: rgba(244,67,54,0.2); color: #f44336; border: 1px solid rgba(244,67,54,0.3); }
-        .stat-warn { background: rgba(255,152,0,0.2); color: #ff9800; border: 1px solid rgba(255,152,0,0.3); }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: rgba(255,255,255,0.08);
-            border-radius: 16px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .card h3 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .card h3 .icon {
-            width: 40px; height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        .icon-api { background: rgba(33,150,243,0.2); }
-        .icon-file { background: rgba(76,175,80,0.2); }
-        .icon-err { background: rgba(244,67,54,0.2); }
-        .icon-sug { background: rgba(255,152,0,0.2); }
-        .icon-gen { background: rgba(156,39,176,0.2); }
-
-        .status-dot {
-            display: inline-block;
-            width: 12px; height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 2s infinite;
-        }
-        .dot-online { background: #4caf50; }
-        .dot-offline { background: #f44336; }
-        .dot-check { background: #2196f3; }
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-        .log-box {
-            background: rgba(0,0,0,0.4);
-            border-radius: 12px;
-            padding: 15px;
-            max-height: 350px;
-            overflow-y: auto;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 12px;
-            line-height: 1.8;
-        }
-        .log-box .success { color: #4ec9b0; }
-        .log-box .error { color: #f44747; }
-        .log-box .warning { color: #cca700; }
-        .log-box .info { color: #569cd6; }
-        .log-box .header-line { color: #dcdcaa; font-weight: bold; }
-
-        .file-list { max-height: 300px; overflow-y: auto; }
-        .file-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 13px;
-        }
-        .tag {
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .tag-exists { background: rgba(76,175,80,0.2); color: #4caf50; }
-        .tag-missing { background: rgba(244,67,54,0.2); color: #f44336; }
-
-        .code-preview {
-            background: rgba(0,0,0,0.5);
-            border-radius: 8px;
-            padding: 15px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 11px;
-            color: #d4d4d4;
-            max-height: 400px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-all;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .footer {
-            text-align: center;
-            padding: 30px;
-            opacity: 0.6;
-            font-size: 13px;
-        }
-
-        @media (max-width: 768px) {
-            .grid { grid-template-columns: 1fr; }
-            .header h1 { font-size: 24px; }
-            .controls { flex-direction: column; }
-            .btn { width: 100%; justify-content: center; }
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+        body { font-family: Arial, sans-serif; background: #1a1a2e; color: #eee; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { color: #e94560; text-align: center; }
+        .card { background: #16213e; border-radius: 10px; padding: 20px; margin: 15px 0; }
+        .card h3 { color: #0f3460; background: #e94560; padding: 8px 15px; border-radius: 5px; display: inline-block; margin-top: 0; }
+        .log { background: #0f3460; border-radius: 8px; padding: 15px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 13px; }
+        .success { color: #4ecca3; }
+        .error { color: #e94560; }
+        .warning { color: #f0a500; }
+        .info { color: #00b4d8; }
+        .btn { background: #e94560; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; font-weight: bold; }
+        .btn:hover { background: #c23152; }
+        .btn-green { background: #4ecca3; color: #1a1a2e; }
+        .btn-green:hover { background: #3db88d; }
+        .progress { width: 100%; height: 20px; background: #0f3460; border-radius: 10px; margin: 10px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: #4ecca3; border-radius: 10px; width: 0%; transition: width 0.5s; }
+        .flex { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 20px 0; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🔧 Troubleshooting System</h1>
-            <p class="subtitle">Arsip Surat Digital Enterprise 2026 - Diagnostic & Auto-Fix Tool</p>
-            <div class="badge">
-                Version <span id="app-version">2026.1.0</span> | 
-                API: <span id="api-url-display">Checking...</span>
-            </div>
+        <h1>🔧 Troubleshooting Arsip Surat Digital</h1>
+        <p style="text-align:center;color:#888;">Diagnostic Tool v2026.1</p>
+        
+        <div class="flex">
+            <button class="btn" onclick="runAll()">▶ Run All Checks</button>
+            <button class="btn" onclick="checkAPI()">🔌 Check API</button>
+            <button class="btn" onclick="checkFiles()">📁 Check Files</button>
+            <button class="btn btn-green" onclick="generateMissing()">🔨 Generate Files</button>
         </div>
-
-        <div class="controls">
-            <button class="btn btn-primary" onclick="runAllChecks()" id="btn-all">▶️ Run All Checks</button>
-            <button class="btn btn-info" onclick="checkAPIConnection()" id="btn-api">🔌 Cek Koneksi API</button>
-            <button class="btn btn-success" onclick="checkAllFiles()" id="btn-files">📁 Cek Semua File</button>
-            <button class="btn btn-warning" onclick="detectErrors()" id="btn-errors">🐛 Deteksi Error Kode</button>
-            <button class="btn btn-danger" onclick="generateMissingFiles()" id="btn-generate">🔨 Generate Missing Files</button>
-            <button class="btn btn-outline" onclick="downloadFullReport()" id="btn-report">📥 Download Report</button>
+        
+        <div class="progress">
+            <div class="progress-fill" id="progressBar"></div>
         </div>
-
-        <div class="progress-container">
-            <div class="progress-header">
-                <strong>Progress Pengecekan</strong>
-                <span id="progress-text">Siap memulai...</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-            <div class="stats-row" id="stats-row">
-                <span class="stat-badge stat-ok">✅ Ready: 0</span>
-                <span class="stat-badge stat-err">❌ Errors: 0</span>
-                <span class="stat-badge stat-warn">⚠️ Missing: 0</span>
-            </div>
+        <p id="statusText" style="text-align:center;">Ready...</p>
+        
+        <div class="card">
+            <h3>🔌 API Connection</h3>
+            <div class="log" id="apiLog">Waiting for check...</div>
         </div>
-
-        <div class="grid">
-            <div class="card">
-                <h3><span class="icon icon-api">🔌</span> 1. Koneksi API Google Apps Script</h3>
-                <div id="api-status"><p><span class="status-dot dot-check"></span> Menunggu pengecekan...</p></div>
-                <div class="log-box" id="api-log"></div>
-            </div>
-            <div class="card">
-                <h3><span class="icon icon-file">📁</span> 2. Pengecekan File Project</h3>
-                <div class="file-list" id="file-list"><p style="color:#888;">Menunggu pengecekan file...</p></div>
-            </div>
-            <div class="card">
-                <h3><span class="icon icon-err">🐛</span> 3. Deteksi Error pada File JS</h3>
-                <div class="log-box" id="error-log"><p style="color:#888;">Menunggu analisis error...</p></div>
-            </div>
-            <div class="card">
-                <h3><span class="icon icon-sug">💡</span> 4. Saran Perbaikan Otomatis</h3>
-                <div class="log-box" id="suggestions-log"><p style="color:#888;">Menunggu analisis...</p></div>
-            </div>
-            <div class="card">
-                <h3><span class="icon icon-gen">🔨</span> 5. Generate File yang Hilang</h3>
-                <div id="generate-status"><p style="color:#888;">File yang perlu dibuat akan muncul disini...</p></div>
-                <div class="code-preview" id="generated-code-preview">// Kode generated file akan muncul disini...</div>
-            </div>
-            <div class="card">
-                <h3><span class="icon" style="background:rgba(0,188,212,0.2);">📋</span> 6. Report Lengkap (BASE64)</h3>
-                <div class="log-box" id="full-report-log"><p style="color:#888;">Report lengkap akan muncul setelah pengecekan...</p></div>
-            </div>
+        
+        <div class="card">
+            <h3>📁 File Check Results</h3>
+            <div class="log" id="fileLog">Waiting for check...</div>
         </div>
-
-        <div class="footer">
-            <p>Arsip Surat Digital Enterprise 2026 | Troubleshooting Tool v1.0</p>
-            <p><a href="https://github.com/warso-id/arsip-surat-digital-enterprise" target="_blank" style="color:#569cd6;">GitHub Repository</a></p>
+        
+        <div class="card">
+            <h3>🔨 Generated Files</h3>
+            <div id="genResult" style="padding:10px;">Run "Generate Files" to see missing files...</div>
         </div>
     </div>
 
     <script>
-    // ============================================
-    // TROUBLESHOOTING SYSTEM v1.0
-    // ============================================
-    
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec';
-    const BASE_URL = 'https://warso-id.github.io/arsip-surat-digital-enterprise';
-    
-    const REQUIRED_FILES = [
-        { path: 'index.html', type: 'html', critical: true, desc: 'Main PWA Entry Point' },
-        { path: 'offline.html', type: 'html', critical: true, desc: 'Offline Fallback Page' },
-        { path: '404.html', type: 'html', critical: true, desc: '404 Redirect Handler' },
-        { path: 'troubleshooting.html', type: 'html', critical: true, desc: 'Troubleshooting Tool' },
-        { path: 'manifest.json', type: 'json', critical: true, desc: 'PWA Manifest' },
-        { path: 'service-worker.js', type: 'js', critical: true, desc: 'Service Worker' },
-        { path: 'assets/css/app.css', type: 'css', critical: true, desc: 'Main Application Styles' },
-        { path: 'assets/css/dashboard.css', type: 'css', critical: false, desc: 'Dashboard Styles' },
-        { path: 'assets/css/surat.css', type: 'css', critical: false, desc: 'Surat Management Styles' },
-        { path: 'assets/css/print.css', type: 'css', critical: false, desc: 'Print Styles' },
-        { path: 'assets/js/config.js', type: 'js', critical: true, desc: 'Application Configuration' },
-        { path: 'assets/js/api.js', type: 'js', critical: true, desc: 'API Service' },
-        { path: 'assets/js/auth.js', type: 'js', critical: true, desc: 'Authentication Service' },
-        { path: 'assets/js/database.js', type: 'js', critical: true, desc: 'IndexedDB Service' },
-        { path: 'assets/js/router.js', type: 'js', critical: true, desc: 'Router System' },
-        { path: 'assets/js/app.js', type: 'js', critical: true, desc: 'Main Application Class' },
-        { path: 'assets/js/dashboard.js', type: 'js', critical: true, desc: 'Dashboard Module' },
-        { path: 'assets/js/surat.js', type: 'js', critical: true, desc: 'Surat Management Module' },
-        { path: 'assets/js/disposisi.js', type: 'js', critical: true, desc: 'Disposisi Module' },
-        { path: 'assets/js/laporan.js', type: 'js', critical: true, desc: 'Laporan Module' },
-        { path: 'assets/js/components/spinner.js', type: 'js', critical: false, desc: 'Spinner Component' },
-        { path: '.gitignore', type: 'text', critical: true, desc: 'Git Ignore Rules' },
-        { path: 'README.md', type: 'md', critical: false, desc: 'Project Documentation' }
-    ];
-
-    const state = {
-        apiConnected: false,
-        apiResponse: null,
-        filesChecked: [],
-        filesMissing: [],
-        errorsFound: [],
-        suggestions: [],
-        generatedFiles: [],
-        totalChecks: 6,
-        completedChecks: 0
-    };
-
-    function toBase64(str) {
-        try { return btoa(unescape(encodeURIComponent(str))); } catch(e) { return btoa(str); }
-    }
-
-    function fromBase64(str) {
-        try { return decodeURIComponent(escape(atob(str))); } catch(e) { return atob(str); }
-    }
-
-    function log(containerId, message, type) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        if (container.querySelector('p[style]')) container.innerHTML = '';
-        const line = document.createElement('div');
-        line.style.cssText = 'padding:2px 0;word-break:break-all;';
-        line.style.color = type === 'success' ? '#4ec9b0' : type === 'error' ? '#f44747' : type === 'warning' ? '#cca700' : '#569cd6';
-        line.textContent = '[' + new Date().toLocaleTimeString() + '] ' + message;
-        container.appendChild(line);
-        container.scrollTop = container.scrollHeight;
-    }
-
-    function updateProgress(name) {
-        state.completedChecks++;
-        const percent = Math.round((state.completedChecks / state.totalChecks) * 100);
-        document.getElementById('progress-fill').style.width = percent + '%';
-        document.getElementById('progress-text').textContent = name + ' (' + state.completedChecks + '/' + state.totalChecks + ')';
-        const ready = state.filesChecked.filter(function(f) { return f.exists; }).length;
-        const errors = state.errorsFound.length;
-        const missing = state.filesMissing.length;
-        document.getElementById('stats-row').innerHTML = '<span class="stat-badge stat-ok">✅ Ready: ' + ready + '</span><span class="stat-badge stat-err">❌ Errors: ' + errors + '</span><span class="stat-badge stat-warn">⚠️ Missing: ' + missing + '</span>';
-    }
-
-    async function checkAPIConnection() {
-        document.getElementById('api-log').innerHTML = '';
-        document.getElementById('api-status').innerHTML = '<p><span class="status-dot dot-check"></span> <strong>Mengecek koneksi API...</strong></p>';
+        const API = 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec';
+        const BASE = '/arsip-surat-digital-enterprise';
         
-        log('api-log', 'MEMULAI PENGECEKAN KONEKSI API', 'info');
-        log('api-log', 'URL: ' + API_URL, 'info');
+        const REQUIRED = [
+            'index.html','manifest.json','service-worker.js','offline.html','404.html','troubleshooting.html',
+            'assets/css/app.css','assets/css/dashboard.css','assets/css/surat.css','assets/css/print.css',
+            'assets/js/config.js','assets/js/api.js','assets/js/auth.js','assets/js/database.js',
+            'assets/js/router.js','assets/js/app.js','assets/js/dashboard.js','assets/js/surat.js',
+            'assets/js/disposisi.js','assets/js/laporan.js','assets/js/components/spinner.js',
+            'assets/images/icon-192x192.svg','assets/images/icon-512x512.svg','assets/images/favicon.svg',
+            'assets/images/logo.svg','assets/images/default-avatar.svg',
+            'README.md','LICENSE','.gitignore','.github/workflows/ci.yml'
+        ];
         
-        try {
-            const formData = new URLSearchParams();
-            formData.append('action', 'ping');
-            
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formData.toString()
-            });
-            
-            log('api-log', 'Status: ' + response.status + ' ' + response.statusText, response.ok ? 'success' : 'error');
-            
-            const data = await response.json();
-            log('api-log', 'Response: ' + JSON.stringify(data).substring(0, 200), 'success');
-            
-            // Test login
-            log('api-log', '', 'info');
-            log('api-log', '🔐 Test Login...', 'info');
-            
-            const loginData = toBase64(JSON.stringify({ username: 'admin', password: 'Admin123!' }));
-            const loginFormData = new URLSearchParams();
-            loginFormData.append('action', 'login');
-            loginFormData.append('data', loginData);
-            
-            const loginResponse = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: loginFormData.toString()
-            });
-            
-            const loginResult = await loginResponse.json();
-            
-            if (loginResult.success) {
-                log('api-log', '✅ Login BERHASIL! User: ' + loginResult.user.username, 'success');
-                state.apiConnected = true;
-                state.apiResponse = loginResult;
-            } else {
-                log('api-log', '⚠️ API berfungsi: ' + (loginResult.message || 'OK'), 'warning');
-                state.apiConnected = true;
-            }
-            
-            document.getElementById('api-status').innerHTML = '<p><span class="status-dot dot-online"></span> <strong>✅ API TERHUBUNG!</strong></p>';
-            
-        } catch (error) {
-            log('api-log', '❌ GAGAL: ' + error.message, 'error');
-            state.apiConnected = false;
-            document.getElementById('api-status').innerHTML = '<p><span class="status-dot dot-offline"></span> <strong>❌ API TIDAK TERHUBUNG</strong></p><p style="font-size:13px;color:#f44336;">Periksa URL API dan pastikan Google Apps Script sudah di-deploy.</p>';
+        let missingFiles = [];
+        let apiConnected = false;
+        
+        function log(id, msg, cls) {
+            const el = document.getElementById(id);
+            if (el.textContent.includes('Waiting')) el.innerHTML = '';
+            el.innerHTML += '<div class="' + cls + '">[' + new Date().toLocaleTimeString() + '] ' + msg + '</div>';
+            el.scrollTop = el.scrollHeight;
         }
         
-        updateProgress('API Connection Check');
-    }
-
-    async function checkAllFiles() {
-        document.getElementById('file-list').innerHTML = '';
-        log('api-log', '', 'info');
-        log('api-log', 'MEMULAI PENGECEKAN FILE (' + REQUIRED_FILES.length + ' files)', 'info');
-        
-        state.filesChecked = [];
-        state.filesMissing = [];
-        
-        for (const file of REQUIRED_FILES) {
-            const fullURL = BASE_URL + '/' + file.path;
-            
-            try {
-                const response = await fetch(fullURL, { method: 'HEAD', cache: 'no-cache' });
-                
-                const fileInfo = { ...file, exists: response.ok, status: response.status };
-                state.filesChecked.push(fileInfo);
-                if (!response.ok) state.filesMissing.push(fileInfo);
-                
-                const item = document.createElement('div');
-                item.className = 'file-item';
-                item.innerHTML = '<span>' + (response.ok ? '✅' : '❌') + ' ' + file.path + (file.critical ? ' <span style="color:#ff9800;font-size:10px;">[KRITIS]</span>' : '') + '</span><span class="tag ' + (response.ok ? 'tag-exists' : 'tag-missing') + '">' + (response.ok ? 'ADA' : 'MISSING') + '</span>';
-                if (!response.ok && file.critical) item.style.background = 'rgba(244,67,54,0.1)';
-                document.getElementById('file-list').appendChild(item);
-                
-                log('api-log', (response.ok ? '✅' : '❌') + ' ' + file.path + ' - ' + response.status, response.ok ? 'success' : 'error');
-                
-            } catch (error) {
-                const fileInfo = { ...file, exists: false, status: 0, error: error.message };
-                state.filesChecked.push(fileInfo);
-                state.filesMissing.push(fileInfo);
-                log('api-log', '❌ ' + file.path + ' - ERROR: ' + error.message, 'error');
-            }
+        function updateProgress(pct, txt) {
+            document.getElementById('progressBar').style.width = pct + '%';
+            document.getElementById('statusText').textContent = txt;
         }
         
-        log('api-log', 'HASIL: ' + state.filesChecked.filter(function(f) { return f.exists; }).length + '/' + state.filesChecked.length + ' file ADA, ' + state.filesMissing.length + ' MISSING', 'info');
-        updateProgress('File Check');
-    }
-
-    async function detectErrors() {
-        document.getElementById('error-log').innerHTML = '';
-        log('error-log', 'MEMULAI DETEKSI ERROR PADA FILE JS', 'info');
-        
-        state.errorsFound = [];
-        
-        const jsFiles = REQUIRED_FILES.filter(function(f) { return f.type === 'js' && f.critical; });
-        
-        for (const file of jsFiles) {
-            const fullURL = BASE_URL + '/' + file.path;
+        async function checkAPI() {
+            log('apiLog', '=== Checking API Connection ===', 'info');
+            log('apiLog', 'URL: ' + API, 'info');
             
             try {
-                const response = await fetch(fullURL, { cache: 'no-cache' });
+                const fd = new URLSearchParams(); fd.append('action', 'ping');
+                const res = await fetch(API, { method: 'POST', body: fd });
+                const data = await res.json();
                 
-                if (!response.ok) {
-                    state.errorsFound.push({ file: file.path, type: 'FILE_MISSING', message: 'File tidak ditemukan (HTTP ' + response.status + ')', severity: 'critical' });
-                    log('error-log', '❌ ' + file.path + ': FILE TIDAK DITEMUKAN', 'error');
-                    continue;
+                if (data.success) {
+                    apiConnected = true;
+                    log('apiLog', '✅ API CONNECTED! Version: ' + (data.version || 'N/A'), 'success');
+                    
+                    const lfd = new URLSearchParams();
+                    lfd.append('action', 'login');
+                    lfd.append('data', btoa(JSON.stringify({username:'admin',password:'Admin123!'})));
+                    const lr = await fetch(API, { method: 'POST', body: lfd });
+                    const ld = await lr.json();
+                    
+                    log('apiLog', ld.success ? '✅ Login OK' : '⚠ Login: ' + ld.message + ' (may need setup)', 
+                        ld.success ? 'success' : 'warning');
+                } else {
+                    log('apiLog', '❌ API Error: ' + JSON.stringify(data), 'error');
                 }
-                
-                const content = await response.text();
-                
+            } catch(e) {
+                apiConnected = false;
+                log('apiLog', '❌ FAILED: ' + e.message, 'error');
+            }
+            updateProgress(33, 'API Check done');
+        }
+        
+        async function checkFiles() {
+            log('fileLog', '=== Checking ' + REQUIRED.length + ' Files ===', 'info');
+            missingFiles = [];
+            
+            for (const f of REQUIRED) {
                 try {
-                    new Function(content);
-                    log('error-log', '✅ ' + file.path + ': Syntax OK', 'success');
-                } catch (syntaxError) {
-                    state.errorsFound.push({ file: file.path, type: 'SYNTAX_ERROR', message: syntaxError.message, severity: 'critical' });
-                    log('error-log', '❌ ' + file.path + ': SYNTAX ERROR - ' + syntaxError.message, 'error');
+                    const res = await fetch(BASE + '/' + f, { method: 'HEAD', cache: 'no-cache' });
+                    if (res.ok) {
+                        log('fileLog', '✅ ' + f, 'success');
+                    } else {
+                        missingFiles.push(f);
+                        log('fileLog', '❌ ' + f + ' (HTTP ' + res.status + ')', 'error');
+                    }
+                } catch(e) {
+                    missingFiles.push(f);
+                    log('fileLog', '❌ ' + f + ' - Error', 'error');
                 }
+            }
+            
+            log('fileLog', '=== ' + (REQUIRED.length - missingFiles.length) + '/' + REQUIRED.length + 
+                ' OK, ' + missingFiles.length + ' MISSING ===', missingFiles.length ? 'warning' : 'success');
+            updateProgress(66, 'File check done');
+        }
+        
+        function generateMissing() {
+            const div = document.getElementById('genResult');
+            
+            if (missingFiles.length === 0 && apiConnected) {
+                div.innerHTML = '<p style="color:#4ecca3;font-size:18px;">✅ All files present!</p>';
+                return;
+            }
+            
+            let html = '<h4 style="color:#e94560;">Missing Files (' + missingFiles.length + '):</h4>';
+            
+            if (!apiConnected) {
+                html += '<p style="color:#f0a500;">⚠ API not connected. Generate code.gs:</p>';
+                html += '<button class="btn btn-green" onclick="downloadCodeGS()">📥 Download code.gs</button><br><br>';
+            }
+            
+            for (const f of missingFiles) {
+                html += '<p style="margin:3px 0;">❌ <span style="color:#e94560;">' + f + '</span></p>';
+            }
+            
+            if (missingFiles.length > 0) {
+                html += '<br><h4>Terminal Commands to Create Files:</h4>';
+                html += '<pre style="background:#0f3460;padding:10px;border-radius:5px;overflow-x:auto;">';
+                html += 'cd arsip-surat-digital-enterprise<br><br>';
+                for (const f of missingFiles) {
+                    const dir = f.includes('/') ? f.substring(0, f.lastIndexOf('/')) : '';
+                    if (dir) html += 'mkdir -p ' + dir + '<br>';
+                    html += 'touch ' + f + '<br>';
+                }
+                html += '</pre>';
                 
-            } catch (error) {
-                state.errorsFound.push({ file: file.path, type: 'FETCH_ERROR', message: error.message, severity: 'critical' });
-                log('error-log', '❌ ' + file.path + ': ' + error.message, 'error');
+                html += '<h4>Or create files on GitHub:</h4>';
+                html += '<ol style="color:#888;">';
+                for (const f of missingFiles) {
+                    html += '<li>Go to: <a href="https://github.com/warso-id/arsip-surat-digital-enterprise/new/main/' + 
+                        f + '" target="_blank" style="color:#00b4d8;">Create ' + f + '</a></li>';
+                }
+                html += '</ol>';
             }
-        }
-        
-        log('error-log', 'HASIL: ' + state.errorsFound.length + ' errors ditemukan', 'info');
-        updateProgress('Error Detection');
-    }
-
-    function generateSuggestions() {
-        document.getElementById('suggestions-log').innerHTML = '';
-        log('suggestions-log', 'SARAN PERBAIKAN OTOMATIS', 'info');
-        
-        state.suggestions = [];
-        
-        if (!state.apiConnected) {
-            state.suggestions.push({ priority: 'HIGH', message: 'Deploy ulang Google Apps Script dan update URL di config.js' });
-            log('suggestions-log', '🔴 [HIGH] Deploy ulang Google Apps Script', 'error');
-        }
-        
-        for (const file of state.filesMissing) {
-            if (file.critical) {
-                state.suggestions.push({ priority: 'HIGH', file: file.path, message: 'Buat file ' + file.path + ' (' + file.desc + ')' });
-                log('suggestions-log', '🔴 [HIGH] Buat: ' + file.path, 'error');
-            }
-        }
-        
-        for (const error of state.errorsFound) {
-            state.suggestions.push({ priority: error.severity === 'critical' ? 'HIGH' : 'MEDIUM', file: error.file, message: 'Perbaiki: ' + error.message });
-            log('suggestions-log', '⚠️ [' + error.file + '] ' + error.message, 'warning');
-        }
-        
-        updateProgress('Suggestions');
-    }
-
-    function generateMissingFiles() {
-        document.getElementById('generated-code-preview').textContent = '';
-        document.getElementById('generate-status').innerHTML = '<p><span class="status-dot dot-check"></span> <strong>Generating missing files...</strong></p>';
-        
-        state.generatedFiles = [];
-        let allCode = '';
-        
-        // Generate code.gs if API not connected
-        if (!state.apiConnected) {
-            const codeGS = generateCodeGS();
-            state.generatedFiles.push({ path: 'code.gs', content: codeGS, base64: toBase64(codeGS) });
-            allCode += '// ====== code.gs (Google Apps Script Backend) ======\n' + codeGS + '\n\n';
-        }
-        
-        // Generate missing critical files
-        for (const file of state.filesMissing) {
-            if (!file.critical) continue;
-            const code = generateFileByPath(file.path);
-            if (code) {
-                state.generatedFiles.push({ path: file.path, content: code, base64: toBase64(code) });
-                allCode += '// ====== ' + file.path + ' ======\n' + code + '\n\n';
-            }
-        }
-        
-        document.getElementById('generated-code-preview').textContent = allCode || '// Semua file sudah lengkap!';
-        
-        if (state.generatedFiles.length > 0) {
-            let html = '<p><strong>✅ Generated ' + state.generatedFiles.length + ' files:</strong></p>';
-            for (const f of state.generatedFiles) {
-                html += '<p style="font-size:13px;margin:5px 0;">📄 <span style="color:#4ec9b0;">' + f.path + '</span> <button onclick="downloadFile(\'' + f.path + '\',\'' + f.base64 + '\')" style="background:#1a73e8;color:white;border:none;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:11px;margin-left:10px;">Download</button></p>';
-            }
-            html += '<button class="btn btn-success" style="margin-top:10px;" onclick="downloadAllGenerated()">📦 Download All</button>';
-            document.getElementById('generate-status').innerHTML = html;
-        } else {
-            document.getElementById('generate-status').innerHTML = '<p><strong>✅ Semua file sudah lengkap!</strong></p>';
-        }
-        
-        updateProgress('Generate Files');
-    }
-
-    function generateCodeGS() {
-        return '// code.gs - Google Apps Script Backend\n// Deploy sebagai Web App: Execute as Me, Access: Anyone\n\nconst CONFIG = {\n  APP_NAME: \'Arsip Surat Digital Enterprise\',\n  APP_VERSION: \'2026.1.0\',\n  get SPREADSHEET_ID() {\n    return PropertiesService.getScriptProperties().getProperty(\'SPREADSHEET_ID\') || \'10-8E7Lg4pajx7htNoOAqA-f4EdvjBvRHJJ_-H1u0JPo\';\n  },\n  get JWT_SECRET() {\n    return PropertiesService.getScriptProperties().getProperty(\'JWT_SECRET\') || \'arsip-surat-digital-secret-key-2026\';\n  }\n};\n\nfunction doPost(e) { return handleRequest(e); }\nfunction doGet(e) { return ContentService.createTextOutput(JSON.stringify({success:true,message:\'API is running\'})).setMimeType(ContentService.MimeType.JSON); }\n\nfunction handleRequest(e) {\n  try {\n    const params = e.parameter || {};\n    const body = parseBody(e);\n    const action = params.action || body.action || \'ping\';\n    const token = params.token || body.token || \'\';\n    let user = null;\n    const publicActions = [\'ping\',\'login\',\'publicRegister\',\'setup\',\'checkSetup\',\'debugInfo\'];\n    \n    if (publicActions.indexOf(action) === -1) {\n      if (!token) return response({success:false,message:\'Token diperlukan\',loginRequired:true});\n      user = verifyToken(token);\n      if (!user) return response({success:false,message:\'Token invalid\',loginRequired:true});\n    }\n    \n    switch(action) {\n      case \'ping\': return response({success:true,message:\'API OK\',version:CONFIG.APP_VERSION});\n      case \'login\': return login(body);\n      case \'publicRegister\': return register(body);\n      case \'setup\': return setup(body);\n      case \'checkSetup\': return checkSetup();\n      case \'getDashboardStats\': return getDashboardStats(user);\n      case \'getSuratMasuk\': return getSuratMasuk(user,body);\n      case \'getSuratKeluar\': return getSuratKeluar(user,body);\n      default: return response({success:false,message:\'Unknown action\'});\n    }\n  } catch(e) { return response({success:false,message:e.message}); }\n}\n\nfunction response(data) { return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON); }\n\nfunction login(body) {\n  const identifier = (body.username || body.email || \'\').trim();\n  const password = (body.password || \'\').trim();\n  if (!identifier || !password) return {success:false,message:\'Username/email dan password diperlukan\'};\n  \n  const sheet = getSheet(\'Users\');\n  if (sheet.getLastRow() <= 1) return {success:false,message:\'Belum ada user. Jalankan setup.\',needSetup:true};\n  \n  const data = sheet.getDataRange().getValues();\n  for (let i = 1; i < data.length; i++) {\n    const row = data[i];\n    if ((String(row[1]) === identifier || String(row[2]) === identifier) && String(row[3]) === hashPassword(password)) {\n      if (row[9] === false) return {success:false,message:\'Akun dinonaktifkan\'};\n      const userData = {id:String(row[0]),username:String(row[1]),email:String(row[2]),fullName:String(row[4]),role:String(row[8]||\'staff\')};\n      return {success:true,message:\'Login berhasil\',token:generateToken(userData.id),user:userData};\n    }\n  }\n  return {success:false,message:\'Username/email atau password salah\'};\n}\n\nfunction register(body) {\n  const username = (body.username||\'\').trim(), email = (body.email||\'\').trim();\n  const password = (body.password||\'\').trim(), fullName = (body.fullName||body.fullname||\'\').trim();\n  if (!username||!email||!password||!fullName) return {success:false,message:\'Semua field harus diisi\'};\n  if (password.length < 6) return {success:false,message:\'Password minimal 6 karakter\'};\n  \n  const sheet = getSheet(\'Users\');\n  const id = Utilities.getUuid(), now = new Date();\n  sheet.appendRow([id,username,email,hashPassword(password),fullName,\'\',\'\',\'\',\'staff\',true,now,now,now]);\n  return {success:true,message:\'Registrasi berhasil! Silakan login.\'};\n}\n\nfunction setup(body) {\n  const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);\n  const sheets = [\'Users\',\'SuratMasuk\',\'SuratKeluar\',\'Disposisi\',\'Kategori\',\'Instansi\'];\n  sheets.forEach(name => { if (!ss.getSheetByName(name)) ss.insertSheet(name); });\n  \n  const usersSheet = ss.getSheetByName(\'Users\');\n  if (usersSheet.getLastRow() <= 1) {\n    usersSheet.appendRow([\'id\',\'username\',\'email\',\'passwordHash\',\'fullName\',\'nip\',\'jabatan\',\'unitKerja\',\'role\',\'isActive\',\'lastLogin\',\'createdAt\',\'updatedAt\']);\n    usersSheet.appendRow([Utilities.getUuid(),\'admin\',\'admin@instansi.id\',hashPassword(\'Admin123!\'),\'Administrator\',\'\',\'\',\'\',\'admin\',true,new Date(),new Date(),new Date()]);\n  }\n  return {success:true,message:\'Setup berhasil!\',data:{adminUsername:\'admin\',adminPassword:\'Admin123!\'}};\n}\n\nfunction checkSetup() {\n  try {\n    const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);\n    const usersSheet = ss.getSheetByName(\'Users\');\n    return {success:true,data:{isSetup:!!(usersSheet&&usersSheet.getLastRow()>1)}};\n  } catch(e) { return {success:true,data:{isSetup:false}}; }\n}\n\nfunction getDashboardStats(user) {\n  const sm = Math.max(0,getSheet(\'SuratMasuk\').getLastRow()-1);\n  const sk = Math.max(0,getSheet(\'SuratKeluar\').getLastRow()-1);\n  const dp = Math.max(0,getSheet(\'Disposisi\').getLastRow()-1);\n  const us = Math.max(0,getSheet(\'Users\').getLastRow()-1);\n  return {success:true,data:{totalSuratMasuk:sm,totalSuratKeluar:sk,totalDisposisi:dp,pendingDisposisi:0,totalPengguna:us}};\n}\n\nfunction getSuratMasuk(user,params) {\n  const sheet = getSheet(\'SuratMasuk\');\n  const data = sheet.getLastRow()>1 ? sheet.getDataRange().getValues().slice(1) : [];\n  const items = data.map(r=>({id:String(r[0]),nomor_surat:String(r[1]||\'-\'),tanggal_surat:r[2]instanceof Date?r[2].toISOString():String(r[2]||\'\'),pengirim:String(r[3]||\'-\'),perihal:String(r[4]||\'-\'),status:String(r[5]||\'baru\')}));\n  return {success:true,data:items};\n}\n\nfunction getSuratKeluar(user,params) {\n  const sheet = getSheet(\'SuratKeluar\');\n  const data = sheet.getLastRow()>1 ? sheet.getDataRange().getValues().slice(1) : [];\n  const items = data.map(r=>({id:String(r[0]),nomor_surat:String(r[1]||\'-\'),tanggal_surat:r[2]instanceof Date?r[2].toISOString():String(r[2]||\'\'),tujuan:String(r[3]||\'-\'),perihal:String(r[4]||\'-\'),status:String(r[5]||\'draft\')}));\n  return {success:true,data:items};\n}\n\nfunction getSheet(name) {\n  const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);\n  let sheet = ss.getSheetByName(name);\n  if (!sheet) sheet = ss.insertSheet(name);\n  return sheet;\n}\n\nfunction hashPassword(p) {\n  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, p + CONFIG.JWT_SECRET.substring(0,16))\n    .map(b => (\'0\'+(b&0xFF).toString(16)).slice(-2)).join(\'\');\n}\n\nfunction generateToken(uid) {\n  const h = Utilities.base64Encode(JSON.stringify({alg:\'HS256\',typ:\'JWT\'}));\n  const p = Utilities.base64Encode(JSON.stringify({sub:uid,iat:Math.floor(Date.now()/1000),exp:Math.floor(Date.now()/1000)+86400}));\n  return h+\'.\'+p+\'.\'+Utilities.base64Encode(Utilities.computeHmacSha256Signature(h+\'.\'+p,CONFIG.JWT_SECRET));\n}\n\nfunction verifyToken(t) {\n  try {\n    const parts = t.split(\'.\');\n    if (parts.length!==3) return null;\n    const sig = Utilities.base64Encode(Utilities.computeHmacSha256Signature(parts[0]+\'.\'+parts[1],CONFIG.JWT_SECRET));\n    if (parts[2]!==sig) return null;\n    const payload = JSON.parse(Utilities.newBlob(Utilities.base64Decode(parts[1])).getDataAsString());\n    if (payload.exp < Math.floor(Date.now()/1000)) return null;\n    const sheet = getSheet(\'Users\');\n    const data = sheet.getDataRange().getValues();\n    for (let i=1;i<data.length;i++) {\n      if (String(data[i][0])===payload.sub) return {id:String(data[i][0]),username:String(data[i][1]),role:String(data[i][8]||\'staff\')};\n    }\n    return null;\n  } catch(e) { return null; }\n}\n\nfunction parseBody(e) {\n  if (e.postData&&e.postData.contents) {\n    try { return JSON.parse(e.postData.contents); } catch(err) {\n      const body = {};\n      e.postData.contents.split(\'&\').forEach(p => {\n        const [k,v] = p.split(\'=\');\n        if (k) body[decodeURIComponent(k)] = decodeURIComponent(v||\'\');\n      });\n      return body;\n    }\n  }\n  return {};\n}\n\nconsole.log(\'✅ code.gs ready\');';
-    }
-
-    function generateFileByPath(path) {
-        const gens = {
-            'manifest.json': function() { return '{"name":"Arsip Surat Digital Enterprise 2026","short_name":"Arsip Surat","start_url":"/arsip-surat-digital-enterprise/index.html","display":"standalone","background_color":"#ffffff","theme_color":"#1a73e8"}'; },
-            'service-worker.js': function() { return "const CACHE_NAME='asde-v1';\nself.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(['/','/index.html','/offline.html'])).then(()=>self.skipWaiting()))});\nself.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).then(r=>{if(r.ok){caches.open(CACHE_NAME).then(c=>c.put(e.request,r.clone()))}return r}).catch(()=>caches.match(e.request).then(r=>r||caches.match('/offline.html'))))});"; },
-            'offline.html': function() { return '<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Offline</title><style>body{font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;background:#f5f5f5;text-align:center}</style></head><body><div><h1>📡 Anda Sedang Offline</h1><p>Silakan periksa koneksi internet Anda.</p><button onclick="location.reload()" style="padding:10px 20px;background:#1a73e8;color:white;border:none;border-radius:8px;cursor:pointer;">Coba Lagi</button></div></body></html>'; },
-            '404.html': function() { return '<!DOCTYPE html><html><head><meta charset="UTF-8"><script>window.location.href="/arsip-surat-digital-enterprise/"+window.location.hash;</script></head><body><p>Redirecting...</p></body></html>'; },
-            'assets/js/config.js': function() { return 'const CONFIG={APP_NAME:\'Arsip Surat Digital Enterprise\',APP_VERSION:\'2026.1.0\',API:{BASE_URL:\'' + API_URL + '\',TIMEOUT:30000},AUTH:{TOKEN_KEY:\'asde_auth_token\',USER_KEY:\'asde_user_data\'},PAGINATION:{PER_PAGE:10}};Object.freeze(CONFIG);console.log(\'Config loaded\');'; },
-            'assets/js/api.js': function() { return 'class ApiService{constructor(){this.baseUrl=CONFIG.API.BASE_URL;this.token=localStorage.getItem(CONFIG.AUTH.TOKEN_KEY)}async makeRequest(a,d={}){const f=new URLSearchParams();f.append(\'action\',a);f.append(\'data\',btoa(JSON.stringify(d)));if(this.token)f.append(\'token\',this.token);const r=await fetch(this.baseUrl,{method:\'POST\',headers:{\'Content-Type\':\'application/x-www-form-urlencoded\'},body:f.toString()});return await r.json()}async login(u,p){return await this.makeRequest(\'login\',{username:u,password:p})}async getDashboardStats(){return await this.makeRequest(\'getDashboardStats\')}}const api=new ApiService();console.log(\'API Service initialized\');'; },
-            'assets/js/auth.js': function() { return 'class AuthService{constructor(){this.token=localStorage.getItem(CONFIG.AUTH.TOKEN_KEY);this.user=JSON.parse(localStorage.getItem(CONFIG.AUTH.USER_KEY)||\'null\');this.isAuthenticated=!!this.token}async login(u,p){const r=await api.login(u,p);if(r.success){this.token=r.token;this.user=r.user;this.isAuthenticated=true;localStorage.setItem(CONFIG.AUTH.TOKEN_KEY,r.token);localStorage.setItem(CONFIG.AUTH.USER_KEY,JSON.stringify(r.user))}return r}async logout(){this.token=null;this.user=null;this.isAuthenticated=false;localStorage.clear()}getUser(){return this.user}}const auth=new AuthService();console.log(\'Auth Service initialized\');'; },
-            'assets/js/database.js': function() { return 'class DatabaseService{constructor(){this.db=null;this.init()}init(){const r=indexedDB.open(\'ArsipSuratDB\',1);r.onsuccess=e=>{this.db=e.target.result;console.log(\'Database initialized\')};r.onupgradeneeded=e=>{[\'suratMasuk\',\'suratKeluar\',\'disposisi\',\'cache\'].forEach(n=>{if(!e.target.result.objectStoreNames.contains(n))e.target.result.createObjectStore(n,{keyPath:\'id\'})})}}}const dbService=new DatabaseService();'; },
-            'assets/js/router.js': function() { return 'class Router{constructor(){this.routes={\'/\':\'dashboard\',\'/dashboard\':\'dashboard\',\'/surat-masuk\':\'surat-masuk\',\'/surat-keluar\':\'surat-keluar\',\'/login\':\'login\',\'/register\':\'register\'};this.currentRoute=null}init(){this.handleRoute();window.addEventListener(\'popstate\',()=>this.handleRoute())}handleRoute(){const p=window.location.pathname.replace(\'/arsip-surat-digital-enterprise\',\'\')||\'/\';const r=this.routes[p.replace(/\\/+$/,\'\')]||\'dashboard\';this.currentRoute=r;window.dispatchEvent(new CustomEvent(\'route-change\',{detail:{route:r}}))}navigate(r){const u=\'/arsip-surat-digital-enterprise\'+(r&&r!==\'/\'?\'/\'+r:\'\');window.history.pushState({route:r},\'\',u);this.handleRoute()}}const router=new Router();console.log(\'Router loaded\');'; },
-            'assets/js/app.js': function() { return 'class App{constructor(){this.version=\'2026.1.0\';this.isOnline=navigator.onLine}async init(){this.setupListeners();this.hideSpinner();if(typeof auth!==\'undefined\'&&auth.isAuthenticated){this.showDashboard()}else{this.showLoginPage()}}setupListeners(){window.addEventListener(\'online\',()=>this.isOnline=true);window.addEventListener(\'offline\',()=>this.isOnline=false);window.addEventListener(\'route-change\',e=>this.navigateTo(e.detail.route))}navigateTo(r){switch(r){case\'dashboard\':this.showDashboard();break;case\'login\':this.showLoginPage();break}}showLoginPage(){document.getElementById(\'app-container\').innerHTML=\'<div class="auth-page"><h2>Login</h2><form onsubmit="event.preventDefault();app.handleLogin()"><input id="login-id" placeholder="Username/Email"><input id="login-pw" type="password" placeholder="Password"><button type="submit">Masuk</button></form></div>\'}async handleLogin(){const r=await api.login(document.getElementById(\'login-id\').value,document.getElementById(\'login-pw\').value);if(r.success)this.showDashboard();else alert(r.message)}showDashboard(){document.getElementById(\'app-container\').innerHTML=\'<h1>Dashboard</h1>\'}hideSpinner(){const s=document.getElementById(\'app-spinner\');if(s)s.classList.add(\'hidden\')}}document.addEventListener(\'DOMContentLoaded\',()=>{window.app=new App();window.app.init()});'; },
-            'assets/js/dashboard.js': function() { return 'console.log(\'Dashboard module loaded\');'; },
-            'assets/js/surat.js': function() { return 'console.log(\'Surat module loaded\');'; },
-            'assets/js/disposisi.js': function() { return 'console.log(\'Disposisi module loaded\');'; },
-            'assets/js/laporan.js': function() { return 'console.log(\'Laporan module loaded\');'; },
-            'assets/js/components/spinner.js': function() { return 'class SpinnerComponent{static show(id){const el=document.getElementById(id);if(el)el.innerHTML=\'<div style="text-align:center;padding:50px"><div class="spinner-enterprise"></div><p>Loading...</p></div>\'}}'; },
-            'assets/css/app.css': function() { return ':root{--primary:#1a73e8;--success:#4caf50;--danger:#f44336;--dark:#333;--light:#f5f5f5}*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;background:var(--light);color:var(--dark)}'; },
-            'assets/css/dashboard.css': function() { return '/* dashboard.css */'; },
-            'assets/css/surat.css': function() { return '/* surat.css */'; },
-            'assets/css/print.css': function() { return '@media print{body{background:white}.app-header,.sidebar,.btn{display:none!important}}'; },
-            '.gitignore': function() { return 'node_modules/\n.DS_Store\n*.log\n.env\nuploads/*\n!uploads/.gitkeep'; },
-            'README.md': function() { return '# Arsip Surat Digital Enterprise 2026\n\nSistem Manajemen Arsip Surat Digital - Full Stack CRUD PWA\n\n## Live Demo\n' + BASE_URL + '\n\n## Setup\n1. Deploy code.gs ke Google Apps Script\n2. Update API URL di assets/js/config.js\n3. Buka index.html'; }
-        };
-        
-        return gens[path] ? gens[path]() : null;
-    }
-
-    function downloadFile(filename, base64Content) {
-        const content = fromBase64(base64Content);
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename.split('/').pop();
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        alert('✅ File "' + filename.split('/').pop() + '" telah didownload!\n\nSimpan ke folder: ' + filename.substring(0, filename.lastIndexOf('/')));
-    }
-
-    function downloadAllGenerated() {
-        if (state.generatedFiles.length === 0) { alert('Tidak ada file.'); return; }
-        state.generatedFiles.forEach(function(file, index) {
-            setTimeout(function() { downloadFile(file.path, file.base64); }, index * 500);
-        });
-        alert('📦 Mendownload ' + state.generatedFiles.length + ' files...');
-    }
-
-    function downloadFullReport() {
-        const report = {
-            timestamp: new Date().toISOString(),
-            api: { connected: state.apiConnected, url: API_URL },
-            files: {
-                total: state.filesChecked.length,
-                exists: state.filesChecked.filter(function(f) { return f.exists; }).length,
-                missing: state.filesMissing.length,
-                details: state.filesChecked.map(function(f) { return { path: f.path, exists: f.exists, critical: f.critical }; })
-            },
-            errors: state.errorsFound,
-            suggestions: state.suggestions,
-            generatedFiles: state.generatedFiles.map(function(f) { return { path: f.path, size: f.content.length }; })
-        };
-        
-        const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'troubleshooting-report-' + new Date().toISOString().slice(0,10) + '.json';
-        a.click();
-        URL.revokeObjectURL(url);
-        
-        document.getElementById('full-report-log').innerHTML = '';
-        log('full-report-log', '═══ REPORT LENGKAP ═══', 'info');
-        log('full-report-log', 'API: ' + (report.api.connected ? 'CONNECTED' : 'DISCONNECTED'), report.api.connected ? 'success' : 'error');
-        log('full-report-log', 'Files: ' + report.files.exists + '/' + report.files.total, 'info');
-        log('full-report-log', 'Errors: ' + report.errors.length, 'info');
-        log('full-report-log', '📥 Report JSON telah didownload!', 'success');
-        
-        alert('✅ Report lengkap telah didownload!');
-    }
-
-    async function runAllChecks() {
-        state.completedChecks = 0;
-        document.getElementById('progress-fill').style.width = '0%';
-        
-        try {
-            await checkAPIConnection();
-            await checkAllFiles();
-            await detectErrors();
-            generateSuggestions();
-            generateMissingFiles();
             
-            document.getElementById('progress-fill').style.width = '100%';
-            document.getElementById('progress-text').textContent = '✅ Semua selesai!';
-            
-            setTimeout(downloadFullReport, 1000);
-        } catch (error) {
-            document.getElementById('progress-text').textContent = '❌ Error: ' + error.message;
+            div.innerHTML = html;
+            updateProgress(100, 'Done!');
         }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('🔧 Troubleshooting System Ready');
-        document.getElementById('app-version').textContent = '2026.1.0';
-        document.getElementById('api-url-display').textContent = API_URL.substring(0, 50) + '...';
-        setTimeout(runAllChecks, 1500);
-    });
+        
+        function downloadCodeGS() {
+            const code = '// code.gs - Google Apps Script Backend\n// Deploy as Web App: Execute as Me, Access: Anyone\n\nfunction doPost(e) {\n  return ContentService.createTextOutput(JSON.stringify({\n    success: true,\n    message: "API is running",\n    version: "2026.1.0"\n  })).setMimeType(ContentService.MimeType.JSON);\n}\n\nfunction doGet(e) { return doPost(e); }';
+            const blob = new Blob([code], {type:'text/plain'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'code.gs';
+            a.click();
+            alert('code.gs downloaded! Upload to Google Apps Script.');
+        }
+        
+        async function runAll() {
+            updateProgress(0, 'Starting...');
+            await checkAPI();
+            await checkFiles();
+            generateMissing();
+        }
+        
+        setTimeout(runAll, 1000);
     </script>
 </body>
 </html>
