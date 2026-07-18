@@ -1,2 +1,189 @@
-// router.js - Base64 encoded
-Ly8gRW50ZXJwcmlzZSBSb3V0ZXIgLSBGaXggdjIwMjYuNy4xOA0KY2xhc3MgRW50ZXJwcmlzZVJvdXRlciB7DQogICAgY29uc3RydWN0b3IoKSB7DQogICAgICAgIHRoaXMucm91dGVzID0gew0KICAgICAgICAgICAgJy8nOiAndGFibGVhdSBkZSBCb3JkJywNCiAgICAgICAgICAgICcvZGFzaGJvYXJkJzogJ2Rhc2hib2FyZCcsDQogICAgICAgICAgICAnL3N1cmF0JzogJ3N1cmF0JywNCiAgICAgICAgICAgICcvZGlzcG9zaXNpJzogJ2Rpc3Bvc2lzaScsDQogICAgICAgICAgICAnL2xhcG9yYW4nOiAnbGFwb3JhbicsDQogICAgICAgICAgICAnL3NldHRpbmdzJzogJ3NldHRpbmdzJw0KICAgICAgICB9Ow0KICAgICAgICB0aGlzLmN1cnJlbnRSb3V0ZSA9IG51bGw7DQogICAgICAgIHRoaXMuaW5pdCgpOw0KICAgIH0NCg0KICAgIGluaXQoKSB7DQogICAgICAgIHRoaXMuaGFuZGxlUG9wdXN0YXRlKCk7DQogICAgICAgIHRoaXMuaGFuZGxlTGlua0NsaWNrcygpOw0KICAgICAgICB0aGlzLmhhbmRsZUluaXRpYWxSb3V0ZSgpOw0KICAgIH0NCg0KICAgIGhhbmRsZVBvcHVzdGF0ZSgpIHsNCiAgICAgICAgd2luZG93LmFkZEV2ZW50TGlzdGVuZXIoJ3BvcHN0YXRlJywgKGUpID0+IHsNCiAgICAgICAgICAgIGlmIChlLnN0YXRlICYmIGUuc3RhdGUucm91dGUpIHsNCiAgICAgICAgICAgICAgICB0aGlzLmhhbmRsZVJvdXRlKGUuc3RhdGUucm91dGUpOw0KICAgICAgICAgICAgfQ0KICAgICAgICB9KTsNCiAgICB9DQoNCiAgICBoYW5kbGVMaW5rQ2xpY2tzKCkgew0KICAgICAgICBkb2N1bWVudC5hZGRFdmVudExpc3RlbmVyKCdjbGljaycsIChlKSA9PiB7DQogICAgICAgICAgICBjb25zdCBsaW5rID0gZS50YXJnZXQuY2xvc2VzdCgnYScpOw0KICAgICAgICAgICAgaWYgKGxpbmsgJiYgbGluay5nZXRBdHRyaWJ1dGUoJ2hyZWYnKSAmJiBsaW5rLmdldEF0dHJpYnV0ZSgnaHJlZicpLnN0YXJ0c1dpdGgoJy8nKSkgew0KICAgICAgICAgICAgICAgIGUucHJldmVudERlZmF1bHQoKTsNCiAgICAgICAgICAgICAgICBjb25zdCBwYXRoID0gbGluay5nZXRBdHRyaWJ1dGUoJ2hyZWYnKTsNCiAgICAgICAgICAgICAgICB0aGlzLm5hdmlnYXRlKHBhdGgpOw0KICAgICAgICAgICAgfQ0KICAgICAgICB9KTsNCiAgICB9DQoNCiAgICBoYW5kbGVJbml0aWFsUm91dGUoKSB7DQogICAgICAgIGNvbnN0IHBhdGggPSB3aW5kb3cubG9jYXRpb24ucGF0aG5hbWUgfHwgJy8nOw0KICAgICAgICB0aGlzLmhhbmRsZVJvdXRlKHBhdGgpOw0KICAgIH0NCg0KICAgIG5hdmlnYXRlKHBhdGgpIHsNCiAgICAgICAgaWYgKHBhdGggIT09IHRoaXMuY3VycmVudFJvdXRlKSB7DQogICAgICAgICAgICB3aW5kb3cuaGlzdG9yeS5wdXNoU3RhdGUoeyByb3V0ZTogcGF0aCB9LCAnJywgcGF0aCk7DQogICAgICAgICAgICB0aGlzLmhhbmRsZVJvdXRlKHBhdGgpOw0KICAgICAgICB9DQogICAgfQ0KDQogICAgYXN5bmMgaGFuZGxlUm91dGUocGF0aCkgew0KICAgICAgICBjb25zb2xlLmxvZyhgUm91dGluZyB0bzogJHtwYXRofWApOw0KICAgICAgICB0aGlzLmN1cnJlbnRSb3V0ZSA9IHBhdGg7DQoNCiAgICAgICAgdHJ5IHsNCiAgICAgICAgICAgIHN3aXRjaChwYXRoKSB7DQogICAgICAgICAgICAgICAgY2FzZSAnLyc6DQogICAgICAgICAgICAgICAgY2FzZSAnL2Rhc2hib2FyZCc6DQogICAgICAgICAgICAgICAgICAgIGF3YWl0IHRoaXMuZGFzaGJvYXJkUm91dGUoKTsNCiAgICAgICAgICAgICAgICAgICAgYnJlYWs7DQogICAgICAgICAgICAgICAgY2FzZSAnL3N1cmF0JzoNCiAgICAgICAgICAgICAgICAgICAgYXdhaXQgdGhpcy5zdXJhdFJvdXRlKCk7DQogICAgICAgICAgICAgICAgICAgIGJyZWFrOw0KICAgICAgICAgICAgICAgIGNhc2UgJy9kaXNwb3Npc2knOg0KICAgICAgICAgICAgICAgICAgICBhd2FpdCB0aGlzLmRpc3Bvc2lzaVJvdXRlKCk7DQogICAgICAgICAgICAgICAgICAgIGJyZWFrOw0KICAgICAgICAgICAgICAgIGNhc2UgJy9sYXBvcmFuJzoNCiAgICAgICAgICAgICAgICAgICAgYXdhaXQgdGhpcy5sYXBvcmFuUm91dGUoKTsNCiAgICAgICAgICAgICAgICAgICAgYnJlYWs7DQogICAgICAgICAgICAgICAgY2FzZSAnL3NldHRpbmdzJzoNCiAgICAgICAgICAgICAgICAgICAgYXdhaXQgdGhpcy5zZXR0aW5nc1JvdXRlKCk7DQogICAgICAgICAgICAgICAgICAgIGJyZWFrOw0KICAgICAgICAgICAgICAgIGRlZmF1bHQ6DQogICAgICAgICAgICAgICAgICAgIHRoaXMuc2hvd0Vycm9yKCdIYWxhbWFuIHRpZGFrIGRpdGVtdWthbicsIDQwNCk7DQogICAgICAgICAgICB9DQogICAgICAgIH0gY2F0Y2ggKGVycm9yKSB7DQogICAgICAgICAgICBjb25zb2xlLmVycm9yKCdSb3V0ZSBlcnJvcjonLCBlcnJvcik7DQogICAgICAgICAgICB0aGlzLnNob3dFcnJvcignVGVyamFkaSBrZXNhbGFoYW4gc2FhdCBtZW11YXQgaGFsYW1hbicsIDUwMCk7DQogICAgICAgIH0NCiAgICB9DQoNCiAgICBhc3luYyBkYXNoYm9hcmRSb3V0ZSgpIHsNCiAgICAgICAgY29uc3QgY29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ21haW4tY29udGVudCcpOw0KICAgICAgICBpZiAoIWNvbnRhaW5lcikgew0KICAgICAgICAgICAgY29uc29sZS5lcnJvcignQ29udGFpbmVyIG5vdCBmb3VuZCcpOw0KICAgICAgICAgICAgcmV0dXJuOw0KICAgICAgICB9DQoNCiAgICAgICAgLy8gQWN0aXZhdGUgZGFzaGJvYXJkIG1vZHVsZSBpZiBhdmFpbGFibGUNCiAgICAgICAgaWYgKHdpbmRvdy5lbnRlcnByaXNlRGFzaGJvYXJkKSB7DQogICAgICAgICAgICBhd2FpdCB3aW5kb3cuZW50ZXJwcmlzZURhc2hib2FyZC5zaG93KCk7DQogICAgICAgIH0gZWxzZSB7DQogICAgICAgICAgICBjb250YWluZXIuaW5uZXJIVE1MID0gYA0KICAgICAgICAgICAgICAgIDxkaXYgY2xhc3M9ImRhc2hib2FyZC1jb250YWluZXIiPg0KICAgICAgICAgICAgICAgICAgICA8aDE+U2VsYW1hdCBEYXRhbmcgZGkgU2lzdGVtIEFyc2lwIFN1cmF0PC9oMT4NCiAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzcz0ic3RhdHMtZ3JpZCI+DQogICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzPSJzdGF0LWNhcmQiPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxoMz5Ub3RhbCBTdXJhdDwvaDM+DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgPHAgaWQ9InRvdGFsLXN1cmF0Ij4wPC9wPg0KICAgICAgICAgICAgICAgICAgICAgICAgPC9kaXY+DQogICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzPSJzdGF0LWNhcmQiPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxoMz5TdXJhdCBNYXN1azwvaDM+DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgPHAgaWQ9InN1cmF0LW1hc3VrIj4wPC9wPg0KICAgICAgICAgICAgICAgICAgICAgICAgPC9kaXY+DQogICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzPSJzdGF0LWNhcmQiPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxoMz5TdXJhdCBLZWx1YXI8L2gzPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxwIGlkPSJzdXJhdC1rZWx1YXIiPjA8L3A+DQogICAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj4NCiAgICAgICAgICAgICAgICAgICAgPC9kaXY+DQogICAgICAgICAgICAgICAgPC9kaXY+DQogICAgICAgICAgICBgOw0KICAgICAgICB9DQogICAgfQ0KDQogICAgYXN5bmMgc3VyYXRSb3V0ZSgpIHsNCiAgICAgICAgY29uc3QgY29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ21haW4tY29udGVudCcpOw0KICAgICAgICBpZiAoIWNvbnRhaW5lcikgew0KICAgICAgICAgICAgY29uc29sZS5lcnJvcignQ29udGFpbmVyIG5vdCBmb3VuZCcpOw0KICAgICAgICAgICAgcmV0dXJuOw0KICAgICAgICB9DQoNCiAgICAgICAgaWYgKHdpbmRvdy5lbnRlcnByaXNlU3VyYXQpIHsNCiAgICAgICAgICAgIGF3YWl0IHdpbmRvdy5lbnRlcnByaXNlU3VyYXQuc2hvdygpOw0KICAgICAgICB9IGVsc2Ugew0KICAgICAgICAgICAgY29udGFpbmVyLmlubmVySFRNTCA9IGA8ZGl2PjxoMT5NYW5hamVtZW4gU3VyYXQ8L2gxPjwvZGl2PmA7DQogICAgICAgIH0NCiAgICB9DQoNCiAgICBhc3luYyBkaXNwb3Npc2lSb3V0ZSgpIHsNCiAgICAgICAgY29uc3QgY29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ21haW4tY29udGVudCcpOw0KICAgICAgICBpZiAoIWNvbnRhaW5lcikgew0KICAgICAgICAgICAgY29uc29sZS5lcnJvcignQ29udGFpbmVyIG5vdCBmb3VuZCcpOw0KICAgICAgICAgICAgcmV0dXJuOw0KICAgICAgICB9DQoNCiAgICAgICAgaWYgKHdpbmRvdy5lbnRlcnByaXNlRGlzcG9zaXNpKSB7DQogICAgICAgICAgICBhd2FpdCB3aW5kb3cuZW50ZXJwcmlzZURpc3Bvc2lzaS5zaG93KCk7DQogICAgICAgIH0gZWxzZSB7DQogICAgICAgICAgICBjb250YWluZXIuaW5uZXJIVE1MID0gYDxkaXY+PGgxPkRpc3Bvc2lzaSBTdXJhdDwvaDE+PC9kaXY+YDsNCiAgICAgICAgfQ0KICAgIH0NCg0KICAgIGFzeW5jIGxhcG9yYW5Sb3V0ZSgpIHsNCiAgICAgICAgY29uc3QgY29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ21haW4tY29udGVudCcpOw0KICAgICAgICBpZiAoIWNvbnRhaW5lcikgew0KICAgICAgICAgICAgY29uc29sZS5lcnJvcignQ29udGFpbmVyIG5vdCBmb3VuZCcpOw0KICAgICAgICAgICAgcmV0dXJuOw0KICAgICAgICB9DQoNCiAgICAgICAgaWYgKHdpbmRvdy5lbnRlcnByaXNlTGFwb3Jhbikgew0KICAgICAgICAgICAgYXdhaXQgd2luZG93LmVudGVycHJpc2VMYXBvcmFuLnNob3coKTsNCiAgICAgICAgfSBlbHNlIHsNCiAgICAgICAgICAgIGNvbnRhaW5lci5pbm5lckhUTUwgPSBgPGRpdj48aDE+TGFwb3JhbjwvaDE+PC9kaXY+YDsNCiAgICAgICAgfQ0KICAgIH0NCg0KICAgIGFzeW5jIHNldHRpbmdzUm91dGUoKSB7DQogICAgICAgIGNvbnN0IGNvbnRhaW5lciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdtYWluLWNvbnRlbnQnKTsNCiAgICAgICAgaWYgKCFjb250YWluZXIpIHsNCiAgICAgICAgICAgIGNvbnNvbGUuZXJyb3IoJ0NvbnRhaW5lciBub3QgZm91bmQnKTsNCiAgICAgICAgICAgIHJldHVybjsNCiAgICAgICAgfQ0KICAgICAgICBjb250YWluZXIuaW5uZXJIVE1MID0gYDxkaXY+PGgxPlBlbmdhdHVyYW48L2gxPjwvZGl2PmA7DQogICAgfQ0KDQogICAgc2hvd0Vycm9yKG1lc3NhZ2UsIGNvZGUpIHsNCiAgICAgICAgY29uc3QgY29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ21haW4tY29udGVudCcpOw0KICAgICAgICBpZiAoY29udGFpbmVyKSB7DQogICAgICAgICAgICBjb250YWluZXIuaW5uZXJIVE1MID0gYA0KICAgICAgICAgICAgICAgIDxkaXYgY2xhc3M9ImVycm9yLXBhZ2UiPg0KICAgICAgICAgICAgICAgICAgICA8aDE+RXJyb3IgJHtjb2RlfTwvaDE+DQogICAgICAgICAgICAgICAgICAgIDxwPiR7bWVzc2FnZX08L3A+DQogICAgICAgICAgICAgICAgICAgIDxhIGhyZWY9Ii8iIGNsYXNzPSJidG4tYmFjayI+S2VtYmFsaSBrZSBCZXJhbmRhPC9hPg0KICAgICAgICAgICAgICAgIDwvZGl2Pg0KICAgICAgICAgICAgYDsNCiAgICAgICAgfQ0KICAgIH0NCn0NCg0KLy8gSW5pdGlhbGl6ZSByb3V0ZXIgd2hlbiBET00gaXMgcmVhZHkNCmlmIChkb2N1bWVudC5yZWFkeVN0YXRlID09PSAnbG9hZGluZycgfHwgZG9jdW1lbnQucmVhZHlTdGF0ZSA9PT0gJ2ludGVyYWN0aXZlJykgew0KICAgIGRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ0RPTUNvbnRlbnRMb2FkZWQnLCAoKSA9PiB7DQogICAgICAgIHdpbmRvdy5lbnRlcnByaXNlUm91dGVyID0gbmV3IEVudGVycHJpc2VSb3V0ZXIoKTsNCiAgICB9KTsNCn0gZWxzZSB7DQogICAgd2luZG93LmVudGVycHJpc2VSb3V0ZXIgPSBuZXcgRW50ZXJwcmlzZVJvdXRlcigpOw0KfQ==
+// Enterprise Router - Fix v2026.7.18
+class EnterpriseRouter {
+    constructor() {
+        this.routes = {
+            '/': 'tableau de Bord',
+            '/dashboard': 'dashboard',
+            '/surat': 'surat',
+            '/disposisi': 'disposisi',
+            '/laporan': 'laporan',
+            '/settings': 'settings'
+        };
+        this.currentRoute = null;
+        this.init();
+    }
+
+    init() {
+        this.handlePopstate();
+        this.handleLinkClicks();
+        this.handleInitialRoute();
+    }
+
+    handlePopstate() {
+        window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.route) {
+                this.handleRoute(e.state.route);
+            }
+        });
+    }
+
+    handleLinkClicks() {
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            if (link && link.getAttribute('href') && link.getAttribute('href').startsWith('/')) {
+                e.preventDefault();
+                const path = link.getAttribute('href');
+                this.navigate(path);
+            }
+        });
+    }
+
+    handleInitialRoute() {
+        const path = window.location.pathname || '/';
+        this.handleRoute(path);
+    }
+
+    navigate(path) {
+        if (path !== this.currentRoute) {
+            window.history.pushState({ route: path }, '', path);
+            this.handleRoute(path);
+        }
+    }
+
+    async handleRoute(path) {
+        console.log(`Routing to: ${path}`);
+        this.currentRoute = path;
+
+        try {
+            switch(path) {
+                case '/':
+                case '/dashboard':
+                    await this.dashboardRoute();
+                    break;
+                case '/surat':
+                    await this.suratRoute();
+                    break;
+                case '/disposisi':
+                    await this.disposisiRoute();
+                    break;
+                case '/laporan':
+                    await this.laporanRoute();
+                    break;
+                case '/settings':
+                    await this.settingsRoute();
+                    break;
+                default:
+                    this.showError('Halaman tidak ditemukan', 404);
+            }
+        } catch (error) {
+            console.error('Route error:', error);
+            this.showError('Terjadi kesalahan saat memuat halaman', 500);
+        }
+    }
+
+    async dashboardRoute() {
+        const container = document.getElementById('main-content');
+        if (!container) {
+            console.error('Container not found');
+            return;
+        }
+
+        // Activate dashboard module if available
+        if (window.enterpriseDashboard) {
+            await window.enterpriseDashboard.show();
+        } else {
+            container.innerHTML = `
+                <div class="dashboard-container">
+                    <h1>Selamat Datang di Sistem Arsip Surat</h1>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Total Surat</h3>
+                            <p id="total-surat">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Surat Masuk</h3>
+                            <p id="surat-masuk">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Surat Keluar</h3>
+                            <p id="surat-keluar">0</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    async suratRoute() {
+        const container = document.getElementById('main-content');
+        if (!container) {
+            console.error('Container not found');
+            return;
+        }
+
+        if (window.enterpriseSurat) {
+            await window.enterpriseSurat.show();
+        } else {
+            container.innerHTML = `<div><h1>Manajemen Surat</h1></div>`;
+        }
+    }
+
+    async disposisiRoute() {
+        const container = document.getElementById('main-content');
+        if (!container) {
+            console.error('Container not found');
+            return;
+        }
+
+        if (window.enterpriseDisposisi) {
+            await window.enterpriseDisposisi.show();
+        } else {
+            container.innerHTML = `<div><h1>Disposisi Surat</h1></div>`;
+        }
+    }
+
+    async laporanRoute() {
+        const container = document.getElementById('main-content');
+        if (!container) {
+            console.error('Container not found');
+            return;
+        }
+
+        if (window.enterpriseLaporan) {
+            await window.enterpriseLaporan.show();
+        } else {
+            container.innerHTML = `<div><h1>Laporan</h1></div>`;
+        }
+    }
+
+    async settingsRoute() {
+        const container = document.getElementById('main-content');
+        if (!container) {
+            console.error('Container not found');
+            return;
+        }
+        container.innerHTML = `<div><h1>Pengaturan</h1></div>`;
+    }
+
+    showError(message, code) {
+        const container = document.getElementById('main-content');
+        if (container) {
+            container.innerHTML = `
+                <div class="error-page">
+                    <h1>Error ${code}</h1>
+                    <p>${message}</p>
+                    <a href="/" class="btn-back">Kembali ke Beranda</a>
+                </div>
+            `;
+        }
+    }
+}
+
+// Initialize router when DOM is ready
+if (document.readyState === 'loading' || document.readyState === 'interactive') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.enterpriseRouter = new EnterpriseRouter();
+    });
+} else {
+    window.enterpriseRouter = new EnterpriseRouter();
+}
