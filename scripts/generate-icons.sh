@@ -1,32 +1,37 @@
 #!/bin/bash
 
-# Generate PWA icons from SVG
-# Requires: inkscape or convert (ImageMagick)
+# Script untuk generate semua icon PNG dari SVG
+# Requires: inkscape atau rsvg-convert
 
-ICON_SIZES=(72 96 128 144 152 192 384 512)
-SOURCE_SVG="assets/images/icon.svg"
-OUTPUT_DIR="assets/images"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ASSETS_DIR="$SCRIPT_DIR/../public/assets/images"
 
-if [ ! -f "$SOURCE_SVG" ]; then
-    echo "Source SVG not found: $SOURCE_SVG"
-    exit 1
-fi
+SIZES=(72 96 128 144 152 192 384 512)
 
 echo "Generating PWA icons..."
 
-for size in "${ICON_SIZES[@]}"; do
-    output_file="${OUTPUT_DIR}/icon-${size}x${size}.png"
+for size in "${SIZES[@]}"; do
+    INPUT_SVG="$ASSETS_DIR/icon-${size}x${size}.svg"
+    OUTPUT_PNG="$ASSETS_DIR/icon-${size}x${size}.png"
     
-    if command -v inkscape &> /dev/null; then
-        inkscape -w $size -h $size "$SOURCE_SVG" -o "$output_file"
-    elif command -v convert &> /dev/null; then
-        convert -background none -size ${size}x${size} "$SOURCE_SVG" "$output_file"
+    if [ -f "$INPUT_SVG" ]; then
+        echo "Generating ${size}x${size}..."
+        
+        if command -v rsvg-convert &> /dev/null; then
+            rsvg-convert -w $size -h $size "$INPUT_SVG" -o "$OUTPUT_PNG"
+        elif command -v inkscape &> /dev/null; then
+            inkscape -w $size -h $size "$INPUT_SVG" -o "$OUTPUT_PNG" 2>/dev/null
+        elif command -v convert &> /dev/null; then
+            convert -background none -size ${size}x${size} "$INPUT_SVG" "$OUTPUT_PNG"
+        else
+            echo "Please install inkscape, rsvg-convert, or imagemagick"
+            exit 1
+        fi
+        
+        echo "  ✓ Created: $OUTPUT_PNG"
     else
-        echo "Please install Inkscape or ImageMagick"
-        exit 1
+        echo "  ✗ SVG not found: $INPUT_SVG"
     fi
-    
-    echo "  Generated: $output_file"
 done
 
-echo "Icons generated successfully!"
+echo "Done! All icons generated."
