@@ -1,113 +1,66 @@
-// run-all.js - Run All Database Migrations
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwblauw29Cv8rmrjQHhfXgdl0csBHlxO3xvZJimyBsSyA4F5f9qH25Ej5QYIu--OGy6Bw/exec';
-
-const migrations = [
-    '001_create_roles_table',
-    '002_create_pengguna_table',
-    '003_create_kategori_table',
-    '004_create_instansi_table',
-    '005_create_surat_masuk_table',
-    '006_create_surat_keluar_table',
-    '007_create_disposisi_table',
-    '008_create_lampiran_table',
-    '009_create_notifikasi_table',
-    '010_create_log_aktivitas_table',
-    '011_create_pengaturan_table'
-];
+const { sequelize } = require('../../config/database');
+const fs = require('fs');
+const path = require('path');
 
 async function runMigrations() {
-    console.log('=========================================');
-    console.log('  Running Database Migrations...');
-    console.log('=========================================\n');
+    try {
+        console.log('Starting database migrations...');
+        
+        // Get all migration files
+        const migrationsDir = path.join(__dirname);
+        const files = fs.readdirSync(migrationsDir)
+            .filter(file => file.match(/^\d+_/))
+            .sort();
 
-    for (const migration of migrations) {
-        try {
-            console.log(`Running: ${migration}...`);
-            
-            const payload = btoa(encodeURIComponent(JSON.stringify({
-                action: 'migration_run',
-                migration: migration,
-                timestamp: Date.now()
-            })));
+        console.log(`Found ${files.length} migration files`);
 
-            const response = await fetch(GAS_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: payload })
-            });
+        // Create migrations table if not exists
+        await sequelize.query(`
+            CREATE TABLE IF NOT EXISTS migrations (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                migration VARCHAR(255) NOT NULL,
+                batch INT NOT NULL,
+                executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
 
-            const result = await response.json();
-            const data = JSON.parse(decodeURIComponent(atob(result.data)));
+        // Get executed migrations
+        const [executed] = await sequelize.query('SELECT migration FROM migrations');
+        const executedMigrations = executed.map(row => row.migration);
 
-            if (data.success) {
-                console.log(`  ✓ ${migration} completed`);
-            } else {
-                console.log(`  ⚠ ${migration} skipped: ${data.message || 'Already exists'}`);
-            }
-
-        } catch (error) {
-            console.error(`  ✗ ${migration} failed: ${error.message}`);
+        let batch = 1;
+        const [lastBatch] = await sequelize.query('SELECT MAX(batch) as max_batch FROM migrations');
+        if (lastBatch[0].max_batch) {
+            batch = lastBatch[0].max_batch + 1;
         }
-    }
 
-    console.log('\n=========================================');
-    console.log('  Migration Complete!');
-    console.log('=========================================');
-}
-
-async function rollbackMigrations() {
-    console.log('=========================================');
-    console.log('  Rolling Back Migrations...');
-    console.log('=========================================\n');
-
-    // Rollback in reverse order
-    const reversed = [...migrations].reverse();
-
-    for (const migration of reversed) {
-        try {
-            console.log(`Rolling back: ${migration}...`);
-            
-            const payload = btoa(encodeURIComponent(JSON.stringify({
-                action: 'migration_rollback',
-                migration: migration,
-                timestamp: Date.now()
-            })));
-
-            const response = await fetch(GAS_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: payload })
-            });
-
-            const result = await response.json();
-            const data = JSON.parse(decodeURIComponent(atob(result.data)));
-
-            if (data.success) {
-                console.log(`  ✓ ${migration} rolled back`);
-            } else {
-                console.log(`  ⚠ ${migration} skipped`);
+        // Run pending migrations
+        for (const file of files) {
+            if (!executedMigrations.includes(file)) {
+                console.log(`Running migration: ${file}`);
+                
+                const migration = require(path.join(migrationsDir, file));
+                
+                try {
+                    await migration.up(sequelize);
+                    await sequelize.query('INSERT INTO migrations (migration, batch) VALUES (?, ?)', {
+                        replacements: [file, batch]
+                    });
+                    console.log(`✓ Migration ${file} completed`);
+                } catch (error) {
+                    console.error(`✗ Migration ${file} failed:`, error.message);
+                    throw error;
+                }
             }
-
-        } catch (error) {
-            console.error(`  ✗ ${migration} rollback failed: ${error.message}`);
         }
+
+        console.log('All migrations completed successfully');
+        process.exit(0);
+    } catch (error) {
+        console.error('Migration failed:', error);
+        process.exit(1);
     }
-
-    console.log('\n=========================================');
-    console.log('  Rollback Complete!');
-    console.log('=========================================');
 }
 
-// Check command line arguments
-const args = process.argv.slice(2);
-const command = args[0] || 'migrate';
-
-if (command === 'rollback') {
-    rollbackMigrations().catch(console.error);
-} else if (command === 'refresh') {
-    rollbackMigrations()
-        .then(() => runMigrations())
-        .catch(console.error);
-} else {
-    runMigrations().catch(console.error);
-}
+// Run migrations
+runMigrations();
