@@ -1,2 +1,91 @@
-// auth.js - Base64 encoded
-Ly8gRW50ZXJwcmlzZSBBdXRoIC0gRml4IHYyMDI2LjcuMTgNCmNsYXNzIEVudGVycHJpc2VBdXRoIHsNCiAgICBjb25zdHJ1Y3RvcigpIHsNCiAgICAgICAgdGhpcy51c2VyID0gbnVsbDsNCiAgICAgICAgdGhpcy50b2tlbiA9IG51bGw7DQogICAgICAgIHRoaXMuaXNJbml0aWFsaXplZCA9IGZhbHNlOw0KICAgICAgICB0aGlzLmF1dGhLZXkgPSAnZW50ZXJwcmlzZV9hdXRoJzsNCiAgICB9DQoNCiAgICBhc3luYyBpbml0KCkgew0KICAgICAgICBpZiAodGhpcy5pc0luaXRpYWxpemVkKSByZXR1cm47DQogICAgICAgIA0KICAgICAgICB0cnkgew0KICAgICAgICAgICAgLy8gUmVzdG9yZSBzZXNzaW9uDQogICAgICAgICAgICBhd2FpdCB0aGlzLnJlc3RvcmVTZXNzaW9uKCk7DQogICAgICAgICAgICB0aGlzLmlzSW5pdGlhbGl6ZWQgPSB0cnVlOw0KICAgICAgICAgICAgY29uc29sZS5sb2coJ1snK25ldyBEYXRlKCkudG9JU09TdHJpbmcoKSsnXSBFbnRlcnByaXNlIEF1dGggaW5pdGlhbGl6ZWQnKTsNCiAgICAgICAgfSBjYXRjaCAoZXJyb3IpIHsNCiAgICAgICAgICAgIGNvbnNvbGUud2FybignQXV0aCBpbml0aWFsaXphdGlvbiBmYWlsZWQ6JywgZXJyb3IpOw0KICAgICAgICB9DQogICAgfQ0KDQogICAgYXN5bmMgcmVzdG9yZVNlc3Npb24oKSB7DQogICAgICAgIHRyeSB7DQogICAgICAgICAgICBjb25zdCBzZXNzaW9uRGF0YSA9IGxvY2FsU3RvcmFnZS5nZXRJdGVtKHRoaXMuYXV0aEtleSk7DQogICAgICAgICAgICBpZiAoc2Vzc2lvbkRhdGEpIHsNCiAgICAgICAgICAgICAgICBjb25zdCBwYXJzZWQgPSBKU09OLnBhcnNlKHNlc3Npb25EYXRhKTsNCiAgICAgICAgICAgICAgICB0aGlzLnVzZXIgPSBwYXJzZWQudXNlcjsNCiAgICAgICAgICAgICAgICB0aGlzLnRva2VuID0gcGFyc2VkLnRva2VuOw0KICAgICAgICAgICAgICAgIGNvbnNvbGUubG9nKCdbJytuZXcgRGF0ZSgpLnRvSVNPU3RyaW5nKCkrJ10gU2Vzc2lvbiByZXN0b3JlZCcpOw0KICAgICAgICAgICAgfQ0KICAgICAgICB9IGNhdGNoIChlcnJvcikgew0KICAgICAgICAgICAgY29uc29sZS53YXJuKCdTZXNzaW9uIHJlc3RvcmF0aW9uIGZhaWxlZDonLCBlcnJvcik7DQogICAgICAgIH0NCiAgICB9DQoNCiAgICBhc3luYyBsb2dpbihjcmVkZW50aWFscykgew0KICAgICAgICAvLyBTaW11bGF0ZSBsb2dpbiAtIGluIHByb2R1Y3Rpb24sIHRoaXMgd291bGQgbWFrZSBhbiBBUEkgY2FsbA0KICAgICAgICByZXR1cm4gbmV3IFByb21pc2UoKHJlc29sdmUsIHJlamVjdCkgPT4gew0KICAgICAgICAgICAgc2V0VGltZW91dCgoKSA9PiB7DQogICAgICAgICAgICAgICAgaWYgKGNyZWRlbnRpYWxzLmVtYWlsICYmIGNyZWRlbnRpYWxzLnBhc3N3b3JkKSB7DQogICAgICAgICAgICAgICAgICAgIHRoaXMudXNlciA9IHsNCiAgICAgICAgICAgICAgICAgICAgICAgIGlkOiBjcnlwdG8ucmFuZG9tVVVJRCgpLA0KICAgICAgICAgICAgICAgICAgICAgICAgZW1haWw6IGNyZWRlbnRpYWxzLmVtYWlsLA0KICAgICAgICAgICAgICAgICAgICAgICAgbmFtZTogY3JlZGVudGlhbHMuZW1haWwuc3BsaXQoJ0AnKVswXSwNCiAgICAgICAgICAgICAgICAgICAgICAgIHJvbGU6ICd1c2VyJw0KICAgICAgICAgICAgICAgICAgICB9Ow0KICAgICAgICAgICAgICAgICAgICB0aGlzLnRva2VuID0gY3J5cHRvLnJhbmRvbVVVSUQoKTsNCiAgICAgICAgICAgICAgICAgICAgDQogICAgICAgICAgICAgICAgICAgIC8vIFNhdmUgc2Vzc2lvbg0KICAgICAgICAgICAgICAgICAgICB0aGlzLnNhdmVTZXNzaW9uKCk7DQogICAgICAgICAgICAgICAgICAgIHJlc29sdmUodGhpcy51c2VyKTsNCiAgICAgICAgICAgICAgICB9IGVsc2Ugew0KICAgICAgICAgICAgICAgICAgICByZWplY3QobmV3IEVycm9yKCdJbnZhbGlkIGNyZWRlbnRpYWxzJykpOw0KICAgICAgICAgICAgICAgIH0NCiAgICAgICAgICAgIH0sIDUwMCk7DQogICAgICAgIH0pOw0KICAgIH0NCg0KICAgIGFzeW5jIGxvZ291dCgpIHsNCiAgICAgICAgdGhpcy51c2VyID0gbnVsbDsNCiAgICAgICAgdGhpcy50b2tlbiA9IG51bGw7DQogICAgICAgIGxvY2FsU3RvcmFnZS5yZW1vdmVJdGVtKHRoaXMuYXV0aEtleSk7DQogICAgICAgIGNvbnNvbGUubG9nKCdVc2VyIGxvZ2dlZCBvdXQnKTsNCiAgICB9DQoNCiAgICBzYXZlU2Vzc2lvbigpIHsNCiAgICAgICAgaWYgKHRoaXMudXNlciAmJiB0aGlzLnRva2VuKSB7DQogICAgICAgICAgICBsb2NhbFN0b3JhZ2Uuc2V0SXRlbSh0aGlzLmF1dGhLZXksIEpTT04uc3RyaW5naWZ5KHsNCiAgICAgICAgICAgICAgICB1c2VyOiB0aGlzLnVzZXIsDQogICAgICAgICAgICAgICAgdG9rZW46IHRoaXMudG9rZW4sDQogICAgICAgICAgICAgICAgdGltZXN0YW1wOiBuZXcgRGF0ZSgpLnRvSVNPU3RyaW5nKCkNCiAgICAgICAgICAgIH0pKTsNCiAgICAgICAgfQ0KICAgIH0NCg0KICAgIGlzQXV0aGVudGljYXRlZCgpIHsNCiAgICAgICAgcmV0dXJuICEhdGhpcy51c2VyICYmICEhdGhpcy50b2tlbjsNCiAgICB9DQoNCiAgICBnZXRVc2VyKCkgew0KICAgICAgICByZXR1cm4gdGhpcy51c2VyOw0KICAgIH0NCg0KICAgIGdldFRva2VuKCkgew0KICAgICAgICByZXR1cm4gdGhpcy50b2tlbjsNCiAgICB9DQp9DQoNCi8vIEV4cG9zZSB0byB3aW5kb3cNCndpbmRvdy5lbnRlcnByaXNlQXV0aCA9IG5ldyBFbnRlcnByaXNlQXV0aCgpOw==
+// Enterprise Auth - Fix v2026.7.18
+class EnterpriseAuth {
+    constructor() {
+        this.user = null;
+        this.token = null;
+        this.isInitialized = false;
+        this.authKey = 'enterprise_auth';
+    }
+
+    async init() {
+        if (this.isInitialized) return;
+        
+        try {
+            // Restore session
+            await this.restoreSession();
+            this.isInitialized = true;
+            console.log('['+new Date().toISOString()+'] Enterprise Auth initialized');
+        } catch (error) {
+            console.warn('Auth initialization failed:', error);
+        }
+    }
+
+    async restoreSession() {
+        try {
+            const sessionData = localStorage.getItem(this.authKey);
+            if (sessionData) {
+                const parsed = JSON.parse(sessionData);
+                this.user = parsed.user;
+                this.token = parsed.token;
+                console.log('['+new Date().toISOString()+'] Session restored');
+            }
+        } catch (error) {
+            console.warn('Session restoration failed:', error);
+        }
+    }
+
+    async login(credentials) {
+        // Simulate login - in production, this would make an API call
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                if (credentials.email && credentials.password) {
+                    this.user = {
+                        id: crypto.randomUUID(),
+                        email: credentials.email,
+                        name: credentials.email.split('@')[0],
+                        role: 'user'
+                    };
+                    this.token = crypto.randomUUID();
+                    
+                    // Save session
+                    this.saveSession();
+                    resolve(this.user);
+                } else {
+                    reject(new Error('Invalid credentials'));
+                }
+            }, 500);
+        });
+    }
+
+    async logout() {
+        this.user = null;
+        this.token = null;
+        localStorage.removeItem(this.authKey);
+        console.log('User logged out');
+    }
+
+    saveSession() {
+        if (this.user && this.token) {
+            localStorage.setItem(this.authKey, JSON.stringify({
+                user: this.user,
+                token: this.token,
+                timestamp: new Date().toISOString()
+            }));
+        }
+    }
+
+    isAuthenticated() {
+        return !!this.user && !!this.token;
+    }
+
+    getUser() {
+        return this.user;
+    }
+
+    getToken() {
+        return this.token;
+    }
+}
+
+// Expose to window
+window.enterpriseAuth = new EnterpriseAuth();
