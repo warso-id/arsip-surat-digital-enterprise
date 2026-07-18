@@ -496,20 +496,23 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script src="public/js/landing.js"></script>
     
-    <!-- Service Worker - Fixed Path -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                const swPath = '/arsip-surat-digital-enterprise/public/sw.js';
-                navigator.serviceWorker.register(swPath, { scope: '/arsip-surat-digital-enterprise/' })
-                    .then(function(registration) {
-                        console.log('SW registered:', registration.scope);
-                    })
-                    .catch(function(error) {
-                        console.log('SW registration failed:', error);
-                    });
-            });
-        }
-    </script>
+    <!-- Service Worker Registration - Fixed -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            // SW berada di root folder project
+            var swPath = '/arsip-surat-digital-enterprise/public/sw.js';
+            var swScope = '/arsip-surat-digital-enterprise/';
+            
+            navigator.serviceWorker.register(swPath, { scope: swScope })
+                .then(function(registration) {
+                    console.log('SW registered successfully:', registration.scope);
+                })
+                .catch(function(error) {
+                    console.warn('SW registration failed:', error.message);
+                });
+        });
+    }
+</script>
 </body>
 </html>
