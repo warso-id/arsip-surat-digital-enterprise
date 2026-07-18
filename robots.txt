@@ -1,9 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /src/storage/
-Disallow: /src/database/
-Disallow: /node_modules/
-Disallow: /.github/
-Disallow: /tests/
-
-Sitemap: https://your-domain.com/sitemap.xml
