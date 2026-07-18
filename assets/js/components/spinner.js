@@ -1,33 +1,63 @@
-// spinner.js - Spinner Component
-class SpinnerComponent {
-    static show(containerId = 'main-content') {
-        const container = document.getElementById(containerId);
-        if (container) {
-            container.innerHTML = `
-                <div style="text-align: center; padding: 50px;">
-                    <div class="spinner-enterprise"></div>
-                    <p class="spinner-text">Memuat data...</p>
+/* ============================================
+   ENTERPRISE SPINNER COMPONENT
+   ============================================ */
+(function() {
+    'use strict';
+
+    class SpinnerComponent {
+        constructor() {
+            this.element = null;
+            this.timeout = null;
+        }
+
+        show(message = 'Memuat...') {
+            // Remove existing spinner
+            this.hide();
+
+            this.element = document.createElement('div');
+            this.element.className = 'spinner-overlay';
+            this.element.innerHTML = `
+                <div class="spinner-container">
+                    <div class="spinner-circle"></div>
+                    <div class="spinner-message">${message}</div>
                 </div>
             `;
+
+            document.body.appendChild(this.element);
+
+            // Auto hide after 30 seconds
+            this.timeout = setTimeout(() => {
+                this.hide();
+            }, 30000);
+        }
+
+        hide() {
+            if (this.timeout) {
+                clearTimeout(this.timeout);
+                this.timeout = null;
+            }
+
+            if (this.element) {
+                this.element.classList.add('fade-out');
+                setTimeout(() => {
+                    if (this.element) {
+                        this.element.remove();
+                        this.element = null;
+                    }
+                }, 300);
+            }
+        }
+
+        async wrap(promise, message = 'Memproses...') {
+            this.show(message);
+            try {
+                const result = await promise;
+                return result;
+            } finally {
+                this.hide();
+            }
         }
     }
 
-    static showOverlay() {
-        const overlay = document.createElement('div');
-        overlay.className = 'spinner-overlay';
-        overlay.innerHTML = `
-            <div style="text-align: center;">
-                <div class="spinner-enterprise"></div>
-                <p class="spinner-text">Mohon tunggu...</p>
-            </div>
-        `;
-        document.body.appendChild(overlay);
-    }
-
-    static hideOverlay() {
-        const overlay = document.querySelector('.spinner-overlay');
-        if (overlay) {
-            overlay.remove();
-        }
-    }
-}
+    window.Spinner = new SpinnerComponent();
+})();
